@@ -1,0 +1,31 @@
+image: hoangnd4rikkei/android-sdk
+
+stages:
+- release
+
+before_script:
+- export GRADLE_USER_HOME=$(pwd)/.gradle
+- export PROD="release"
+- chmod +x ./gradlew
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+  - .gradle/
+
+build_release:
+  stage: release
+  only:
+  - release
+  script:
+  - ./gradlew assembleRelease
+  - cd app/build/outputs/apk/$PROD
+  - cp app-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-release.apk
+  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/release/
+  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-mapping.txt
+  - ls -al $CI_PROJECT_DIR
+  artifacts:
+    paths:
+    - ./$CI_BUILD_REF-release.apk
+    - ./$CI_BUILD_REF-mapping.txt
+    expire_in: 5 day
