@@ -9,7 +9,7 @@ import android.util.Base64;
 public class VPNGateConnection {
     //HostName,IP,Score,Ping,Speed,CountryLong,CountryShort,NumVpnSessions,Uptime,TotalUsers,TotalTraffic,logType,Operator,Message,OpenVPN_ConfigData_Base64
     private String hostName;
-    private String iP;
+    private String ip;
     private int score;
     private int ping;
     private int speed;
@@ -30,7 +30,7 @@ public class VPNGateConnection {
             int index = 0;
             VPNGateConnection vpnGateConnection = new VPNGateConnection();
             vpnGateConnection.hostName = properties[index++];
-            vpnGateConnection.iP = properties[index++];
+            vpnGateConnection.ip = properties[index++];
             vpnGateConnection.score = Integer.parseInt(properties[index++]);
             vpnGateConnection.ping = Integer.parseInt(properties[index++]);
             vpnGateConnection.speed = Integer.parseInt(properties[index++]);
@@ -68,12 +68,12 @@ public class VPNGateConnection {
         this.hostName = hostName;
     }
 
-    public String getiP() {
-        return iP;
+    public String getIp() {
+        return ip;
     }
 
-    public void setiP(String iP) {
-        this.iP = iP;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public int getScore() {
