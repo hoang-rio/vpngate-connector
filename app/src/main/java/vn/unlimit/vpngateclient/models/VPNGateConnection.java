@@ -18,7 +18,7 @@ public class VPNGateConnection {
     private int numVpnSession;
     private int uptime;
     private int totalUser;
-    private long totalTrafic;
+    private long totalTraffic;
     private String logType;
     private String operator;
     private String message;
@@ -27,21 +27,23 @@ public class VPNGateConnection {
     public static VPNGateConnection fromCsv(String csvLine) {
         String[] properties = csvLine.split(",");
         try {
+            int index = 0;
             VPNGateConnection vpnGateConnection = new VPNGateConnection();
-            vpnGateConnection.hostName = properties[0];
-            vpnGateConnection.iP = properties[1];
-            vpnGateConnection.score = Integer.parseInt(properties[2]);
-            vpnGateConnection.ping = Integer.parseInt(properties[4]);
-            vpnGateConnection.speed = Integer.parseInt(properties[5]);
-            vpnGateConnection.countryLong = properties[6];
-            vpnGateConnection.countryShort = properties[7];
-            vpnGateConnection.numVpnSession = Integer.parseInt(properties[8]);
-            vpnGateConnection.uptime = Integer.parseInt(properties[9]);
-            vpnGateConnection.totalTrafic = Integer.parseInt(properties[10]);
-            vpnGateConnection.logType = properties[11];
-            vpnGateConnection.operator = properties[12];
-            vpnGateConnection.message = properties[13];
-            vpnGateConnection.setOpenVpnConfigData(properties[14]);
+            vpnGateConnection.hostName = properties[index++];
+            vpnGateConnection.iP = properties[index++];
+            vpnGateConnection.score = Integer.parseInt(properties[index++]);
+            vpnGateConnection.ping = Integer.parseInt(properties[index++]);
+            vpnGateConnection.speed = Integer.parseInt(properties[index++]);
+            vpnGateConnection.countryLong = properties[index++];
+            vpnGateConnection.countryShort = properties[index++];
+            vpnGateConnection.numVpnSession = Integer.parseInt(properties[index++]);
+            vpnGateConnection.uptime = Integer.parseInt(properties[index++]);
+            vpnGateConnection.totalUser = Integer.parseInt(properties[index++]);
+            vpnGateConnection.totalTraffic = Long.parseLong(properties[index++]);
+            vpnGateConnection.logType = properties[index++];
+            vpnGateConnection.operator = properties[index++];
+            vpnGateConnection.message = properties[index++];
+            vpnGateConnection.setOpenVpnConfigData(properties[index]);
             return vpnGateConnection;
         } catch (Exception e) {
             return null;
@@ -168,19 +170,19 @@ public class VPNGateConnection {
         this.speed = speed;
     }
 
-    public long getTotalTrafic() {
-        return totalTrafic;
-    }
-
-    public void setTotalTrafic(long totalTrafic) {
-        this.totalTrafic = totalTrafic;
-    }
-
     public int getUptime() {
         return uptime;
     }
 
     public void setUptime(int uptime) {
         this.uptime = uptime;
+    }
+
+    public long getTotalTraffic() {
+        return totalTraffic;
+    }
+
+    public void setTotalTraffic(long totalTraffic) {
+        this.totalTraffic = totalTraffic;
     }
 }

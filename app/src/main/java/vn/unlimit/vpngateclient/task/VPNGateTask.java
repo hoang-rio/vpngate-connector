@@ -26,7 +26,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {
-        VPNGateConnectionList vpnGateConnectionList = null;
+        VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
@@ -80,7 +80,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
 
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
-                sb.append(line);
+                sb.append(line).append("\n");
             }
 
         } catch (IOException e) {

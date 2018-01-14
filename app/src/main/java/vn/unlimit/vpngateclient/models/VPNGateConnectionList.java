@@ -1,5 +1,6 @@
 package vn.unlimit.vpngateclient.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,6 +9,14 @@ import java.util.List;
 
 public class VPNGateConnectionList {
     private List<VPNGateConnection> data;
+
+    public List<VPNGateConnection> getAll() {
+        return data;
+    }
+
+    public VPNGateConnectionList() {
+        data = new ArrayList<>();
+    }
 
     /**
      * Filter connection by keyword
