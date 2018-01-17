@@ -1,10 +1,12 @@
-image: hoangnd4rikkei/android-sdk
+image: lakoo/android-ndk
 
 stages:
+- debug
 - release
 
 before_script:
 - export GRADLE_USER_HOME=$(pwd)/.gradle
+- export DEBUG="debug"
 - export PROD="release"
 - chmod +x ./gradlew
 
@@ -12,7 +14,19 @@ cache:
   key: ${CI_PROJECT_ID}
   paths:
   - .gradle/
-
+build_debug:
+  stage: debug
+  only:
+  - master
+  script:
+  - ./gradlew assembleDebug
+  - cd app/build/outputs/apk/$DEBUG
+  - cp app-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-debug.apk
+  - ls -al $CI_PROJECT_DIR
+  artifacts:
+    paths:
+    - ./$CI_BUILD_REF-debug.apk
+    expire_in: 5 day
 build_release:
   stage: release
   only:

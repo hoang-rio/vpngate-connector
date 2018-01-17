@@ -3,6 +3,7 @@ package vn.unlimit.vpngateclient;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import vn.unlimit.vpngateclient.models.VPNGateConnectionList;
 import vn.unlimit.vpngateclient.request.RequestListener;
@@ -12,16 +13,19 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
     final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
+    TextView txt;
 
 //    // Used to load the 'native-lib' library on application startup.
-//    static {
-//        System.loadLibrary("native-lib");
-//    }
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        txt = (TextView) this.findViewById(R.id.sample_text);
+        txt.setText(stringFromJNI());
         vpnGateTask = new VPNGateTask();
         vpnGateTask.setRequestListener(this);
         vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -37,4 +41,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
     public void onError(String error) {
         System.out.print(error);
     }
+
+    private native String stringFromJNI();
 }
