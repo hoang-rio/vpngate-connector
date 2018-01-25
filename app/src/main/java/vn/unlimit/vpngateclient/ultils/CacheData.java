@@ -20,7 +20,7 @@ public class CacheData {
     private Gson gson;
     private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
 
-    public void CacheData(Context context) {
+    public CacheData(Context context) {
         sharedPreferencesCache = context.getSharedPreferences("vpn_cache_data", Context.MODE_PRIVATE);
         gson = new Gson();
         mContext = context;
