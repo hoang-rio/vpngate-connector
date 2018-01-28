@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VPN Gate Connector</string>
+    <string name="navigation_drawer_open">Mở menu</string>
+    <string name="navigation_drawer_close">Đóng menu</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="about">Giới thiệu</string>
+    <string name="help">Trợ giúp</string>
+    <string name="refresh">Cập nhật</string>
+</resources>

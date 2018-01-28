@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient.models;
+package vn.unlimit.vpngate.models;
 
 import android.util.Base64;
 

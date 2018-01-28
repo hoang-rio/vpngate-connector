@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient.models;
+package vn.unlimit.vpngate.models;
 
 import java.util.ArrayList;
 import java.util.List;

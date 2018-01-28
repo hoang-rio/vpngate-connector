@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient;
+package vn.unlimit.vpngate;
 
 import org.junit.Test;
 

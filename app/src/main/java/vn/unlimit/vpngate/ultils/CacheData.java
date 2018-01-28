@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient.ultils;
+package vn.unlimit.vpngate.ultils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,8 +7,8 @@ import com.google.gson.Gson;
 
 import java.util.Date;
 
-import vn.unlimit.vpngateclient.models.Cache;
-import vn.unlimit.vpngateclient.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.models.Cache;
+import vn.unlimit.vpngate.models.VPNGateConnectionList;
 
 /**
  * Created by hoangnd on 1/17/2018.

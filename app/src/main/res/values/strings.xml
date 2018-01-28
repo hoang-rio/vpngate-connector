@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">VPN Gate Client</string>
+    <string name="app_name">VPN Gate Connector</string>
     <string name="navigation_drawer_open">Open drawer</string>
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
     <string name="about">About</string>
     <string name="help">Help</string>
+    <string name="refresh">Refresh</string>
     <string name="email_address">donghoang.nguyen@gmail.com</string>
 </resources>

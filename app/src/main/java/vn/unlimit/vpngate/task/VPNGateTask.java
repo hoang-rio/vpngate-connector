@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient.task;
+package vn.unlimit.vpngate.task;
 
 import android.os.AsyncTask;
 
@@ -8,12 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import vn.unlimit.vpngateclient.models.VPNGateConnection;
-import vn.unlimit.vpngateclient.models.VPNGateConnectionList;
-import vn.unlimit.vpngateclient.request.RequestListener;
+import vn.unlimit.vpngate.models.VPNGateConnection;
+import vn.unlimit.vpngate.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.request.RequestListener;
 
 /**
  * Created by dongh on 14/01/2018.

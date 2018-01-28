@@ -1,4 +1,4 @@
-package vn.unlimit.vpngateclient;
+package vn.unlimit.vpngate;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
