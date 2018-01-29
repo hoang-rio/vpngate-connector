@@ -5,7 +5,7 @@ package vn.unlimit.vpngate.request;
  */
 
 public interface RequestListener {
-    void onComplete(Object result);
+    void onSuccess(Object result);
 
     void onError(String error);
 }

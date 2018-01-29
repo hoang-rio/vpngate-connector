@@ -101,7 +101,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     protected void onPostExecute(VPNGateConnectionList vpnGateConnections) {
         if (!isCancelled() && requestListener != null) {
             if (vpnGateConnections.size() > 0) {
-                requestListener.onComplete(vpnGateConnections);
+                requestListener.onSuccess(vpnGateConnections);
             } else {
                 requestListener.onError("unknown");
             }

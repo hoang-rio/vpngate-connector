@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (vpnGateConnectionList == null) {
             getDataServer();
         } else {
-            onComplete(vpnGateConnectionList);
+            onSuccess(vpnGateConnectionList);
         }
     }
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             loadingProgressBar.setVisibility(View.VISIBLE);
             lnSwipeRefresh.setVisibility(View.GONE);
         } else {
-            onComplete(vpnGateConnectionList);
+            onSuccess(vpnGateConnectionList);
         }
     }
 
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     @Override
-    public void onComplete(Object o) {
+    public void onSuccess(Object o) {
         isLoading = false;
         loadingProgressBar.setVisibility(View.GONE);
         lnSwipeRefresh.setVisibility(View.VISIBLE);
