@@ -30,12 +30,11 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         try {
             URL url = new URL(VPN_GATE_API_URL);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(5000);
-            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(3000);
+            connection.setConnectTimeout(3000);
             connection.setRequestProperty("Accept-Encoding", "identity");
             connection.connect();
-            String csv = getStringFromInputStream(connection.getInputStream());
-            vpnGateConnectionList = getConnectionList(csv);
+            vpnGateConnectionList = getConnectionList(connection.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -49,36 +48,22 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         return vpnGateConnectionList;
     }
 
-    private VPNGateConnectionList getConnectionList(String csv) {
+    // convert InputStream to VPNGateConnectionList
+    private VPNGateConnectionList getConnectionList(InputStream is) {
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+
+        String line;
         try {
-            String[] lines = csv.split("\n");
-            for (String line : lines) {
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
                 if (line.indexOf("*") != 0 && line.indexOf("#") != 0) {
                     VPNGateConnection vpnGateConnection = VPNGateConnection.fromCsv(line);
                     if (vpnGateConnection != null) {
                         vpnGateConnectionList.add(vpnGateConnection);
                     }
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return vpnGateConnectionList;
-    }
-
-    // convert InputStream to String
-    private static String getStringFromInputStream(InputStream is) {
-
-        BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-
-            br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
             }
 
         } catch (IOException e) {
@@ -93,7 +78,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
             }
         }
 
-        return sb.toString();
+        return vpnGateConnectionList;
 
     }
 

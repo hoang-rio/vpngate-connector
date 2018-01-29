@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import vn.unlimit.vpngate.models.Cache;
@@ -36,9 +37,10 @@ public class DataUtil {
     public void setConnectionsCache(VPNGateConnectionList vpnGateConnectionList) {
         SharedPreferences.Editor editor = sharedPreferencesCache.edit();
         Cache cache = new Cache();
-        cache.expires = new Date();
+        Calendar calendar = Calendar.getInstance();
         //Cache in 3 hours
-        cache.expires.setTime(cache.expires.getTime() + 3 * 60 * 60);
+        calendar.add(Calendar.HOUR, 3);
+        cache.expires = calendar.getTime();
         cache.cacheData = vpnGateConnectionList;
         editor.putString(CONNECTION_CACHE_KEY, gson.toJson(cache));
         editor.apply();
