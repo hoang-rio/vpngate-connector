@@ -37,6 +37,14 @@ public class VPNGateConnectionList {
         data.remove(index);
     }
 
+    public void clear() {
+        data.clear();
+    }
+
+    public void addAll(VPNGateConnectionList list) {
+        data.addAll(list.data);
+    }
+
     public VPNGateConnection get(int index) {
         return data.get(index);
     }

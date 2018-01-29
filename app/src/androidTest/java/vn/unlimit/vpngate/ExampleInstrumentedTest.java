@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("vn.unlimit.vpngateclient", appContext.getPackageName());
+        assertEquals("flag_vn.unlimit.vpngateclient", appContext.getPackageName());
     }
 }

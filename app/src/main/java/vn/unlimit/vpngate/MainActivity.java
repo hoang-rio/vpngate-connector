@@ -3,32 +3,35 @@ package vn.unlimit.vpngate;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
-import vn.unlimit.vpngate.ultils.CacheData;
+import vn.unlimit.vpngate.ultils.DataUtil;
 
-public class MainActivity extends AppCompatActivity implements RequestListener {
+public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener {
     final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
-    TextView txt;
-    CacheData cacheData;
+    DataUtil dataUtil;
     ProgressBar loadingProgressBar;
-    View lnSwipeRefresh;
+    SwipeRefreshLayout lnSwipeRefresh;
     boolean isLoading = true;
     private DrawerLayout drawerLayout;
+    private RecyclerView recyclerViewVPN;
     private ActionBarDrawerToggle drawerToggle;
+    private VPNGateListAdapter vpnGateListAdapter;
 
     //    // Used to load the 'native-lib' library on application startup.
     static {
@@ -37,25 +40,32 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        cacheData = new CacheData(getApplicationContext());
+        dataUtil = new DataUtil(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadingProgressBar = findViewById(R.id.loading);
-        lnSwipeRefresh = findViewById(R.id.swiperefresh);
-        drawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
+        lnSwipeRefresh = findViewById(R.id.swipe_refresh);
+        lnSwipeRefresh.setOnRefreshListener(this);
+        recyclerViewVPN = findViewById(R.id.rcv_connection);
+        vpnGateListAdapter = new VPNGateListAdapter(getApplicationContext());
+        recyclerViewVPN.setAdapter(vpnGateListAdapter);
+        drawerLayout = findViewById(R.id.activity_main_drawer);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        txt = this.findViewById(R.id.sample_text);
-        txt.setText(stringFromJNI());
-        vpnGateConnectionList = cacheData.getConnectionsCache();
-        if(vpnGateConnectionList == null) {
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        vpnGateConnectionList = dataUtil.getConnectionsCache();
+        if (vpnGateConnectionList == null) {
             getDataServer();
-        }else {
+        } else {
             onComplete(vpnGateConnectionList);
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -64,6 +74,14 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
     @Override
     protected void onResume() {
         super.onResume();
+        vpnGateConnectionList = dataUtil.getConnectionsCache();
+        if (vpnGateConnectionList == null) {
+            isLoading = true;
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            lnSwipeRefresh.setVisibility(View.GONE);
+        } else {
+            onComplete(vpnGateConnectionList);
+        }
     }
 
     @Override
@@ -75,13 +93,31 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
     protected void onStop() {
         super.onStop();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        vpnGateTask.stop();
+    }
+
     private void getDataServer() {
-        lnSwipeRefresh.setVisibility(View.GONE);
+        getDataServer(false);
+    }
+
+    private void getDataServer(boolean isRefresh) {
+        if (!isRefresh) {
+            lnSwipeRefresh.setVisibility(View.GONE);
+            loadingProgressBar.setVisibility(View.VISIBLE);
+        }
         isLoading = true;
-        loadingProgressBar.setVisibility(View.VISIBLE);
         vpnGateTask = new VPNGateTask();
         vpnGateTask.setRequestListener(this);
         vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public void onRefresh() {
+        getDataServer(true);
     }
 
     @Override
@@ -113,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
             case R.id.search:
                 Toast.makeText(this, "Search button selected", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.menu_refresh:
-                getDataServer();
-                Toast.makeText(this, "Refresh button selected", Toast.LENGTH_SHORT).show();
-                return true;
+//            case R.id.menu_refresh:
+//                getDataServer();
+//                Toast.makeText(this, "Refresh button selected", Toast.LENGTH_SHORT).show();
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -128,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener {
         loadingProgressBar.setVisibility(View.GONE);
         lnSwipeRefresh.setVisibility(View.VISIBLE);
         vpnGateConnectionList = (VPNGateConnectionList) o;
-        cacheData.setConnectionsCache(vpnGateConnectionList);
-        System.out.print(o);
+        dataUtil.setConnectionsCache(vpnGateConnectionList);
+        vpnGateListAdapter.initialize(vpnGateConnectionList);
+        lnSwipeRefresh.setRefreshing(false);
     }
 
     @Override

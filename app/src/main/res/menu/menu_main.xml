@@ -9,10 +9,10 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView"
         tools:ignore="MenuTitle"/>
-    <item
-        android:id="@+id/menu_refresh"
-        app:showAsAction="always"
-        android:title="@string/refresh"
-        android:icon="@drawable/ic_refresh_white"
-        tools:ignore="MenuTitle"/>
+    <!--<item-->
+        <!--android:id="@+id/menu_refresh"-->
+        <!--app:showAsAction="always"-->
+        <!--android:title="@string/refresh"-->
+        <!--android:icon="@drawable/ic_refresh_white"-->
+        <!--tools:ignore="MenuTitle"/>-->
 </menu>

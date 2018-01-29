@@ -3,4 +3,6 @@
     <color name="colorPrimary">#124097</color>
     <color name="colorPrimaryDark">#124097</color>
     <color name="colorAccent">#fd754c</color>
+    <color name="lineColor">#bdbdbd</color>
+    <color name="colorOverlay">#30a4a4a4</color>
 </resources>

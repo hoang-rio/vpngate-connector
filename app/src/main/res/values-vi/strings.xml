@@ -7,4 +7,14 @@
     <string name="about">Giới thiệu</string>
     <string name="help">Trợ giúp</string>
     <string name="refresh">Cập nhật</string>
+    <string name="speed">Tốc độ</string>
+    <string name="hostname">Tên máy chủ</string>
+    <string name="ping">Độ trễ</string>
+    <string name="session">Số phiên</string>
+    <string name="uptime">T.gian bật</string>
+    <string name="owner">Chủ sở hữu</string>
+    <string name="days">ngày</string>
+    <string name="hour">giờ</string>
+    <string name="minute">phút</string>
+    <string name="connection_error">Có lỗi khi lấy dữ liệu từ máy chủ. Chạm để thử lại</string>
 </resources>

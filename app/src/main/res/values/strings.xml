@@ -7,4 +7,14 @@
     <string name="help">Help</string>
     <string name="refresh">Refresh</string>
     <string name="email_address">donghoang.nguyen@gmail.com</string>
+    <string name="speed">Speed</string>
+    <string name="hostname">Hostname</string>
+    <string name="ping">Ping</string>
+    <string name="session">Session</string>
+    <string name="uptime">Uptime</string>
+    <string name="owner">Owner</string>
+    <string name="days">days</string>
+    <string name="hour">hour</string>
+    <string name="minute">minute</string>
+    <string name="connection_error">Error when trying get data from server. Tap to try again!</string>
 </resources>
