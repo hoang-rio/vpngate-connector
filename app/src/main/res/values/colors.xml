@@ -5,4 +5,5 @@
     <color name="colorAccent">#fd754c</color>
     <color name="lineColor">#bdbdbd</color>
     <color name="colorOverlay">#30a4a4a4</color>
+    <color name="colorWhite">#ffffff</color>
 </resources>

@@ -2,6 +2,8 @@ package vn.unlimit.vpngate.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,11 +21,14 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private OnItemClickListener onItemClickListener;
+    private OnTapAndHoldListener onTapAndHoldListener;
     private VPNGateConnectionList _list;
+    private LayoutInflater layoutInflater;
 
     public VPNGateListAdapter(Context context) {
         mContext = context;
         _list = new VPNGateConnectionList();
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
     public void initialize(VPNGateConnectionList vpnGateConnectionList) {
@@ -42,6 +47,10 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         onItemClickListener = _onItemClickListener;
     }
 
+    public void setOnTapAndHoldListener(OnTapAndHoldListener _onTapAndHoldListener) {
+        onTapAndHoldListener = _onTapAndHoldListener;
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         ((VHTypeVPN) viewHolder).bindViewHolder(position);
@@ -54,10 +63,11 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VHTypeVPN(parent);
+        View itemView = layoutInflater.inflate(R.layout.vpn_item, parent, false);
+        return new VHTypeVPN(itemView);
     }
 
-    private class VHTypeVPN extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class VHTypeVPN extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnTouchListener {
         ImageView imgFlag;
         TextView txtCountry;
         TextView txtIp;
@@ -83,17 +93,16 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         void bindViewHolder(int position) {
-            String baseImgUrl = "http://www.vpngate.net/images/flags/";
             try {
                 VPNGateConnection vpnGateConnection = _list.get(position);
                 GlideApp.with(mContext)
-                        .load(baseImgUrl + vpnGateConnection.getCountryShort() + ".png")
+                        .load("http://www.vpngate.net/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
                         .error(R.color.colorOverlay)
                         .into(imgFlag);
                 txtCountry.setText(vpnGateConnection.getCountryLong());
                 txtIp.setText(vpnGateConnection.getIp());
-                txtHostname.setText(vpnGateConnection.getHostName());
+                txtHostname.setText(vpnGateConnection.getHostName() + ".opengw.net");
                 txtUptime.setText(vpnGateConnection.getUptime());
                 txtSpeed.setText(vpnGateConnection.getSpeed());
                 txtPing.setText(vpnGateConnection.getPing());
@@ -102,6 +111,11 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            return false;
         }
 
         @Override

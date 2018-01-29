@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,19 +10,27 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/layout_error"/>
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
+        <!-- We use a Toolbar so that our drawer can be displayed
+             in front of the action bar -->
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone" />
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:theme="@style/ToolbarColoredBackArrow"
+            app:titleTextAppearance="@style/Toolbar.TitleText" />
+
+        <include layout="@layout/layout_error" />
+
+        <include layout="@layout/layout_loading_center" />
 
         <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_marginTop="?attr/actionBarSize">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rcv_connection"
@@ -29,15 +38,14 @@
                 android:layout_height="match_parent" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
-
     </RelativeLayout>
     <!-- Left Menu -->
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:insetForeground="#4a000000"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:insetForeground="#4a000000">
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -1,5 +1,7 @@
 package vn.unlimit.vpngate;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
@@ -7,27 +9,31 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import vn.unlimit.vpngate.adapter.OnItemClickListener;
 import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
 
-public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener, OnItemClickListener {
     final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     DataUtil dataUtil;
-    ProgressBar loadingProgressBar;
+    View lnLoading;
     SwipeRefreshLayout lnSwipeRefresh;
     boolean isLoading = true;
+    private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private RecyclerView recyclerViewVPN;
     private ActionBarDrawerToggle drawerToggle;
@@ -43,14 +49,18 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         dataUtil = new DataUtil(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadingProgressBar = findViewById(R.id.loading);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        lnLoading = findViewById(R.id.ln_loading);
         lnSwipeRefresh = findViewById(R.id.swipe_refresh);
         lnSwipeRefresh.setOnRefreshListener(this);
         recyclerViewVPN = findViewById(R.id.rcv_connection);
         vpnGateListAdapter = new VPNGateListAdapter(getApplicationContext());
+        vpnGateListAdapter.setOnItemClickListener(this);
         recyclerViewVPN.setAdapter(vpnGateListAdapter);
+        recyclerViewVPN.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         drawerLayout = findViewById(R.id.activity_main_drawer);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,6 +77,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     @Override
+    public void onItemClick(Object o, int position) {
+        Toast.makeText(this, "Select item at position: " + position, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
     }
@@ -77,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         vpnGateConnectionList = dataUtil.getConnectionsCache();
         if (vpnGateConnectionList == null) {
             isLoading = true;
-            loadingProgressBar.setVisibility(View.VISIBLE);
+            lnLoading.setVisibility(View.VISIBLE);
             lnSwipeRefresh.setVisibility(View.GONE);
         } else {
             onSuccess(vpnGateConnectionList);
@@ -107,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void getDataServer(boolean isRefresh) {
         if (!isRefresh) {
             lnSwipeRefresh.setVisibility(View.GONE);
-            loadingProgressBar.setVisibility(View.VISIBLE);
+            lnLoading.setVisibility(View.VISIBLE);
         }
         isLoading = true;
         vpnGateTask = new VPNGateTask();
@@ -137,6 +152,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem menuSearch = menu.findItem(R.id.action_search);
+
+        final SearchView searchView = (SearchView) menuSearch.getActionView();
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+//        searchView.setSubmitButtonEnabled(true);
+        searchView.setQueryHint(getString(R.string.search_hint));
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -146,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.search:
+            case R.id.action_search:
                 Toast.makeText(this, "Search button selected", Toast.LENGTH_SHORT).show();
                 return true;
 //            case R.id.menu_refresh:
@@ -161,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     public void onSuccess(Object o) {
         isLoading = false;
-        loadingProgressBar.setVisibility(View.GONE);
+        lnLoading.setVisibility(View.GONE);
         lnSwipeRefresh.setVisibility(View.VISIBLE);
         vpnGateConnectionList = (VPNGateConnectionList) o;
         dataUtil.setConnectionsCache(vpnGateConnectionList);

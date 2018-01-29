@@ -9,4 +9,13 @@ import java.util.Date;
 public class Cache {
     public Date expires;
     public VPNGateConnectionList cacheData;
+
+    /**
+     * Check cache is expires or not
+     *
+     * @return boolean Expires check result
+     */
+    public boolean isExpires() {
+        return expires != null && expires.after(new Date());
+    }
 }

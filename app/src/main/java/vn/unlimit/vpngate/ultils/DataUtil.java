@@ -30,6 +30,7 @@ public class DataUtil {
 
     /**
      * Set connection cache
+     *
      * @param vpnGateConnectionList input VpnGateConnectionList
      */
     public void setConnectionsCache(VPNGateConnectionList vpnGateConnectionList) {
@@ -37,7 +38,7 @@ public class DataUtil {
         Cache cache = new Cache();
         cache.expires = new Date();
         //Cache in 3 hours
-        cache.expires.setTime(cache.expires.getTime() + 5 * 60 * 60);
+        cache.expires.setTime(cache.expires.getTime() + 3 * 60 * 60);
         cache.cacheData = vpnGateConnectionList;
         editor.putString(CONNECTION_CACHE_KEY, gson.toJson(cache));
         editor.apply();
@@ -45,6 +46,7 @@ public class DataUtil {
 
     /**
      * Get connection cache
+     *
      * @return VPNGateConnectionList
      */
     public VPNGateConnectionList getConnectionsCache() {
@@ -53,7 +55,7 @@ public class DataUtil {
             return null;
         } else {
             Cache cache = gson.fromJson(json, Cache.class);
-            if (cache.expires.before(new Date())) {
+            if (cache.isExpires()) {
                 SharedPreferences.Editor editor = sharedPreferencesCache.edit();
                 editor.remove(CONNECTION_CACHE_KEY);
                 editor.apply();
@@ -66,10 +68,11 @@ public class DataUtil {
 
     /**
      * Set int setting value
-     * @param key setting key
+     *
+     * @param key   setting key
      * @param value setting value
      */
-    public void setIntSetting(String key, int value){
+    public void setIntSetting(String key, int value) {
         SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
         editor.putInt(key, value);
         editor.apply();
@@ -77,11 +80,12 @@ public class DataUtil {
 
     /**
      * Get int setting value
-     * @param key setting key
+     *
+     * @param key    setting key
      * @param defVal default value
      * @return int
      */
-    public int getIntSetting(String key, int defVal){
+    public int getIntSetting(String key, int defVal) {
         return sharedPreferencesSetting.getInt(key, defVal);
     }
 }

@@ -17,4 +17,6 @@
     <string name="hour">hour</string>
     <string name="minute">minute</string>
     <string name="connection_error">Error when trying get data from server. Tap to try again!</string>
+    <string name="loading_text">App is fetching data from server\nPlease wait in a moment</string>
+    <string name="search_hint">Keyword</string>
 </resources>
