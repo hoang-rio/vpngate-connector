@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +22,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private OnItemClickListener onItemClickListener;
-    private OnTapAndHoldListener onTapAndHoldListener;
+    private OnItemLongPressListener onItemLongPressListener;
     private VPNGateConnectionList _list;
     private LayoutInflater layoutInflater;
 
@@ -47,8 +48,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         onItemClickListener = _onItemClickListener;
     }
 
-    public void setOnTapAndHoldListener(OnTapAndHoldListener _onTapAndHoldListener) {
-        onTapAndHoldListener = _onTapAndHoldListener;
+    public void setOnItemLongPressListener(OnItemLongPressListener _onItemLongPressListener) {
+        this.onItemLongPressListener = _onItemLongPressListener;
     }
 
     @Override
@@ -89,6 +90,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtPing = itemView.findViewById(R.id.txt_ping);
             txtSession = itemView.findViewById(R.id.txt_session);
             txtOwner = itemView.findViewById(R.id.txt_owner);
+            itemView.setOnTouchListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -102,20 +104,30 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .into(imgFlag);
                 txtCountry.setText(vpnGateConnection.getCountryLong());
                 txtIp.setText(vpnGateConnection.getIp());
-                txtHostname.setText(vpnGateConnection.getHostName() + ".opengw.net");
-                txtUptime.setText(vpnGateConnection.getUptime());
-                txtSpeed.setText(vpnGateConnection.getSpeed());
-                txtPing.setText(vpnGateConnection.getPing());
-                txtSession.setText(vpnGateConnection.getNumVpnSession());
+                txtHostname.setText(vpnGateConnection.getCalculateHostName());
+                txtUptime.setText(vpnGateConnection.getCalculateUpTime(mContext));
+                txtSpeed.setText(vpnGateConnection.getCalculateSpeed());
+                txtPing.setText(vpnGateConnection.getPingAsString());
+                txtSession.setText(vpnGateConnection.getNumVpnSessionAsString());
                 txtOwner.setText(vpnGateConnection.getOperator());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public void onLongPress(MotionEvent e) {
+                if (onItemLongPressListener != null) {
+                    VPNGateConnection item = _list.get(getAdapterPosition());
+                    onItemLongPressListener.onItemLongPress(item, getAdapterPosition());
+                }
+            }
+        });
+
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            return false;
+            return gestureDetector.onTouchEvent(motionEvent);
         }
 
         @Override

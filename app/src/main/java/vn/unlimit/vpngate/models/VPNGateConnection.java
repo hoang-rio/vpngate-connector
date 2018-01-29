@@ -1,6 +1,11 @@
 package vn.unlimit.vpngate.models;
 
+import android.content.Context;
 import android.util.Base64;
+
+import java.text.DecimalFormat;
+
+import vn.unlimit.vpngate.R;
 
 /**
  * Created by dongh on 14/01/2018.
@@ -41,7 +46,7 @@ public class VPNGateConnection {
             vpnGateConnection.totalUser = Integer.parseInt(properties[index++]);
             vpnGateConnection.totalTraffic = Long.parseLong(properties[index++]);
             vpnGateConnection.logType = properties[index++];
-            vpnGateConnection.operator = properties[index++];
+            vpnGateConnection.setOperator(properties[index++]);
             vpnGateConnection.message = properties[index++];
             vpnGateConnection.setOpenVpnConfigData(properties[index]);
             return vpnGateConnection;
@@ -62,6 +67,10 @@ public class VPNGateConnection {
 
     public String getHostName() {
         return hostName;
+    }
+
+    public String getCalculateHostName() {
+        return hostName + ".opengw.net";
     }
 
     public void setHostName(String hostName) {
@@ -88,6 +97,10 @@ public class VPNGateConnection {
         return ping;
     }
 
+    public String getPingAsString() {
+        return ping + "";
+    }
+
     public void setPing(int ping) {
         this.ping = ping;
     }
@@ -110,6 +123,10 @@ public class VPNGateConnection {
 
     public int getNumVpnSession() {
         return numVpnSession;
+    }
+
+    public String getNumVpnSessionAsString() {
+        return numVpnSession + "";
     }
 
     public void setNumVpnSession(int numVpnSession) {
@@ -138,6 +155,7 @@ public class VPNGateConnection {
     }
 
     public void setOperator(String operator) {
+        operator = operator.replace("'s owner", "");
         this.operator = operator;
     }
 
@@ -166,6 +184,10 @@ public class VPNGateConnection {
         return speed;
     }
 
+    public String getCalculateSpeed() {
+        return round((double) speed / (1000 * 1000));
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }
@@ -184,5 +206,26 @@ public class VPNGateConnection {
 
     public void setTotalTraffic(long totalTraffic) {
         this.totalTraffic = totalTraffic;
+    }
+
+    public String getCalculateUpTime(Context context) {
+        //Display as second
+        if (uptime < 60000) {
+            return round(uptime / 1000) + " " + context.getResources().getString(R.string.second);
+        }
+        //Display as minute
+        if (uptime < 3600000) {
+            return Math.round((double) uptime / 60000) + " " + context.getResources().getString(R.string.minute);
+        }
+        //Display as hours
+        if (uptime < 3600000 * 24) {
+            return round((double) uptime / 3600000) + " " + context.getResources().getString(R.string.hour);
+        }
+        return round((double) uptime / (24 * 3600000)) + " " + context.getResources().getString(R.string.days);
+    }
+
+    private String round(double value) {
+        DecimalFormat df = new DecimalFormat("####0.###");
+        return df.format(value);
     }
 }

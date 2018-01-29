@@ -19,13 +19,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import vn.unlimit.vpngate.adapter.OnItemClickListener;
+import vn.unlimit.vpngate.adapter.OnItemLongPressListener;
 import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
 
-public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener, OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnItemLongPressListener, View.OnClickListener {
     final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private RecyclerView recyclerViewVPN;
     private ActionBarDrawerToggle drawerToggle;
     private VPNGateListAdapter vpnGateListAdapter;
+    private View lnError;
 
     //    // Used to load the 'native-lib' library on application startup.
     static {
@@ -55,7 +57,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         lnSwipeRefresh = findViewById(R.id.swipe_refresh);
         lnSwipeRefresh.setOnRefreshListener(this);
         recyclerViewVPN = findViewById(R.id.rcv_connection);
+        lnError = findViewById(R.id.ln_error);
+        lnError.setOnClickListener(this);
         vpnGateListAdapter = new VPNGateListAdapter(getApplicationContext());
+        vpnGateListAdapter.setOnItemClickListener(this);
         vpnGateListAdapter.setOnItemClickListener(this);
         recyclerViewVPN.setAdapter(vpnGateListAdapter);
         recyclerViewVPN.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -74,6 +79,19 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } else {
             onSuccess(vpnGateConnectionList);
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.equals(lnError)) {
+            lnError.setVisibility(View.GONE);
+            getDataServer(false);
+        }
+    }
+
+    @Override
+    public void onItemLongPress(Object o, int position) {
+        Toast.makeText(this, "Tap and hold item at position: " + position, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -99,15 +117,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 
     @Override
     protected void onDestroy() {
@@ -159,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setMaxWidth(Integer.MAX_VALUE);
+
 //        searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getString(R.string.search_hint));
         return super.onCreateOptionsMenu(menu);
@@ -195,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onError(String error) {
+        lnSwipeRefresh.setVisibility(View.GONE);
+        lnLoading.setVisibility(View.GONE);
+        lnError.setVisibility(View.VISIBLE);
         System.out.print(error);
     }
 
