@@ -16,6 +16,6 @@ public class Cache {
      * @return boolean Expires check result
      */
     public boolean isExpires() {
-        return expires != null && expires.after(new Date());
+        return expires != null && expires.before(new Date());
     }
 }
