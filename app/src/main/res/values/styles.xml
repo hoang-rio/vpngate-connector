@@ -6,29 +6,31 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
-        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
     </style>
+
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
-        <item name="android:width">30dp</item>
-        <item name="android:padding">5dp</item>
-    </style>
+
     <style name="ToolbarColoredBackArrow" parent="AppTheme">
         <item name="android:textColorSecondary">@color/colorWhite</item>
+        <item name="android:editTextColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorWhiteTransparent</item>
     </style>
+
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/colorWhite</item>
     </style>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <style name="label">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
+
     <style name="AppTheme.VPNItem">
         <item name="android:textColor">@color/colorTextPrimary</item>
     </style>

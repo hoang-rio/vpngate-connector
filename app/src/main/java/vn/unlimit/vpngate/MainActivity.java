@@ -1,16 +1,17 @@
 package vn.unlimit.vpngate;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -18,33 +19,36 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import vn.unlimit.vpngate.adapter.OnItemClickListener;
-import vn.unlimit.vpngate.adapter.OnItemLongPressListener;
-import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
+import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
 
-public class MainActivity extends AppCompatActivity implements RequestListener, SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnItemLongPressListener, View.OnClickListener {
-    final String TAG = "Main";
-    VPNGateConnectionList vpnGateConnectionList;
-    VPNGateTask vpnGateTask;
-    DataUtil dataUtil;
-    View lnLoading;
-    SwipeRefreshLayout lnSwipeRefresh;
-    boolean isLoading = true;
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private RecyclerView recyclerViewVPN;
-    private ActionBarDrawerToggle drawerToggle;
-    private VPNGateListAdapter vpnGateListAdapter;
-    private View lnError;
-
+public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener {
     //    // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
+
+    final String TAG = "Main";
+    VPNGateConnectionList vpnGateConnectionList;
+    VPNGateTask vpnGateTask;
+    View lnLoading;
+    View frameContent;
+    private DataUtil dataUtil;
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private View lnError;
+    private View lnNoNetwork;
+    private String currentUrl = "home";
+    private BroadcastReceiver connectionChangeReceive = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getFirstState();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,30 +58,41 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         lnLoading = findViewById(R.id.ln_loading);
-        lnSwipeRefresh = findViewById(R.id.swipe_refresh);
-        lnSwipeRefresh.setOnRefreshListener(this);
-        recyclerViewVPN = findViewById(R.id.rcv_connection);
         lnError = findViewById(R.id.ln_error);
+        lnNoNetwork = findViewById(R.id.ln_no_network);
         lnError.setOnClickListener(this);
-        vpnGateListAdapter = new VPNGateListAdapter(getApplicationContext());
-        vpnGateListAdapter.setOnItemClickListener(this);
-        vpnGateListAdapter.setOnItemClickListener(this);
-        recyclerViewVPN.setAdapter(vpnGateListAdapter);
-        recyclerViewVPN.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        frameContent = findViewById(R.id.frame_content);
         drawerLayout = findViewById(R.id.activity_main_drawer);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
+        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(connectionChangeReceive, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        vpnGateConnectionList = dataUtil.getConnectionsCache();
-        if (vpnGateConnectionList == null) {
-            getDataServer();
+        getFirstState();
+    }
+
+    /**
+     * Check network and process first state
+     */
+    private void getFirstState() {
+        if (DataUtil.isOnline(getApplicationContext())) {
+            lnNoNetwork.setVisibility(View.GONE);
+            vpnGateConnectionList = dataUtil.getConnectionsCache();
+            if (vpnGateConnectionList == null) {
+                getDataServer();
+            } else {
+                onSuccess(vpnGateConnectionList);
+            }
         } else {
-            onSuccess(vpnGateConnectionList);
+            lnNoNetwork.setVisibility(View.VISIBLE);
+            lnError.setVisibility(View.GONE);
+            lnLoading.setVisibility(View.GONE);
+            frameContent.setVisibility(View.GONE);
         }
     }
 
@@ -85,19 +100,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public void onClick(View view) {
         if (view.equals(lnError)) {
             lnError.setVisibility(View.GONE);
-            getDataServer(false);
+            getDataServer();
         }
     }
 
-    @Override
-    public void onItemLongPress(Object o, int position) {
-        Toast.makeText(this, "Tap and hold item at position: " + position, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onItemClick(Object o, int position) {
-        Toast.makeText(this, "Select item at position: " + position, Toast.LENGTH_LONG).show();
-    }
 
     @Override
     protected void onPause() {
@@ -109,11 +115,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         super.onResume();
         vpnGateConnectionList = dataUtil.getConnectionsCache();
         if (vpnGateConnectionList == null) {
-            isLoading = true;
-            lnLoading.setVisibility(View.VISIBLE);
-            lnSwipeRefresh.setVisibility(View.GONE);
-        } else {
-            onSuccess(vpnGateConnectionList);
+            getDataServer();
         }
     }
 
@@ -121,28 +123,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        vpnGateTask.stop();
+        if (vpnGateTask != null) {
+            vpnGateTask.stop();
+        }
+        unregisterReceiver(connectionChangeReceive);
     }
 
     private void getDataServer() {
-        getDataServer(false);
-    }
-
-    private void getDataServer(boolean isRefresh) {
-        if (!isRefresh) {
-            lnSwipeRefresh.setVisibility(View.GONE);
-            lnLoading.setVisibility(View.VISIBLE);
+        if (vpnGateTask != null && vpnGateTask.isCancelled()) {
+            vpnGateTask.stop();
         }
-        isLoading = true;
         vpnGateTask = new VPNGateTask();
         vpnGateTask.setRequestListener(this);
         vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @Override
-    public void onRefresh() {
-        getDataServer(true);
-    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -183,10 +178,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             case R.id.action_search:
                 Toast.makeText(this, "Search button selected", Toast.LENGTH_SHORT).show();
                 return true;
-//            case R.id.menu_refresh:
-//                getDataServer();
-//                Toast.makeText(this, "Refresh button selected", Toast.LENGTH_SHORT).show();
-//                return true;
+            case R.id.action_sort:
+                Toast.makeText(this, "Sort button selected", Toast.LENGTH_SHORT).show();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -194,21 +188,46 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onSuccess(Object o) {
-        isLoading = false;
         lnLoading.setVisibility(View.GONE);
-        lnSwipeRefresh.setVisibility(View.VISIBLE);
         vpnGateConnectionList = (VPNGateConnectionList) o;
         dataUtil.setConnectionsCache(vpnGateConnectionList);
-        vpnGateListAdapter.initialize(vpnGateConnectionList);
-        lnSwipeRefresh.setRefreshing(false);
+        replaceFragment(currentUrl);
+    }
+
+    private void replaceFragment(String url) {
+        try {
+            if (url != null) {
+                currentUrl = url;
+                Fragment fragment = null;
+                String tag = "";
+                if (url.equals("home")) {
+                    fragment = HomeFragment.newInstance(vpnGateConnectionList);
+                    tag = HomeFragment.class.getName();
+                }
+                if (fragment != null) {
+                    frameContent.setVisibility(View.VISIBLE);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frame_content, fragment, tag)
+                            .addToBackStack("home")
+                            .commitAllowingStateLoss();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onError(String error) {
-        lnSwipeRefresh.setVisibility(View.GONE);
+        frameContent.setVisibility(View.GONE);
         lnLoading.setVisibility(View.GONE);
         lnError.setVisibility(View.VISIBLE);
         System.out.print(error);
+    }
+
+    public DataUtil getDataUtil() {
+        return dataUtil;
     }
 
     private native String stringFromJNI();

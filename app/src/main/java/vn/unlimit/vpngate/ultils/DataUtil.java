@@ -2,11 +2,12 @@ package vn.unlimit.vpngate.ultils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.google.gson.Gson;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import vn.unlimit.vpngate.models.Cache;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -30,20 +31,20 @@ public class DataUtil {
     }
 
     /**
-     * Set connection cache
+     * Check device connect to a network or not
      *
-     * @param vpnGateConnectionList input VpnGateConnectionList
+     * @param context
+     * @return connect to network result
      */
-    public void setConnectionsCache(VPNGateConnectionList vpnGateConnectionList) {
-        SharedPreferences.Editor editor = sharedPreferencesCache.edit();
-        Cache cache = new Cache();
-        Calendar calendar = Calendar.getInstance();
-        //Cache in 3 hours
-        calendar.add(Calendar.HOUR, 3);
-        cache.expires = calendar.getTime();
-        cache.cacheData = vpnGateConnectionList;
-        editor.putString(CONNECTION_CACHE_KEY, gson.toJson(cache));
-        editor.apply();
+    public static boolean isOnline(Context context) {
+        try {
+            ConnectivityManager cm =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            return netInfo != null && netInfo.isConnectedOrConnecting();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -66,6 +67,23 @@ public class DataUtil {
                 return cache.cacheData;
             }
         }
+    }
+
+    /**
+     * Set connection cache
+     *
+     * @param vpnGateConnectionList input VpnGateConnectionList
+     */
+    public void setConnectionsCache(VPNGateConnectionList vpnGateConnectionList) {
+        SharedPreferences.Editor editor = sharedPreferencesCache.edit();
+        Cache cache = new Cache();
+        Calendar calendar = Calendar.getInstance();
+        //Cache in 3 hours
+        calendar.add(Calendar.HOUR, 3);
+        cache.expires = calendar.getTime();
+        cache.cacheData = vpnGateConnectionList;
+        editor.putString(CONNECTION_CACHE_KEY, gson.toJson(cache));
+        editor.apply();
     }
 
     /**

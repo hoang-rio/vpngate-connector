@@ -7,4 +7,6 @@
     <color name="colorOverlay">#30a4a4a4</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorTextPrimary">#333333</color>
+    <color name="colorTextSecondary">#616161</color>
+    <color name="colorWhiteTransparent">#b0ffffff</color>
 </resources>

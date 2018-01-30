@@ -2,9 +2,7 @@ package vn.unlimit.vpngate.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,9 +20,11 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private OnItemClickListener onItemClickListener;
-    private OnItemLongPressListener onItemLongPressListener;
+    private OnItemLongClickListener onItemLongClickListener;
+    private OnScrollListener onScrollListener;
     private VPNGateConnectionList _list;
     private LayoutInflater layoutInflater;
+    private int lastPosition = 0;
 
     public VPNGateListAdapter(Context context) {
         mContext = context;
@@ -45,16 +45,28 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void setOnItemClickListener(OnItemClickListener _onItemClickListener) {
-        onItemClickListener = _onItemClickListener;
+        this.onItemClickListener = _onItemClickListener;
     }
 
-    public void setOnItemLongPressListener(OnItemLongPressListener _onItemLongPressListener) {
-        this.onItemLongPressListener = _onItemLongPressListener;
+    public void setOnItemLongClickListener(OnItemLongClickListener _onItemLongPressListener) {
+        this.onItemLongClickListener = _onItemLongPressListener;
+    }
+
+    public void setOnScrollListener(OnScrollListener _onScrollListener) {
+        this.onScrollListener = _onScrollListener;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if (onScrollListener != null) {
+            if (position > lastPosition || position == 0) {
+                onScrollListener.onScrollDown();
+            } else if (position < lastPosition) {
+                onScrollListener.onScrollUp();
+            }
+        }
         ((VHTypeVPN) viewHolder).bindViewHolder(position);
+        lastPosition = position;
     }
 
     @Override
@@ -68,7 +80,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return new VHTypeVPN(itemView);
     }
 
-    private class VHTypeVPN extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnTouchListener {
+    private class VHTypeVPN extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         ImageView imgFlag;
         TextView txtCountry;
         TextView txtIp;
@@ -90,7 +102,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtPing = itemView.findViewById(R.id.txt_ping);
             txtSession = itemView.findViewById(R.id.txt_session);
             txtOwner = itemView.findViewById(R.id.txt_owner);
-            itemView.setOnTouchListener(this);
+            itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -115,19 +127,18 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
 
-        final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                if (onItemLongPressListener != null) {
-                    VPNGateConnection item = _list.get(getAdapterPosition());
-                    onItemLongPressListener.onItemLongPress(item, getAdapterPosition());
-                }
-            }
-        });
-
         @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            return gestureDetector.onTouchEvent(motionEvent);
+        public boolean onLongClick(View view) {
+            try {
+                if (onItemLongClickListener != null) {
+                    VPNGateConnection item = _list.get(getAdapterPosition());
+                    onItemLongClickListener.onItemLongClick(item, getAdapterPosition());
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
         }
 
         @Override

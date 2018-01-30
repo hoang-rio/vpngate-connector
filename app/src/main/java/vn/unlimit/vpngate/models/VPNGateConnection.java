@@ -1,6 +1,8 @@
 package vn.unlimit.vpngate.models;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Base64;
 
 import java.text.DecimalFormat;
@@ -11,7 +13,17 @@ import vn.unlimit.vpngate.R;
  * Created by dongh on 14/01/2018.
  */
 
-public class VPNGateConnection {
+public class VPNGateConnection implements Parcelable {
+    public static final Parcelable.Creator<VPNGateConnection> CREATOR
+            = new Parcelable.Creator<VPNGateConnection>() {
+        public VPNGateConnection createFromParcel(Parcel in) {
+            return new VPNGateConnection(in);
+        }
+
+        public VPNGateConnection[] newArray(int size) {
+            return new VPNGateConnection[size];
+        }
+    };
     //HostName,IP,Score,Ping,Speed,CountryLong,CountryShort,NumVpnSessions,Uptime,TotalUsers,TotalTraffic,logType,Operator,Message,OpenVPN_ConfigData_Base64
     private String hostName;
     private String ip;
@@ -28,6 +40,30 @@ public class VPNGateConnection {
     private String operator;
     private String message;
     private String openVpnConfigData;
+
+    private VPNGateConnection(Parcel in) {
+        hostName = in.readString();
+        ip = in.readString();
+        score = in.readInt();
+        ping = in.readInt();
+        speed = in.readInt();
+        countryLong = in.readString();
+        countryShort = in.readString();
+        numVpnSession = in.readInt();
+        uptime = in.readInt();
+        totalUser = in.readInt();
+        totalTraffic = in.readLong();
+        logType = in.readString();
+        operator = in.readString();
+        message = in.readString();
+        message = in.readString();
+        openVpnConfigData = in.readString();
+    }
+
+    //Empty constructor
+    private VPNGateConnection() {
+
+    }
 
     public static VPNGateConnection fromCsv(String csvLine) {
         String[] properties = csvLine.split(",");
@@ -55,6 +91,24 @@ public class VPNGateConnection {
         }
     }
 
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(hostName);
+        out.writeString(ip);
+        out.writeInt(score);
+        out.writeInt(ping);
+        out.writeInt(speed);
+        out.writeString(countryLong);
+        out.writeString(countryShort);
+        out.writeInt(numVpnSession);
+        out.writeInt(uptime);
+        out.writeInt(totalUser);
+        out.writeLong(totalTraffic);
+        out.writeString(logType);
+        out.writeString(operator);
+        out.writeString(message);
+        out.writeString(openVpnConfigData);
+    }
+
     private String decodeBase64(String base64str) {
         try {
             byte[] plainBytes = Base64.decode(base64str, 1);
@@ -69,12 +123,12 @@ public class VPNGateConnection {
         return hostName;
     }
 
-    public String getCalculateHostName() {
-        return hostName + ".opengw.net";
-    }
-
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    public String getCalculateHostName() {
+        return hostName + ".opengw.net";
     }
 
     public String getIp() {
@@ -97,12 +151,12 @@ public class VPNGateConnection {
         return ping;
     }
 
-    public String getPingAsString() {
-        return ping + "";
-    }
-
     public void setPing(int ping) {
         this.ping = ping;
+    }
+
+    public String getPingAsString() {
+        return ping + "";
     }
 
     public String getCountryLong() {
@@ -125,14 +179,13 @@ public class VPNGateConnection {
         return numVpnSession;
     }
 
-    public String getNumVpnSessionAsString() {
-        return numVpnSession + "";
-    }
-
     public void setNumVpnSession(int numVpnSession) {
         this.numVpnSession = numVpnSession;
     }
 
+    public String getNumVpnSessionAsString() {
+        return numVpnSession + "";
+    }
 
     public int getTotalUser() {
         return totalUser;
@@ -184,12 +237,12 @@ public class VPNGateConnection {
         return speed;
     }
 
-    public String getCalculateSpeed() {
-        return round((double) speed / (1000 * 1000));
-    }
-
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public String getCalculateSpeed() {
+        return round((double) speed / (1000 * 1000));
     }
 
     public int getUptime() {
@@ -211,15 +264,15 @@ public class VPNGateConnection {
     public String getCalculateUpTime(Context context) {
         //Display as second
         if (uptime < 60000) {
-            return round(uptime / 1000) + " " + context.getResources().getString(R.string.second);
+            return round(uptime / 1000) + " " + context.getResources().getString(R.string.seconds);
         }
         //Display as minute
         if (uptime < 3600000) {
-            return Math.round((double) uptime / 60000) + " " + context.getResources().getString(R.string.minute);
+            return Math.round((double) uptime / 60000) + " " + context.getResources().getString(R.string.minutes);
         }
         //Display as hours
         if (uptime < 3600000 * 24) {
-            return round((double) uptime / 3600000) + " " + context.getResources().getString(R.string.hour);
+            return round((double) uptime / 3600000) + " " + context.getResources().getString(R.string.hours);
         }
         return round((double) uptime / (24 * 3600000)) + " " + context.getResources().getString(R.string.days);
     }
@@ -227,5 +280,9 @@ public class VPNGateConnection {
     private String round(double value) {
         DecimalFormat df = new DecimalFormat("####0.###");
         return df.format(value);
+    }
+
+    public int describeContents() {
+        return 0;
     }
 }
