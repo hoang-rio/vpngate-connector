@@ -99,6 +99,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return rootView;
     }
 
+    public void filter(String keyword) {
+        VPNGateConnectionList filterResult = vpnGateConnectionList.filter(keyword);
+        vpnGateListAdapter.initialize(filterResult);
+    }
+
     @Override
     public void onClick(View view) {
         if (view.equals(btnToTop)) {

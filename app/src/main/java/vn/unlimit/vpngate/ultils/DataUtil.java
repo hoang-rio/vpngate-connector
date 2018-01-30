@@ -6,7 +6,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Calendar;
 
 import vn.unlimit.vpngate.models.Cache;
@@ -18,14 +25,12 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 
 public class DataUtil {
     private Context mContext;
-    private SharedPreferences sharedPreferencesCache;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
     private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
 
     public DataUtil(Context context) {
         mContext = context;
-        sharedPreferencesCache = mContext.getSharedPreferences("vpn_cache_data", Context.MODE_PRIVATE);
         sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data", Context.MODE_PRIVATE);
         gson = new Gson();
     }
@@ -53,20 +58,26 @@ public class DataUtil {
      * @return VPNGateConnectionList
      */
     public VPNGateConnectionList getConnectionsCache() {
-        String json = sharedPreferencesCache.getString(CONNECTION_CACHE_KEY, null);
-        if (json == null) {
-            return null;
-        } else {
-            Cache cache = gson.fromJson(json, Cache.class);
-            if (cache.isExpires()) {
-                SharedPreferences.Editor editor = sharedPreferencesCache.edit();
-                editor.remove(CONNECTION_CACHE_KEY);
-                editor.apply();
+        try {
+            File inFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
+            if (!inFile.isFile()) {
                 return null;
             } else {
-                return cache.cacheData;
+                FileInputStream fileInputStream = new FileInputStream(inFile);
+                JsonReader reader = new JsonReader(new InputStreamReader(fileInputStream));
+                Cache cache = gson.fromJson(reader, Cache.class);
+                if (cache.isExpires()) {
+                    reader.close();
+                    return null;
+                } else {
+                    reader.close();
+                    return cache.cacheData;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     /**
@@ -75,15 +86,21 @@ public class DataUtil {
      * @param vpnGateConnectionList input VpnGateConnectionList
      */
     public void setConnectionsCache(VPNGateConnectionList vpnGateConnectionList) {
-        SharedPreferences.Editor editor = sharedPreferencesCache.edit();
-        Cache cache = new Cache();
-        Calendar calendar = Calendar.getInstance();
-        //Cache in 3 hours
-        calendar.add(Calendar.HOUR, 3);
-        cache.expires = calendar.getTime();
-        cache.cacheData = vpnGateConnectionList;
-        editor.putString(CONNECTION_CACHE_KEY, gson.toJson(cache));
-        editor.apply();
+        try {
+            Cache cache = new Cache();
+            Calendar calendar = Calendar.getInstance();
+            //Cache in 3 hours
+            calendar.add(Calendar.HOUR, 3);
+            cache.expires = calendar.getTime();
+            cache.cacheData = vpnGateConnectionList;
+            File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
+            FileOutputStream out = new FileOutputStream(outFile);
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+            gson.toJson(cache, Cache.class, writer);
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

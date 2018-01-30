@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import vn.unlimit.vpngate.fragment.HomeFragment;
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        getFirstState();
     }
 
     /**
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             if (vpnGateConnectionList == null) {
                 getDataServer();
             } else {
-                onSuccess(vpnGateConnectionList);
+                updateData(vpnGateConnectionList);
             }
         } else {
             lnNoNetwork.setVisibility(View.VISIBLE);
@@ -113,10 +114,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onResume() {
         super.onResume();
-        vpnGateConnectionList = dataUtil.getConnectionsCache();
-        if (vpnGateConnectionList == null) {
-            getDataServer();
-        }
     }
 
 
@@ -163,9 +160,26 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setMaxWidth(Integer.MAX_VALUE);
-
+        final EditText editText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 //        searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                if (currentFragment != null) {
+                    currentFragment.filter(newText);
+                    return true;
+                }
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -175,9 +189,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.action_search:
-                Toast.makeText(this, "Search button selected", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.action_sort:
                 Toast.makeText(this, "Sort button selected", Toast.LENGTH_SHORT).show();
                 return true;
@@ -189,8 +200,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     public void onSuccess(Object o) {
         lnLoading.setVisibility(View.GONE);
-        vpnGateConnectionList = (VPNGateConnectionList) o;
+        updateData(o);
         dataUtil.setConnectionsCache(vpnGateConnectionList);
+    }
+
+    private void updateData(Object o) {
+        vpnGateConnectionList = (VPNGateConnectionList) o;
+        lnLoading.setVisibility(View.GONE);
         replaceFragment(currentUrl);
     }
 
@@ -200,12 +216,14 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
+                String title = getResources().getString(R.string.app_name);
                 if (url.equals("home")) {
                     fragment = HomeFragment.newInstance(vpnGateConnectionList);
                     tag = HomeFragment.class.getName();
                 }
                 if (fragment != null) {
                     frameContent.setVisibility(View.VISIBLE);
+                    setTitleActionbar(title);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame_content, fragment, tag)
                             .addToBackStack("home")
@@ -215,6 +233,12 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setTitleActionbar(String title) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
         }
     }
 

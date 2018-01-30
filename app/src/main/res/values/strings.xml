@@ -21,6 +21,14 @@
     <string name="connection_error">Error when trying get data from server. Tap to try again!</string>
     <string name="no_network">Your device is not connect to any network\nPlease connect any wifi or enable mobile data to continue</string>
     <string name="loading_text">App is fetching data from server\nPlease wait in a moment</string>
-    <string name="search_hint">Keyword</string>
+    <string name="search_hint">Country</string>
     <string name="to_top">Back to top</string>
+    <string name="country">Country</string>
+    <string name="sort_property">Sort by</string>
+    <string name="sort_type">Sort type</string>
+    <string name="sort_asc">Ascending</string>
+    <string name="sort_desc">Descending</string>
+    <string name="confirm">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="sort_default">Default</string>
 </resources>

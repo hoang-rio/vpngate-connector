@@ -21,6 +21,14 @@
     <string name="connection_error">Có lỗi khi lấy dữ liệu từ máy chủ. Chạm để thử lại</string>
     <string name="no_network">Thiết bị của bạn chưa được kết nối mạng\nVui lòng kết nối wifi hoặc bật kết nối di động để tiếp tục</string>
     <string name="loading_text">Ứng dụng đang lấy dữ liệu từ máy chủ\nVui lòng đợi giây lát</string>
-    <string name="search_hint">Từ khóa</string>
+    <string name="search_hint">Tên quốc gia</string>
     <string name="to_top">Về đầu trang</string>
+    <string name="country">Quốc gia</string>
+    <string name="sort_property">Sắp xếp theo</string>
+    <string name="sort_type">Kiếu sắp xếp</string>
+    <string name="sort_asc">Tăng dần</string>
+    <string name="sort_desc">Giảm dần</string>
+    <string name="confirm">Đồng ý</string>
+    <string name="cancel">Hủy</string>
+    <string name="sort_default">Mặc định</string>
 </resources>

@@ -38,12 +38,17 @@ public class VPNGateConnectionList implements Parcelable {
     /**
      * Filter connection by keyword
      *
-     * @param keyword  keyword to filter
-     * @param property property to filter
+     * @param keyword keyword to filter
      * @return
      */
-    private List<VPNGateConnection> filter(String keyword, String property) {
-        return data;
+    public VPNGateConnectionList filter(String keyword) {
+        VPNGateConnectionList result = new VPNGateConnectionList();
+        for (VPNGateConnection vpnGateConnection : data) {
+            if (vpnGateConnection.getCountryLong().toLowerCase().contains(keyword.toLowerCase())) {
+                result.add(vpnGateConnection);
+            }
+        }
+        return result;
     }
 
     public void add(VPNGateConnection vpnGateConnection) {
@@ -98,14 +103,14 @@ public class VPNGateConnectionList implements Parcelable {
     }
 
     public final class ORDER {
-        public final int ASC = 0;
-        public final int DESC = 1;
+        public static final int ASC = 0;
+        public static final int DESC = 1;
     }
 
     public final class Property {
-        public final String COUNTRY = "COUNTRY";
-        public final String SPEED = "SPEED";
-        public final String PING = "PING";
-        public final String UPTIME = "UPTIME";
+        public static final String COUNTRY = "COUNTRY";
+        public static final String SPEED = "SPEED";
+        public static final String PING = "PING";
+        public static final String UPTIME = "UPTIME";
     }
 }

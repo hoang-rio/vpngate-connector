@@ -19,8 +19,7 @@ import vn.unlimit.vpngate.request.RequestListener;
 
 public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     private static String VPN_GATE_API_URL = "http://www.vpngate.net/api/iphone/";
-    final Integer TYPE_ERROR = 0;
-    final Integer TYPE_NOT_RELOAD = 1;
+    private RequestListener requestListener;
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {
@@ -52,7 +51,6 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     private VPNGateConnectionList getConnectionList(InputStream is) {
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
         BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
 
         String line;
         try {
@@ -66,7 +64,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (br != null) {
@@ -93,8 +91,6 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         }
         super.onPostExecute(vpnGateConnections);
     }
-
-    private RequestListener requestListener;
 
     public void setRequestListener(RequestListener requestListener) {
         this.requestListener = requestListener;
