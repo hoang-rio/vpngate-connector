@@ -33,4 +33,12 @@
     <string name="apply">Áp dụng</string>
     <string name="cancel">Hủy</string>
     <string name="sort_default">Mặc định</string>
+    <string name="feature_not_available">Hiện tại bạn chưa thể sử dụng tính năng này</string>
+    <!--- Settings -->
+    <string name="setting_cache_label">Thời gian lưu bộ nhớ tạm</string>
+    <string name="setting_cache_subtitle">Là thời gian dữ liệu được lưu tạm vào bộ nhớ máy</string>
+    <string name="setting_cache_auto_clear_label">Bộ nhớ đệm sẽ tự xóa vào lúc:</string>
+    <string name="setting_cache_clear">Xóa ngay</string>
+    <string name="setting_clear_cache_success">Xóa bộ nhớ đệm thành công</string>
+    <string name="setting_clear_cache_error">Có lỗi xảy ra. Bộ nhớ đệm chưa được xóa</string>
 </resources>

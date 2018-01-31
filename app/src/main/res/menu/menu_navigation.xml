@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_home"
+        android:checkable="true"
+        android:checked="true"
+        android:enabled="true"
+        android:icon="@drawable/ic_home_black"
+        android:title="@string/home" />
+    <item
         android:id="@+id/nav_setting"
+        android:checkable="true"
         android:icon="@drawable/ic_setting_black"
         android:title="@string/setting" />
     <item
         android:id="@+id/nav_help"
+        android:checkable="true"
         android:icon="@drawable/ic_help_black"
         android:title="@string/help" />
     <item
         android:id="@+id/nav_about"
+        android:checkable="true"
         android:icon="@drawable/ic_info_black"
         android:title="@string/about" />
 </menu>

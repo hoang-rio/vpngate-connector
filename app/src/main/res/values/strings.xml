@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">VPN Gate Connector</string>
+    <string name="home">Home</string>
     <string name="navigation_drawer_open">Open drawer</string>
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
@@ -33,4 +34,12 @@
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
     <string name="sort_default">Default</string>
+    <string name="feature_not_available">You can\'t do this action at this moment</string>
+    <!--- Settings -->
+    <string name="setting_cache_label">Cache save time</string>
+    <string name="setting_cache_subtitle">Is the time data will save in device</string>
+    <string name="setting_cache_auto_clear_label">Cache will auto clear at:</string>
+    <string name="setting_cache_clear">Clear now</string>
+    <string name="setting_clear_cache_success">Clear cache success</string>
+    <string name="setting_clear_cache_error">Some thing when wrong. Cache can\'t clear</string>
 </resources>

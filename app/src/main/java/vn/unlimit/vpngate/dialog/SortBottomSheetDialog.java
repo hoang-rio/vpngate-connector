@@ -84,7 +84,7 @@ public class SortBottomSheetDialog extends BottomSheetDialogFragment implements 
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
-        View contentView = View.inflate(getContext(), R.layout.layout_sort, null);
+        View contentView = View.inflate(getContext(), R.layout.layout_sort_bottom, null);
         rdgSortProperty = contentView.findViewById(R.id.rdg_sort_property);
         rdgSortProperty2 = contentView.findViewById(R.id.rdg_sort_property2);
         rdgSortType = contentView.findViewById(R.id.rdg_sort_type);

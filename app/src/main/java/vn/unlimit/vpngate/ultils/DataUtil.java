@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Calendar;
+import java.util.Date;
 
 import vn.unlimit.vpngate.models.Cache;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -24,6 +25,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
  */
 
 public class DataUtil {
+    public static String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -90,7 +92,7 @@ public class DataUtil {
             Cache cache = new Cache();
             Calendar calendar = Calendar.getInstance();
             //Cache in 3 hours
-            calendar.add(Calendar.HOUR, 3);
+            calendar.add(Calendar.HOUR, getIntSetting(SETTING_CACHE_TIME_KEY, 3));
             cache.expires = calendar.getTime();
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
@@ -101,6 +103,39 @@ public class DataUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Clear connection cache
+     *
+     * @return boolean
+     */
+    public boolean clearConnectionCache() {
+        File inFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
+        return inFile.isFile() && inFile.delete();
+    }
+
+    public Date getConnectionCacheExpires() {
+        try {
+            File inFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
+            if (!inFile.isFile()) {
+                return null;
+            } else {
+                FileInputStream fileInputStream = new FileInputStream(inFile);
+                JsonReader reader = new JsonReader(new InputStreamReader(fileInputStream));
+                Cache cache = gson.fromJson(reader, Cache.class);
+                if (cache.isExpires()) {
+                    reader.close();
+                    return null;
+                } else {
+                    reader.close();
+                    return cache.expires;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setStringSetting(String key, String value) {

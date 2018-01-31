@@ -22,7 +22,6 @@ import vn.unlimit.vpngate.adapter.OnItemLongClickListener;
 import vn.unlimit.vpngate.adapter.OnScrollListener;
 import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
-import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
@@ -51,9 +50,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     public static HomeFragment newInstance(VPNGateConnectionList _vpnGateConnectionList) {
         HomeFragment homeFragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(BaseProvider.PASS_VPN_CONNECTION_LIST, _vpnGateConnectionList);
-        homeFragment.setArguments(args);
+        homeFragment.vpnGateConnectionList = _vpnGateConnectionList;
         return homeFragment;
     }
 
@@ -75,7 +72,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onCreate(@Nullable Bundle savedBundle) {
         super.onCreate(savedBundle);
         try {
-            vpnGateConnectionList = getArguments().getParcelable(BaseProvider.PASS_VPN_CONNECTION_LIST);
             vpnGateListAdapter = new VPNGateListAdapter(mContext);
             dataUtil = ((MainActivity) getActivity()).getDataUtil();
             handler = new Handler();

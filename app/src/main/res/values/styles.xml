@@ -29,6 +29,7 @@
 
     <style name="AppTheme.Button">
         <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@drawable/apply_button_selector</item>
     </style>
 
     <style name="label">
@@ -42,6 +43,26 @@
 
     <style name="AppTheme.BottomSheetDialog">
         <item name="android:textSize">15sp</item>
-        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlNormal">@android:color/black</item>
+    </style>
+
+    <style name="AppTheme.Setting">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="AppTheme.Setting.Item">
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+    </style>
+
+    <style name="AppTheme.Setting.Line">
+        <item name="android:background">@color/lineColor</item>
+    </style>
+
+    <style name="AppTheme.Setting.SubText">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
 </resources>

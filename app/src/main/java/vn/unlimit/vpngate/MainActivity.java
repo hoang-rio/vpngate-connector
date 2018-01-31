@@ -27,7 +27,9 @@ import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.HomeFragment;
+import vn.unlimit.vpngate.fragment.SettingFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     VPNGateTask vpnGateTask;
     View lnLoading;
     View frameContent;
+    boolean isLoading = true;
+    boolean isFirstReplace = true;
     private DataUtil dataUtil;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -54,11 +58,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private View lnNoNetwork;
     private String currentUrl = "home";
     private String mSortProperty = "";
+    private Menu mMenu;
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
-    private BroadcastReceiver connectionChangeReceive = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            initState();
+            switch (intent.getAction()) {
+                case "android.net.conn.CONNECTIVITY_CHANGE":
+                    initState();
+                    break;
+                case BaseProvider.Action.ACTION_CLEAR_CACHE:
+                    vpnGateConnectionList = null;
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
@@ -90,8 +104,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         navigationView.setNavigationItemSelectedListener(this);
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
-        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        registerReceiver(connectionChangeReceive, filter);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction(BaseProvider.Action.ACTION_CLEAR_CACHE);
+        registerReceiver(broadcastReceiver, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -128,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -139,18 +154,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         super.onResume();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (vpnGateTask != null) {
             vpnGateTask.stop();
         }
-        unregisterReceiver(connectionChangeReceive);
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void getDataServer() {
+        isLoading = true;
         lnLoading.setVisibility(View.VISIBLE);
+        lnError.setVisibility(View.GONE);
+        frameContent.setVisibility(View.GONE);
+        lnNoNetwork.setVisibility(View.GONE);
         if (vpnGateTask != null && vpnGateTask.isCancelled()) {
             vpnGateTask.stop();
         }
@@ -158,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         vpnGateTask.setRequestListener(this);
         vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -176,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
+        mMenu = menu;
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuSearch = menu.findItem(R.id.action_search);
         menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -232,6 +249,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (isLoading) {
+            Toast.makeText(this, getResources().getText(R.string.feature_not_available), Toast.LENGTH_LONG).show();
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.action_sort:
                 SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
@@ -257,7 +278,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onSuccess(Object o) {
+        isLoading = false;
         lnLoading.setVisibility(View.GONE);
+        frameContent.setVisibility(View.VISIBLE);
         if (!"".equals(mSortProperty)) {
             ((VPNGateConnectionList) o).sort(mSortProperty, mSortType);
         }
@@ -266,42 +289,77 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void updateData(VPNGateConnectionList o) {
+        isLoading = false;
         vpnGateConnectionList = o;
         lnLoading.setVisibility(View.GONE);
-        replaceFragment(currentUrl);
+        replaceFragment("home");
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+        switch (menuItem.getItemId()) {
+            case R.id.nav_home:
+                if (vpnGateConnectionList != null) {
+                    replaceFragment("home");
+                } else {
+                    getDataServer();
+                }
+                break;
+            case R.id.nav_setting:
+                replaceFragment("setting");
+                break;
+            default:
+                break;
+        }
+        navigationView.setCheckedItem(menuItem.getItemId());
+        if (toolbar != null) {
+            toolbar.collapseActionView();
+        }
+        drawerLayout.closeDrawers();
         return true;
     }
 
     private void replaceFragment(String url) {
         try {
-            if (url != null) {
+            if (url != null && (!currentUrl.equals(url) || isFirstReplace)) {
+                isFirstReplace = false;
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
                 String title = getResources().getString(R.string.app_name);
-                if (url.equals("home")) {
-                    fragment = HomeFragment.newInstance(vpnGateConnectionList);
-                    tag = HomeFragment.class.getName();
+                switch (url) {
+                    case "home":
+                        fragment = HomeFragment.newInstance(vpnGateConnectionList);
+                        tag = HomeFragment.class.getName();
+                        break;
+                    case "setting":
+                        fragment = new SettingFragment();
+                        tag = SettingFragment.class.getName();
+                        title = getResources().getString(R.string.setting);
+                        break;
+                    default:
+                        break;
                 }
                 if (fragment != null) {
                     frameContent.setVisibility(View.VISIBLE);
                     setTitleActionbar(title);
                     if (url.equals("home")) {
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.frame_content, fragment, tag)
-                                //.addToBackStack("home")
-                                .commitAllowingStateLoss();
+                        if (mMenu != null) {
+                            mMenu.findItem(R.id.action_search).setVisible(true);
+                            mMenu.findItem(R.id.action_sort).setVisible(true);
+                        }
                     } else {
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.frame_content, fragment, tag)
-                                .addToBackStack("home")
-                                .commitAllowingStateLoss();
+                        if (mMenu != null) {
+                            mMenu.findItem(R.id.action_search).setVisible(false);
+                            mMenu.findItem(R.id.action_sort).setVisible(false);
+                        }
+
                     }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frame_content, fragment, tag)
+                            //.addToBackStack("home")
+                            .commitAllowingStateLoss();
                 }
             }
 
@@ -321,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         frameContent.setVisibility(View.GONE);
         lnLoading.setVisibility(View.GONE);
         lnError.setVisibility(View.VISIBLE);
+        lnNoNetwork.setVisibility(View.GONE);
         System.out.print(error);
     }
 
