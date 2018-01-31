@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     View lnLoading;
     View frameContent;
     boolean isLoading = true;
-    boolean isFirstReplace = true;
     private DataUtil dataUtil;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -300,11 +299,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
-                if (vpnGateConnectionList != null) {
-                    replaceFragment("home");
-                } else {
+                if (vpnGateConnectionList == null) {
                     getDataServer();
                 }
+                replaceFragment("home");
                 break;
             case R.id.nav_setting:
                 replaceFragment("setting");
@@ -322,8 +320,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void replaceFragment(String url) {
         try {
-            if (url != null && (!currentUrl.equals(url) || isFirstReplace)) {
-                isFirstReplace = false;
+            if (url != null) {
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
