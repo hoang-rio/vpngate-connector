@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -37,5 +38,10 @@
 
     <style name="AppTheme.VPNItem">
         <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+    <style name="AppTheme.BottomSheetDialog">
+        <item name="android:textSize">15sp</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
     </style>
 </resources>

@@ -84,37 +84,41 @@ public class VPNGateConnectionList implements Parcelable {
      * @param type     order type 0 = ASC, 1 = DESC
      * @return
      */
-    public void orderBy(final String property, final int type) {
+    public void sort(final String property, final int type) {
         Collections.sort(data, new Comparator<VPNGateConnection>() {
             @Override
             public int compare(VPNGateConnection o1, VPNGateConnection o2) {
                 if (type == ORDER.ASC) {
                     switch (property) {
-                        case Property.COUNTRY:
+                        case SortProperty.COUNTRY:
                             return o1.getCountryLong().compareTo(o2.getCountryLong());
-                        case Property.SPEED:
+                        case SortProperty.SPEED:
                             return Integer.valueOf(o1.getSpeed()).compareTo(o2.getSpeed());
-                        case Property.PING:
+                        case SortProperty.PING:
                             return Integer.valueOf(o1.getPing()).compareTo(o2.getPing());
-                        case Property.SCORE:
+                        case SortProperty.SCORE:
                             return Integer.valueOf(o1.getScore()).compareTo(o2.getScore());
-                        case Property.UPTIME:
+                        case SortProperty.UPTIME:
                             return Integer.valueOf(o1.getUptime()).compareTo(o2.getUptime());
+                        case SortProperty.SESSION:
+                            return Integer.valueOf(o1.getNumVpnSession()).compareTo(o2.getNumVpnSession());
                         default:
                             return 0;
                     }
                 } else if (type == ORDER.DESC) {
                     switch (property) {
-                        case Property.COUNTRY:
+                        case SortProperty.COUNTRY:
                             return o2.getCountryLong().compareTo(o1.getCountryLong());
-                        case Property.SPEED:
+                        case SortProperty.SPEED:
                             return Integer.valueOf(o2.getSpeed()).compareTo(o1.getSpeed());
-                        case Property.PING:
+                        case SortProperty.PING:
                             return Integer.valueOf(o2.getPing()).compareTo(o1.getPing());
-                        case Property.SCORE:
+                        case SortProperty.SCORE:
                             return Integer.valueOf(o2.getScore()).compareTo(o1.getScore());
-                        case Property.UPTIME:
+                        case SortProperty.UPTIME:
                             return Integer.valueOf(o2.getUptime()).compareTo(o1.getUptime());
+                        case SortProperty.SESSION:
+                            return Integer.valueOf(o2.getNumVpnSession()).compareTo(o1.getNumVpnSession());
                         default:
                             return 0;
                     }
@@ -145,11 +149,12 @@ public class VPNGateConnectionList implements Parcelable {
         public static final int DESC = 1;
     }
 
-    public final class Property {
+    public final class SortProperty {
         public static final String COUNTRY = "COUNTRY";
         public static final String SPEED = "SPEED";
         public static final String PING = "PING";
         public static final String SCORE = "SCORE";
         public static final String UPTIME = "UPTIME";
+        public static final String SESSION = "SESSION";
     }
 }

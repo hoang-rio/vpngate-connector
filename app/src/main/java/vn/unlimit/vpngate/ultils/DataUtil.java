@@ -103,6 +103,16 @@ public class DataUtil {
         }
     }
 
+    public void setStringSetting(String key, String value) {
+        SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    public String getStringSetting(String key, String defVal) {
+        return sharedPreferencesSetting.getString(key, defVal);
+    }
+
     /**
      * Set int setting value
      *

@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,18 +25,21 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
 
-public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     //    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
+//    static {
+//        System.loadLibrary("native-lib");
+//    }
 
+    private static String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
+    private static String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
@@ -44,16 +48,27 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private DataUtil dataUtil;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     private ActionBarDrawerToggle drawerToggle;
     private View lnError;
     private View lnNoNetwork;
     private String currentUrl = "home";
+    private String mSortProperty = "";
+    private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private BroadcastReceiver connectionChangeReceive = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             initState();
         }
     };
+
+    public String getSortProperty() {
+        return mSortProperty;
+    }
+
+    public int getSortType() {
+        return mSortType;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         drawerLayout = findViewById(R.id.activity_main_drawer);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
+        navigationView = findViewById(R.id.nav_main);
+        navigationView.setNavigationItemSelectedListener(this);
+        mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
+        mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
         IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(connectionChangeReceive, filter);
         try {
@@ -215,9 +234,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
         switch (item.getItemId()) {
             case R.id.action_sort:
-                Toast.makeText(this, "Sort button selected", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_search:
+                SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
+                sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
+                    @Override
+                    public void onApplyClick(String sortProperty, int sortType) {
+                        mSortProperty = sortProperty;
+                        mSortType = sortType;
+                        dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
+                        dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
+                        HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                        if (currentFragment != null) {
+                            currentFragment.sort(sortProperty, sortType);
+                        }
+                    }
+                });
+                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
                 return true;
         }
 
@@ -227,14 +258,23 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     public void onSuccess(Object o) {
         lnLoading.setVisibility(View.GONE);
-        updateData(o);
+        if (!"".equals(mSortProperty)) {
+            ((VPNGateConnectionList) o).sort(mSortProperty, mSortType);
+        }
+        updateData((VPNGateConnectionList) o);
         dataUtil.setConnectionsCache(vpnGateConnectionList);
     }
 
-    private void updateData(Object o) {
-        vpnGateConnectionList = (VPNGateConnectionList) o;
+    private void updateData(VPNGateConnectionList o) {
+        vpnGateConnectionList = o;
         lnLoading.setVisibility(View.GONE);
         replaceFragment(currentUrl);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+        return true;
     }
 
     private void replaceFragment(String url) {
@@ -288,5 +328,5 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         return dataUtil;
     }
 
-    private native String stringFromJNI();
+//    private native String stringFromJNI();
 }

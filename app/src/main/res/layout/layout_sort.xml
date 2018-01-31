@@ -2,38 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.BottomSheetDialog">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:background="@color/colorOverlay">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorOverlay">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/sort" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="55dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:contentDescription="@string/confirm"
-            android:focusable="true"
-            android:src="@drawable/done_button_selector" />
-    </RelativeLayout>
+            android:padding="10dp"
+            android:text="@string/sort" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,15 +41,20 @@
 
             <RadioGroup
                 android:id="@+id/rdg_sort_property"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/radio_default"
+                    android:id="@+id/radio_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/sort_default" />
+                    android:text="@string/speed" />
+                <RadioButton
+                    android:id="@+id/radio_session"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/session" />
 
                 <RadioButton
                     android:id="@+id/radio_country"
@@ -74,11 +62,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/country" />
 
-                <RadioButton
-                    android:id="@+id/radio_speed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/speed" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/rdg_sort_property2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/radio_ping"
@@ -97,7 +87,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/uptime" />
-
             </RadioGroup>
         </LinearLayout>
 
@@ -126,14 +115,14 @@
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/sort_type_asc"
+                    android:id="@+id/radio_sort_type_asc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/sort_asc" />
 
                 <RadioButton
-                    android:id="@+id/sort_type_desc"
+                    android:id="@+id/radio_sort_type_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sort_desc" />
@@ -141,4 +130,22 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_apply"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/apply_button_selector"
+            android:padding="5dp"
+            android:text="@string/apply"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
 </LinearLayout>
