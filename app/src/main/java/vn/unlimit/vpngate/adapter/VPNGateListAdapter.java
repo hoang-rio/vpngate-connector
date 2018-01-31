@@ -85,6 +85,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView txtCountry;
         TextView txtIp;
         TextView txtHostname;
+        TextView txtScore;
         TextView txtUptime;
         TextView txtSpeed;
         TextView txtPing;
@@ -97,6 +98,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtCountry = itemView.findViewById(R.id.txt_country);
             txtIp = itemView.findViewById(R.id.txt_ip);
             txtHostname = itemView.findViewById(R.id.txt_hostname);
+            txtScore = itemView.findViewById(R.id.txt_score);
             txtUptime = itemView.findViewById(R.id.txt_uptime);
             txtSpeed = itemView.findViewById(R.id.txt_speed);
             txtPing = itemView.findViewById(R.id.txt_ping);
@@ -117,6 +119,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 txtCountry.setText(vpnGateConnection.getCountryLong());
                 txtIp.setText(vpnGateConnection.getIp());
                 txtHostname.setText(vpnGateConnection.getCalculateHostName());
+                txtScore.setText(vpnGateConnection.getScoreAsString());
                 txtUptime.setText(vpnGateConnection.getCalculateUpTime(mContext));
                 txtSpeed.setText(vpnGateConnection.getCalculateSpeed());
                 txtPing.setText(vpnGateConnection.getPingAsString());

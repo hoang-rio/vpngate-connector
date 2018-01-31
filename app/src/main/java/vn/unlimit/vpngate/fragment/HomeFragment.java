@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -99,9 +100,40 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return rootView;
     }
 
+    /**
+     * Search by keyword
+     *
+     * @param keyword
+     */
     public void filter(String keyword) {
-        VPNGateConnectionList filterResult = vpnGateConnectionList.filter(keyword);
-        vpnGateListAdapter.initialize(filterResult);
+        lnSwipeRefresh.setEnabled(false);
+        lnSwipeRefresh.setRefreshing(false);
+        if (vpnGateTask != null && !vpnGateTask.isCancelled()) {
+            vpnGateTask.stop();
+        }
+        if (!keyword.equals("")) {
+            VPNGateConnectionList filterResult = vpnGateConnectionList.filter(keyword);
+            vpnGateListAdapter.initialize(filterResult);
+        }
+    }
+
+    public void sort(String property, int type) {
+
+    }
+
+    /**
+     * Close search
+     */
+    public void closeSearch() {
+        vpnGateListAdapter.initialize(vpnGateConnectionList);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                lnSwipeRefresh.setEnabled(true);
+                lnSwipeRefresh.setRefreshing(false);
+            }
+        }, 300);
+
     }
 
     @Override

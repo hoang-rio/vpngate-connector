@@ -147,6 +147,10 @@ public class VPNGateConnection implements Parcelable {
         this.score = score;
     }
 
+    public String getScoreAsString() {
+        return String.valueOf(score);
+    }
+
     public int getPing() {
         return ping;
     }

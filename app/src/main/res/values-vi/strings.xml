@@ -10,6 +10,7 @@
     <string name="refresh">Cập nhật</string>
     <string name="speed">Tốc độ</string>
     <string name="hostname">Tên máy chủ</string>
+    <string name="score">Điểm(Chất lượng)</string>
     <string name="ping">Độ trễ</string>
     <string name="session">Số kết nối</string>
     <string name="uptime">T.gian bật</string>

@@ -21,6 +21,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private BroadcastReceiver connectionChangeReceive = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            getFirstState();
+            initState();
         }
     };
 
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onCreate(Bundle savedInstanceState) {
         dataUtil = new DataUtil(getApplicationContext());
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     /**
      * Check network and process first state
      */
-    private void getFirstState() {
+    private void initState() {
         if (DataUtil.isOnline(getApplicationContext())) {
             lnNoNetwork.setVisibility(View.GONE);
             vpnGateConnectionList = dataUtil.getConnectionsCache();
@@ -127,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void getDataServer() {
+        lnLoading.setVisibility(View.VISIBLE);
         if (vpnGateTask != null && vpnGateTask.isCancelled()) {
             vpnGateTask.stop();
         }
@@ -155,13 +160,33 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuSearch = menu.findItem(R.id.action_search);
+        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                if (currentFragment != null) {
+                    currentFragment.filter("");
+                }
+                return true;
+            }
 
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                if (currentFragment != null) {
+                    currentFragment.closeSearch();
+                }
+                return true;
+            }
+        });
         final SearchView searchView = (SearchView) menuSearch.getActionView();
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setMaxWidth(Integer.MAX_VALUE);
         final EditText editText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setTextColor(getResources().getColor(R.color.colorWhite));
+        editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
 //        searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getString(R.string.search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -191,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         switch (item.getItemId()) {
             case R.id.action_sort:
                 Toast.makeText(this, "Sort button selected", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_search:
                 return true;
         }
 
@@ -224,10 +251,17 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 if (fragment != null) {
                     frameContent.setVisibility(View.VISIBLE);
                     setTitleActionbar(title);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.frame_content, fragment, tag)
-                            .addToBackStack("home")
-                            .commitAllowingStateLoss();
+                    if (url.equals("home")) {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_content, fragment, tag)
+                                //.addToBackStack("home")
+                                .commitAllowingStateLoss();
+                    } else {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_content, fragment, tag)
+                                .addToBackStack("home")
+                                .commitAllowingStateLoss();
+                    }
                 }
             }
 

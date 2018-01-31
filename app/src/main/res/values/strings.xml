@@ -10,6 +10,7 @@
     <string name="email_address">donghoang.nguyen@gmail.com</string>
     <string name="speed">Speed</string>
     <string name="hostname">Hostname</string>
+    <string name="score">Score</string>
     <string name="ping">Ping</string>
     <string name="session">Session</string>
     <string name="uptime">Uptime</string>
