@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
@@ -21,7 +21,10 @@ import vn.unlimit.vpngate.adapter.OnItemClickListener;
 import vn.unlimit.vpngate.adapter.OnItemLongClickListener;
 import vn.unlimit.vpngate.adapter.OnScrollListener;
 import vn.unlimit.vpngate.adapter.VPNGateListAdapter;
+import vn.unlimit.vpngate.dialog.CopyBottomSheetDialog;
+import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.ultils.DataUtil;
@@ -155,12 +158,18 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onItemClick(Object o, int position) {
-        Toast.makeText(mContext, "Selected item at position: " + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent();
+        intent.setAction(BaseProvider.ACTION.ACTION_SEND_DETAIL);
+        Bundle args = new Bundle();
+        args.putParcelable(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
+        intent.putExtras(args);
+        getContext().sendBroadcast(intent);
     }
 
     @Override
     public void onItemLongClick(Object o, int position) {
-        Toast.makeText(mContext, "Long click item at position: " + position, Toast.LENGTH_SHORT).show();
+        CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
+        dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
     }
 
     @Override

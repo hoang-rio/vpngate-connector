@@ -12,6 +12,7 @@
     <string name="speed">Tốc độ</string>
     <string name="hostname">Tên máy chủ</string>
     <string name="score">Điểm(Chất lượng)</string>
+    <string name="score_short">Điểm</string>
     <string name="ping">Độ trễ</string>
     <string name="session">Số kết nối</string>
     <string name="uptime">T.gian bật</string>
@@ -35,8 +36,8 @@
     <string name="sort_default">Mặc định</string>
     <string name="feature_not_available">Hiện tại bạn chưa thể sử dụng tính năng này</string>
     <!--- Settings -->
-    <string name="setting_cache_label">Thời gian lưu bộ nhớ tạm</string>
-    <string name="setting_cache_subtitle">Là thời gian dữ liệu được lưu tạm vào bộ nhớ máy</string>
+    <string name="setting_cache_label">Thời gian lưu đệm</string>
+    <string name="setting_cache_subtitle">Là thời gian dữ liệu được lưu vào bộ nhớ máy sau khi lấy dữ liệu từ máy chủ</string>
     <string name="setting_cache_auto_clear_label">Bộ nhớ đệm sẽ tự xóa vào lúc:</string>
     <string name="setting_cache_clear">Xóa ngay</string>
     <string name="setting_clear_cache_success">Xóa bộ nhớ đệm thành công</string>
@@ -48,4 +49,14 @@
         <item>12 giờ</item>
     </string-array>
     <string name="press_back_again_to_exit">Bấm quay lại lần nữa để thoát</string>
+    <!-- Detail -->
+    <string name="total_user">Tổng người dùng</string>
+    <string name="total_traffic">Tổng lưu lượng</string>
+    <string name="log_type">Log type</string>
+    <string name="connect_to_this_server">Kết nối đến server này</string>
+    <string name="via_ip">Qua IP</string>
+    <string name="via_hostname">Qua tên máy chủ</string>
+    <string name="copy_ip">Sao chép IP vào bộ nhớ đệm</string>
+    <string name="copy_hostname">Sao chép tên máy chủ vào bộ nhớ đệm</string>
+    <string name="copied">Đã sao chép</string>
 </resources>

@@ -27,8 +27,10 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
+import vn.unlimit.vpngate.fragment.DetailFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
+import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -71,6 +73,19 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
                     break;
+                case BaseProvider.ACTION.ACTION_SEND_DETAIL:
+                    currentUrl = "detail";
+                    VPNGateConnection vpnGateConnection = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
+                    DetailFragment detailFragment = DetailFragment.newInstance(vpnGateConnection);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frame_content, detailFragment)
+                            .commitAllowingStateLoss();
+                    setTitleActionbar(vpnGateConnection.getIp());
+                    if (toolbar != null) {
+                        toolbar.collapseActionView();
+                    }
+                    toggleAction(false);
+                    break;
                 default:
                     break;
             }
@@ -108,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
+        filter.addAction(BaseProvider.ACTION.ACTION_SEND_DETAIL);
         registerReceiver(broadcastReceiver, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -342,18 +358,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 if (fragment != null) {
                     frameContent.setVisibility(View.VISIBLE);
                     setTitleActionbar(title);
-                    if (url.equals("home")) {
-                        if (mMenu != null) {
-                            mMenu.findItem(R.id.action_search).setVisible(true);
-                            mMenu.findItem(R.id.action_sort).setVisible(true);
-                        }
-                    } else {
-                        if (mMenu != null) {
-                            mMenu.findItem(R.id.action_search).setVisible(false);
-                            mMenu.findItem(R.id.action_sort).setVisible(false);
-                        }
-
-                    }
+                    toggleAction(url.equals("home"));
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame_content, fragment, tag)
                             //.addToBackStack("home")
@@ -363,6 +368,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void toggleAction(boolean visible) {
+        if (mMenu != null) {
+            mMenu.findItem(R.id.action_search).setVisible(visible);
+            mMenu.findItem(R.id.action_sort).setVisible(visible);
         }
     }
 

@@ -9,10 +9,10 @@
     <string name="setting">Settings</string>
     <string name="help">Help</string>
     <string name="refresh">Refresh</string>
-    <string name="email_address">donghoang.nguyen@gmail.com</string>
     <string name="speed">Speed</string>
     <string name="hostname">Hostname</string>
     <string name="score">Score</string>
+    <string name="score_short">Score</string>
     <string name="ping">Ping</string>
     <string name="session">Session</string>
     <string name="uptime">Uptime</string>
@@ -37,7 +37,7 @@
     <string name="feature_not_available">You can\'t do this action at this moment</string>
     <!--- Settings -->
     <string name="setting_cache_label">Cache save time</string>
-    <string name="setting_cache_subtitle">Is the time data will save in device</string>
+    <string name="setting_cache_subtitle">Is the time data will save in device after get data from server</string>
     <string name="setting_cache_auto_clear_label">Cache will auto clear at:</string>
     <string name="setting_cache_clear">Clear now</string>
     <string name="setting_clear_cache_success">Clear cache success</string>
@@ -49,4 +49,14 @@
         <item>12 hours</item>
     </string-array>
     <string name="press_back_again_to_exit">Please click BACK again to exit</string>
+    <!-- Detail -->
+    <string name="total_user">Total user</string>
+    <string name="total_traffic">Total traffic</string>
+    <string name="log_type">Log type</string>
+    <string name="connect_to_this_server">Connect to this server</string>
+    <string name="via_ip">Via IP</string>
+    <string name="via_hostname">Via hostname</string>
+    <string name="copy_ip">Copy IP to clipboard</string>
+    <string name="copy_hostname">Copy HostName to clipboard</string>
+    <string name="copied">Copied</string>
 </resources>

@@ -5,9 +5,10 @@ package vn.unlimit.vpngate.provider;
  */
 
 public class BaseProvider {
-    public final static String PASS_VPN_CONNECTION_LIST = "PASS_VPN_CONNECTION_LIST";
+    public final static String PASS_DETAIL_VPN_CONNECTION = "PASS_DETAIL_VPN_CONNECTION";
 
     public class ACTION {
         public final static String ACTION_CLEAR_CACHE = "vn.unlimit.vpngate.ACTION_CLEAR_CACHE";
+        public final static String ACTION_SEND_DETAIL = "vn.unlimit.vpngate.ACTION_SEND_DETAIL";
     }
 }

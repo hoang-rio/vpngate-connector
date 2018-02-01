@@ -265,6 +265,18 @@ public class VPNGateConnection implements Parcelable {
         this.totalTraffic = totalTraffic;
     }
 
+    public String getCalculateTotalTraffic() {
+        double inMB = (double) totalTraffic / (1000 * 1000);
+        if (inMB < 1000) {
+            return round(inMB) + " MB";
+        }
+        double inGB = inMB / 1000;
+        if (inGB < 1000) {
+            return round(inMB / 1000) + " GB";
+        }
+        return round(inGB / 1000) + " TB";
+    }
+
     public String getCalculateUpTime(Context context) {
         //Display as second
         if (uptime < 60000) {
