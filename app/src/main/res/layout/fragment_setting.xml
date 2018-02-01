@@ -5,7 +5,19 @@
     android:orientation="vertical"
     android:theme="@style/AppTheme.Setting">
 
+    <RelativeLayout
+        android:id="@+id/ln_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
     <ScrollView
+        android:id="@+id/ln_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -39,60 +51,78 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:background="@color/colorAccent"
+                        android:minHeight="30dp"
+                        android:minWidth="100dp"
+                        android:popupBackground="@color/colorPrimary"
+                        android:popupElevation="3dp" />
                 </RelativeLayout>
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/setting_cache_subtitle"
-                    android:theme="@style/AppTheme.Setting.SubText" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/setting_cache_subtitle"
+                        android:theme="@style/AppTheme.Setting.SubText" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ln_clear_cache"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:theme="@style/AppTheme.Setting.Item">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:theme="@style/AppTheme.Setting.Line" />
 
                 <LinearLayout
-                    android:id="@+id/ln_clear_cache"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/setting_cache_auto_clear_label"
                         android:theme="@style/label" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/txt_cache_expire"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="2018-01-31 19:40"
-                            android:textColor="@color/colorRed"
-                            android:theme="@style/AppTheme.Setting.SubText" />
-
-                        <Button
-                            android:id="@+id/btn_clear_cache"
-                            android:layout_width="wrap_content"
-                            android:layout_height="50dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/apply_button_selector"
-                            android:elevation="5dp"
-                            android:text="@string/setting_cache_clear"
-                            android:theme="@style/AppTheme.Button" />
-                    </RelativeLayout>
-
                 </LinearLayout>
-            </LinearLayout>
 
-            <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="1dp"-->
-            <!--android:theme="@style/AppTheme.Setting.Line" />-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/txt_cache_expire"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="2018-01-31 19:40"
+                        android:textColor="@color/colorRed"
+                        android:theme="@style/AppTheme.Setting.SubText" />
+
+                    <Button
+                        android:id="@+id/btn_clear_cache"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/selector_apply_button"
+                        android:elevation="5dp"
+                        android:minWidth="100dp"
+                        android:text="@string/setting_cache_clear"
+                        android:theme="@style/AppTheme.Button" />
+                </RelativeLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>

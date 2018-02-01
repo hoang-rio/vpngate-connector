@@ -29,7 +29,9 @@
 
     <style name="AppTheme.Button">
         <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:background">@drawable/apply_button_selector</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="label">

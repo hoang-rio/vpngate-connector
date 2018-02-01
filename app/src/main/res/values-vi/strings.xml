@@ -41,4 +41,11 @@
     <string name="setting_cache_clear">Xóa ngay</string>
     <string name="setting_clear_cache_success">Xóa bộ nhớ đệm thành công</string>
     <string name="setting_clear_cache_error">Có lỗi xảy ra. Bộ nhớ đệm chưa được xóa</string>
+    <string-array name="setting_cache_time">
+        <item>3 giờ</item>
+        <item>5 giờ</item>
+        <item>7 giờ</item>
+        <item>12 giờ</item>
+    </string-array>
+    <string name="press_back_again_to_exit">Bấm quay lại lần nữa để thoát</string>
 </resources>

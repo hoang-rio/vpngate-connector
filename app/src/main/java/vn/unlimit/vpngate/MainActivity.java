@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     View lnLoading;
     View frameContent;
     boolean isLoading = true;
+    boolean doubleBackToExitPressedOnce = false;
     private DataUtil dataUtil;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 case "android.net.conn.CONNECTIVITY_CHANGE":
                     initState();
                     break;
-                case BaseProvider.Action.ACTION_CLEAR_CACHE:
+                case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
                     break;
                 default:
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        filter.addAction(BaseProvider.Action.ACTION_CLEAR_CACHE);
+        filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
         registerReceiver(broadcastReceiver, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -296,7 +298,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
                 if (vpnGateConnectionList == null) {
@@ -327,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 String title = getResources().getString(R.string.app_name);
                 switch (url) {
                     case "home":
-                        fragment = HomeFragment.newInstance(vpnGateConnectionList);
+                        fragment = new HomeFragment();
                         tag = HomeFragment.class.getName();
                         break;
                     case "setting":
@@ -365,6 +366,31 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!currentUrl.equals("home")) {
+            if (vpnGateConnectionList == null) {
+                getDataServer();
+            }
+            navigationView.setCheckedItem(R.id.nav_home);
+            replaceFragment("home");
+        } else {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+    }
+
     private void setTitleActionbar(String title) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
@@ -382,6 +408,14 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     public DataUtil getDataUtil() {
         return dataUtil;
+    }
+
+    public VPNGateConnectionList getVpnGateConnectionList() {
+        return vpnGateConnectionList;
+    }
+
+    public void setVpnGateConnectionList(VPNGateConnectionList _vpnGateConnectionList) {
+        vpnGateConnectionList = _vpnGateConnectionList;
     }
 
 //    private native String stringFromJNI();

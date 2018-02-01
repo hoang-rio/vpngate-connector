@@ -35,7 +35,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private SwipeRefreshLayout lnSwipeRefresh;
     private Context mContext;
     private RecyclerView recyclerViewVPN;
-    private VPNGateConnectionList vpnGateConnectionList;
     private VPNGateListAdapter vpnGateListAdapter;
     private VPNGateTask vpnGateTask;
     private DataUtil dataUtil;
@@ -43,15 +42,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private boolean isSearching = false;
     private String mKeyword = "";
     private Handler handler;
+    private MainActivity mActivity;
 
     public HomeFragment() {
 
-    }
-
-    public static HomeFragment newInstance(VPNGateConnectionList _vpnGateConnectionList) {
-        HomeFragment homeFragment = new HomeFragment();
-        homeFragment.vpnGateConnectionList = _vpnGateConnectionList;
-        return homeFragment;
     }
 
     @Override
@@ -84,6 +78,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mActivity = (MainActivity) getActivity();
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         lnSwipeRefresh = rootView.findViewById(R.id.ln_swipe_refresh);
         lnSwipeRefresh.setColorSchemeResources(R.color.colorAccent);
@@ -94,7 +89,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         vpnGateListAdapter.setOnItemClickListener(this);
         vpnGateListAdapter.setOnItemLongClickListener(this);
         vpnGateListAdapter.setOnScrollListener(this);
-        vpnGateListAdapter.initialize(vpnGateConnectionList);
+        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         btnToTop = rootView.findViewById(R.id.btn_to_top);
         btnToTop.setOnClickListener(this);
         return rootView;
@@ -110,17 +105,17 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (!keyword.equals("")) {
             mKeyword = keyword;
             isSearching = true;
-            VPNGateConnectionList filterResult = vpnGateConnectionList.filter(keyword);
+            VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(keyword);
             vpnGateListAdapter.initialize(filterResult);
         }
     }
 
     public void sort(String property, int type) {
         stopTask();
-        vpnGateConnectionList.sort(property, type);
-        dataUtil.setConnectionsCache(vpnGateConnectionList);
+        mActivity.getVpnGateConnectionList().sort(property, type);
+        dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
         if (isSearching) {
-            VPNGateConnectionList filterResult = vpnGateConnectionList.filter(mKeyword);
+            VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(mKeyword);
             vpnGateListAdapter.initialize(filterResult);
         } else {
             closeSearch();
@@ -140,7 +135,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     public void closeSearch() {
         isSearching = false;
-        vpnGateListAdapter.initialize(vpnGateConnectionList);
+        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -190,13 +185,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onSuccess(Object o) {
-        vpnGateConnectionList = (VPNGateConnectionList) o;
-        MainActivity activity = (MainActivity) getActivity();
-        if (!"".equals(activity.getSortProperty())) {
-            ((VPNGateConnectionList) o).sort(activity.getSortProperty(), activity.getSortType());
+        mActivity.setVpnGateConnectionList((VPNGateConnectionList) o);
+        if (!"".equals(mActivity.getSortProperty())) {
+            mActivity.getVpnGateConnectionList().sort(mActivity.getSortProperty(), mActivity.getSortType());
         }
-        vpnGateListAdapter.initialize(vpnGateConnectionList);
-        dataUtil.setConnectionsCache(vpnGateConnectionList);
+        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+        dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
         lnSwipeRefresh.setRefreshing(false);
     }
 

@@ -138,12 +138,12 @@
         <Button
             android:id="@+id/btn_apply"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:layout_gravity="right"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/apply_button_selector"
+            android:background="@drawable/selector_apply_button"
             android:padding="5dp"
             android:text="@string/apply"
             android:textColor="@color/colorWhite" />
