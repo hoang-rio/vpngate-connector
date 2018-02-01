@@ -360,7 +360,6 @@
 
             <Button
                 android:id="@+id/btn_via_ip"
-                style="?attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginRight="10dp"
@@ -370,7 +369,6 @@
 
             <Button
                 android:id="@+id/btn_via_hostname"
-                style="?attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginLeft="10dp"
