@@ -59,4 +59,7 @@
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
     <string name="copied">Copied</string>
+    <!--VPN String -->
+    <string name="unknown_state">Uknow</string>
+    <string name="notification_title">VPN Gate Connector %s</string>
 </resources>
