@@ -47,7 +47,7 @@ import de.blinkt.openvpn.core.VpnStatus.ByteCountListener;
 import de.blinkt.openvpn.core.VpnStatus.ConnectionStatus;
 import de.blinkt.openvpn.core.VpnStatus.StateListener;
 import vn.unlimit.vpngate.BuildConfig;
-import vn.unlimit.vpngate.MainActivity;
+import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.ultils.TotalTraffic;
 
@@ -60,6 +60,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     public static final String START_SERVICE_STICKY = "vn.unlimit.vpngate.START_SERVICE_STICKY";
     public static final String ALWAYS_SHOW_NOTIFICATION = "vn.unlimit.vpngate.NOTIFICATION_ALWAYS_VISIBLE";
     public static final String DISCONNECT_VPN = "vn.unlimit.vpngate.DISCONNECT_VPN";
+    public static final String VPN_STATUS = "vn.unlimit.vpngate.VPN_STATUS";
     private static final String PAUSE_VPN = "vn.unlimit.vpngate.PAUSE_VPN";
     private static final String RESUME_VPN = "vn.unlimit.vpngate.RESUME_VPN";
     private static final int OPENVPN_STATUS = 1;
@@ -148,7 +149,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
 
         //int icon = getIconByConnectionStatus(status);
-        int icon = R.mipmap.ic_launcher_round;
+        int icon = R.mipmap.ic_launcher;
         android.app.Notification.Builder nbuilder = new Notification.Builder(this);
 
         if (mProfile != null)
@@ -254,7 +255,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                     this, 0, disconnectVPN, 0);
 
             nbuilder.addAction(R.drawable.ic_menu_close_clear_cancel,
-                    getString(R.string.cancel_connection), disconnectPendingIntent);
+                    getString(R.string.disconnect), disconnectPendingIntent);
 
             Intent pauseVPN = new Intent(this, OpenVPNService.class);
             if (mDeviceStateReceiver == null || !mDeviceStateReceiver.isUserPaused()) {
@@ -281,10 +282,13 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     PendingIntent getLogPendingIntent() {
         // Let the configure Button show the Log
-        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+        Intent intent = new Intent(getBaseContext(), DetailActivity.class);
+        intent.putExtra(DetailActivity.TYPE_START, DetailActivity.TYPE_FROM_NOTIFY);
         //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        PendingIntent startLW = PendingIntent.getActivity(this, 0, intent, 0);
-        return startLW;
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+//                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 
@@ -520,7 +524,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     private OpenVPNManagement instantiateOpenVPN3Core() {
         try {
-            Class cl = Class.forName("vn.unlimit.vpngate.core.OpenVPNThreadv3");
+            Class cl = Class.forName("de.blinkt.openvpn.OpenVPNThreadv3");
             return (OpenVPNManagement) cl.getConstructor(OpenVPNService.class, VpnProfile.class).newInstance(this, mProfile);
         } catch (IllegalArgumentException | InstantiationException | InvocationTargetException |
                 NoSuchMethodException | ClassNotFoundException | IllegalAccessException e) {
@@ -966,7 +970,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     private void doSendBroadcast(String state, ConnectionStatus level) {
         Intent vpnstatus = new Intent();
-        vpnstatus.setAction("vn.unlimit.vpngate.VPN_STATUS");
+        vpnstatus.setAction(VPN_STATUS);
         vpnstatus.putExtra("status", level.toString());
         vpnstatus.putExtra("detailstatus", state);
         sendBroadcast(vpnstatus, permission.ACCESS_NETWORK_STATE);

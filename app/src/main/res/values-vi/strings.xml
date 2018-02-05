@@ -43,6 +43,7 @@
     <string name="setting_clear_cache_success">Xóa bộ nhớ đệm thành công</string>
     <string name="setting_clear_cache_error">Có lỗi xảy ra. Bộ nhớ đệm chưa được xóa</string>
     <string-array name="setting_cache_time">
+        <item>1 giờ</item>
         <item>3 giờ</item>
         <item>5 giờ</item>
         <item>7 giờ</item>
@@ -54,9 +55,13 @@
     <string name="total_traffic">Tổng lưu lượng</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Kết nối đến server này</string>
-    <string name="via_ip">Qua IP</string>
-    <string name="via_hostname">Qua tên máy chủ</string>
+    <string name="disconnect">Ngắt kết nối</string>
+    <string name="connecting">Đang kết nối…</string>
+    <string name="canceled">Đã hủy</string>
     <string name="copy_ip">Sao chép IP vào bộ nhớ đệm</string>
     <string name="copy_hostname">Sao chép tên máy chủ vào bộ nhớ đệm</string>
     <string name="copied">Đã sao chép</string>
+    <!-- VPN String -->
+    <string name="pauseVPN">Tạm dừng VPN</string>
+    <string name="resumevpn">Tiếp tục VPN</string>
 </resources>

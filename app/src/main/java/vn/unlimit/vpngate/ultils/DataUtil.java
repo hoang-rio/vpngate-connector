@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import vn.unlimit.vpngate.models.Cache;
+import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 
 /**
@@ -92,7 +93,7 @@ public class DataUtil {
             Cache cache = new Cache();
             Calendar calendar = Calendar.getInstance();
             //Cache in hours get from setting
-            int[] cacheTime = new int[]{3, 5, 7, 12};
+            int[] cacheTime = new int[]{1, 3, 5, 7, 12};
             int hour = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)];
             calendar.add(Calendar.HOUR, hour);
             cache.expires = calendar.getTime();
@@ -102,6 +103,7 @@ public class DataUtil {
             JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
             gson.toJson(cache, Cache.class, writer);
             writer.close();
+            setConnectionCacheExpire(cache.expires);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,23 +119,24 @@ public class DataUtil {
         return inFile.isFile() && inFile.delete();
     }
 
+    private void setConnectionCacheExpire(Date expires) {
+        SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+        editor.putString("vpn_cache_time", gson.toJson(expires));
+        editor.apply();
+    }
+
+    /**
+     * Get connection cache from shared preferences
+     *
+     * @return
+     */
     public Date getConnectionCacheExpires() {
         try {
-            File inFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
-            if (!inFile.isFile()) {
+            String jsonString = sharedPreferencesSetting.getString("vpn_cache_time", null);
+            if (jsonString == null) {
                 return null;
-            } else {
-                FileInputStream fileInputStream = new FileInputStream(inFile);
-                JsonReader reader = new JsonReader(new InputStreamReader(fileInputStream));
-                Cache cache = gson.fromJson(reader, Cache.class);
-                if (cache.isExpires()) {
-                    reader.close();
-                    return null;
-                } else {
-                    reader.close();
-                    return cache.expires;
-                }
             }
+            return gson.fromJson(jsonString, Date.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,4 +175,31 @@ public class DataUtil {
     public int getIntSetting(String key, int defVal) {
         return sharedPreferencesSetting.getInt(key, defVal);
     }
+
+    public VPNGateConnection getLastVPNConnection() {
+        try {
+            String jsonString = sharedPreferencesSetting.getString("vpn_last_connection", null);
+            if (jsonString == null) {
+                return null;
+            }
+            return gson.fromJson(jsonString, VPNGateConnection.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void setLastVPNConnection(VPNGateConnection vpnGateConnection) {
+        try {
+            if (vpnGateConnection != null) {
+                SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+                editor.putString("vpn_last_connection", gson.toJson(vpnGateConnection));
+                editor.apply();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

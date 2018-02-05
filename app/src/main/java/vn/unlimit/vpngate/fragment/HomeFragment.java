@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.adapter.OnItemClickListener;
@@ -70,7 +72,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onCreate(savedBundle);
         try {
             vpnGateListAdapter = new VPNGateListAdapter(mContext);
-            dataUtil = ((MainActivity) getActivity()).getDataUtil();
+            dataUtil = ((App) getActivity().getApplication()).getDataUtil();
             handler = new Handler();
         } catch (Exception e) {
             e.printStackTrace();
@@ -158,12 +160,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onItemClick(Object o, int position) {
-        Intent intent = new Intent();
-        intent.setAction(BaseProvider.ACTION.ACTION_SEND_DETAIL);
-        Bundle args = new Bundle();
-        args.putParcelable(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
-        intent.putExtras(args);
-        getContext().sendBroadcast(intent);
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
+        startActivity(intent);
     }
 
     @Override

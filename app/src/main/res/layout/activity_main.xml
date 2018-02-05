@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:fitsSystemWindows="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -21,7 +19,6 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/AppTheme"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:theme="@style/ToolbarColoredBackArrow"
             app:titleTextAppearance="@style/Toolbar.TitleText" />
 
         <FrameLayout
@@ -36,6 +33,7 @@
         <include layout="@layout/layout_loading_center" />
 
         <include layout="@layout/layout_no_network" />
+
     </RelativeLayout>
     <!-- Left Menu -->
     <android.support.design.widget.NavigationView

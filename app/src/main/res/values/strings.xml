@@ -43,6 +43,7 @@
     <string name="setting_clear_cache_success">Clear cache success</string>
     <string name="setting_clear_cache_error">Some thing when wrong. Cache can\'t clear</string>
     <string-array name="setting_cache_time">
+        <item>1 hour</item>
         <item>3 hours</item>
         <item>5 hours</item>
         <item>7 hours</item>
@@ -54,13 +55,16 @@
     <string name="total_traffic">Total traffic</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Connect to this server</string>
-    <string name="via_ip">Via IP</string>
-    <string name="via_hostname">Via hostname</string>
+    <string name="connecting">Connecting…</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="canceled">Canceled</string>
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
     <string name="copied">Copied</string>
     <!--VPN String -->
     <string name="unknown_state">Uknow</string>
-    <string name="notification_title">VPN Connected - %s</string>
+    <string name="notification_title">VPN Gate - %s</string>
     <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
+    <string name="server_btn_disconnect">VPN disconnected</string>
+    <string name="server_btn_connect">VPN connected</string>
 </resources>

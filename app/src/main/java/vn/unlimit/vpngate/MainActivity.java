@@ -27,10 +27,8 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
-import vn.unlimit.vpngate.fragment.DetailFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
-import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -73,30 +71,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
                     break;
-                case BaseProvider.ACTION.ACTION_SEND_DETAIL:
-                    currentUrl = "detail";
-                    VPNGateConnection vpnGateConnection = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
-                    DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DetailFragment.class.getName());
-                    if (detailFragment == null) {
-                        detailFragment = DetailFragment.newInstance(vpnGateConnection);
-                        getSupportFragmentManager().beginTransaction()
-                                .add(R.id.frame_content, detailFragment)
-                                .addToBackStack("detail")
-                                .commitAllowingStateLoss();
-                    } else {
-                        detailFragment = DetailFragment.newInstance(vpnGateConnection);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.frame_content, detailFragment)
-                                .addToBackStack("detail")
-                                .commitAllowingStateLoss();
-                    }
-
-                    setTitleActionbar(vpnGateConnection.getIp());
-                    if (toolbar != null) {
-                        toolbar.collapseActionView();
-                    }
-                    toggleAction(false);
-                    break;
                 default:
                     break;
             }
@@ -113,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        dataUtil = new DataUtil(getApplicationContext());
+        dataUtil = ((App) getApplication()).getDataUtil();
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
@@ -134,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
-        filter.addAction(BaseProvider.ACTION.ACTION_SEND_DETAIL);
         registerReceiver(broadcastReceiver, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -391,31 +364,29 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onBackPressed() {
-        if (currentUrl.equals("setting")) {
-            if (vpnGateConnectionList == null) {
-                getDataServer();
-            }
-            navigationView.setCheckedItem(R.id.nav_home);
-            replaceFragment("home");
-        } else if (currentUrl.equals("detail")) {
-            setTitleActionbar(getResources().getString(R.string.app_name));
-            toggleAction(true);
-            super.onBackPressed();
-            return;
-        } else {
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
+        switch (currentUrl) {
+            case "setting":
+                if (vpnGateConnectionList == null) {
+                    getDataServer();
                 }
-            }, 2000);
+                navigationView.setCheckedItem(R.id.nav_home);
+                replaceFragment("home");
+                break;
+            default:
+                if (doubleBackToExitPressedOnce) {
+                    super.onBackPressed();
+                    return;
+                }
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, 2000);
+                break;
         }
     }
 
@@ -432,10 +403,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         lnError.setVisibility(View.VISIBLE);
         lnNoNetwork.setVisibility(View.GONE);
         System.out.print(error);
-    }
-
-    public DataUtil getDataUtil() {
-        return dataUtil;
     }
 
     public VPNGateConnectionList getVpnGateConnectionList() {

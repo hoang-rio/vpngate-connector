@@ -40,7 +40,6 @@ public class VPNGateConnection implements Parcelable {
     private String operator;
     private String message;
     private String openVpnConfigData;
-    private boolean isConnectViaHostName = false;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -297,11 +296,8 @@ public class VPNGateConnection implements Parcelable {
         return 0;
     }
 
-    public boolean isConnectViaHostName() {
-        return isConnectViaHostName;
+    public String getName() {
+        return String.format("%s[%s]", countryLong, ip);
     }
 
-    public void setConnectViaHostName(boolean connectViaHostName) {
-        isConnectViaHostName = connectViaHostName;
-    }
 }

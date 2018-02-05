@@ -2,7 +2,6 @@ package vn.unlimit.vpngate.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 
 import java.text.DateFormat;
 
+import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.provider.BaseProvider;
@@ -31,42 +31,34 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private View lnClearCache;
     private DataUtil dataUtil;
     private TextView txtCacheExpires;
-    private View lnLoading;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
         View rootView = inflater.inflate(R.layout.fragment_setting, container, false);
-        dataUtil = ((MainActivity) getActivity()).getDataUtil();
+        dataUtil = ((App) getActivity().getApplication()).getDataUtil();
         spinnerCacheTime = rootView.findViewById(R.id.spin_cache_time);
         spinnerCacheTime.setOnItemSelectedListener(this);
         btnClearCache = rootView.findViewById(R.id.btn_clear_cache);
         btnClearCache.setOnClickListener(this);
         lnClearCache = rootView.findViewById(R.id.ln_clear_cache);
         txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
-        lnLoading = rootView.findViewById(R.id.ln_loading);
-        new Handler().postDelayed(new Runnable() {
+        SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
+        String[] listCacheTime = getResources().getStringArray(R.array.setting_cache_time);
+        spinnerInit.setStringArray(listCacheTime,
+                listCacheTime[dataUtil.getIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, 0)]
+        );
+        spinnerInit.setOnItemSelectedIndexListener(new SpinnerInit.OnItemSelectedIndexListener() {
             @Override
-            public void run() {
-                SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
-                String[] listCacheTime = getResources().getStringArray(R.array.setting_cache_time);
-                spinnerInit.setStringArray(listCacheTime,
-                        listCacheTime[dataUtil.getIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, 0)]
-                );
-                spinnerInit.setOnItemSelectedIndexListener(new SpinnerInit.OnItemSelectedIndexListener() {
-                    @Override
-                    public void onItemSelected(String name, int index) {
-                        dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index);
-                    }
-                });
-                if (dataUtil.getConnectionCacheExpires() == null) {
-                    lnClearCache.setVisibility(View.GONE);
-                } else {
-                    lnClearCache.setVisibility(View.VISIBLE);
-                    txtCacheExpires.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(dataUtil.getConnectionCacheExpires()));
-                }
-                lnLoading.setVisibility(View.GONE);
+            public void onItemSelected(String name, int index) {
+                dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index);
             }
-        }, 300);
+        });
+        if (dataUtil.getConnectionCacheExpires() == null) {
+            lnClearCache.setVisibility(View.GONE);
+        } else {
+            lnClearCache.setVisibility(View.VISIBLE);
+            txtCacheExpires.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(dataUtil.getConnectionCacheExpires()));
+        }
 
         return rootView;
     }
@@ -75,7 +67,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     public void onClick(View view) {
         if (view.equals(btnClearCache)) {
             MainActivity activity = (MainActivity) getActivity();
-            if (activity.getDataUtil().clearConnectionCache()) {
+            if (dataUtil.clearConnectionCache()) {
                 Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_success), Toast.LENGTH_SHORT).show();
                 lnClearCache.setVisibility(View.GONE);
                 sendClearCache();
