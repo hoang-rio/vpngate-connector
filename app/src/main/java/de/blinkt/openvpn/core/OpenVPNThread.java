@@ -8,8 +8,6 @@ package de.blinkt.openvpn.core;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import com.vasilkoff.easyvpnfree.R;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -21,24 +19,22 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import de.blinkt.openvpn.core.VpnStatus.ConnectionStatus;
+import vn.unlimit.vpngate.R;
 
 public class OpenVPNThread implements Runnable {
+    public static final int M_FATAL = (1 << 4);
+    public static final int M_NONFATAL = (1 << 5);
+    public static final int M_WARN = (1 << 6);
+    public static final int M_DEBUG = (1 << 7);
     private static final String DUMP_PATH_STRING = "Dump path: ";
     @SuppressLint("SdCardPath")
     private static final String BROKEN_PIE_SUPPORT = "/data/data/de.blinkt.openvpn/cache/pievpn";
     private final static String BROKEN_PIE_SUPPORT2 = "syntax error";
     private static final String TAG = "OpenVPN";
-    public static final int M_FATAL = (1 << 4);
-    public static final int M_NONFATAL = (1 << 5);
-    public static final int M_WARN = (1 << 6);
-    public static final int M_DEBUG = (1 << 7);
     private String[] mArgv;
     private Process mProcess;
     private String mNativeDir;

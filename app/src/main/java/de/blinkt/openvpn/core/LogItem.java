@@ -12,13 +12,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.vasilkoff.easyvpnfree.R;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -32,17 +27,29 @@ import java.util.FormatFlagsConversionMismatchException;
 import java.util.Locale;
 import java.util.UnknownFormatConversionException;
 
+import vn.unlimit.vpngate.R;
+
 
 
 /**
  * Created by arne on 24.04.16.
  */
 public class LogItem implements Parcelable {
+    public static final Creator<LogItem> CREATOR
+            = new Creator<LogItem>() {
+        public LogItem createFromParcel(Parcel in) {
+            return new LogItem(in);
+        }
+
+        public LogItem[] newArray(int size) {
+            return new LogItem[size];
+        }
+    };
+    // Default log priority
+    VpnStatus.LogLevel mLevel = VpnStatus.LogLevel.INFO;
     private Object[] mArgs = null;
     private String mMessage = null;
     private int mRessourceId;
-    // Default log priority
-    VpnStatus.LogLevel mLevel = VpnStatus.LogLevel.INFO;
     private long logtime = System.currentTimeMillis();
     private int mVerbosityLevel = -1;
 
@@ -57,11 +64,106 @@ public class LogItem implements Parcelable {
         mVerbosityLevel = verblevel;
     }
 
+
+    public LogItem(byte[] in, int length) throws UnsupportedEncodingException {
+        ByteBuffer bb = ByteBuffer.wrap(in, 0, length);
+        bb.get(); // ignore version
+        logtime = bb.getLong();
+        mVerbosityLevel = bb.getInt();
+        mLevel = VpnStatus.LogLevel.getEnumByValue(bb.getInt());
+        mRessourceId = bb.getInt();
+        int len = bb.getInt();
+        if (len == 0) {
+            mMessage = null;
+        } else {
+            if (len > bb.remaining())
+                throw new IndexOutOfBoundsException("String length " + len + " is bigger than remaining bytes " + bb.remaining());
+            byte[] utf8bytes = new byte[len];
+            bb.get(utf8bytes);
+            mMessage = new String(utf8bytes, "UTF-8");
+        }
+        int numArgs = bb.getInt();
+        if (numArgs > 30) {
+            throw new IndexOutOfBoundsException("Too many arguments for Logitem to unmarschal");
+        }
+        if (numArgs == 0) {
+            mArgs = null;
+        } else {
+            mArgs = new Object[numArgs];
+            for (int i = 0; i < numArgs; i++) {
+                char type = bb.getChar();
+                switch (type) {
+                    case 's':
+                        mArgs[i] = unmarschalString(bb);
+                        break;
+                    case 'i':
+                        mArgs[i] = bb.getInt();
+                        break;
+                    case 'd':
+                        mArgs[i] = bb.getDouble();
+                        break;
+                    case 'f':
+                        mArgs[i] = bb.getFloat();
+                        break;
+                    case 'l':
+                        mArgs[i] = bb.getLong();
+                        break;
+                    case '0':
+                        mArgs[i] = null;
+                        break;
+                    default:
+                        throw new UnsupportedEncodingException("Unknown format type: " + type);
+                }
+            }
+        }
+        if (bb.hasRemaining())
+            throw new UnsupportedEncodingException(bb.remaining() + " bytes left after unmarshaling everything");
+    }
+
+    public LogItem(Parcel in) {
+        mArgs = in.readArray(Object.class.getClassLoader());
+        mMessage = in.readString();
+        mRessourceId = in.readInt();
+        mLevel = VpnStatus.LogLevel.getEnumByValue(in.readInt());
+        mVerbosityLevel = in.readInt();
+        logtime = in.readLong();
+    }
+
+    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId, Object... args) {
+        mRessourceId = ressourceId;
+        mArgs = args;
+        mLevel = loglevel;
+    }
+
+    public LogItem(VpnStatus.LogLevel loglevel, String msg) {
+        mLevel = loglevel;
+        mMessage = msg;
+    }
+
+    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId) {
+        mRessourceId = ressourceId;
+        mLevel = loglevel;
+    }
+
+    // TextUtils.join will cause not macked exeception in tests ....
+    public static String join(CharSequence delimiter, Object[] tokens) {
+        StringBuilder sb = new StringBuilder();
+        boolean firstTime = true;
+        for (Object token : tokens) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                sb.append(delimiter);
+            }
+            sb.append(token);
+        }
+        return sb.toString();
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -143,61 +245,6 @@ public class LogItem implements Parcelable {
 
     }
 
-    public LogItem(byte[] in, int length) throws UnsupportedEncodingException {
-        ByteBuffer bb = ByteBuffer.wrap(in, 0, length);
-        bb.get(); // ignore version
-        logtime = bb.getLong();
-        mVerbosityLevel = bb.getInt();
-        mLevel = VpnStatus.LogLevel.getEnumByValue(bb.getInt());
-        mRessourceId = bb.getInt();
-        int len = bb.getInt();
-        if (len == 0) {
-            mMessage = null;
-        } else {
-            if (len > bb.remaining())
-                throw new IndexOutOfBoundsException("String length " + len + " is bigger than remaining bytes " + bb.remaining());
-            byte[] utf8bytes = new byte[len];
-            bb.get(utf8bytes);
-            mMessage = new String(utf8bytes, "UTF-8");
-        }
-        int numArgs = bb.getInt();
-        if (numArgs > 30) {
-            throw new IndexOutOfBoundsException("Too many arguments for Logitem to unmarschal");
-        }
-        if (numArgs == 0) {
-            mArgs = null;
-        } else {
-            mArgs = new Object[numArgs];
-            for (int i = 0; i < numArgs; i++) {
-                char type = bb.getChar();
-                switch (type) {
-                    case 's':
-                        mArgs[i] = unmarschalString(bb);
-                        break;
-                    case 'i':
-                        mArgs[i] = bb.getInt();
-                        break;
-                    case 'd':
-                        mArgs[i] = bb.getDouble();
-                        break;
-                    case 'f':
-                        mArgs[i] = bb.getFloat();
-                        break;
-                    case 'l':
-                        mArgs[i] = bb.getLong();
-                        break;
-                    case '0':
-                        mArgs[i] = null;
-                        break;
-                    default:
-                        throw new UnsupportedEncodingException("Unknown format type: " + type);
-                }
-            }
-        }
-        if (bb.hasRemaining())
-            throw new UnsupportedEncodingException(bb.remaining() + " bytes left after unmarshaling everything");
-    }
-
     private void marschalString(String str, ByteBuffer bb) throws UnsupportedEncodingException {
         byte[] utf8bytes = str.getBytes("UTF-8");
         bb.putInt(utf8bytes.length);
@@ -209,45 +256,6 @@ public class LogItem implements Parcelable {
         byte[] utf8bytes = new byte[len];
         bb.get(utf8bytes);
         return new String(utf8bytes, "UTF-8");
-    }
-
-
-    public LogItem(Parcel in) {
-        mArgs = in.readArray(Object.class.getClassLoader());
-        mMessage = in.readString();
-        mRessourceId = in.readInt();
-        mLevel = VpnStatus.LogLevel.getEnumByValue(in.readInt());
-        mVerbosityLevel = in.readInt();
-        logtime = in.readLong();
-    }
-
-    public static final Creator<LogItem> CREATOR
-            = new Creator<LogItem>() {
-        public LogItem createFromParcel(Parcel in) {
-            return new LogItem(in);
-        }
-
-        public LogItem[] newArray(int size) {
-            return new LogItem[size];
-        }
-    };
-
-    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId, Object... args) {
-        mRessourceId = ressourceId;
-        mArgs = args;
-        mLevel = loglevel;
-    }
-
-
-    public LogItem(VpnStatus.LogLevel loglevel, String msg) {
-        mLevel = loglevel;
-        mMessage = msg;
-    }
-
-
-    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId) {
-        mRessourceId = ressourceId;
-        mLevel = loglevel;
     }
 
     public String getString(Context c) {
@@ -283,23 +291,6 @@ public class LogItem implements Parcelable {
         }
 
     }
-
-
-    // TextUtils.join will cause not macked exeception in tests ....
-    public static String join(CharSequence delimiter, Object[] tokens) {
-        StringBuilder sb = new StringBuilder();
-        boolean firstTime = true;
-        for (Object token : tokens) {
-            if (firstTime) {
-                firstTime = false;
-            } else {
-                sb.append(delimiter);
-            }
-            sb.append(token);
-        }
-        return sb.toString();
-    }
-
 
     public VpnStatus.LogLevel getLogLevel() {
         return mLevel;
@@ -372,9 +363,6 @@ public class LogItem implements Parcelable {
         if (mLevel == null)
             return false;
 
-        if (mMessage == null && mRessourceId == 0)
-            return false;
-
-        return true;
+        return !(mMessage == null && mRessourceId == 0);
     }
 }

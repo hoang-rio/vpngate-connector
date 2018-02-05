@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -19,8 +18,6 @@ import android.security.KeyChainException;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
-
-import com.vasilkoff.easyvpnfree.R;
 
 import org.spongycastle.util.io.pem.PemObject;
 import org.spongycastle.util.io.pem.PemWriter;
@@ -57,6 +54,7 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.core.X509Utils;
+import vn.unlimit.vpngate.R;
 
 public class VpnProfile implements Serializable, Cloneable {
     // Note that this class cannot be moved to core where it belongs since
@@ -66,21 +64,12 @@ public class VpnProfile implements Serializable, Cloneable {
     //
     transient public static final long MAX_EMBED_FILE_SIZE = 2048 * 1024; // 2048kB
     // Don't change this, not all parts of the program use this constant
-    public static final String EXTRA_PROFILEUUID = "de.blinkt.openvpn.profileUUID";
+    public static final String EXTRA_PROFILEUUID = "vn.umlimit.vpngate.profileUUID";
     public static final String INLINE_TAG = "[[INLINE]]";
     public static final String DISPLAYNAME_TAG = "[[NAME]]";
-
-    private static final long serialVersionUID = 7085688938959334563L;
     public static final int MAXLOGLEVEL = 4;
     public static final int CURRENT_PROFILE_VERSION = 6;
     public static final int DEFAULT_MSSFIX_SIZE = 1280;
-    public static String DEFAULT_DNS1 = "8.8.8.8";
-    public static String DEFAULT_DNS2 = "8.8.4.4";
-
-    public transient String mTransientPW = null;
-    public transient String mTransientPCKS12PW = null;
-
-
     public static final int TYPE_CERTIFICATES = 0;
     public static final int TYPE_PKCS12 = 1;
     public static final int TYPE_KEYSTORE = 2;
@@ -94,6 +83,12 @@ public class VpnProfile implements Serializable, Cloneable {
     public static final int X509_VERIFY_TLSREMOTE_DN = 2;
     public static final int X509_VERIFY_TLSREMOTE_RDN = 3;
     public static final int X509_VERIFY_TLSREMOTE_RDN_PREFIX = 4;
+    public static final boolean mIsOpenVPN22 = false;
+    private static final long serialVersionUID = 7085688938959334563L;
+    public static String DEFAULT_DNS1 = "8.8.8.8";
+    public static String DEFAULT_DNS2 = "8.8.4.4";
+    public transient String mTransientPW = null;
+    public transient String mTransientPCKS12PW = null;
     // variable named wrong and should haven beeen transient
     // but needs to keep wrong name to guarante loading of old
     // profiles
@@ -110,7 +105,6 @@ public class VpnProfile implements Serializable, Cloneable {
     public String mPKCS12Filename;
     public String mPKCS12Password;
     public boolean mUseTLSAuth = false;
-
     public String mDNS1 = DEFAULT_DNS1;
     public String mDNS2 = DEFAULT_DNS2;
     public String mIPv4Address;
@@ -144,13 +138,7 @@ public class VpnProfile implements Serializable, Cloneable {
     public String mAuth = "";
     public int mX509AuthType = X509_VERIFY_TLSREMOTE_RDN;
     public String mx509UsernameField = null;
-
-    private transient PrivateKey mPrivateKey;
-    // Public attributes, since I got mad with getter/setter
-    // set members to default values
-    private UUID mUuid;
     public boolean mAllowLocalLAN;
-    private int mProfileVersion;
     public String mExcludedRoutes;
     public String mExcludedRoutesv6;
     public int mMssFix = 0; // -1 is default,
@@ -158,18 +146,18 @@ public class VpnProfile implements Serializable, Cloneable {
     public boolean mRemoteRandom = false;
     public HashSet<String> mAllowedAppsVpn = new HashSet<>();
     public boolean mAllowedAppsVpnAreDisallowed = true;
-
     public String mCrlFilename;
     public String mProfileCreator;
-
-
     public boolean mPushPeerInfo = false;
-    public static final boolean mIsOpenVPN22 = false;
-
     /* Options no longer used in new profiles */
     public String mServerName = "openvpn.blinkt.de";
     public String mServerPort = "1194";
     public boolean mUseUdp = true;
+    private transient PrivateKey mPrivateKey;
+    // Public attributes, since I got mad with getter/setter
+    // set members to default values
+    private UUID mUuid;
+    private int mProfileVersion;
 
     public VpnProfile(String name) {
         mUuid = UUID.randomUUID();
@@ -193,6 +181,38 @@ public class VpnProfile implements Serializable, Cloneable {
             return unescaped;
         else
             return '"' + escapedString + '"';
+    }
+
+    //! Put inline data inline and other data as normal escaped filename
+    public static String insertFileData(String cfgentry, String filedata) {
+        if (filedata == null) {
+            return String.format("%s %s\n", cfgentry, "file missing in config profile");
+        } else if (isEmbedded(filedata)) {
+            String dataWithOutHeader = getEmbeddedContent(filedata);
+            return String.format(Locale.ENGLISH, "<%s>\n%s\n</%s>\n", cfgentry, dataWithOutHeader, cfgentry);
+        } else {
+            return String.format(Locale.ENGLISH, "%s %s\n", cfgentry, openVpnEscape(filedata));
+        }
+    }
+
+    public static String getDisplayName(String embeddedFile) {
+        int start = DISPLAYNAME_TAG.length();
+        int end = embeddedFile.indexOf(INLINE_TAG);
+        return embeddedFile.substring(start, end);
+    }
+
+    public static String getEmbeddedContent(String data) {
+        if (!data.contains(INLINE_TAG))
+            return data;
+
+        int start = data.indexOf(INLINE_TAG) + INLINE_TAG.length();
+        return data.substring(start);
+    }
+
+    public static boolean isEmbedded(String data) {
+        if (data == null)
+            return false;
+        return data.startsWith(INLINE_TAG) || data.startsWith(DISPLAYNAME_TAG);
     }
 
     public void clearDefaults() {
@@ -571,18 +591,6 @@ public class VpnProfile implements Serializable, Cloneable {
 
     }
 
-    //! Put inline data inline and other data as normal escaped filename
-    public static String insertFileData(String cfgentry, String filedata) {
-        if (filedata == null) {
-            return String.format("%s %s\n", cfgentry, "file missing in config profile");
-        } else if (isEmbedded(filedata)) {
-            String dataWithOutHeader = getEmbeddedContent(filedata);
-            return String.format(Locale.ENGLISH, "<%s>\n%s\n</%s>\n", cfgentry, dataWithOutHeader, cfgentry);
-        } else {
-            return String.format(Locale.ENGLISH, "%s %s\n", cfgentry, openVpnEscape(filedata));
-        }
-    }
-
     @NonNull
     private Collection<String> getCustomRoutes(String routes) {
         Vector<String> cidrRoutes = new Vector<>();
@@ -644,7 +652,6 @@ public class VpnProfile implements Serializable, Cloneable {
         return parts[0] + "  " + netmask;
     }
 
-
     public Intent prepareStartService(Context context) {
         Intent intent = getStartServiceIntent(context);
 
@@ -676,29 +683,6 @@ public class VpnProfile implements Serializable, Cloneable {
 
     public String[] getKeyStoreCertificates(Context context) {
         return getKeyStoreCertificates(context, 5);
-    }
-
-    public static String getDisplayName(String embeddedFile) {
-        int start = DISPLAYNAME_TAG.length();
-        int end = embeddedFile.indexOf(INLINE_TAG);
-        return embeddedFile.substring(start, end);
-    }
-
-    public static String getEmbeddedContent(String data) {
-        if (!data.contains(INLINE_TAG))
-            return data;
-
-        int start = data.indexOf(INLINE_TAG) + INLINE_TAG.length();
-        return data.substring(start);
-    }
-
-    public static boolean isEmbedded(String data) {
-        if (data == null)
-            return false;
-        if (data.startsWith(INLINE_TAG) || data.startsWith(DISPLAYNAME_TAG))
-            return true;
-        else
-            return false;
     }
 
     public void checkForRestart(final Context context) {
@@ -738,13 +722,6 @@ public class VpnProfile implements Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-
-    class NoCertReturnedException extends Exception {
-        public NoCertReturnedException(String msg) {
-            super(msg);
         }
     }
 
@@ -958,10 +935,7 @@ public class VpnProfile implements Serializable, Cloneable {
 
         if (data.contains("Proc-Type: 4,ENCRYPTED"))
             return true;
-        else if (data.contains("-----BEGIN ENCRYPTED PRIVATE KEY-----"))
-            return true;
-        else
-            return false;
+        else return data.contains("-----BEGIN ENCRYPTED PRIVATE KEY-----");
     }
 
     public int needUserPWInput(boolean ignoreTransient) {
@@ -1066,6 +1040,12 @@ public class VpnProfile implements Serializable, Cloneable {
         } catch (NoSuchMethodException | InvalidKeyException | InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
             VpnStatus.logError(R.string.error_rsa_sign, e.getClass().toString(), e.getLocalizedMessage());
             return null;
+        }
+    }
+
+    class NoCertReturnedException extends Exception {
+        public NoCertReturnedException(String msg) {
+            super(msg);
         }
     }
 

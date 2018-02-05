@@ -40,6 +40,7 @@ public class VPNGateConnection implements Parcelable {
     private String operator;
     private String message;
     private String openVpnConfigData;
+    private boolean isConnectViaHostName = false;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -55,7 +56,6 @@ public class VPNGateConnection implements Parcelable {
         totalTraffic = in.readLong();
         logType = in.readString();
         operator = in.readString();
-        message = in.readString();
         message = in.readString();
         openVpnConfigData = in.readString();
     }
@@ -229,12 +229,7 @@ public class VPNGateConnection implements Parcelable {
     }
 
     public void setOpenVpnConfigData(String openVpnConfigData) {
-        if (openVpnConfigData.contains("=")) {
-            this.openVpnConfigData = decodeBase64(openVpnConfigData);
-        } else {
-            this.openVpnConfigData = openVpnConfigData;
-        }
-
+        this.openVpnConfigData = decodeBase64(openVpnConfigData);
     }
 
     public int getSpeed() {
@@ -300,5 +295,13 @@ public class VPNGateConnection implements Parcelable {
 
     public int describeContents() {
         return 0;
+    }
+
+    public boolean isConnectViaHostName() {
+        return isConnectViaHostName;
+    }
+
+    public void setConnectViaHostName(boolean connectViaHostName) {
+        isConnectViaHostName = connectViaHostName;
     }
 }

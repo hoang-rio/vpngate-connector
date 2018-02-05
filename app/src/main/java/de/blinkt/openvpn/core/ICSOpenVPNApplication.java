@@ -4,19 +4,16 @@
  */
 
 package de.blinkt.openvpn.core;
+
 import android.app.Application;
+
+import vn.unlimit.vpngate.BuildConfig;
 
 /*
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 */
-
-
-
-import com.vasilkoff.easyvpnfree.BuildConfig;
-
-import de.blinkt.openvpn.core.PRNGFixes;
 
 /*
 @ReportsCrashes(

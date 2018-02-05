@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import com.vasilkoff.easyvpnfree.R;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,8 +17,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Vector;
 
-
 import de.blinkt.openvpn.VpnProfile;
+import vn.unlimit.vpngate.R;
 
 public class VPNLaunchHelper {
     private static final String MININONPIEVPN = "nopie_openvpn";

@@ -7,9 +7,6 @@ package de.blinkt.openvpn.core;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
-
-import com.vasilkoff.easyvpnfree.BuildConfig;
 
 import junit.framework.Assert;
 
@@ -21,190 +18,13 @@ import java.util.PriorityQueue;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import vn.unlimit.vpngate.BuildConfig;
+
 
 
 public class NetworkSpace {
 
-    static class ipAddress implements Comparable<ipAddress> {
-        private BigInteger netAddress;
-        public int networkMask;
-        private boolean included;
-        private boolean isV4;
-        private BigInteger firstAddress;
-        private BigInteger lastAddress;
-
-
-        /**
-         * sorts the networks with following criteria:
-         * 1. compares first 1 of the network
-         * 2. smaller networks are returned as smaller
-         */
-        @Override
-        public int compareTo(@NonNull ipAddress another) {
-            int comp = getFirstAddress().compareTo(another.getFirstAddress());
-            if (comp != 0)
-                return comp;
-
-
-            if (networkMask > another.networkMask)
-                return -1;
-            else if (another.networkMask == networkMask)
-                return 0;
-            else
-                return 1;
-        }
-
-        /**
-         * Warning ignores the included integer
-         *
-         * @param o the object to compare this instance with.
-         */
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof ipAddress))
-                return super.equals(o);
-
-
-            ipAddress on = (ipAddress) o;
-            return (networkMask == on.networkMask) && on.getFirstAddress().equals(getFirstAddress());
-        }
-
-        public ipAddress(CIDRIP ip, boolean include) {
-            included = include;
-            netAddress = BigInteger.valueOf(ip.getInt());
-            networkMask = ip.len;
-            isV4 = true;
-        }
-
-        public ipAddress(Inet6Address address, int mask, boolean include) {
-            networkMask = mask;
-            included = include;
-
-            int s = 128;
-
-            netAddress = BigInteger.ZERO;
-            for (byte b : address.getAddress()) {
-                s -= 8;
-                netAddress = netAddress.add(BigInteger.valueOf((b & 0xFF)).shiftLeft(s));
-            }
-        }
-
-        public BigInteger getLastAddress() {
-            if (lastAddress == null)
-                lastAddress = getMaskedAddress(true);
-            return lastAddress;
-        }
-
-
-        public BigInteger getFirstAddress() {
-            if (firstAddress == null)
-                firstAddress = getMaskedAddress(false);
-            return firstAddress;
-        }
-
-
-        private BigInteger getMaskedAddress(boolean one) {
-            BigInteger numAddress = netAddress;
-
-            int numBits;
-            if (isV4) {
-                numBits = 32 - networkMask;
-            } else {
-                numBits = 128 - networkMask;
-            }
-
-            for (int i = 0; i < numBits; i++) {
-                if (one)
-                    numAddress = numAddress.setBit(i);
-                else
-                    numAddress = numAddress.clearBit(i);
-            }
-            return numAddress;
-        }
-
-
-        @Override
-        public String toString() {
-            //String in = included ? "+" : "-";
-            if (isV4)
-                return String.format(Locale.US, "%s/%d", getIPv4Address(), networkMask);
-            else
-                return String.format(Locale.US, "%s/%d", getIPv6Address(), networkMask);
-        }
-
-        ipAddress(BigInteger baseAddress, int mask, boolean included, boolean isV4) {
-            this.netAddress = baseAddress;
-            this.networkMask = mask;
-            this.included = included;
-            this.isV4 = isV4;
-        }
-
-
-        public ipAddress[] split() {
-            ipAddress firstHalf = new ipAddress(getFirstAddress(), networkMask + 1, included, isV4);
-            ipAddress secondHalf = new ipAddress(firstHalf.getLastAddress().add(BigInteger.ONE), networkMask + 1, included, isV4);
-            if (BuildConfig.DEBUG)
-                Assert.assertTrue(secondHalf.getLastAddress().equals(getLastAddress()));
-            return new ipAddress[]{firstHalf, secondHalf};
-        }
-
-        String getIPv4Address() {
-            if (BuildConfig.DEBUG) {
-                Assert.assertTrue(isV4);
-                Assert.assertTrue(netAddress.longValue() <= 0xffffffffl);
-                Assert.assertTrue(netAddress.longValue() >= 0);
-            }
-            long ip = netAddress.longValue();
-            return String.format(Locale.US, "%d.%d.%d.%d", (ip >> 24) % 256, (ip >> 16) % 256, (ip >> 8) % 256, ip % 256);
-        }
-
-        String getIPv6Address() {
-            if (BuildConfig.DEBUG) Assert.assertTrue(!isV4);
-            BigInteger r = netAddress;
-
-            String ipv6str = null;
-            boolean lastPart = true;
-
-            while (r.compareTo(BigInteger.ZERO) == 1) {
-
-                long part = r.mod(BigInteger.valueOf(0x10000)).longValue();
-                if (ipv6str != null || part != 0) {
-                    if (ipv6str == null && !lastPart)
-                            ipv6str = ":";
-
-                    if (lastPart)
-                        ipv6str = String.format(Locale.US, "%x", part, ipv6str);
-                    else
-                        ipv6str = String.format(Locale.US, "%x:%s", part, ipv6str);
-                }
-
-                r = r.shiftRight(16);
-                lastPart = false;
-            }
-            if (ipv6str == null)
-                return "::";
-
-
-            return ipv6str;
-        }
-
-        public boolean containsNet(ipAddress network) {
-            // this.first >= net.first &&  this.last <= net.last
-            BigInteger ourFirst = getFirstAddress();
-            BigInteger ourLast = getLastAddress();
-            BigInteger netFirst = network.getFirstAddress();
-            BigInteger netLast = network.getLastAddress();
-
-            boolean a = ourFirst.compareTo(netFirst) != 1;
-            boolean b = ourLast.compareTo(netLast) != -1;
-            return a && b;
-
-        }
-    }
-
-
     TreeSet<ipAddress> mIpAddresses = new TreeSet<ipAddress>();
-
 
     public Collection<ipAddress> getNetworks(boolean included) {
         Vector<ipAddress> ips = new Vector<ipAddress>();
@@ -218,7 +38,6 @@ public class NetworkSpace {
     public void clear() {
         mIpAddresses.clear();
     }
-
 
     void addIP(CIDRIP cidrIp, boolean include) {
 
@@ -363,6 +182,179 @@ public class NetworkSpace {
         }
 
         return ips;
+    }
+
+    static class ipAddress implements Comparable<ipAddress> {
+        public int networkMask;
+        private BigInteger netAddress;
+        private boolean included;
+        private boolean isV4;
+        private BigInteger firstAddress;
+        private BigInteger lastAddress;
+
+
+        public ipAddress(CIDRIP ip, boolean include) {
+            included = include;
+            netAddress = BigInteger.valueOf(ip.getInt());
+            networkMask = ip.len;
+            isV4 = true;
+        }
+
+        public ipAddress(Inet6Address address, int mask, boolean include) {
+            networkMask = mask;
+            included = include;
+
+            int s = 128;
+
+            netAddress = BigInteger.ZERO;
+            for (byte b : address.getAddress()) {
+                s -= 8;
+                netAddress = netAddress.add(BigInteger.valueOf((b & 0xFF)).shiftLeft(s));
+            }
+        }
+
+        ipAddress(BigInteger baseAddress, int mask, boolean included, boolean isV4) {
+            this.netAddress = baseAddress;
+            this.networkMask = mask;
+            this.included = included;
+            this.isV4 = isV4;
+        }
+
+        /**
+         * sorts the networks with following criteria:
+         * 1. compares first 1 of the network
+         * 2. smaller networks are returned as smaller
+         */
+        @Override
+        public int compareTo(@NonNull ipAddress another) {
+            int comp = getFirstAddress().compareTo(another.getFirstAddress());
+            if (comp != 0)
+                return comp;
+
+
+            if (networkMask > another.networkMask)
+                return -1;
+            else if (another.networkMask == networkMask)
+                return 0;
+            else
+                return 1;
+        }
+
+        /**
+         * Warning ignores the included integer
+         *
+         * @param o the object to compare this instance with.
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ipAddress))
+                return super.equals(o);
+
+
+            ipAddress on = (ipAddress) o;
+            return (networkMask == on.networkMask) && on.getFirstAddress().equals(getFirstAddress());
+        }
+
+        public BigInteger getLastAddress() {
+            if (lastAddress == null)
+                lastAddress = getMaskedAddress(true);
+            return lastAddress;
+        }
+
+        public BigInteger getFirstAddress() {
+            if (firstAddress == null)
+                firstAddress = getMaskedAddress(false);
+            return firstAddress;
+        }
+
+        private BigInteger getMaskedAddress(boolean one) {
+            BigInteger numAddress = netAddress;
+
+            int numBits;
+            if (isV4) {
+                numBits = 32 - networkMask;
+            } else {
+                numBits = 128 - networkMask;
+            }
+
+            for (int i = 0; i < numBits; i++) {
+                if (one)
+                    numAddress = numAddress.setBit(i);
+                else
+                    numAddress = numAddress.clearBit(i);
+            }
+            return numAddress;
+        }
+
+        @Override
+        public String toString() {
+            //String in = included ? "+" : "-";
+            if (isV4)
+                return String.format(Locale.US, "%s/%d", getIPv4Address(), networkMask);
+            else
+                return String.format(Locale.US, "%s/%d", getIPv6Address(), networkMask);
+        }
+
+        public ipAddress[] split() {
+            ipAddress firstHalf = new ipAddress(getFirstAddress(), networkMask + 1, included, isV4);
+            ipAddress secondHalf = new ipAddress(firstHalf.getLastAddress().add(BigInteger.ONE), networkMask + 1, included, isV4);
+            if (BuildConfig.DEBUG)
+                Assert.assertTrue(secondHalf.getLastAddress().equals(getLastAddress()));
+            return new ipAddress[]{firstHalf, secondHalf};
+        }
+
+        String getIPv4Address() {
+            if (BuildConfig.DEBUG) {
+                Assert.assertTrue(isV4);
+                Assert.assertTrue(netAddress.longValue() <= 0xffffffffl);
+                Assert.assertTrue(netAddress.longValue() >= 0);
+            }
+            long ip = netAddress.longValue();
+            return String.format(Locale.US, "%d.%d.%d.%d", (ip >> 24) % 256, (ip >> 16) % 256, (ip >> 8) % 256, ip % 256);
+        }
+
+        String getIPv6Address() {
+            if (BuildConfig.DEBUG) Assert.assertTrue(!isV4);
+            BigInteger r = netAddress;
+
+            String ipv6str = null;
+            boolean lastPart = true;
+
+            while (r.compareTo(BigInteger.ZERO) == 1) {
+
+                long part = r.mod(BigInteger.valueOf(0x10000)).longValue();
+                if (ipv6str != null || part != 0) {
+                    if (ipv6str == null && !lastPart)
+                        ipv6str = ":";
+
+                    if (lastPart)
+                        ipv6str = String.format(Locale.US, "%x", part, ipv6str);
+                    else
+                        ipv6str = String.format(Locale.US, "%x:%s", part, ipv6str);
+                }
+
+                r = r.shiftRight(16);
+                lastPart = false;
+            }
+            if (ipv6str == null)
+                return "::";
+
+
+            return ipv6str;
+        }
+
+        public boolean containsNet(ipAddress network) {
+            // this.first >= net.first &&  this.last <= net.last
+            BigInteger ourFirst = getFirstAddress();
+            BigInteger ourLast = getLastAddress();
+            BigInteger netFirst = network.getFirstAddress();
+            BigInteger netLast = network.getLastAddress();
+
+            boolean a = ourFirst.compareTo(netFirst) != 1;
+            boolean b = ourLast.compareTo(netLast) != -1;
+            return a && b;
+
+        }
     }
 
 }

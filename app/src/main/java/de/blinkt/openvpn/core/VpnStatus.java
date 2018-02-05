@@ -6,11 +6,8 @@
 package de.blinkt.openvpn.core;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Message;
-
-import com.vasilkoff.easyvpnfree.R;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -19,25 +16,41 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Vector;
 
+import vn.unlimit.vpngate.R;
+
 
 
 public class VpnStatus {
 
 
+    // keytool -printcert -jarfile de.blinkt.openvpn_85.apk
+    public static final byte[] officalkey = {-58, -42, -44, -106, 90, -88, -87, -88, -52, -124, 84, 117, 66, 79, -112, -111, -46, 86, -37, 109};
+    public static final byte[] officaldebugkey = {-99, -69, 45, 71, 114, -116, 82, 66, -99, -122, 50, -70, -56, -111, 98, -35, -65, 105, 82, 43};
+    public static final byte[] amazonkey = {-116, -115, -118, -89, -116, -112, 120, 55, 79, -8, -119, -23, 106, -114, -85, -56, -4, 105, 26, -57};
+    public static final byte[] fdroidkey = {-92, 111, -42, -46, 123, -96, -60, 79, -27, -31, 49, 103, 11, -54, -68, -27, 17, 2, 121, 104};
+    static final int MAXLOGENTRIES = 1000;
     public static LinkedList<LogItem> logbuffer;
-
     private static Vector<LogListener> logListener;
     private static Vector<StateListener> stateListener;
     private static Vector<ByteCountListener> byteCountListener;
-
     private static String mLaststatemsg = "";
-
     private static String mLaststate = "NOPROCESS";
-
     private static int mLastStateresid = R.string.state_noprocess;
-
     private static long mlastByteCount[] = {0, 0, 0, 0};
     private static HandlerThread mHandlerThread;
+    private static ConnectionStatus mLastLevel = ConnectionStatus.LEVEL_NOTCONNECTED;
+    private static LogFileHandler mLogFileHandler;
+
+    static {
+        logbuffer = new LinkedList<>();
+        logListener = new Vector<>();
+        stateListener = new Vector<>();
+        byteCountListener = new Vector<>();
+
+
+        logInformation();
+
+    }
 
     public static void logException(LogLevel ll, String context, Exception e) {
         StringWriter sw = new StringWriter();
@@ -58,8 +71,6 @@ public class VpnStatus {
     public static void logException(String context, Exception e) {
         logException(LogLevel.ERROR, context, e);
     }
-
-    static final int MAXLOGENTRIES = 1000;
 
     public static boolean isVPNActive() {
         return mLastLevel != ConnectionStatus.LEVEL_AUTH_FAILED && !(mLastLevel == ConnectionStatus.LEVEL_NOTCONNECTED);
@@ -126,87 +137,6 @@ public class VpnStatus {
             mLogFileHandler.sendEmptyMessage(LogFileHandler.FLUSH_TO_DISK);
     }
 
-    public enum ConnectionStatus {
-        LEVEL_CONNECTED,
-        LEVEL_VPNPAUSED,
-        LEVEL_CONNECTING_SERVER_REPLIED,
-        LEVEL_CONNECTING_NO_SERVER_REPLY_YET,
-        LEVEL_NONETWORK,
-        LEVEL_NOTCONNECTED,
-        LEVEL_START,
-        LEVEL_AUTH_FAILED,
-        LEVEL_WAITING_FOR_USER_INPUT,
-        UNKNOWN_LEVEL
-    }
-
-    public enum LogLevel {
-        INFO(2),
-        ERROR(-2),
-        WARNING(1),
-        VERBOSE(3),
-        DEBUG(4);
-
-        protected int mValue;
-
-        LogLevel(int value) {
-            mValue = value;
-        }
-
-        public int getInt() {
-            return mValue;
-        }
-
-        public static LogLevel getEnumByValue(int value) {
-            switch (value) {
-                case 1:
-                    return INFO;
-                case 2:
-                    return ERROR;
-                case 3:
-                    return WARNING;
-                case 4:
-                    return DEBUG;
-                default:
-                    return null;
-            }
-        }
-    }
-
-    // keytool -printcert -jarfile de.blinkt.openvpn_85.apk
-    public static final byte[] officalkey = {-58, -42, -44, -106, 90, -88, -87, -88, -52, -124, 84, 117, 66, 79, -112, -111, -46, 86, -37, 109};
-    public static final byte[] officaldebugkey = {-99, -69, 45, 71, 114, -116, 82, 66, -99, -122, 50, -70, -56, -111, 98, -35, -65, 105, 82, 43};
-    public static final byte[] amazonkey = {-116, -115, -118, -89, -116, -112, 120, 55, 79, -8, -119, -23, 106, -114, -85, -56, -4, 105, 26, -57};
-    public static final byte[] fdroidkey = {-92, 111, -42, -46, 123, -96, -60, 79, -27, -31, 49, 103, 11, -54, -68, -27, 17, 2, 121, 104};
-
-
-    private static ConnectionStatus mLastLevel = ConnectionStatus.LEVEL_NOTCONNECTED;
-
-    private static LogFileHandler mLogFileHandler;
-
-    static {
-        logbuffer = new LinkedList<>();
-        logListener = new Vector<>();
-        stateListener = new Vector<>();
-        byteCountListener = new Vector<>();
-
-
-        logInformation();
-
-    }
-
-
-    public interface LogListener {
-        void newLog(LogItem logItem);
-    }
-
-    public interface StateListener {
-        void updateState(String state, String logmessage, int localizedResId, ConnectionStatus level);
-    }
-
-    public interface ByteCountListener {
-        void updateByteCount(long in, long out, long diffIn, long diffOut);
-    }
-
     public synchronized static void logMessage(LogLevel level, String prefix, String message) {
         newLogItem(new LogItem(level, prefix + message));
 
@@ -247,7 +177,6 @@ public class VpnStatus {
     public synchronized static void removeByteCountListener(ByteCountListener bcl) {
         byteCountListener.remove(bcl);
     }
-
 
     public synchronized static void addStateListener(StateListener sl) {
         if (!stateListener.contains(sl)) {
@@ -330,11 +259,9 @@ public class VpnStatus {
 
     }
 
-
     public synchronized static void removeStateListener(StateListener sl) {
         stateListener.remove(sl);
     }
-
 
     synchronized public static LogItem[] getlogbuffer() {
 
@@ -391,7 +318,6 @@ public class VpnStatus {
         newLogItem(logItem, false);
     }
 
-
     synchronized static void newLogItem(LogItem logItem, boolean cachedLine) {
         if (cachedLine) {
             logbuffer.addFirst(logItem);
@@ -419,7 +345,6 @@ public class VpnStatus {
         }
     }
 
-
     public static void logError(String msg) {
         newLogItem(new LogItem(LogLevel.ERROR, msg));
 
@@ -432,7 +357,6 @@ public class VpnStatus {
     public static void logWarning(String msg) {
         newLogItem(new LogItem(LogLevel.WARNING, msg));
     }
-
 
     public static void logError(int resourceId) {
         newLogItem(new LogItem(LogLevel.ERROR, resourceId));
@@ -447,7 +371,6 @@ public class VpnStatus {
 
     }
 
-
     public static synchronized void updateByteCount(long in, long out) {
         long lastIn = mlastByteCount[0];
         long lastOut = mlastByteCount[1];
@@ -459,6 +382,66 @@ public class VpnStatus {
         for (ByteCountListener bcl : byteCountListener) {
             bcl.updateByteCount(in, out, diffIn, diffOut);
         }
+    }
+
+    public enum ConnectionStatus {
+        LEVEL_CONNECTED,
+        LEVEL_VPNPAUSED,
+        LEVEL_CONNECTING_SERVER_REPLIED,
+        LEVEL_CONNECTING_NO_SERVER_REPLY_YET,
+        LEVEL_NONETWORK,
+        LEVEL_NOTCONNECTED,
+        LEVEL_START,
+        LEVEL_AUTH_FAILED,
+        LEVEL_WAITING_FOR_USER_INPUT,
+        UNKNOWN_LEVEL
+    }
+
+
+    public enum LogLevel {
+        INFO(2),
+        ERROR(-2),
+        WARNING(1),
+        VERBOSE(3),
+        DEBUG(4);
+
+        protected int mValue;
+
+        LogLevel(int value) {
+            mValue = value;
+        }
+
+        public static LogLevel getEnumByValue(int value) {
+            switch (value) {
+                case 1:
+                    return INFO;
+                case 2:
+                    return ERROR;
+                case 3:
+                    return WARNING;
+                case 4:
+                    return DEBUG;
+                default:
+                    return null;
+            }
+        }
+
+        public int getInt() {
+            return mValue;
+        }
+    }
+
+    public interface LogListener {
+        void newLog(LogItem logItem);
+    }
+
+    public interface StateListener {
+        void updateState(String state, String logmessage, int localizedResId, ConnectionStatus level);
+    }
+
+
+    public interface ByteCountListener {
+        void updateByteCount(long in, long out, long diffIn, long diffOut);
     }
 
 

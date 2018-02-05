@@ -9,16 +9,18 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
-
-import com.vasilkoff.easyvpnfree.R;
-
-import de.blinkt.openvpn.VpnProfile;
 import org.spongycastle.util.io.pem.PemObject;
 import org.spongycastle.util.io.pem.PemReader;
 
-
-import javax.security.auth.x500.X500Principal;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.cert.Certificate;
@@ -27,10 +29,14 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import javax.security.auth.x500.X500Principal;
+
+import de.blinkt.openvpn.VpnProfile;
+import vn.unlimit.vpngate.R;
 
 public class X509Utils {
 	public static Certificate[] getCertificatesFromFile(String certfilename) throws FileNotFoundException, CertificateException {
@@ -195,7 +201,7 @@ public class X509Utils {
             if (isPrintableChar(c)) {
                 d+=c;
             } else if (i==1 && (c==0x12 || c==0x1b)) {
-                ;   // ignore
+                // ignore
             } else {
                 d += "\\x" + hexstr;
             }

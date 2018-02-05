@@ -61,5 +61,6 @@
     <string name="copied">Copied</string>
     <!--VPN String -->
     <string name="unknown_state">Uknow</string>
-    <string name="notification_title">VPN Gate Connector %s</string>
+    <string name="notification_title">VPN Connected - %s</string>
+    <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
 </resources>

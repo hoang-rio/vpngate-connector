@@ -76,10 +76,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 case BaseProvider.ACTION.ACTION_SEND_DETAIL:
                     currentUrl = "detail";
                     VPNGateConnection vpnGateConnection = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
-                    DetailFragment detailFragment = DetailFragment.newInstance(vpnGateConnection);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.frame_content, detailFragment)
-                            .commitAllowingStateLoss();
+                    DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DetailFragment.class.getName());
+                    if (detailFragment == null) {
+                        detailFragment = DetailFragment.newInstance(vpnGateConnection);
+                        getSupportFragmentManager().beginTransaction()
+                                .add(R.id.frame_content, detailFragment)
+                                .addToBackStack("detail")
+                                .commitAllowingStateLoss();
+                    } else {
+                        detailFragment = DetailFragment.newInstance(vpnGateConnection);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_content, detailFragment)
+                                .addToBackStack("detail")
+                                .commitAllowingStateLoss();
+                    }
+
                     setTitleActionbar(vpnGateConnection.getIp());
                     if (toolbar != null) {
                         toolbar.collapseActionView();
@@ -380,12 +391,17 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onBackPressed() {
-        if (!currentUrl.equals("home")) {
+        if (currentUrl.equals("setting")) {
             if (vpnGateConnectionList == null) {
                 getDataServer();
             }
             navigationView.setCheckedItem(R.id.nav_home);
             replaceFragment("home");
+        } else if (currentUrl.equals("detail")) {
+            setTitleActionbar(getResources().getString(R.string.app_name));
+            toggleAction(true);
+            super.onBackPressed();
+            return;
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
