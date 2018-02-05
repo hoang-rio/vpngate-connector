@@ -1,4 +1,4 @@
-image: lakoo/android-ndk
+image: hoangnd4rikkei/android-sdk
 
 stages:
 - debug
