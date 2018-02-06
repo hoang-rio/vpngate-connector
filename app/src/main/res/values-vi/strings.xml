@@ -64,4 +64,5 @@
     <!-- VPN String -->
     <string name="pauseVPN">Tạm dừng VPN</string>
     <string name="resumevpn">Tiếp tục VPN</string>
+    <string name="check_ip">Kiểm tra IP hiện tại</string>
 </resources>

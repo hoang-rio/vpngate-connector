@@ -67,4 +67,8 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
+
+    <style name="AppTheme.Link">
+        <item name="android:textColor">@color/colorLink</item>
+    </style>
 </resources>

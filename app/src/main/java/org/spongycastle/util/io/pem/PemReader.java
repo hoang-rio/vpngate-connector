@@ -5,13 +5,13 @@
 
 package org.spongycastle.util.io.pem;
 
+import org.spongycastle.util.encoders.Base64;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.spongycastle.util.encoders.Base64;
 
 public class PemReader
     extends BufferedReader

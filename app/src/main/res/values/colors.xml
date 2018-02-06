@@ -14,4 +14,5 @@
     <color name="colorWhiteTransparent">#b0ffffff</color>
     <color name="colorSelected">#3c124097</color>
     <color name="colorTransparent">#00000000</color>
+    <color name="colorLink">#1976d2</color>
 </resources>

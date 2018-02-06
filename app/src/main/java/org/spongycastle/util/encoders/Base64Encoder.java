@@ -26,25 +26,22 @@ public class Base64Encoder
             (byte)'7', (byte)'8', (byte)'9',
             (byte)'+', (byte)'/'
         };
-
-    protected byte    padding = (byte)'=';
-    
     /*
      * set up the decoding table.
      */
     protected final byte[] decodingTable = new byte[128];
+    protected byte padding = (byte) '=';
 
+    public Base64Encoder() {
+        initialiseDecodingTable();
+    }
+    
     protected void initialiseDecodingTable()
     {
         for (int i = 0; i < encodingTable.length; i++)
         {
             decodingTable[encodingTable[i]] = (byte)i;
         }
-    }
-    
-    public Base64Encoder()
-    {
-        initialiseDecodingTable();
     }
     
     /**

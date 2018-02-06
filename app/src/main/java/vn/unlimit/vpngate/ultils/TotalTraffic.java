@@ -8,10 +8,6 @@ import java.util.List;
 
 import de.blinkt.openvpn.core.OpenVPNService;
 
-/**
- * Created by Kusenko on 16.12.2016.
- */
-
 public class TotalTraffic {
 
     public static final String TRAFFIC_ACTION = "traffic_action";

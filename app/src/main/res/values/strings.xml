@@ -67,4 +67,10 @@
     <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
     <string name="server_btn_disconnect">VPN disconnected</string>
     <string name="server_btn_connect">VPN connected</string>
+    <string name="check_ip">Check your current public IP</string>
+    <string name="about_html">%s is an application allow connection to free VPN server by volunteer from VPN Gate open source project. More information about VPN Gate project bellow.</string>
+    <string name="license_html">%s use a part of ICS OpenVPN repository as library. See full license bellow.</string>
+    <string name="vpn_gate_link">http://www.vpngate.net/en/about_overview.aspx</string>
+    <string name="version">Version:</string>
+    <string name="license_link"><u>https://github.com/schwabe/ics-openvpn/blob/master/doc/LICENSE.txt</u></string>
 </resources>

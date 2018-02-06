@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.MainActivity;
@@ -160,6 +163,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onItemClick(Object o, int position) {
+        Answers.getInstance().logCustom(new CustomEvent("Select server")
+                .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
+                .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
         startActivity(intent);
@@ -167,8 +173,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onItemLongClick(Object o, int position) {
-        CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
-        dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
+        try {
+            Answers.getInstance().logCustom(new CustomEvent("Long click server")
+                    .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
+                    .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
+            CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
+            dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

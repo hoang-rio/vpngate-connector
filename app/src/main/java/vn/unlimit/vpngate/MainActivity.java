@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -24,9 +25,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.answers.SearchEvent;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
+import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         dataUtil = ((App) getApplication()).getDataUtil();
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Answers());
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -236,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             public boolean onQueryTextChange(String newText) {
                 HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                 if (currentFragment != null) {
+                    Answers.getInstance().logSearch(new SearchEvent()
+                            .putQuery(newText));
                     currentFragment.filter(newText);
                     return true;
                 }
@@ -266,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
                         HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                         if (currentFragment != null) {
+                            Answers.getInstance().logCustom(new CustomEvent("Sort")
+                                    .putCustomAttribute("property", sortProperty)
+                                    .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
                             currentFragment.sort(sortProperty, sortType);
                         }
                     }
@@ -297,7 +308,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Answers.getInstance().logCustom(new CustomEvent("Drawer select")
+                .putCustomAttribute("title", menuItem.getTitle().toString()));
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
                 if (vpnGateConnectionList == null) {
@@ -307,6 +320,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 break;
             case R.id.nav_setting:
                 replaceFragment("setting");
+                break;
+            case R.id.nav_about:
+                replaceFragment("about");
                 break;
             default:
                 break;
@@ -335,6 +351,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         fragment = new SettingFragment();
                         tag = SettingFragment.class.getName();
                         title = getResources().getString(R.string.setting);
+                        break;
+                    case "about":
+                        fragment = new AboutFragment();
+                        tag = AboutFragment.class.getName();
+                        title = getResources().getString(R.string.about);
                         break;
                     default:
                         break;
@@ -366,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public void onBackPressed() {
         switch (currentUrl) {
             case "setting":
+            case "about":
                 if (vpnGateConnectionList == null) {
                     getDataServer();
                 }
@@ -398,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onError(String error) {
+        Answers.getInstance().logCustom(new CustomEvent("Error").putCustomAttribute("screen", "home"));
         frameContent.setVisibility(View.GONE);
         lnLoading.setVisibility(View.GONE);
         lnError.setVisibility(View.VISIBLE);

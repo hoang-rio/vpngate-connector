@@ -5,9 +5,6 @@ import android.preference.PreferenceManager;
 
 import vn.unlimit.vpngate.App;
 
-/**
- * Created by Kusenko on 16.12.2016.
- */
 
 public class PropertiesService {
 
