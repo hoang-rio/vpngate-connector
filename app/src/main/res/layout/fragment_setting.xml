@@ -108,6 +108,7 @@
                         android:elevation="5dp"
                         android:minWidth="100dp"
                         android:text="@string/setting_cache_clear"
+                        android:textAllCaps="false"
                         android:theme="@style/AppTheme.Button" />
                 </RelativeLayout>
 

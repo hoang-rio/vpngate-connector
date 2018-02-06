@@ -36,6 +36,7 @@ import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import io.fabric.sdk.android.Fabric;
+import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.ultils.DataUtil;
@@ -195,9 +196,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 btnConnect.setText(getString(R.string.disconnect));
                 isConnecting = false;
                 linkCheckIp.setVisibility(View.VISIBLE);
+                //Fake
+                mVpnGateConnection.setMessage("Test message");
+                if (dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0 && !mVpnGateConnection.getMessage().equals("")) {
+                    MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
+                    messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                }
                 break;
             case LEVEL_AUTH_FAILED:
                 btnConnect.setText(getString(R.string.connect_to_this_server));
+                Answers.getInstance().logCustom(new CustomEvent("Connect Error")
+                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                 if (Build.VERSION.SDK_INT >= 16) {
                     btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                 }

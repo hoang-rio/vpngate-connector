@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
     android:paddingTop="20dp">
 
     <TextView
@@ -29,9 +29,15 @@
             style="@style/label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="7dp"
             android:text="1.0-dev" />
     </LinearLayout>
+
+    <TextView
+        style="@style/AppTheme.Heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/about" />
 
     <TextView
         android:id="@+id/txt_about_html"
@@ -46,6 +52,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/vpn_gate_link" />
+
+    <TextView
+        style="@style/AppTheme.Heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/license" />
 
     <TextView
         android:id="@+id/txt_license_html"

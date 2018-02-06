@@ -32,6 +32,7 @@ import com.crashlytics.android.answers.SearchEvent;
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
+import vn.unlimit.vpngate.fragment.HelpFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case "android.net.conn.CONNECTIVITY_CHANGE":
+                case BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE:
                     initState();
                     break;
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
         IntentFilter filter = new IntentFilter();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
         registerReceiver(broadcastReceiver, filter);
         try {
@@ -320,9 +321,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 break;
             case R.id.nav_setting:
                 replaceFragment("setting");
+                stopRequest();
                 break;
             case R.id.nav_about:
                 replaceFragment("about");
+                stopRequest();
+                break;
+            case R.id.nav_help:
+                replaceFragment("help");
+                stopRequest();
                 break;
             default:
                 break;
@@ -333,6 +340,19 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
         drawerLayout.closeDrawers();
         return true;
+    }
+
+    private void stopRequest() {
+        try {
+            if (vpnGateTask != null && !vpnGateTask.isCancelled()) {
+                vpnGateTask.stop();
+            }
+            lnError.setVisibility(View.GONE);
+            lnLoading.setVisibility(View.GONE);
+            lnNoNetwork.setVisibility(View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void replaceFragment(String url) {
@@ -351,6 +371,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         fragment = new SettingFragment();
                         tag = SettingFragment.class.getName();
                         title = getResources().getString(R.string.setting);
+                        break;
+                    case "help":
+                        fragment = new HelpFragment();
+                        tag = HelpFragment.class.getName();
+                        title = getResources().getString(R.string.help);
                         break;
                     case "about":
                         fragment = new AboutFragment();
@@ -388,6 +413,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         switch (currentUrl) {
             case "setting":
             case "about":
+            case "help":
                 if (vpnGateConnectionList == null) {
                     getDataServer();
                 }

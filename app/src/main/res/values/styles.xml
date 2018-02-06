@@ -71,4 +71,10 @@
     <style name="AppTheme.Link">
         <item name="android:textColor">@color/colorLink</item>
     </style>
+
+    <style name="AppTheme.Heading">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
 </resources>

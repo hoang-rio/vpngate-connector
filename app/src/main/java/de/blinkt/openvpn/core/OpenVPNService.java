@@ -240,9 +240,9 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                                       android.app.Notification.Builder nbuilder) {
         try {
             if (lowpriority) {
-                Method setpriority = nbuilder.getClass().getMethod("setPriority", int.class);
+                Method setPriority = nbuilder.getClass().getMethod("setPriority", int.class);
                 // PRIORITY_MIN == -2
-                setpriority.invoke(nbuilder, -2);
+                setPriority.invoke(nbuilder, -2);
 
                 Method setUsesChronometer = nbuilder.getClass().getMethod("setUsesChronometer", boolean.class);
                 setUsesChronometer.invoke(nbuilder, true);

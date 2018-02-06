@@ -99,12 +99,14 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = null;
             if (view.equals(btnCopyIp)) {
-                Answers.getInstance().logCustom(new CustomEvent("copy_ip")
+                Answers.getInstance().logCustom(new CustomEvent("Copy")
+                        .putCustomAttribute("type", "ip")
                         .putCustomAttribute("ip", mVpnGateConnection.getIp())
                         .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getIp());
             } else if (view.equals(btnCopyHostName)) {
-                Answers.getInstance().logCustom(new CustomEvent("copy_hostname")
+                Answers.getInstance().logCustom(new CustomEvent("Copy")
+                        .putCustomAttribute("type", "hostname")
                         .putCustomAttribute("ip", mVpnGateConnection.getIp())
                         .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getCalculateHostName());

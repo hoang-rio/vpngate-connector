@@ -62,15 +62,24 @@
     <string name="copy_hostname">Copy HostName to clipboard</string>
     <string name="copied">Copied</string>
     <!--VPN String -->
-    <string name="unknown_state">Uknow</string>
+    <string name="unknown_state">Unknown</string>
     <string name="notification_title">VPN Gate - %s</string>
     <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
-    <string name="server_btn_disconnect">VPN disconnected</string>
-    <string name="server_btn_connect">VPN connected</string>
     <string name="check_ip">Check your current public IP</string>
-    <string name="about_html">%s is an application allow connection to free VPN server by volunteer from VPN Gate open source project. More information about VPN Gate project bellow.</string>
-    <string name="license_html">%s use a part of ICS OpenVPN repository as library. See full license bellow.</string>
+    <string name="about_html">%s is an application allow connection to free VPN server by volunteer around the world from VPN Gate open source project. More information about VPN Gate project in link bellow.</string>
+    <string name="license_html">%s use a part of ICS OpenVPN code as library. See full license in link bellow.</string>
     <string name="vpn_gate_link">http://www.vpngate.net/en/about_overview.aspx</string>
     <string name="version">Version:</string>
-    <string name="license_link"><u>https://github.com/schwabe/ics-openvpn/blob/master/doc/LICENSE.txt</u></string>
+    <string name="license_link">https://github.com/schwabe/ics-openvpn/blob/master/doc/LICENSE.txt</string>
+    <string name="license">License</string>
+    <string name="operator_message">Operator message</string>
+    <string name="hide_op_message_5time">Hide all message next 5 connect time</string>
+    <string name="close">Close</string>
+    <string name="name_hint">Your name. Mininum %d character</string>
+    <string name="content_hint">What you need help?\nMinimum %d character</string>
+    <string name="btn_send">Send</string>
+    <string name="name_error_message">Name must be longer than %d character</string>
+    <string name="content_error_message">Content must be longer than %d character</string>
+    <string name="help_request_from">Help request from: </string>
+    <string name="send_email">Send email</string>
 </resources>

@@ -27,6 +27,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 
 public class DataUtil {
     public static String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
+    public static String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -173,7 +174,11 @@ public class DataUtil {
      * @return int
      */
     public int getIntSetting(String key, int defVal) {
-        return sharedPreferencesSetting.getInt(key, defVal);
+        int retVal = sharedPreferencesSetting.getInt(key, defVal);
+        if (key.equals(SETTING_HIDE_OPERATOR_MESSAGE_COUNT) && retVal > 0) {
+            setIntSetting(key, retVal--);
+        }
+        return retVal;
     }
 
     public VPNGateConnection getLastVPNConnection() {
@@ -200,6 +205,16 @@ public class DataUtil {
             e.printStackTrace();
         }
 
+    }
+
+    public boolean getBooleanSetting(String key, boolean defVal) {
+        return sharedPreferencesSetting.getBoolean(key, defVal);
+    }
+
+    public void setBooleanSetting(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
     }
 
 }

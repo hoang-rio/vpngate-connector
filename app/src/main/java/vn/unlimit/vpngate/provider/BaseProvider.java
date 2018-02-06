@@ -10,5 +10,6 @@ public class BaseProvider {
     public class ACTION {
         public final static String ACTION_CLEAR_CACHE = "vn.unlimit.vpngate.ACTION_CLEAR_CACHE";
         public final static String ACTION_SEND_DETAIL = "vn.unlimit.vpngate.ACTION_SEND_DETAIL";
+        public final static String ACTION_CHANGE_NETWORK_STATE = "android.net.conn.CONNECTIVITY_CHANGE";
     }
 }
