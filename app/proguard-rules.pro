@@ -32,11 +32,6 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
--keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
+#-keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
 -printmapping mapping.txt
 -dontwarn com.crashlytics.**
--keepclasseswithmembernames class * {
-    native <methods>;
-}
-
--keep class android.support.v8.renderscript.** { *; }
