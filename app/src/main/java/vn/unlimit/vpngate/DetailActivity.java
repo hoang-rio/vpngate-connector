@@ -189,11 +189,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 btnConnect.setText(getString(R.string.disconnect));
                 isConnecting = false;
                 linkCheckIp.setVisibility(View.VISIBLE);
-                //Fake
-                mVpnGateConnection.setMessage("Test message");
-                if (dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0 && !mVpnGateConnection.getMessage().equals("")) {
+                if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                     MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                }
+                break;
+            case LEVEL_NOTCONNECTED:
+                if (!isConnecting) {
+                    linkCheckIp.setVisibility(View.GONE);
+                    btnConnect.setText(R.string.connect_to_this_server);
+                    if (Build.VERSION.SDK_INT >= 16) {
+                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                    }
                 }
                 break;
             case LEVEL_AUTH_FAILED:
