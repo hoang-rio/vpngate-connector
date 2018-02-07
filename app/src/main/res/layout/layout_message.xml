@@ -37,7 +37,8 @@
             android:layout_height="wrap_content"
             android:minHeight="50dp"
             android:text=""
-            android:textColor="@color/colorTextSecondary" />
+            android:textColor="@color/colorTextSecondary"
+            android:textIsSelectable="true" />
     </ScrollView>
 
     <LinearLayout
