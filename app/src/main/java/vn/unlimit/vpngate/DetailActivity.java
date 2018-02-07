@@ -206,6 +206,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                 linkCheckIp.setVisibility(View.GONE);
+                isConnecting = false;
                 break;
             default:
                 linkCheckIp.setVisibility(View.GONE);
