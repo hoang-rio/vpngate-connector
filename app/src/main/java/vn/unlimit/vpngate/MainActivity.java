@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -436,6 +437,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 }, 2000);
                 break;
         }
+        drawerLayout.closeDrawer(Gravity.START);
     }
 
     private void setTitleActionbar(String title) {

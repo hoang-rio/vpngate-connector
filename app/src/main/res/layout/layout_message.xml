@@ -38,7 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="50dp"
-            android:text="" />
+            android:text=""
+            android:textColor="@color/colorTextSecondary" />
     </ScrollView>
 
     <LinearLayout

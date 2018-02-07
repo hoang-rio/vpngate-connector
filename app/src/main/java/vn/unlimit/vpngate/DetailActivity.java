@@ -72,7 +72,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private Button btnConnect;
     private View btnBack;
     private VpnProfile vpnProfile;
-    private VpnProfile currentProfile;
     private BroadcastReceiver brStatus;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -110,6 +109,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (getIntent().getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             STARTED_TYPE = TYPE_FROM_NOTIFY;
             mVpnGateConnection = dataUtil.getLastVPNConnection();
+            loadVpnProfile();
             try {
                 Answers.getInstance().logCustom(new CustomEvent("Open detail")
                         .putCustomAttribute("from", "Notification")
@@ -150,14 +150,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
-        if (STARTED_TYPE == TYPE_FROM_NOTIFY) {
-            //Start main
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override
@@ -178,8 +171,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void receiveStatus(Intent intent) {
-        changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
         txtStatus.setText(VpnStatus.getLastCleanLogMessage(getApplicationContext()));
+        changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
 
         if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
             try {
@@ -204,20 +197,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case LEVEL_AUTH_FAILED:
-                btnConnect.setText(getString(R.string.connect_to_this_server));
+                btnConnect.setText(getString(R.string.retry_connect));
                 Answers.getInstance().logCustom(new CustomEvent("Connect Error")
                         .putCustomAttribute("ip", mVpnGateConnection.getIp())
                         .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                 if (Build.VERSION.SDK_INT >= 16) {
                     btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                 }
+                txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                 linkCheckIp.setVisibility(View.GONE);
                 break;
             default:
                 linkCheckIp.setVisibility(View.GONE);
-//                btnConnect.setText(getString(R.string.disconnect));
-                isConnecting = false;
-                //connectingProgress.setVisibility(View.VISIBLE);
         }
     }
 
@@ -242,18 +233,25 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 txtTotalUser.setText(String.valueOf(mVpnGateConnection.getTotalUser()));
                 txtTotalTraffic.setText(mVpnGateConnection.getCalculateTotalTraffic());
                 txtLogType.setText(mVpnGateConnection.getLogType());
-                currentProfile = ProfileManager.getLastConnectedProfile(this);
-                if (currentProfile != null && currentProfile.mName.equals(mVpnGateConnection.getName())) {
+                if (isCurrent() && checkStatus()) {
                     btnConnect.setText(getResources().getString(R.string.disconnect));
                     if (Build.VERSION.SDK_INT >= 16) {
                         btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
                     }
                     txtStatus.setText(VpnStatus.getLastCleanLogMessage(this));
                 }
+                if (checkStatus()) {
+                    linkCheckIp.setVisibility(View.VISIBLE);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean isCurrent() {
+        VPNGateConnection vpnGateConnection = dataUtil.getLastVPNConnection();
+        return vpnGateConnection != null && vpnGateConnection.getName().equals(mVpnGateConnection.getName());
     }
 
     @Override
@@ -288,8 +286,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             if (view.equals(btnConnect)) {
                 if (!isConnecting) {
-                    currentProfile = ProfileManager.getLastConnectedProfile(this);
-                    if (checkStatus() && (currentProfile != null && vpnProfile != null && currentProfile.mName.equals(vpnProfile.mName))) {
+                    if (checkStatus() && isCurrent()) {
                         Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
                                 .putCustomAttribute("type", "disconnect current")
                                 .putCustomAttribute("ip", mVpnGateConnection.getIp())
@@ -299,6 +296,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                         }
                         btnConnect.setText(R.string.connect_to_this_server);
+                        txtStatus.setText(R.string.disconnecting);
                     } else {
                         if (checkStatus()) {
                             stopVpn();
@@ -306,6 +304,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     .putCustomAttribute("type", "replace current")
                                     .putCustomAttribute("ip", mVpnGateConnection.getIp())
                                     .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                            linkCheckIp.setVisibility(View.GONE);
                         } else {
                             Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
                                     .putCustomAttribute("type", "connect new")
@@ -332,8 +331,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     }
                     btnConnect.setText(R.string.connect_to_this_server);
                     txtStatus.setText(getString(R.string.canceled));
+                    isConnecting = false;
                 }
-
             }
             if (view.equals(linkCheckIp)) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://myiponline.com"));
@@ -349,7 +348,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (loadVpnProfile()) {
             startVpn();
         } else {
-            Toast.makeText(this, getString(R.string.error_importing_file), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_load_profile), Toast.LENGTH_SHORT).show();
         }
     }
 

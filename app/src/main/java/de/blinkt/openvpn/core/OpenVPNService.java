@@ -284,8 +284,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         // Let the configure Button show the Log
         Intent intent = new Intent(getBaseContext(), DetailActivity.class);
         intent.putExtra(DetailActivity.TYPE_START, DetailActivity.TYPE_FROM_NOTIFY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | 
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

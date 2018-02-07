@@ -55,7 +55,10 @@
     <string name="total_traffic">Tổng lưu lượng</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Kết nối đến server này</string>
+    <string name="retry_connect">Thử kết nối lại</string>
+    <string name="vpn_auth_failure">Lỗi xác thực</string>
     <string name="disconnect">Ngắt kết nối</string>
+    <string name="disconnecting">Đang ngắt kết nối…</string>
     <string name="connecting">Đang kết nối…</string>
     <string name="canceled">Đã hủy</string>
     <string name="copy_ip">Sao chép IP vào bộ nhớ đệm</string>
@@ -77,6 +80,8 @@
     <string name="btn_send">Gửi</string>
     <string name="name_error_message">Tên bạn phải dài hơn %d ký tự</string>
     <string name="content_error_message">Nội dung phải dài hơn %d ký tự</string>
-    <string name="help_request_from">Yêu cầu trợ giúp từ: </string>
+    <string name="help_request_from">[VPN]Yêu cầu trợ giúp từ: </string>
     <string name="send_email">Gửi email</string>
+    <string name="email_error_fix">Vui lòng sửa các lỗi nhập liệu trước</string>
+    <string name="error_load_profile">Có lỗi khi nạp cấu hình VPN</string>
 </resources>

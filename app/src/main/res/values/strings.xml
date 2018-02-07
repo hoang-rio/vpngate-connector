@@ -55,8 +55,11 @@
     <string name="total_traffic">Total traffic</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Connect to this server</string>
+    <string name="retry_connect">Retry connect</string>
+    <string name="vpn_auth_failure">Auth failure</string>
     <string name="connecting">Connecting…</string>
     <string name="disconnect">Disconnect</string>
+    <string name="disconnecting">Disconnecting…</string>
     <string name="canceled">Canceled</string>
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
@@ -80,6 +83,8 @@
     <string name="btn_send">Send</string>
     <string name="name_error_message">Name must be longer than %d character</string>
     <string name="content_error_message">Content must be longer than %d character</string>
-    <string name="help_request_from">Help request from: </string>
+    <string name="help_request_from">[VPN]Help request from: </string>
     <string name="send_email">Send email</string>
+    <string name="email_error_fix">Please check correct error first</string>
+    <string name="error_load_profile">Error load VPN profile</string>
 </resources>
