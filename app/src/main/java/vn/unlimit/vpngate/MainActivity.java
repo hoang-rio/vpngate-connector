@@ -225,8 +225,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             }
         });
         final SearchView searchView = (SearchView) menuSearch.getActionView();
-
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        if (searchManager != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
         searchView.setMaxWidth(Integer.MAX_VALUE);
         final EditText editText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
