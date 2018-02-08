@@ -19,7 +19,6 @@ import java.util.Vector;
 import vn.unlimit.vpngate.R;
 
 
-
 public class VpnStatus {
 
 
@@ -73,7 +72,7 @@ public class VpnStatus {
     }
 
     public static boolean isVPNActive() {
-        return mLastLevel != ConnectionStatus.LEVEL_AUTH_FAILED && !(mLastLevel == ConnectionStatus.LEVEL_NOTCONNECTED);
+        return mLastLevel != ConnectionStatus.LEVEL_AUTH_FAILED && !(mLastLevel == ConnectionStatus.LEVEL_NOTCONNECTED) && !(mLastLevel == ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT);
     }
 
     public static String getLastCleanLogMessage(Context c) {

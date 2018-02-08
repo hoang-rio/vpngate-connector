@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -50,7 +51,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public static final int TYPE_NORMAL = 1000;
     public static final String TYPE_START = "vn.ulimit.vpngate.TYPE_START";
     private static final int START_VPN_PROFILE = 70;
-    private static int STARTED_TYPE = TYPE_NORMAL;
     private static OpenVPNService mVPNService;
     ImageView imgFlag;
     TextView txtCountry;
@@ -107,7 +107,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         Fabric.with(this, new Answers());
         dataUtil = ((App) getApplication()).getDataUtil();
         if (getIntent().getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
-            STARTED_TYPE = TYPE_FROM_NOTIFY;
             mVpnGateConnection = dataUtil.getLastVPNConnection();
             loadVpnProfile();
             try {
@@ -313,13 +312,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     .putCustomAttribute("ip", mVpnGateConnection.getIp())
                                     .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                             linkCheckIp.setVisibility(View.GONE);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    prepareVpn();
+                                }
+                            }, 500);
                         } else {
                             Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
                                     .putCustomAttribute("type", "connect new")
                                     .putCustomAttribute("ip", mVpnGateConnection.getIp())
                                     .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                            prepareVpn();
                         }
-                        prepareVpn();
                         if (Build.VERSION.SDK_INT >= 16) {
                             btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
                             txtStatus.setText(getString(R.string.connecting));
