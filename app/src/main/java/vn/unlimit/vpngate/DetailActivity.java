@@ -41,6 +41,7 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.ultils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -90,6 +91,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     };
     private boolean isConnecting = false;
+    private boolean isAuthFailed = false;
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -187,6 +189,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             case LEVEL_CONNECTED:
                 btnConnect.setText(getString(R.string.disconnect));
                 isConnecting = false;
+                isAuthFailed = false;
                 linkCheckIp.setVisibility(View.VISIBLE);
                 if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                     MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
@@ -194,7 +197,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case LEVEL_NOTCONNECTED:
-                if (!isConnecting) {
+                if (!isConnecting && !isAuthFailed) {
                     linkCheckIp.setVisibility(View.GONE);
                     btnConnect.setText(R.string.connect_to_this_server);
                     if (Build.VERSION.SDK_INT >= 16) {
@@ -203,6 +206,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case LEVEL_AUTH_FAILED:
+                isAuthFailed = true;
                 btnConnect.setText(getString(R.string.retry_connect));
                 Answers.getInstance().logCustom(new CustomEvent("Connect Error")
                         .putCustomAttribute("ip", mVpnGateConnection.getIp())
@@ -278,6 +282,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onPause() {
         super.onPause();
         try {
+            TotalTraffic.saveTotal();
             unbindService(mConnection);
         } catch (Exception e) {
             e.printStackTrace();

@@ -64,4 +64,11 @@ public class TotalTraffic {
             PropertiesService.setUploaded(outTotal);
     }
 
+    public static void clearTotal() {
+        inTotal = 0;
+        PropertiesService.setDownloaded(inTotal);
+        outTotal = 0;
+        PropertiesService.setUploaded(outTotal);
+    }
+
 }

@@ -19,27 +19,34 @@ build_debug:
   only:
   - master
   script:
-  - ./gradlew assembleDebug
-  - cd app/build/outputs/apk/$DEBUG
-  - cp app-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-debug.apk
+  - ./gradlew assembleFreeDebug
+  - cd app/build/outputs/apk/free/$DEBUG
+  - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
   - ls -al $CI_PROJECT_DIR
   artifacts:
     paths:
-    - ./$CI_BUILD_REF-debug.apk
+    - ./$CI_BUILD_REF-free-debug.apk
     expire_in: 5 day
 build_release:
   stage: release
   only:
   - release
   script:
-  - ./gradlew assembleRelease
-  - cd app/build/outputs/apk/$PROD
-  - cp app-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-release.apk
-  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/release/
-  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-mapping.txt
+  - ./gradlew assembleFreeRelease
+  - cd app/build/outputs/apk/free/$PROD
+  - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
+  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/free/
+  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-free.txt
+  - ./gradlew assembleProRelease
+  - cd app/build/outputs/apk/pro/$PROD
+  - cp app-pro-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro.apk
+  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/pro/
+  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-pro.txt
   - ls -al $CI_PROJECT_DIR
   artifacts:
     paths:
-    - ./$CI_BUILD_REF-release.apk
-    - ./$CI_BUILD_REF-mapping.txt
+    - ./$CI_BUILD_REF-free.apk
+    - ./$CI_BUILD_REF-free.txt
+    - ./$CI_BUILD_REF-pro.apk
+    - ./$CI_BUILD_REF-pro.txt
     expire_in: 5 day

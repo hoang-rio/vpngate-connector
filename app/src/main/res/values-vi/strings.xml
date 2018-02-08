@@ -85,4 +85,8 @@
     <string name="send_email">Gửi email</string>
     <string name="email_error_fix">Vui lòng sửa các lỗi nhập liệu trước</string>
     <string name="error_load_profile">Có lỗi khi nạp cấu hình VPN</string>
+    <string name="traffic_session">Lưu lượng phiên</string>
+    <string name="uploaded_data">Tải lên</string>
+    <string name="downloaded_data">Tải xuống</string>
+    <string name="clear_statistics">Xóa thống kê</string>
 </resources>

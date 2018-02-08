@@ -300,8 +300,8 @@
     <string name="timestamp_iso" translatable="false">ISO</string>
     <string name="timestamps" translatable="false">Timestamps</string>
     <string name="timestamps_none" translatable="false">None</string>
-    <string name="uploaded_data" translatable="false">Upload</string>
-    <string name="downloaded_data" translatable="false">Download</string>
+    <string name="uploaded_data">Upload</string>
+    <string name="downloaded_data">Download</string>
     <string name="vpn_status" translatable="false">Vpn Status</string>
     <string name="logview_options" translatable="false">View options</string>
     <string name="unhandled_exception" translatable="false">Unhandled exception: %1$s\n\n%2$s</string>

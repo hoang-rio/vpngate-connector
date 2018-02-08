@@ -87,4 +87,6 @@
     <string name="send_email">Send email</string>
     <string name="email_error_fix">Please check correct error first</string>
     <string name="error_load_profile">Error load VPN profile</string>
+    <string name="traffic_session">Session traffic</string>
+    <string name="clear_statistics">Clear statistics</string>
 </resources>
