@@ -172,54 +172,61 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void receiveStatus(Intent intent) {
-        txtStatus.setText(VpnStatus.getLastCleanLogMessage(getApplicationContext()));
-        changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
+        if (!isFinishing()) {
+            txtStatus.setText(VpnStatus.getLastCleanLogMessage(getApplicationContext()));
+            changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
 
-        if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
     }
 
     private void changeServerStatus(VpnStatus.ConnectionStatus status) {
-        switch (status) {
-            case LEVEL_CONNECTED:
-                btnConnect.setText(getString(R.string.disconnect));
-                isConnecting = false;
-                isAuthFailed = false;
-                linkCheckIp.setVisibility(View.VISIBLE);
-                if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
-                    MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                    messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
-                }
-                break;
-            case LEVEL_NOTCONNECTED:
-                if (!isConnecting && !isAuthFailed) {
-                    linkCheckIp.setVisibility(View.GONE);
-                    btnConnect.setText(R.string.connect_to_this_server);
+        try {
+            switch (status) {
+                case LEVEL_CONNECTED:
+                    btnConnect.setText(getString(R.string.disconnect));
+                    isConnecting = false;
+                    isAuthFailed = false;
+                    linkCheckIp.setVisibility(View.VISIBLE);
+                    if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
+                        MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
+                        messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                    }
+                    break;
+                case LEVEL_NOTCONNECTED:
+                    if (!isConnecting && !isAuthFailed) {
+                        linkCheckIp.setVisibility(View.GONE);
+                        btnConnect.setText(R.string.connect_to_this_server);
+                        if (Build.VERSION.SDK_INT >= 16) {
+                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                        }
+                    }
+                    break;
+                case LEVEL_AUTH_FAILED:
+                    isAuthFailed = true;
+                    btnConnect.setText(getString(R.string.retry_connect));
+                    Answers.getInstance().logCustom(new CustomEvent("Connect Error")
+                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                     if (Build.VERSION.SDK_INT >= 16) {
                         btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                     }
-                }
-                break;
-            case LEVEL_AUTH_FAILED:
-                isAuthFailed = true;
-                btnConnect.setText(getString(R.string.retry_connect));
-                Answers.getInstance().logCustom(new CustomEvent("Connect Error")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                if (Build.VERSION.SDK_INT >= 16) {
-                    btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                }
-                txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
-                linkCheckIp.setVisibility(View.GONE);
-                isConnecting = false;
-                break;
-            default:
-                linkCheckIp.setVisibility(View.GONE);
+                    txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
+                    linkCheckIp.setVisibility(View.GONE);
+                    isConnecting = false;
+                    break;
+                default:
+                    linkCheckIp.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
