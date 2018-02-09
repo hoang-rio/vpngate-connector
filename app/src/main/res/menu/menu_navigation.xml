@@ -1,25 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_home"
-        android:checkable="true"
-        android:checked="true"
-        android:enabled="true"
-        android:icon="@drawable/ic_home_black"
-        android:title="@string/home" />
-    <item
-        android:id="@+id/nav_setting"
-        android:checkable="true"
-        android:icon="@drawable/ic_setting_black"
-        android:title="@string/setting" />
-    <item
-        android:id="@+id/nav_help"
-        android:checkable="true"
-        android:icon="@drawable/ic_help_black"
-        android:title="@string/help" />
-    <item
-        android:id="@+id/nav_about"
-        android:checkable="true"
-        android:icon="@drawable/ic_info_black"
-        android:title="@string/about" />
+    <group
+        android:id="@+id/menu_top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_get_pro"
+            android:checkable="false"
+            android:icon="@drawable/ic_no_ads_grey"
+            android:title="@string/get_pro_version" />
+    </group>
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_home"
+            android:checkable="true"
+            android:checked="true"
+            android:icon="@drawable/ic_home_black"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_status"
+            android:checkable="true"
+            android:icon="@drawable/ic_earth_grey"
+            android:title="@string/status" />
+        <item
+            android:id="@+id/nav_setting"
+            android:checkable="true"
+            android:icon="@drawable/ic_setting_black"
+            android:title="@string/setting" />
+        <item
+            android:id="@+id/nav_help"
+            android:checkable="true"
+            android:icon="@drawable/ic_help_black"
+            android:title="@string/help" />
+        <item
+            android:id="@+id/nav_about"
+            android:checkable="true"
+            android:icon="@drawable/ic_info_black"
+            android:title="@string/about" />
+    </group>
 </menu>

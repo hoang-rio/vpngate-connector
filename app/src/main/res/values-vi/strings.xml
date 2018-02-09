@@ -89,4 +89,6 @@
     <string name="uploaded_data">Tải lên</string>
     <string name="downloaded_data">Tải xuống</string>
     <string name="clear_statistics">Xóa thống kê</string>
+    <string name="get_pro_version">Mua bản Pro</string>
+    <string name="status">Trạng thái</string>
 </resources>

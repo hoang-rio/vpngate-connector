@@ -16,14 +16,23 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -74,6 +83,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private View btnBack;
     private VpnProfile vpnProfile;
     private BroadcastReceiver brStatus;
+    private InterstitialAd mInterstitialAd;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -92,6 +102,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     };
     private boolean isConnecting = false;
     private boolean isAuthFailed = false;
+    private boolean isShowAds = false;
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -147,6 +158,44 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         linkCheckIp.setOnClickListener(this);
         bindData();
         registerBroadCast();
+        if (dataUtil.hasAds()) {
+            MobileAds.initialize(this, dataUtil.getAdMobId());
+            mInterstitialAd = new InterstitialAd(this);
+            AdView adView = new AdView(this);
+            adView.setAdSize(AdSize.SMART_BANNER);
+            if (BuildConfig.DEBUG) {
+                //Test
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+            } else {
+                //Real
+                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
+                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
+            }
+            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
+            adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdFailedToLoad(int load) {
+                    hideAdContainer();
+                }
+            });
+            adView.loadAd(new AdRequest.Builder().build());
+        } else {
+            hideAdContainer();
+        }
+    }
+
+    private void hideAdContainer() {
+        try {
+            ScrollView scrollView = findViewById(R.id.scrollView);
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) scrollView.getLayoutParams();
+            findViewById(R.id.ad_container).setVisibility(View.GONE);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
+            scrollView.setLayoutParams(params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -189,16 +238,23 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     private void changeServerStatus(VpnStatus.ConnectionStatus status) {
         try {
+            dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
             switch (status) {
                 case LEVEL_CONNECTED:
                     btnConnect.setText(getString(R.string.disconnect));
                     isConnecting = false;
                     isAuthFailed = false;
                     linkCheckIp.setVisibility(View.VISIBLE);
+                    if (!isShowAds) {
+                        loadAds();
+                    }
                     if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                         MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
                         messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                     }
+                    break;
+                case LEVEL_WAITING_FOR_USER_INPUT:
+                    dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
                     break;
                 case LEVEL_NOTCONNECTED:
                     if (!isConnecting && !isAuthFailed) {
@@ -229,7 +285,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
     }
-
 
     private void bindData() {
         if (mVpnGateConnection != null) {
@@ -317,6 +372,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
                     } else {
+                        loadAds();
                         if (checkStatus()) {
                             stopVpn();
                             Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
@@ -366,6 +422,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void loadAds() {
+        if (mInterstitialAd != null && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+            isShowAds = true;
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    mInterstitialAd.show();
+                }
+            });
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
     }
 

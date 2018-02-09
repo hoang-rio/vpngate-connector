@@ -89,4 +89,11 @@
     <string name="error_load_profile">Error load VPN profile</string>
     <string name="traffic_session">Session traffic</string>
     <string name="clear_statistics">Clear statistics</string>
+    <string name="get_pro_version">Get Pro version</string>
+    <string name="status">Status</string>
+    <!-- Admob -->
+    <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
+    <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>
+    <string name="admob_banner_bottom_home" translatable="false">ca-app-pub-3085232976681422/5804237477</string>
+    <string name="admob_banner_inside_list" translatable="false">ca-app-pub-3085232976681422/4795952720</string>
 </resources>

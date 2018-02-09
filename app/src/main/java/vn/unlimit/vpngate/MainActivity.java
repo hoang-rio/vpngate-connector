@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,14 +22,21 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.SearchEvent;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
@@ -36,6 +44,7 @@ import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HelpFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
+import vn.unlimit.vpngate.fragment.StatusFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -122,6 +131,38 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             getSupportActionBar().setHomeButtonEnabled(true);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        if (dataUtil.hasAds()) {
+            AdView adView = new AdView(this);
+            adView.setAdSize(AdSize.SMART_BANNER);
+            if (BuildConfig.DEBUG) {
+                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+            } else {
+                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
+            }
+            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
+            adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdFailedToLoad(int load) {
+                    hideAdContainer();
+                }
+            });
+            adView.loadAd(new AdRequest.Builder().build());
+        } else {
+            hideAdContainer();
+            navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+        }
+    }
+
+    private void hideAdContainer() {
+        try {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
+            params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
+            frameContent.setLayoutParams(params);
+            findViewById(R.id.ad_container).setVisibility(View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -315,11 +356,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         Answers.getInstance().logCustom(new CustomEvent("Drawer select")
                 .putCustomAttribute("title", menuItem.getTitle().toString()));
         switch (menuItem.getItemId()) {
+            case R.id.nav_get_pro:
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                }
+                return false;
             case R.id.nav_home:
                 if (vpnGateConnectionList == null) {
                     getDataServer();
                 }
                 replaceFragment("home");
+                break;
+            case R.id.nav_status:
+                replaceFragment("status");
                 break;
             case R.id.nav_setting:
                 replaceFragment("setting");
@@ -369,6 +420,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         fragment = new HomeFragment();
                         tag = HomeFragment.class.getName();
                         break;
+                    case "status":
+                        fragment = new StatusFragment();
+                        tag = StatusFragment.class.getName();
+                        title = getResources().getString(R.string.status);
+                        break;
                     case "setting":
                         fragment = new SettingFragment();
                         tag = SettingFragment.class.getName();
@@ -413,16 +469,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     public void onBackPressed() {
         switch (currentUrl) {
-            case "setting":
-            case "about":
-            case "help":
-                if (vpnGateConnectionList == null) {
-                    getDataServer();
-                }
-                navigationView.setCheckedItem(R.id.nav_home);
-                replaceFragment("home");
-                break;
-            default:
+            case "home":
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
                     return;
@@ -436,6 +483,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         doubleBackToExitPressedOnce = false;
                     }
                 }, 2000);
+                break;
+            default:
+                if (vpnGateConnectionList == null) {
+                    getDataServer();
+                }
+                navigationView.setCheckedItem(R.id.nav_home);
+                replaceFragment("home");
                 break;
         }
         drawerLayout.closeDrawer(Gravity.START);

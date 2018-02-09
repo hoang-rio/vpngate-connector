@@ -2,8 +2,11 @@ package vn.unlimit.vpngate.ultils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -17,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.Date;
 
+import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.models.Cache;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -26,8 +30,9 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
  */
 
 public class DataUtil {
-    public static String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
-    public static String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
+    public static final String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
+    public static final String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
+    public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -217,4 +222,26 @@ public class DataUtil {
         editor.apply();
     }
 
+    public boolean hasAds() {
+        try {
+            return BuildConfig.FLAVOR.equals("free") && getAdMobId() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public String getAdMobId() {
+        try {
+            ApplicationInfo app = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = app.metaData;
+            if (bundle != null) {
+                return bundle.getString("vn.unlimit.vpngate.adMobID");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
 }
