@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void hideAdContainer() {
         try {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
             frameContent.setLayoutParams(params);
@@ -395,11 +395,20 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 .putCustomAttribute("title", menuItem.getTitle().toString()));
         switch (menuItem.getItemId()) {
             case R.id.nav_get_pro:
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                if (dataUtil.hasAds() && dataUtil.hasProInstalled()) {
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("vn.unlimit.vpngatepro");
+                    if (launchIntent != null) {
+                        startActivity(launchIntent);//null pointer check in case package name was not found
+                    }
+                    finish();
+                } else {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                    }
                 }
+
                 return false;
             case R.id.nav_home:
                 if (vpnGateConnectionList == null) {

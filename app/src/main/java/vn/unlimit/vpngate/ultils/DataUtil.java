@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.ultils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -242,6 +243,16 @@ public class DataUtil {
             e.printStackTrace();
         }
         return null;
+    }
 
+    public boolean hasProInstalled() {
+        try {
+            android.content.pm.PackageManager mPm = mContext.getPackageManager();  // 1
+            PackageInfo info = mPm.getPackageInfo("vn.unlimit.vpngatepro", 0);  // 2,3
+            return info != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
