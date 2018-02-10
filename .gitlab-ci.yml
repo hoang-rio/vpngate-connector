@@ -37,6 +37,7 @@ build_release:
   - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
   - cd $CI_PROJECT_DIR/app/build/outputs/mapping/free/$PROD
   - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-free.txt
+  - cd $CI_PROJECT_DIR
   - ./gradlew assembleProRelease
   - cd app/build/outputs/apk/pro/$PROD
   - cp app-pro-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro.apk
