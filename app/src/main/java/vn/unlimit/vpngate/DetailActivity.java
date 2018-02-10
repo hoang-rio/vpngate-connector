@@ -60,7 +60,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public static final int TYPE_FROM_NOTIFY = 1001;
     public static final int TYPE_NORMAL = 1000;
     public static final String TYPE_START = "vn.ulimit.vpngate.TYPE_START";
-    private static final int START_VPN_PROFILE = 70;
+    public static final int START_VPN_PROFILE = 70;
     private static OpenVPNService mVPNService;
     ImageView imgFlag;
     TextView txtCountry;
@@ -162,7 +162,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             MobileAds.initialize(this, dataUtil.getAdMobId());
             mInterstitialAd = new InterstitialAd(this);
             AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 //Test
                 mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -196,11 +196,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override
@@ -245,9 +240,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     isConnecting = false;
                     isAuthFailed = false;
                     linkCheckIp.setVisibility(View.VISIBLE);
-                    if (!isShowAds) {
-                        loadAds();
-                    }
                     if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                         MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
                         messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
@@ -263,6 +255,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         if (Build.VERSION.SDK_INT >= 16) {
                             btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                         }
+                        txtStatus.setText(R.string.disconnected);
                     }
                     break;
                 case LEVEL_AUTH_FAILED:
@@ -280,6 +273,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     break;
                 default:
                     linkCheckIp.setVisibility(View.GONE);
+            }
+            if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false) && !isShowAds) {
+                loadAds();
             }
         } catch (Exception e) {
             e.printStackTrace();

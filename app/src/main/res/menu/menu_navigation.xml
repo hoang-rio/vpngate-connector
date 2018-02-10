@@ -22,7 +22,8 @@
             android:id="@+id/nav_status"
             android:checkable="true"
             android:icon="@drawable/ic_earth_grey"
-            android:title="@string/status" />
+            android:title="@string/status"
+            android:visible="false" />
         <item
             android:id="@+id/nav_setting"
             android:checkable="true"

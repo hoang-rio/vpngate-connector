@@ -91,9 +91,15 @@
     <string name="clear_statistics">Clear statistics</string>
     <string name="get_pro_version">Get Pro version</string>
     <string name="status">Status</string>
+    <string name="tap_to_disconnect">Tap button to disconnect from %s</string>
+    <string name="tap_to_connect_last">Tap button to connect to %s</string>
+    <string name="no_last_vpn_server">Please select a VPN Server from home to connect first</string>
+    <string name="connect_one_warning">You need connect to at least one VPN Server before access this function</string>
+    <string name="disconnected">Disconnected</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>
     <string name="admob_banner_bottom_home" translatable="false">ca-app-pub-3085232976681422/5804237477</string>
     <string name="admob_banner_inside_list" translatable="false">ca-app-pub-3085232976681422/4795952720</string>
+    <string name="admob_full_screen_status" translatable="false">ca-app-pub-3085232976681422/1038355322</string>
 </resources>

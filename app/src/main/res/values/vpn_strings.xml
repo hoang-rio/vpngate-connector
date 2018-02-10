@@ -237,7 +237,7 @@
     <string name="state_get_config" translatable="false">Getting client configuration</string>
     <string name="state_assign_ip" translatable="false">Assigning IP addresses</string>
     <string name="state_add_routes" translatable="false">Adding routes</string>
-    <string name="state_connected" translatable="false">Connected</string>
+    <string name="state_connected">Connected</string>
     <string name="state_disconnected" translatable="false">Disconnect</string>
     <string name="state_reconnecting" translatable="false">Reconnecting</string>
     <string name="state_exiting" translatable="false">Exiting</string>

@@ -174,9 +174,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         void bindViewHolder(int position) {
             try {
-                if (mDataUtil.hasAds() && position > adsPerItem) {
-                    position = position - (int) Math.round((double) position / adsPerItem);
-                }
+                position = getRealPosition(position);
                 VPNGateConnection vpnGateConnection = _list.get(position);
                 GlideApp.with(mContext)
                         .load("http://www.vpngate.net/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
@@ -197,12 +195,20 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
 
+        private int getRealPosition(int position) {
+            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
+                return position - (int) Math.round((double) position / adsPerItem);
+            }
+            return position;
+        }
+
         @Override
         public boolean onLongClick(View view) {
             try {
                 if (onItemLongClickListener != null) {
-                    VPNGateConnection item = _list.get(getAdapterPosition());
-                    onItemLongClickListener.onItemLongClick(item, getAdapterPosition());
+                    int clickedPost = getRealPosition(getAdapterPosition());
+                    VPNGateConnection item = _list.get(clickedPost);
+                    onItemLongClickListener.onItemLongClick(item, clickedPost);
                     return true;
                 }
             } catch (Exception e) {
@@ -215,8 +221,9 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void onClick(View view) {
             try {
                 if (onItemClickListener != null) {
-                    VPNGateConnection item = _list.get(getAdapterPosition());
-                    onItemClickListener.onItemClick(item, getAdapterPosition());
+                    int clickedPost = getRealPosition(getAdapterPosition());
+                    VPNGateConnection item = _list.get(clickedPost);
+                    onItemClickListener.onItemClick(item, clickedPost);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     View frameContent;
     boolean isLoading = true;
     boolean doubleBackToExitPressedOnce = false;
+    MenuItem selectedMenuItem = null;
     private DataUtil dataUtil;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -73,10 +74,12 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private ActionBarDrawerToggle drawerToggle;
     private View lnError;
     private View lnNoNetwork;
-    private String currentUrl = "home";
+    private String currentUrl = "";
     private String mSortProperty = "";
+    private String currentTitle = "";
     private Menu mMenu;
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
+    private boolean disallowLoadHome = false;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,6 +96,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     };
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("currentUrl", currentUrl);
+        outState.putString("currentTitle", currentTitle);
+        super.onSaveInstanceState(outState);
+    }
+
     public String getSortProperty() {
         return mSortProperty;
     }
@@ -103,8 +113,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        dataUtil = ((App) getApplication()).getDataUtil();
         super.onCreate(savedInstanceState);
+        dataUtil = ((App) getApplication()).getDataUtil();
+        if (savedInstanceState != null) {
+            disallowLoadHome = true;
+            isLoading = false;
+            currentUrl = savedInstanceState.getString("currentUrl");
+            currentTitle = savedInstanceState.getString("currentTitle");
+            vpnGateConnectionList = dataUtil.getConnectionsCache();
+        }
         Fabric.with(this, new Crashlytics());
         Fabric.with(this, new Answers());
         setContentView(R.layout.activity_main);
@@ -132,9 +149,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        initAds();
+    }
+
+    private void checkStatusMenu() {
+        if (dataUtil.getLastVPNConnection() != null) {
+            navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
+        } else {
+            navigationView.getMenu().findItem(R.id.nav_status).setVisible(false);
+        }
+    }
+
+    private void initAds() {
         if (dataUtil.hasAds()) {
             AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             } else {
@@ -170,19 +199,26 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
      * Check network and process first state
      */
     private void initState() {
-        if (DataUtil.isOnline(getApplicationContext())) {
-            lnNoNetwork.setVisibility(View.GONE);
-            vpnGateConnectionList = dataUtil.getConnectionsCache();
-            if (vpnGateConnectionList == null) {
-                getDataServer();
+        checkStatusMenu();
+        if (!disallowLoadHome) {
+            if (DataUtil.isOnline(getApplicationContext())) {
+                lnNoNetwork.setVisibility(View.GONE);
+                vpnGateConnectionList = dataUtil.getConnectionsCache();
+                if (vpnGateConnectionList == null) {
+                    getDataServer();
+                } else {
+                    updateData(vpnGateConnectionList);
+                }
             } else {
-                updateData(vpnGateConnectionList);
+                lnNoNetwork.setVisibility(View.VISIBLE);
+                lnError.setVisibility(View.GONE);
+                lnLoading.setVisibility(View.GONE);
+                frameContent.setVisibility(View.GONE);
             }
         } else {
-            lnNoNetwork.setVisibility(View.VISIBLE);
+            setTitleActionbar(currentTitle);
             lnError.setVisibility(View.GONE);
             lnLoading.setVisibility(View.GONE);
-            frameContent.setVisibility(View.GONE);
         }
     }
 
@@ -353,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        selectedMenuItem = menuItem;
+        disallowLoadHome = true;
         Answers.getInstance().logCustom(new CustomEvent("Drawer select")
                 .putCustomAttribute("title", menuItem.getTitle().toString()));
         switch (menuItem.getItemId()) {
@@ -368,8 +406,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     getDataServer();
                 }
                 replaceFragment("home");
+                disallowLoadHome = false;
                 break;
             case R.id.nav_status:
+                if (dataUtil.getLastVPNConnection() == null) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.connect_one_warning), Toast.LENGTH_LONG).show();
+                    return false;
+                }
                 replaceFragment("status");
                 break;
             case R.id.nav_setting:
@@ -410,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void replaceFragment(String url) {
         try {
-            if (url != null) {
+            if (url != null && !url.equals(currentUrl)) {
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
@@ -453,7 +496,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                             .commitAllowingStateLoss();
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -496,6 +538,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void setTitleActionbar(String title) {
+        currentTitle = title;
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }

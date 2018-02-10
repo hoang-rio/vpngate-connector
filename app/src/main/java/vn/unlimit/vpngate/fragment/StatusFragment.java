@@ -1,11 +1,14 @@
 package vn.unlimit.vpngate.fragment;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.VpnService;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -20,12 +23,25 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
+import de.blinkt.openvpn.VpnProfile;
+import de.blinkt.openvpn.core.ConfigParser;
 import de.blinkt.openvpn.core.OpenVPNService;
+import de.blinkt.openvpn.core.ProfileManager;
+import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
+import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.ultils.DataUtil;
@@ -67,6 +83,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     };
     private boolean isConnecting = false;
     private boolean isAuthFailed = false;
+    private InterstitialAd mInterstitialAd;
+    private VpnProfile vpnProfile;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -83,6 +101,17 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         mVpnGateConnection = dataUtil.getLastVPNConnection();
         bindData();
         registerBroadCast();
+        if (dataUtil.hasAds()) {
+            MobileAds.initialize(getContext(), dataUtil.getAdMobId());
+            mInterstitialAd = new InterstitialAd(getContext());
+            if (BuildConfig.DEBUG) {
+                //Test
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+            } else {
+                //Real
+                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
+            }
+        }
         return rootView;
     }
 
@@ -102,14 +131,36 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(), false));
             if (checkStatus()) {
                 btnOnOff.setActivated(true);
-                txtStatus.setText("Tap button to disconnect");
+                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_disconnect), mVpnGateConnection.getName()));
             } else if (mVpnGateConnection != null) {
-                txtStatus.setText(String.format("Tap button to connect to last VPN Server %s", mVpnGateConnection.getName()));
+                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_connect_last), mVpnGateConnection.getName()));
             } else {
-                txtStatus.setText("Please select a VPN Server from home to connect first");
+                btnOnOff.setActivated(false);
+                btnOnOff.setEnabled(false);
+                txtStatus.setText(R.string.no_last_vpn_server);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void stopVpn() {
+        //prepareStopVPN();
+        ProfileManager.setConntectedVpnProfileDisconnected(getContext());
+        if (mVPNService != null && mVPNService.getManagement() != null)
+            mVPNService.getManagement().stopVPN(false);
+
+    }
+
+    private void loadAds() {
+        if (mInterstitialAd != null && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    mInterstitialAd.show();
+                }
+            });
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
     }
 
@@ -121,13 +172,94 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(0, false));
             txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(0, false));
         }
+        if (view.equals(btnOnOff)) {
+            if (mVpnGateConnection == null) {
+                return;
+            }
+            if (!isConnecting) {
+                if (checkStatus()) {
+                    Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
+                            .putCustomAttribute("type", "disconnect current")
+                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    stopVpn();
+                    isConnecting = false;
+                    btnOnOff.setActivated(false);
+                    txtStatus.setText(R.string.disconnecting);
+                } else {
+                    loadAds();
+                    Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
+                            .putCustomAttribute("type", "connect from status")
+                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    prepareVpn();
+                    txtStatus.setText(getString(R.string.connecting));
+                    btnOnOff.setActivated(true);
+                    isConnecting = true;
+                    dataUtil.setLastVPNConnection(mVpnGateConnection);
+                }
+            }
+        } else {
+            Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
+                    .putCustomAttribute("type", "cancel connect to vpn")
+                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            stopVpn();
+            btnOnOff.setActivated(false);
+            txtStatus.setText(getString(R.string.canceled));
+            isConnecting = false;
+        }
+    }
+
+    private void prepareVpn() {
+        if (loadVpnProfile()) {
+            startVpn();
+        } else {
+            Toast.makeText(getContext(), getString(R.string.error_load_profile), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean loadVpnProfile() {
+        byte[] data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+        ConfigParser cp = new ConfigParser();
+        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
+        try {
+            cp.parseConfig(isr);
+            vpnProfile = cp.convertProfile();
+            vpnProfile.mName = mVpnGateConnection.getName();
+            ProfileManager.setTemporaryProfile(vpnProfile);
+        } catch (IOException | ConfigParser.ConfigParseError e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void startVpn() {
+        Intent intent = VpnService.prepare(getContext());
+
+        if (intent != null) {
+            VpnStatus.updateStateString("USER_VPN_PERMISSION", "", R.string.state_user_vpn_permission,
+                    VpnStatus.ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT);
+            // Start the query
+            try {
+                startActivityForResult(intent, DetailActivity.START_VPN_PROFILE);
+            } catch (ActivityNotFoundException ane) {
+                // Shame on you Sony! At least one user reported that
+                // an official Sony Xperia Arc S image triggers this exception
+                VpnStatus.logError(R.string.no_vpn_support_image);
+            }
+        } else {
+            onActivityResult(DetailActivity.START_VPN_PROFILE, Activity.RESULT_OK, null);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         try {
-            Intent intent = new Intent(getActivity(), OpenVPNService.class);
+            Intent intent = new Intent(getContext(), OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception ex) {
@@ -232,6 +364,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 case LEVEL_NOTCONNECTED:
                     if (!isConnecting && !isAuthFailed) {
                         btnOnOff.setActivated(false);
+                        txtStatus.setText(String.format(getString(R.string.tap_to_connect_last), mVpnGateConnection.getName()));
                     }
                     break;
                 case LEVEL_AUTH_FAILED:
@@ -248,6 +381,19 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case DetailActivity.START_VPN_PROFILE:
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, getActivity().getBaseContext());
+                    break;
+            }
         }
     }
 }

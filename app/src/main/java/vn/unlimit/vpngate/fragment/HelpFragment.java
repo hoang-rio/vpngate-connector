@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -93,11 +94,10 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         if (view.equals(btnSend)) {
             try {
                 if (isValidName && isValideContent) {
-                    Intent mailIntent = new Intent(Intent.ACTION_SEND);
-                    mailIntent.setType("message/rfc822");
-                    mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"support@chiasenhac.us"});
-                    mailIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.help_request_from) + " " + edtName.getText());
-                    mailIntent.putExtra(Intent.EXTRA_TEXT, edtContent.getText().toString());
+                    String subject = getResources().getString(R.string.help_request_from) + " " + edtName.getText();
+                    String body = edtContent.getText().toString();
+                    Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
+                    mailIntent.setData(Uri.parse(String.format("mailto:support@chiasenhac.us?subject=%s&body=%s", subject, body)));
                     startActivity(Intent.createChooser(mailIntent, getResources().getString(R.string.send_email)));
                 } else {
                     Toast.makeText(getContext(), getResources().getString(R.string.email_error_fix), Toast.LENGTH_LONG).show();
