@@ -4,12 +4,20 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/ad_container"
+    <LinearLayout
+        android:id="@+id/ad_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp" />
+        android:orientation="vertical">
 
-    <include layout="@layout/item_line" />
+        <RelativeLayout
+            android:id="@+id/ad_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp" />
+
+        <include layout="@layout/item_line" />
+    </LinearLayout>
+
 </LinearLayout>

@@ -161,7 +161,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
             mInterstitialAd = new InterstitialAd(this);
-            AdView adView = new AdView(this);
+            final AdView adView = new AdView(this);
             adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 //Test
@@ -172,13 +172,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
             }
-            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
             adView.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int load) {
+                    adView.setVisibility(View.GONE);
                     hideAdContainer();
                 }
             });
+            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
             adView.loadAd(new AdRequest.Builder().build());
         } else {
             hideAdContainer();

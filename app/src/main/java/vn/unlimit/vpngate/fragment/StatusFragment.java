@@ -198,16 +198,16 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     isConnecting = true;
                     dataUtil.setLastVPNConnection(mVpnGateConnection);
                 }
+            } else {
+                Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
+                        .putCustomAttribute("type", "cancel connect to vpn")
+                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                stopVpn();
+                btnOnOff.setActivated(false);
+                txtStatus.setText(getString(R.string.canceled));
+                isConnecting = false;
             }
-        } else {
-            Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
-                    .putCustomAttribute("type", "cancel connect to vpn")
-                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-            stopVpn();
-            btnOnOff.setActivated(false);
-            txtStatus.setText(getString(R.string.canceled));
-            isConnecting = false;
         }
     }
 

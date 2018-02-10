@@ -121,8 +121,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mItemView = itemView;
         }
 
-        void bindViewHolder(int position) {
-            AdView v = new AdView(mContext);
+        void bindViewHolder(final int position) {
+            final AdView v = new AdView(mContext);
             v.setAdSize(AdSize.SMART_BANNER);
             if (BuildConfig.DEBUG) {
                 v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
@@ -136,11 +136,12 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             v.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int num) {
-                    mItemView.setVisibility(View.GONE);
+                    itemView.findViewById(R.id.ad_item).setVisibility(View.GONE);
                 }
+
             });
-            v.loadAd(new AdRequest.Builder().build());
             ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
+            v.loadAd(new AdRequest.Builder().build());
         }
     }
 
