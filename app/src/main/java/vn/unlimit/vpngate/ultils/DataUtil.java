@@ -41,7 +41,7 @@ public class DataUtil {
 
     public DataUtil(Context context) {
         mContext = context;
-        sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data", Context.MODE_PRIVATE);
+        sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
         gson = new Gson();
     }
 

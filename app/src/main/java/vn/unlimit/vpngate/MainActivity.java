@@ -162,20 +162,21 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void initAds() {
         if (dataUtil.hasAds()) {
-            AdView adView = new AdView(this);
+            final AdView adView = new AdView(this);
             adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             } else {
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
             }
-            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
             adView.setAdListener(new AdListener() {
                 @Override
-                public void onAdFailedToLoad(int load) {
+                public void onAdFailedToLoad(int errorCode) {
+                    adView.setVisibility(View.GONE);
                     hideAdContainer();
                 }
             });
+            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
             adView.loadAd(new AdRequest.Builder().build());
         } else {
             hideAdContainer();
@@ -462,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void replaceFragment(String url) {
         try {
-            if (url != null && !url.equals(currentUrl)) {
+            if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
