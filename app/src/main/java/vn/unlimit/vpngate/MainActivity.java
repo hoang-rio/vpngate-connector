@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         mMenu = menu;
+        toggleAction(currentUrl.equals("home"));
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuSearch = menu.findItem(R.id.action_search);
         menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
