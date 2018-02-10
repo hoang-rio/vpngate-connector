@@ -35,12 +35,12 @@ build_release:
   - ./gradlew assembleFreeRelease
   - cd app/build/outputs/apk/free/$PROD
   - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
-  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/free/
+  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/free/$PROD
   - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-free.txt
   - ./gradlew assembleProRelease
   - cd app/build/outputs/apk/pro/$PROD
   - cp app-pro-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro.apk
-  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/pro/
+  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/pro/$PROD
   - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-pro.txt
   - ls -al $CI_PROJECT_DIR
   artifacts:
