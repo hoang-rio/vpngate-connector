@@ -465,6 +465,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void replaceFragment(String url) {
         try {
             if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
+                toggleAction(url.equals("home"));
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
@@ -500,7 +501,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 if (fragment != null) {
                     frameContent.setVisibility(View.VISIBLE);
                     setTitleActionbar(title);
-                    toggleAction(url.equals("home"));
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame_content, fragment, tag)
                             //.addToBackStack("home")
