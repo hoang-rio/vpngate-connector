@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     public void filter(String keyword) {
         stopTask();
-        if (!"".equals(keyword)) {
+        if (!"".equals(keyword) && mActivity.getVpnGateConnectionList() != null) {
             mKeyword = keyword;
             isSearching = true;
             VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(keyword);

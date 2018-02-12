@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="vn.unlimit.vpngate">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,7 +25,10 @@
         <activity
             android:name=".DetailActivity"
             android:configChanges="orientation|screenSize" />
-
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            tools:replace="android:theme" />
         <service
             android:name="de.blinkt.openvpn.core.OpenVPNService"
             android:permission="android.permission.BIND_VPN_SERVICE">
