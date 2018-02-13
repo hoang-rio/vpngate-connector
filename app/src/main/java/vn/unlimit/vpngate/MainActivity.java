@@ -90,6 +90,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
                     break;
+                case BaseProvider.ACTION.ACTION_CONNECT_VPN:
+                    if (dataUtil != null && dataUtil.getLastVPNConnection() != null) {
+                        try {
+                            navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -142,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
+        filter.addAction(BaseProvider.ACTION.ACTION_CONNECT_VPN);
         registerReceiver(broadcastReceiver, filter);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -465,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void replaceFragment(String url) {
         try {
             if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
-                toggleAction(url.equals("home"));
+                toggleAction(url.equals("home") && vpnGateConnectionList != null);
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
