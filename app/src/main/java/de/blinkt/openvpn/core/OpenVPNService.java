@@ -418,6 +418,9 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             VpnStatus.logException("Error writing config file", e);
             endVpnService();
             return;
+        } catch (Exception e) {
+            endVpnService();
+            return;
         }
 
         // Extract information from the intent.
