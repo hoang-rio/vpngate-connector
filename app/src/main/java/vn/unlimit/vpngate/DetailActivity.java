@@ -397,6 +397,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         isConnecting = true;
                         btnConnect.setText(R.string.cancel);
                         dataUtil.setLastVPNConnection(mVpnGateConnection);
+                        sendConnectVPN();
                     }
                 } else {
                     Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
@@ -433,6 +434,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
+    }
+
+    private void sendConnectVPN() {
+        Intent intent = new Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN);
+        sendBroadcast(intent);
     }
 
     private void prepareVpn() {
