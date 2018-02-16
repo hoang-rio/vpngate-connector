@@ -476,6 +476,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         try {
             if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
                 toggleAction(url.equals("home") && vpnGateConnectionList != null);
+                if (!url.equals("home")) {
+                    lnLoading.setVisibility(View.GONE);
+                    lnNoNetwork.setVisibility(View.GONE);
+                    lnError.setVisibility(View.GONE);
+                }
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
