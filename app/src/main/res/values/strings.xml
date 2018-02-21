@@ -102,4 +102,5 @@
     <string name="admob_banner_bottom_home" translatable="false">ca-app-pub-3085232976681422/5804237477</string>
     <string name="admob_banner_inside_list" translatable="false">ca-app-pub-3085232976681422/4795952720</string>
     <string name="admob_full_screen_status" translatable="false">ca-app-pub-3085232976681422/1038355322</string>
+    <string name="start_app_app_id" translatable="false">201456007</string>
 </resources>

@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.startapp.android.publish.ads.banner.Banner;
+import com.startapp.android.publish.ads.banner.BannerListener;
 
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
@@ -30,6 +33,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_NORMAL = 100000;
     private static final int TYPE_ADS = 100001;
     private Context mContext;
+    private Activity mActivity;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private OnScrollListener onScrollListener;
@@ -39,7 +43,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private DataUtil mDataUtil;
     private int adsPerItem = 3;
 
-    public VPNGateListAdapter(Context context, DataUtil dataUtil) {
+    public VPNGateListAdapter(Activity activity, Context context, DataUtil dataUtil) {
+        mActivity = activity;
         mDataUtil = dataUtil;
         mContext = context;
         _list = new VPNGateConnectionList();
@@ -107,9 +112,9 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_ADS) {
-            return new VHTypeAds(layoutInflater.inflate(R.layout.adv_item, parent, false));
+            return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, false));
         }
-        View itemView = layoutInflater.inflate(R.layout.vpn_item, parent, false);
+        View itemView = layoutInflater.inflate(R.layout.item_vpn, parent, false);
         return new VHTypeVPN(itemView);
     }
 
@@ -125,7 +130,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             final AdView v = new AdView(mContext);
             v.setAdSize(AdSize.SMART_BANNER);
             if (BuildConfig.DEBUG) {
-                v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                v.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
             } else {
                 v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
             }
@@ -136,9 +141,33 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             v.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int num) {
-                    itemView.findViewById(R.id.ad_item).setVisibility(View.GONE);
-                }
+                    v.setVisibility(View.GONE);
+                    final Banner startAppBanner = new Banner(mActivity);
+                    RelativeLayout.LayoutParams bannerParameters =
+                            new RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    startAppBanner.setBannerListener(new BannerListener() {
+                        @Override
+                        public void onReceiveAd(View view) {
 
+                        }
+
+                        @Override
+                        public void onFailedToReceiveAd(View view) {
+                            mItemView.setVisibility(View.GONE);
+                            startAppBanner.hideBanner();
+                        }
+
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+                    ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+                }
             });
             ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
             v.loadAd(new AdRequest.Builder().build());

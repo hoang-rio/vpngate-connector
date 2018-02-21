@@ -33,6 +33,10 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.startapp.android.publish.ads.banner.Banner;
+import com.startapp.android.publish.ads.banner.BannerListener;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+import com.startapp.android.publish.adsCommon.StartAppSDK;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -135,6 +139,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mVpnGateConnection = getIntent().getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
         }
         checkConnectionData();
+        if (dataUtil.hasAds()) {
+            StartAppSDK.init(this, getString(R.string.start_app_app_id));
+            StartAppAd.disableSplash();
+        }
         setContentView(R.layout.activity_detail);
         btnConnect = findViewById(R.id.btn_connect);
         btnBack = findViewById(R.id.btn_back);
@@ -158,6 +166,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         linkCheckIp.setOnClickListener(this);
         bindData();
         registerBroadCast();
+        initAdMob();
+    }
+
+    private void initAdMob() {
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
             mInterstitialAd = new InterstitialAd(this);
@@ -165,8 +177,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712_");
+                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
             } else {
                 //Real
                 mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
@@ -174,9 +186,32 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             adView.setAdListener(new AdListener() {
                 @Override
-                public void onAdFailedToLoad(int load) {
+                public void onAdFailedToLoad(int errorCode) {
                     adView.setVisibility(View.GONE);
-                    hideAdContainer();
+                    Banner startAppBanner = new Banner(DetailActivity.this);
+                    RelativeLayout.LayoutParams bannerParameters =
+                            new RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    startAppBanner.setBannerListener(new BannerListener() {
+                        @Override
+                        public void onReceiveAd(View view) {
+
+                        }
+
+                        @Override
+                        public void onFailedToReceiveAd(View view) {
+                            hideAdContainer();
+                        }
+
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+                    ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
                 }
             });
             ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
@@ -430,6 +465,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onAdLoaded() {
                     mInterstitialAd.show();
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    StartAppAd.showAd(getApplicationContext());
                 }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
