@@ -119,14 +119,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void sort(String property, int type) {
-        stopTask();
-        mActivity.getVpnGateConnectionList().sort(property, type);
-        dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
-        if (isSearching) {
-            VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(mKeyword);
-            vpnGateListAdapter.initialize(filterResult);
-        } else {
-            closeSearch();
+        try {
+            stopTask();
+            if (mActivity.getVpnGateConnectionList() != null) {
+                mActivity.getVpnGateConnectionList().sort(property, type);
+                dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
+                if (isSearching) {
+                    VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(mKeyword);
+                    vpnGateListAdapter.initialize(filterResult);
+                } else {
+                    closeSearch();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

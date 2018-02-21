@@ -180,50 +180,54 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void initAdMob() {
-        if (dataUtil.hasAds()) {
-            final AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            if (BuildConfig.DEBUG) {
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
-            } else {
-                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
-            }
-            adView.setAdListener(new AdListener() {
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    adView.setVisibility(View.GONE);
-                    startAppBanner = new Banner(MainActivity.this);
-                    RelativeLayout.LayoutParams bannerParameters =
-                            new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    startAppBanner.setBannerListener(new BannerListener() {
-                        @Override
-                        public void onReceiveAd(View view) {
-
-                        }
-
-                        @Override
-                        public void onFailedToReceiveAd(View view) {
-                            hideAdContainer();
-                        }
-
-                        @Override
-                        public void onClick(View view) {
-
-                        }
-                    });
-                    ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
-
+        try {
+            if (dataUtil.hasAds()) {
+                final AdView adView = new AdView(this);
+                adView.setAdSize(AdSize.BANNER);
+                if (BuildConfig.DEBUG) {
+                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
+                } else {
+                    adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
                 }
-            });
-            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
-            adView.loadAd(new AdRequest.Builder().build());
-        } else {
-            hideAdContainer();
-            navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+                adView.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        adView.setVisibility(View.GONE);
+                        startAppBanner = new Banner(MainActivity.this);
+                        RelativeLayout.LayoutParams bannerParameters =
+                                new RelativeLayout.LayoutParams(
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        startAppBanner.setBannerListener(new BannerListener() {
+                            @Override
+                            public void onReceiveAd(View view) {
+
+                            }
+
+                            @Override
+                            public void onFailedToReceiveAd(View view) {
+                                hideAdContainer();
+                            }
+
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                        ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+
+                    }
+                });
+                ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
+                adView.loadAd(new AdRequest.Builder().build());
+            } else {
+                hideAdContainer();
+                navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
