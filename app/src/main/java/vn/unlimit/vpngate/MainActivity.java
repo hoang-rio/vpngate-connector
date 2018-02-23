@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         Fabric.with(this, new Answers());
         //Start app Init
         if (dataUtil.hasAds()) {
-            StartAppSDK.init(this, getString(R.string.start_app_app_id));
+            StartAppSDK.init(this, getString(R.string.start_app_app_id), false);
         }
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 final AdView adView = new AdView(this);
                 adView.setAdSize(AdSize.BANNER);
                 if (BuildConfig.DEBUG) {
-                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
+                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 } else {
                     adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
                 }

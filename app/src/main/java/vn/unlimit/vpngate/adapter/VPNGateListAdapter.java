@@ -99,7 +99,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewHolder instanceof VHTypeVPN) {
             ((VHTypeVPN) viewHolder).bindViewHolder(position);
         } else if (viewHolder instanceof VHTypeAds) {
-            ((VHTypeAds) viewHolder).bindViewHolder(position);
+            ((VHTypeAds) viewHolder).bindViewHolder();
         }
         lastPosition = position;
     }
@@ -126,51 +126,55 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mItemView = itemView;
         }
 
-        void bindViewHolder(final int position) {
-            final AdView v = new AdView(mContext);
-            v.setAdSize(AdSize.SMART_BANNER);
-            if (BuildConfig.DEBUG) {
-                v.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
-            } else {
-                v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
-            }
-            float density = mContext.getResources().getDisplayMetrics().density;
-            int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
-            AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
-            v.setLayoutParams(params);
-            v.setAdListener(new AdListener() {
-                @Override
-                public void onAdFailedToLoad(int num) {
-                    v.setVisibility(View.GONE);
-                    final Banner startAppBanner = new Banner(mActivity);
-                    RelativeLayout.LayoutParams bannerParameters =
-                            new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    startAppBanner.setBannerListener(new BannerListener() {
-                        @Override
-                        public void onReceiveAd(View view) {
-
-                        }
-
-                        @Override
-                        public void onFailedToReceiveAd(View view) {
-                            mItemView.setVisibility(View.GONE);
-                            startAppBanner.hideBanner();
-                        }
-
-                        @Override
-                        public void onClick(View view) {
-
-                        }
-                    });
-                    ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+        void bindViewHolder() {
+            try {
+                final AdView v = new AdView(mContext);
+                v.setAdSize(AdSize.SMART_BANNER);
+                if (BuildConfig.DEBUG) {
+                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                } else {
+                    v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
                 }
-            });
-            ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
-            v.loadAd(new AdRequest.Builder().build());
+                float density = mContext.getResources().getDisplayMetrics().density;
+                int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
+                AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
+                v.setLayoutParams(params);
+                v.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int num) {
+                        v.setVisibility(View.GONE);
+                        final Banner startAppBanner = new Banner(mActivity);
+                        RelativeLayout.LayoutParams bannerParameters =
+                                new RelativeLayout.LayoutParams(
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        startAppBanner.setBannerListener(new BannerListener() {
+                            @Override
+                            public void onReceiveAd(View view) {
+
+                            }
+
+                            @Override
+                            public void onFailedToReceiveAd(View view) {
+                                mItemView.setVisibility(View.GONE);
+                                startAppBanner.hideBanner();
+                            }
+
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                        ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+                    }
+                });
+                ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
+                v.loadAd(new AdRequest.Builder().build());
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
     }
 
