@@ -88,6 +88,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VpnProfile vpnProfile;
     private BroadcastReceiver brStatus;
     private InterstitialAd mInterstitialAd;
+    private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -140,7 +141,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
         checkConnectionData();
         if (dataUtil.hasAds()) {
-            StartAppSDK.init(this, getString(R.string.start_app_app_id));
+            StartAppSDK.init(this, getString(R.string.start_app_app_id), false);
             StartAppAd.disableSplash();
         }
         setContentView(R.layout.activity_detail);
@@ -177,8 +178,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             adView.setAdSize(AdSize.BANNER);
             if (BuildConfig.DEBUG) {
                 //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712_");
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             } else {
                 //Real
                 mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
@@ -236,6 +237,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onDestroy() {
+        mDestroyCalled = true;
         super.onDestroy();
         unregisterReceiver(brStatus);
     }
@@ -464,12 +466,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
-                    mInterstitialAd.show();
+                    if (!mDestroyCalled) {
+                        mInterstitialAd.show();
+                    }
                 }
 
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
-                    StartAppAd.showAd(getApplicationContext());
+                    if (!mDestroyCalled) {
+                        StartAppAd.showAd(getApplicationContext());
+                    }
                 }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
