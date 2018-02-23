@@ -580,6 +580,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             case "home":
                 if (dataUtil.hasAds()) {
                     StartAppAd.onBackPressed(getApplicationContext());
+                    Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
                     super.onBackPressed();
                 } else {
                     if (doubleBackToExitPressedOnce) {
