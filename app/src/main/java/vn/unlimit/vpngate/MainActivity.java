@@ -37,6 +37,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.startapp.android.publish.ads.banner.Banner;
+import com.startapp.android.publish.ads.banner.BannerListener;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+import com.startapp.android.publish.adsCommon.StartAppSDK;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
@@ -80,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private Menu mMenu;
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private boolean disallowLoadHome = false;
+    private Banner startAppBanner;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -133,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
         Fabric.with(this, new Crashlytics());
         Fabric.with(this, new Answers());
+        //Start app Init
+        if (dataUtil.hasAds()) {
+            StartAppSDK.init(this, getString(R.string.start_app_app_id), false);
+        }
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -159,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        initAds();
+        initAdMob();
     }
 
     private void checkStatusMenu() {
@@ -170,27 +179,55 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
-    private void initAds() {
-        if (dataUtil.hasAds()) {
-            final AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            if (BuildConfig.DEBUG) {
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-            } else {
-                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
-            }
-            adView.setAdListener(new AdListener() {
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    adView.setVisibility(View.GONE);
-                    hideAdContainer();
+    private void initAdMob() {
+        try {
+            if (dataUtil.hasAds()) {
+                final AdView adView = new AdView(this);
+                adView.setAdSize(AdSize.BANNER);
+                if (BuildConfig.DEBUG) {
+                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                } else {
+                    adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
                 }
-            });
-            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
-            adView.loadAd(new AdRequest.Builder().build());
-        } else {
-            hideAdContainer();
-            navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+                adView.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        adView.setVisibility(View.GONE);
+                        startAppBanner = new Banner(MainActivity.this);
+                        RelativeLayout.LayoutParams bannerParameters =
+                                new RelativeLayout.LayoutParams(
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        startAppBanner.setBannerListener(new BannerListener() {
+                            @Override
+                            public void onReceiveAd(View view) {
+
+                            }
+
+                            @Override
+                            public void onFailedToReceiveAd(View view) {
+                                hideAdContainer();
+                            }
+
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                        ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+
+                    }
+                });
+                ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
+                adView.loadAd(new AdRequest.Builder().build());
+            } else {
+                hideAdContainer();
+                navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -199,8 +236,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
-            frameContent.setLayoutParams(params);
+            if (startAppBanner != null) {
+                startAppBanner.hideBanner();
+            }
             findViewById(R.id.ad_container).setVisibility(View.GONE);
+            frameContent.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -476,6 +516,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         try {
             if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
                 toggleAction(url.equals("home") && vpnGateConnectionList != null);
+                if (!url.equals("home")) {
+                    lnLoading.setVisibility(View.GONE);
+                    lnNoNetwork.setVisibility(View.GONE);
+                    lnError.setVisibility(View.GONE);
+                }
                 currentUrl = url;
                 Fragment fragment = null;
                 String tag = "";
@@ -533,19 +578,25 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public void onBackPressed() {
         switch (currentUrl) {
             case "home":
-                if (doubleBackToExitPressedOnce) {
+                if (dataUtil.hasAds()) {
+                    StartAppAd.onBackPressed(getApplicationContext());
+                    Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
                     super.onBackPressed();
-                    return;
-                }
-                this.doubleBackToExitPressedOnce = true;
-                Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-                new Handler().postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        doubleBackToExitPressedOnce = false;
+                } else {
+                    if (doubleBackToExitPressedOnce) {
+                        super.onBackPressed();
+                        return;
                     }
-                }, 2000);
+                    this.doubleBackToExitPressedOnce = true;
+                    Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+                    new Handler().postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            doubleBackToExitPressedOnce = false;
+                        }
+                    }, 2000);
+                }
                 break;
             default:
                 if (vpnGateConnectionList == null) {

@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onCreate(savedBundle);
         try {
             dataUtil = ((App) getActivity().getApplication()).getDataUtil();
-            vpnGateListAdapter = new VPNGateListAdapter(mContext, dataUtil);
+            vpnGateListAdapter = new VPNGateListAdapter(getActivity(), mContext, dataUtil);
             handler = new Handler();
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,14 +119,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void sort(String property, int type) {
-        stopTask();
-        mActivity.getVpnGateConnectionList().sort(property, type);
-        dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
-        if (isSearching) {
-            VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(mKeyword);
-            vpnGateListAdapter.initialize(filterResult);
-        } else {
-            closeSearch();
+        try {
+            stopTask();
+            if (mActivity.getVpnGateConnectionList() != null) {
+                mActivity.getVpnGateConnectionList().sort(property, type);
+                dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
+                if (isSearching) {
+                    VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(mKeyword);
+                    vpnGateListAdapter.initialize(filterResult);
+                } else {
+                    closeSearch();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

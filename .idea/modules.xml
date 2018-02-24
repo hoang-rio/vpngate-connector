@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/VPNGateConnector.iml" filepath="$PROJECT_DIR$/VPNGateConnector.iml" />
+      <module fileurl="file://D:\Projects\hoangnd\android\vpngate-android-client\VPNGateConnector.iml" filepath="D:\Projects\hoangnd\android\vpngate-android-client\VPNGateConnector.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://F:\Deverlop\Android\VPNGateConnector\vpngate-android-client.iml" filepath="F:\Deverlop\Android\VPNGateConnector\vpngate-android-client.iml" />
     </modules>

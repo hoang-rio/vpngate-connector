@@ -33,6 +33,10 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.startapp.android.publish.ads.banner.Banner;
+import com.startapp.android.publish.ads.banner.BannerListener;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+import com.startapp.android.publish.adsCommon.StartAppSDK;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -84,6 +88,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VpnProfile vpnProfile;
     private BroadcastReceiver brStatus;
     private InterstitialAd mInterstitialAd;
+    private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -135,6 +140,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mVpnGateConnection = getIntent().getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
         }
         checkConnectionData();
+        if (dataUtil.hasAds()) {
+            StartAppSDK.init(this, getString(R.string.start_app_app_id), false);
+            StartAppAd.disableSplash();
+        }
         setContentView(R.layout.activity_detail);
         btnConnect = findViewById(R.id.btn_connect);
         btnBack = findViewById(R.id.btn_back);
@@ -158,6 +167,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         linkCheckIp.setOnClickListener(this);
         bindData();
         registerBroadCast();
+        initAdMob();
+    }
+
+    private void initAdMob() {
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
             mInterstitialAd = new InterstitialAd(this);
@@ -174,9 +187,32 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             adView.setAdListener(new AdListener() {
                 @Override
-                public void onAdFailedToLoad(int load) {
+                public void onAdFailedToLoad(int errorCode) {
                     adView.setVisibility(View.GONE);
-                    hideAdContainer();
+                    Banner startAppBanner = new Banner(DetailActivity.this);
+                    RelativeLayout.LayoutParams bannerParameters =
+                            new RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    startAppBanner.setBannerListener(new BannerListener() {
+                        @Override
+                        public void onReceiveAd(View view) {
+
+                        }
+
+                        @Override
+                        public void onFailedToReceiveAd(View view) {
+                            hideAdContainer();
+                        }
+
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+                    ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
                 }
             });
             ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
@@ -201,6 +237,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onDestroy() {
+        mDestroyCalled = true;
         super.onDestroy();
         unregisterReceiver(brStatus);
     }
@@ -429,7 +466,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
-                    mInterstitialAd.show();
+                    if (!mDestroyCalled) {
+                        mInterstitialAd.show();
+                    }
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    if (!mDestroyCalled) {
+                        StartAppAd.showAd(getApplicationContext());
+                    }
                 }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
