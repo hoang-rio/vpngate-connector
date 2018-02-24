@@ -8,6 +8,7 @@ package de.blinkt.openvpn.core;
 import android.Manifest.permission;
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.UiModeManager;
@@ -27,6 +28,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.system.OsConstants;
 import android.text.TextUtils;
 import android.util.Log;
@@ -143,6 +145,23 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel() {
+        String channelId = "vpngate_service";
+        try {
+            String channelName = "VPN Gate Background Service";
+            NotificationChannel chan = new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(getColor(R.color.colorPrimary));
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(chan);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return channelId;
+    }
+
     private void showNotification(final String msg, String tickerText, boolean lowpriority, long when, ConnectionStatus status) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
@@ -150,7 +169,12 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
         //int icon = getIconByConnectionStatus(status);
         int icon = R.mipmap.ic_launcher;
-        android.app.Notification.Builder nbuilder = new Notification.Builder(this);
+        android.app.Notification.Builder nbuilder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nbuilder = new Notification.Builder(this, createNotificationChannel());
+        } else {
+            nbuilder = new Notification.Builder(this);
+        }
 
         if (mProfile != null)
             nbuilder.setContentTitle(getString(R.string.notification_title, mProfile.mName));
