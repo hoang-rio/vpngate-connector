@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             if (DataUtil.isOnline(getApplicationContext())) {
                 lnNoNetwork.setVisibility(View.GONE);
                 vpnGateConnectionList = dataUtil.getConnectionsCache();
-                if (vpnGateConnectionList == null) {
+                if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
                     getDataServer();
                 } else {
                     updateData(vpnGateConnectionList);

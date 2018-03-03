@@ -552,13 +552,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case START_VPN_PROFILE:
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, getBaseContext());
-                    break;
+        try {
+            if (resultCode == Activity.RESULT_OK) {
+                switch (requestCode) {
+                    case START_VPN_PROFILE:
+                        VPNLaunchHelper.startOpenVpn(vpnProfile, getBaseContext());
+                        break;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
