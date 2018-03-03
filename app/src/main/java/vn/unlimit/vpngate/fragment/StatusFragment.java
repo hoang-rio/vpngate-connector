@@ -387,13 +387,16 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case DetailActivity.START_VPN_PROFILE:
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, getActivity().getBaseContext());
-                    break;
+        try {
+            if (resultCode == Activity.RESULT_OK) {
+                switch (requestCode) {
+                    case DetailActivity.START_VPN_PROFILE:
+                        VPNLaunchHelper.startOpenVpn(vpnProfile, getActivity().getBaseContext());
+                        break;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
