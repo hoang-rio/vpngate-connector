@@ -38,7 +38,7 @@
         <include layout="@layout/layout_no_network" />
 
         <RelativeLayout
-            android:id="@+id/ad_container"
+            android:id="@+id/ad_container_home"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"

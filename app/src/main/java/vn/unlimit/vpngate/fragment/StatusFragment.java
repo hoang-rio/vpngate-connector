@@ -23,10 +23,12 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -85,6 +87,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private boolean isAuthFailed = false;
     private InterstitialAd mInterstitialAd;
     private VpnProfile vpnProfile;
+    private com.facebook.ads.InterstitialAd fInterstitialAd;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -102,11 +105,10 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         bindData();
         registerBroadCast();
         if (dataUtil.hasAds()) {
-            MobileAds.initialize(getContext(), dataUtil.getAdMobId());
             mInterstitialAd = new InterstitialAd(getContext());
             if (BuildConfig.DEBUG) {
                 //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712_");
             } else {
                 //Real
                 mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
@@ -158,6 +160,43 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onAdLoaded() {
                     mInterstitialAd.show();
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errCode) {
+                    fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
+                    fInterstitialAd.setAdListener(new InterstitialAdListener() {
+                        @Override
+                        public void onInterstitialDisplayed(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onInterstitialDismissed(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onError(Ad ad, AdError adError) {
+
+                        }
+
+                        @Override
+                        public void onAdLoaded(Ad ad) {
+                            fInterstitialAd.show();
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
+
+                        }
+                    });
+                    fInterstitialAd.loadAd();
                 }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
