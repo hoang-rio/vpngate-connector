@@ -102,5 +102,12 @@
     <string name="admob_banner_bottom_home" translatable="false">ca-app-pub-3085232976681422/5804237477</string>
     <string name="admob_banner_inside_list" translatable="false">ca-app-pub-3085232976681422/4795952720</string>
     <string name="admob_full_screen_status" translatable="false">ca-app-pub-3085232976681422/1038355322</string>
-    <string name="start_app_app_id" translatable="false">201456007</string>
+    <string name="admob_banner_bellow_detail" translatable="false">ca-app-pub-3085232976681422/9538848174</string>
+    <!--Facebook Ads -->
+    <string name="fan_banner_bottom_home" translatable="false">201696243934523_201764487261032</string>
+    <string name="fan_banner_bottom_detail" translatable="false">201696243934523_202299963874151</string>
+    <string name="fan_banner_inside_list" translatable="false">201696243934523_202300357207445</string>
+    <string name="fan_full_screen" translatable="false">201696243934523_201696323934515</string>
+    <string name="fan_full_screen_status" translatable="false">201696243934523_202300953874052</string>
+    <string name="fan_banner_bellow_detail" translatable="false">201696243934523_202328370537977</string>
 </resources>

@@ -60,6 +60,7 @@
         android:layout_marginTop="50dp">
 
         <LinearLayout
+            android:id="@+id/ln_content_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -383,7 +384,7 @@
     </ScrollView>
 
     <RelativeLayout
-        android:id="@+id/ad_container"
+        android:id="@+id/ad_container_detail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"

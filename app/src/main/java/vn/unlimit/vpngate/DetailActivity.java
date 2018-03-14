@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,16 +28,15 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.startapp.android.publish.ads.banner.Banner;
-import com.startapp.android.publish.ads.banner.BannerListener;
-import com.startapp.android.publish.adsCommon.StartAppAd;
-import com.startapp.android.publish.adsCommon.StartAppSDK;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -81,6 +81,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView txtLogType;
     TextView txtStatus;
     View linkCheckIp;
+    LinearLayout lnContentDetail;
     private DataUtil dataUtil;
     private VPNGateConnection mVpnGateConnection;
     private Button btnConnect;
@@ -88,6 +89,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VpnProfile vpnProfile;
     private BroadcastReceiver brStatus;
     private InterstitialAd mInterstitialAd;
+    private com.facebook.ads.InterstitialAd fInterstitialAd;
+    private com.facebook.ads.AdView fAdView;
     private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -140,10 +143,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mVpnGateConnection = getIntent().getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION);
         }
         checkConnectionData();
-        if (dataUtil.hasAds()) {
-            StartAppSDK.init(this, getString(R.string.start_app_app_id), false);
-            StartAppAd.disableSplash();
-        }
         setContentView(R.layout.activity_detail);
         btnConnect = findViewById(R.id.btn_connect);
         btnBack = findViewById(R.id.btn_back);
@@ -165,6 +164,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         txtStatus = findViewById(R.id.txt_status);
         linkCheckIp = findViewById(R.id.txt_check_ip);
         linkCheckIp.setOnClickListener(this);
+        lnContentDetail = findViewById(R.id.ln_content_detail);
         bindData();
         registerBroadCast();
         initAdMob();
@@ -189,34 +189,74 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     adView.setVisibility(View.GONE);
-                    Banner startAppBanner = new Banner(DetailActivity.this);
-                    RelativeLayout.LayoutParams bannerParameters =
-                            new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    startAppBanner.setBannerListener(new BannerListener() {
+                    fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                    fAdView.setAdListener(new com.facebook.ads.AdListener() {
                         @Override
-                        public void onReceiveAd(View view) {
-
-                        }
-
-                        @Override
-                        public void onFailedToReceiveAd(View view) {
+                        public void onError(Ad ad, AdError adError) {
                             hideAdContainer();
                         }
 
                         @Override
-                        public void onClick(View view) {
+                        public void onAdLoaded(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
 
                         }
                     });
-                    ((RelativeLayout) findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+                    ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
+                    fAdView.loadAd();
                 }
             });
-            ((RelativeLayout) findViewById(R.id.ad_container)).addView(adView);
+            ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
             adView.loadAd(new AdRequest.Builder().build());
+            //Banner bellow
+            final AdView adViewBellow = new AdView(this);
+            if (BuildConfig.DEBUG) {
+                adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+            } else {
+                adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
+            }
+            adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
+            adViewBellow.setAdListener(new AdListener() {
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    adViewBellow.setVisibility(View.GONE);
+                    final com.facebook.ads.AdView fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
+                    fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
+                        @Override
+                        public void onError(Ad ad, AdError adError) {
+                            fAdViewBellow.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAdLoaded(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
+
+                        }
+                    });
+                    lnContentDetail.addView(fAdViewBellow);
+                    fAdViewBellow.loadAd();
+                }
+            });
+            lnContentDetail.addView(adViewBellow);
+            adViewBellow.loadAd(new AdRequest.Builder().build());
         } else {
             hideAdContainer();
         }
@@ -229,6 +269,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             findViewById(R.id.ad_container).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
+            if (fAdView != null) {
+                fAdView.setVisibility(View.GONE);
+            }
             scrollView.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
@@ -474,7 +517,39 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     if (!mDestroyCalled) {
-                        StartAppAd.showAd(getApplicationContext());
+                        fInterstitialAd = new com.facebook.ads.InterstitialAd(getApplicationContext(), getString(R.string.fan_full_screen));
+                        fInterstitialAd.setAdListener(new InterstitialAdListener() {
+                            @Override
+                            public void onInterstitialDisplayed(Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onInterstitialDismissed(Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onError(Ad ad, AdError adError) {
+
+                            }
+
+                            @Override
+                            public void onAdLoaded(Ad ad) {
+                                fInterstitialAd.show();
+                            }
+
+                            @Override
+                            public void onAdClicked(Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
+
+                            }
+                        });
+                        fInterstitialAd.loadAd();
                     }
                 }
             });

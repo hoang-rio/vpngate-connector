@@ -1,7 +1,7 @@
 package vn.unlimit.vpngate.adapter;
 
-import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.startapp.android.publish.ads.banner.Banner;
-import com.startapp.android.publish.ads.banner.BannerListener;
 
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
@@ -33,7 +33,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_NORMAL = 100000;
     private static final int TYPE_ADS = 100001;
     private Context mContext;
-    private Activity mActivity;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private OnScrollListener onScrollListener;
@@ -43,8 +42,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private DataUtil mDataUtil;
     private int adsPerItem = 3;
 
-    public VPNGateListAdapter(Activity activity, Context context, DataUtil dataUtil) {
-        mActivity = activity;
+    public VPNGateListAdapter(Context context, DataUtil dataUtil) {
         mDataUtil = dataUtil;
         mContext = context;
         _list = new VPNGateConnectionList();
@@ -88,7 +86,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (onScrollListener != null) {
             if (position > lastPosition || position == 0) {
                 onScrollListener.onScrollDown();
@@ -131,7 +129,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 final AdView v = new AdView(mContext);
                 v.setAdSize(AdSize.SMART_BANNER);
                 if (BuildConfig.DEBUG) {
-                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
                 } else {
                     v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
                 }
@@ -143,31 +141,31 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     @Override
                     public void onAdFailedToLoad(int num) {
                         v.setVisibility(View.GONE);
-                        final Banner startAppBanner = new Banner(mActivity);
-                        RelativeLayout.LayoutParams bannerParameters =
-                                new RelativeLayout.LayoutParams(
-                                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        bannerParameters.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        bannerParameters.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                        startAppBanner.setBannerListener(new BannerListener() {
+                        final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
+                        fAdView.setAdListener(new com.facebook.ads.AdListener() {
                             @Override
-                            public void onReceiveAd(View view) {
-
-                            }
-
-                            @Override
-                            public void onFailedToReceiveAd(View view) {
+                            public void onError(Ad ad, AdError adError) {
                                 mItemView.setVisibility(View.GONE);
-                                startAppBanner.hideBanner();
+                                fAdView.setVisibility(View.GONE);
                             }
 
                             @Override
-                            public void onClick(View view) {
+                            public void onAdLoaded(Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onAdClicked(Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
 
                             }
                         });
-                        ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(startAppBanner, bannerParameters);
+                        ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(fAdView);
+                        fAdView.loadAd();
                     }
                 });
                 ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
