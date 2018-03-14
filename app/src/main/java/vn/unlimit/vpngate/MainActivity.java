@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             if (fAdView != null) {
                 fAdView.setVisibility(View.GONE);
             }
-            findViewById(R.id.ad_container).setVisibility(View.GONE);
+            findViewById(R.id.ad_container_home).setVisibility(View.GONE);
             frameContent.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
