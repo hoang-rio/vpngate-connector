@@ -266,7 +266,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             ScrollView scrollView = findViewById(R.id.scrollView);
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) scrollView.getLayoutParams();
-            findViewById(R.id.ad_container).setVisibility(View.GONE);
+            findViewById(R.id.ad_container_detail).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
             if (fAdView != null) {
