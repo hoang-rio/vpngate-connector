@@ -8,7 +8,12 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -22,9 +27,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import vn.unlimit.vpngate.BuildConfig;
+import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.Cache;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.request.RequestListener;
 
 /**
  * Manager shared preferences data
@@ -34,15 +41,31 @@ public class DataUtil {
     public static final String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
     public static final String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
     public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
+    private static String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
     private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public DataUtil(Context context) {
         mContext = context;
         sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
         gson = new Gson();
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        // [END enable_dev_mode]
+
+        // Set default Remote Config parameter values. An app uses the in-app default values, and
+        // when you need to adjust those defaults, you set an updated value for only the values you
+        // want to change in the Firebase console. See Best Practices in the README for more
+        // information.
+        // [START set_default_values]
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        // [END set_default_values]
     }
 
     /**
@@ -254,5 +277,44 @@ public class DataUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void getIsAmobPrimary(final RequestListener requestListener) {
+        if (hasAds()) {
+            try {
+                long cacheExpiration = 3600; // 1 hour in seconds.
+                // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
+                // retrieve values from the service.
+                if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+                    cacheExpiration = 0;
+                }
+
+                // [START fetch_config_with_callback]
+                // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
+                // will use fetch data from the Remote Config service, rather than cached parameter values,
+                // if cached parameter values are more than cacheExpiration seconds old.
+                // See Best Practices in the README for more information.
+                mFirebaseRemoteConfig.fetch(cacheExpiration)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // After config data is successfully fetched, it must be activated before newly fetched
+                                    // values are returned.
+                                    mFirebaseRemoteConfig.activateFetched();
+                                }
+                                if (requestListener != null) {
+                                    requestListener.onSuccess(mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY));
+                                }
+                            }
+                        });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (requestListener != null) {
+                    requestListener.onError("general error");
+                }
+            }
+        }
     }
 }

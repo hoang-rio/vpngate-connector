@@ -6,11 +6,13 @@ import android.content.Context;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.ultils.DataUtil;
 
 public class App extends Application {
 
     private static App instance;
+    private static boolean isAdMobPrimary = false;
     private DataUtil dataUtil;
 
     public static String getResourceString(int resId) {
@@ -21,6 +23,10 @@ public class App extends Application {
         return instance;
     }
 
+    public static boolean isAdMobPrimary() {
+        return isAdMobPrimary;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -29,6 +35,17 @@ public class App extends Application {
 
         instance = this;
         dataUtil = new DataUtil(this);
+        dataUtil.getIsAmobPrimary(new RequestListener() {
+            @Override
+            public void onSuccess(Object result) {
+                isAdMobPrimary = (boolean) result;
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
     }
 
     public DataUtil getDataUtil() {
@@ -39,5 +56,4 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
     }
-
 }
