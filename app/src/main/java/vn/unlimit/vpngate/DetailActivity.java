@@ -182,11 +182,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     adView.setAdSize(AdSize.BANNER);
                     if (BuildConfig.DEBUG) {
                         //Test
-                        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
                         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                     } else {
                         //Real
-                        mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
                         adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
                     }
                     adView.setAdListener(new AdListener() {

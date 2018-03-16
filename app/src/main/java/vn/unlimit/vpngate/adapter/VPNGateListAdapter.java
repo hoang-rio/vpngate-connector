@@ -130,7 +130,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     public void onError(Ad ad, AdError adError) {
                         fAdView.setVisibility(View.GONE);
                         final AdView v = new AdView(mContext);
-                        v.setAdSize(AdSize.SMART_BANNER);
+                        v.setAdSize(AdSize.LARGE_BANNER);
                         if (BuildConfig.DEBUG) {
                             v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                         } else {
