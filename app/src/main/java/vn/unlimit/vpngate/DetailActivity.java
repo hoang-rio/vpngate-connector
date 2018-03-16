@@ -90,7 +90,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private BroadcastReceiver brStatus;
     private InterstitialAd mInterstitialAd;
     private com.facebook.ads.InterstitialAd fInterstitialAd;
-    private com.facebook.ads.AdView fAdView;
+    private AdView adView;
     private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -173,90 +173,90 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void initAdMob() {
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
-            mInterstitialAd = new InterstitialAd(this);
-            final AdView adView = new AdView(this);
-            adView.setAdSize(AdSize.BANNER);
-            if (BuildConfig.DEBUG) {
-                //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-            } else {
-                //Real
-                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
-                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
-            }
-            adView.setAdListener(new AdListener() {
+            fInterstitialAd = new com.facebook.ads.InterstitialAd(this, getString(R.string.fan_full_screen));
+            final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+            fAdView.setAdListener(new com.facebook.ads.AdListener() {
                 @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    adView.setVisibility(View.GONE);
-                    fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
-                    fAdView.setAdListener(new com.facebook.ads.AdListener() {
+                public void onError(Ad ad, AdError adError) {
+                    adView = new AdView(getApplicationContext());
+                    adView.setAdSize(AdSize.BANNER);
+                    if (BuildConfig.DEBUG) {
+                        //Test
+                        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    } else {
+                        //Real
+                        mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen));
+                        adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
+                    }
+                    adView.setAdListener(new AdListener() {
                         @Override
-                        public void onError(Ad ad, AdError adError) {
+                        public void onAdFailedToLoad(int errorCode) {
                             hideAdContainer();
                         }
-
-                        @Override
-                        public void onAdLoaded(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onAdClicked(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onLoggingImpression(Ad ad) {
-
-                        }
                     });
-                    ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
-                    fAdView.loadAd();
+                    ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
+                    adView.loadAd(new AdRequest.Builder().build());
                 }
-            });
-            ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
-            adView.loadAd(new AdRequest.Builder().build());
-            //Banner bellow
-            final AdView adViewBellow = new AdView(this);
-            if (BuildConfig.DEBUG) {
-                adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-            } else {
-                adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
-            }
-            adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
-            adViewBellow.setAdListener(new AdListener() {
+
                 @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    adViewBellow.setVisibility(View.GONE);
-                    final com.facebook.ads.AdView fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
-                    fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
+                public void onAdLoaded(Ad ad) {
+
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
+                }
+            });
+            ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
+            fAdView.loadAd();
+            //Banner bellow
+            final com.facebook.ads.AdView fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
+            fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
+                @Override
+                public void onError(Ad ad, AdError adError) {
+                    fAdViewBellow.setVisibility(View.GONE);
+                    final AdView adViewBellow = new AdView(getApplicationContext());
+                    if (BuildConfig.DEBUG) {
+                        adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    } else {
+                        adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
+                    }
+                    adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
+                    adViewBellow.setAdListener(new AdListener() {
                         @Override
-                        public void onError(Ad ad, AdError adError) {
-                            fAdViewBellow.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAdLoaded(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onAdClicked(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onLoggingImpression(Ad ad) {
+                        public void onAdFailedToLoad(int errorCode) {
+                            adViewBellow.setVisibility(View.GONE);
 
                         }
                     });
-                    lnContentDetail.addView(fAdViewBellow);
-                    fAdViewBellow.loadAd();
+                    lnContentDetail.addView(adViewBellow);
+                    adViewBellow.loadAd(new AdRequest.Builder().build());
+                }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
                 }
             });
-            lnContentDetail.addView(adViewBellow);
-            adViewBellow.loadAd(new AdRequest.Builder().build());
+            lnContentDetail.addView(fAdViewBellow);
+            fAdViewBellow.loadAd();
         } else {
             hideAdContainer();
         }
@@ -269,8 +269,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             findViewById(R.id.ad_container_detail).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
-            if (fAdView != null) {
-                fAdView.setVisibility(View.GONE);
+            if (adView != null) {
+                adView.setVisibility(View.GONE);
             }
             scrollView.setLayoutParams(params);
         } catch (Exception e) {
@@ -504,56 +504,60 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void loadAds() {
-        if (mInterstitialAd != null && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+        if (fInterstitialAd != null && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
             isShowAds = true;
-            mInterstitialAd.setAdListener(new AdListener() {
+            fInterstitialAd = new com.facebook.ads.InterstitialAd(getApplicationContext(), getString(R.string.fan_full_screen));
+            fInterstitialAd.setAdListener(new InterstitialAdListener() {
                 @Override
-                public void onAdLoaded() {
-                    if (!mDestroyCalled) {
-                        mInterstitialAd.show();
-                    }
+                public void onInterstitialDisplayed(Ad ad) {
+
                 }
 
                 @Override
-                public void onAdFailedToLoad(int errorCode) {
+                public void onInterstitialDismissed(Ad ad) {
+
+                }
+
+                @Override
+                public void onError(Ad ad, AdError adError) {
                     if (!mDestroyCalled) {
-                        fInterstitialAd = new com.facebook.ads.InterstitialAd(getApplicationContext(), getString(R.string.fan_full_screen));
-                        fInterstitialAd.setAdListener(new InterstitialAdListener() {
+                        mInterstitialAd = new InterstitialAd(getApplicationContext());
+                        if (BuildConfig.DEBUG) {
+                            mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                        } else {
+                            mInterstitialAd.setAdUnitId(getString(R.string.admob_full_screen));
+                        }
+                        mInterstitialAd.setAdListener(new AdListener() {
                             @Override
-                            public void onInterstitialDisplayed(Ad ad) {
-
+                            public void onAdLoaded() {
+                                mInterstitialAd.show();
                             }
 
                             @Override
-                            public void onInterstitialDismissed(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-                                fInterstitialAd.show();
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
+                            public void onAdFailedToLoad(int errorCode) {
+                                //Do nothing here
                             }
                         });
-                        fInterstitialAd.loadAd();
+                        mInterstitialAd.loadAd(new AdRequest.Builder().build());
                     }
                 }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+                    fInterstitialAd.show();
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
+                }
             });
-            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            fInterstitialAd.loadAd();
         }
     }
 
