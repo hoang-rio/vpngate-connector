@@ -111,7 +111,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_ADS) {
-            return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, true));
+            return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, false));
         }
         return new VHTypeVPN(layoutInflater.inflate(R.layout.item_vpn, parent, false));
     }
