@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onResume() {
         super.onResume();
-        if (currentUrl.equals("home")) {
+        if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
             initState();
         }
     }
