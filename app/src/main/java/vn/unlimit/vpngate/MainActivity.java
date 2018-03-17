@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private Menu mMenu;
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private boolean disallowLoadHome = false;
-    private com.facebook.ads.AdView fAdView;
+    private AdView adView;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -129,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         super.onCreate(savedInstanceState);
         dataUtil = ((App) getApplication()).getDataUtil();
         if (savedInstanceState != null) {
-            disallowLoadHome = true;
             isLoading = false;
             currentUrl = savedInstanceState.getString("currentUrl");
             currentTitle = savedInstanceState.getString("currentTitle");
             vpnGateConnectionList = dataUtil.getConnectionsCache();
+            disallowLoadHome = vpnGateConnectionList != null && vpnGateConnectionList.size() > 0;
         }
         Fabric.with(this, new Crashlytics());
         Fabric.with(this, new Answers());
@@ -163,7 +163,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        initAdMob();
+        if (App.isAdMobPrimary()) {
+            initAdMob();
+        } else {
+            initFan();
+        }
     }
 
     private void checkStatusMenu() {
@@ -178,10 +182,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         try {
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this, dataUtil.getAdMobId());
-                final AdView adView = new AdView(this);
+                adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.BANNER);
                 if (BuildConfig.DEBUG) {
-                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
+                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 } else {
                     adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
                 }
@@ -189,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         adView.setVisibility(View.GONE);
-                        fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                        final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
                         fAdView.setAdListener(new com.facebook.ads.AdListener() {
                             @Override
                             public void onError(Ad ad, AdError adError) {
@@ -225,13 +229,64 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
+    private void initFan() {
+        try {
+            if (dataUtil.hasAds()) {
+                MobileAds.initialize(this, dataUtil.getAdMobId());
+                final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                fAdView.setAdListener(new com.facebook.ads.AdListener() {
+                    @Override
+                    public void onError(Ad ad, AdError adError) {
+                        fAdView.setVisibility(View.GONE);
+                        adView = new AdView(getApplicationContext());
+                        adView.setAdSize(AdSize.BANNER);
+                        if (BuildConfig.DEBUG) {
+                            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                        } else {
+                            adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
+                        }
+                        adView.setAdListener(new AdListener() {
+                            @Override
+                            public void onAdFailedToLoad(int errorCode) {
+                                hideAdContainer();
+                            }
+                        });
+                        ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(adView);
+                        adView.loadAd(new AdRequest.Builder().build());
+                    }
+
+                    @Override
+                    public void onAdLoaded(Ad ad) {
+                    }
+
+                    @Override
+                    public void onAdClicked(Ad ad) {
+
+                    }
+
+                    @Override
+                    public void onLoggingImpression(Ad ad) {
+
+                    }
+                });
+                ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(fAdView);
+                fAdView.loadAd();
+            } else {
+                hideAdContainer();
+                navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void hideAdContainer() {
         try {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
-            if (fAdView != null) {
-                fAdView.setVisibility(View.GONE);
+            if (adView != null) {
+                adView.setVisibility(View.GONE);
             }
             findViewById(R.id.ad_container_home).setVisibility(View.GONE);
             frameContent.setLayoutParams(params);
@@ -283,6 +338,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onResume() {
         super.onResume();
+        if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
+            initState();
+        }
     }
 
     @Override

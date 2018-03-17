@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
+import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
@@ -41,6 +43,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int lastPosition = 0;
     private DataUtil mDataUtil;
     private int adsPerItem = 3;
+    private Activity mActivity;
 
     public VPNGateListAdapter(Context context, DataUtil dataUtil) {
         mDataUtil = dataUtil;
@@ -107,69 +110,114 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return _list.size();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_ADS) {
             return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, false));
         }
-        View itemView = layoutInflater.inflate(R.layout.item_vpn, parent, false);
-        return new VHTypeVPN(itemView);
+        return new VHTypeVPN(layoutInflater.inflate(R.layout.item_vpn, parent, false));
     }
 
     private class VHTypeAds extends RecyclerView.ViewHolder {
-        private View mItemView;
 
         VHTypeAds(View itemView) {
             super(itemView);
-            mItemView = itemView;
         }
 
         void bindViewHolder() {
             try {
-                final AdView v = new AdView(mContext);
-                v.setAdSize(AdSize.SMART_BANNER);
-                if (BuildConfig.DEBUG) {
-                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111_");
-                } else {
-                    v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
-                }
-                float density = mContext.getResources().getDisplayMetrics().density;
-                int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
-                AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
-                v.setLayoutParams(params);
-                v.setAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int num) {
-                        v.setVisibility(View.GONE);
-                        final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
-                        fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-                                mItemView.setVisibility(View.GONE);
-                                fAdView.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
-                            }
-                        });
-                        ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(fAdView);
-                        fAdView.loadAd();
+                if (App.isAdMobPrimary()) {
+                    final AdView v = new AdView(mContext);
+                    v.setAdSize(AdSize.LARGE_BANNER);
+                    if (BuildConfig.DEBUG) {
+                        v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    } else {
+                        v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
                     }
-                });
-                ((RelativeLayout) mItemView.findViewById(R.id.ad_container)).addView(v);
-                v.loadAd(new AdRequest.Builder().build());
+                    float density = mContext.getResources().getDisplayMetrics().density;
+                    int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
+                    AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
+                    v.setLayoutParams(params);
+                    v.setAdListener(new AdListener() {
+                        @Override
+                        public void onAdFailedToLoad(int errorCode) {
+                            v.setVisibility(View.GONE);
+                            final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
+                            fAdView.setAdListener(new com.facebook.ads.AdListener() {
+                                @Override
+                                public void onError(Ad ad, AdError adError) {
+                                    itemView.setVisibility(View.GONE);
+                                    fAdView.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAdLoaded(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onAdClicked(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onLoggingImpression(Ad ad) {
+
+                                }
+                            });
+                            ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(fAdView);
+                            fAdView.loadAd();
+                        }
+                    });
+                    ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(v);
+                    v.loadAd(new AdRequest.Builder().build());
+                } else {
+                    final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
+                    fAdView.setAdListener(new com.facebook.ads.AdListener() {
+                        @Override
+                        public void onError(Ad ad, AdError adError) {
+                            fAdView.setVisibility(View.GONE);
+                            final AdView v = new AdView(mContext);
+                            v.setAdSize(AdSize.LARGE_BANNER);
+                            if (BuildConfig.DEBUG) {
+                                v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                            } else {
+                                v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
+                            }
+                            float density = mContext.getResources().getDisplayMetrics().density;
+                            int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
+                            AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
+                            v.setLayoutParams(params);
+                            v.setAdListener(new AdListener() {
+                                @Override
+                                public void onAdFailedToLoad(int errorCode) {
+                                    itemView.setVisibility(View.GONE);
+                                    v.setVisibility(View.GONE);
+                                }
+                            });
+                            ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(v);
+                            v.loadAd(new AdRequest.Builder().build());
+                        }
+
+                        @Override
+                        public void onAdLoaded(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
+
+                        }
+                    });
+                    ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(fAdView);
+                    fAdView.loadAd();
+                }
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }

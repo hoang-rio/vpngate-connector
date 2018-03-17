@@ -88,6 +88,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private InterstitialAd mInterstitialAd;
     private VpnProfile vpnProfile;
     private com.facebook.ads.InterstitialAd fInterstitialAd;
+    private boolean mDestroyCalled = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -104,16 +105,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         mVpnGateConnection = dataUtil.getLastVPNConnection();
         bindData();
         registerBroadCast();
-        if (dataUtil.hasAds()) {
-            mInterstitialAd = new InterstitialAd(getContext());
-            if (BuildConfig.DEBUG) {
-                //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712_");
-            } else {
-                //Real
-                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
-            }
-        }
         return rootView;
     }
 
@@ -154,8 +145,16 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void loadAds() {
-        if (mInterstitialAd != null && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+    private void loadAdMob() {
+        if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+            mInterstitialAd = new InterstitialAd(getContext());
+            if (BuildConfig.DEBUG) {
+                //Test
+                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+            } else {
+                //Real
+                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
+            }
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
@@ -164,42 +163,106 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
                 @Override
                 public void onAdFailedToLoad(int errCode) {
-                    fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
-                    fInterstitialAd.setAdListener(new InterstitialAdListener() {
-                        @Override
-                        public void onInterstitialDisplayed(Ad ad) {
+                    if (!mDestroyCalled) {
+                        fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
+                        fInterstitialAd.setAdListener(new InterstitialAdListener() {
+                            @Override
+                            public void onInterstitialDisplayed(Ad ad) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onInterstitialDismissed(Ad ad) {
+                            @Override
+                            public void onInterstitialDismissed(Ad ad) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onError(Ad ad, AdError adError) {
+                            @Override
+                            public void onError(Ad ad, AdError adError) {
+                            }
 
-                        }
+                            @Override
+                            public void onAdLoaded(Ad ad) {
+                                fInterstitialAd.show();
+                            }
 
-                        @Override
-                        public void onAdLoaded(Ad ad) {
-                            fInterstitialAd.show();
-                        }
+                            @Override
+                            public void onAdClicked(Ad ad) {
 
-                        @Override
-                        public void onAdClicked(Ad ad) {
+                            }
 
-                        }
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
 
-                        @Override
-                        public void onLoggingImpression(Ad ad) {
-
-                        }
-                    });
-                    fInterstitialAd.loadAd();
+                            }
+                        });
+                        fInterstitialAd.loadAd();
+                    }
                 }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    private void loadFan() {
+        if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+            fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
+            fInterstitialAd.setAdListener(new InterstitialAdListener() {
+                @Override
+                public void onInterstitialDisplayed(Ad ad) {
+
+                }
+
+                @Override
+                public void onInterstitialDismissed(Ad ad) {
+
+                }
+
+                @Override
+                public void onError(Ad ad, AdError adError) {
+                    try {
+                        if (!mDestroyCalled) {
+                            mInterstitialAd = new InterstitialAd(getContext());
+                            if (BuildConfig.DEBUG) {
+                                //Test
+                                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                            } else {
+                                //Real
+                                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
+                            }
+                            mInterstitialAd.setAdListener(new AdListener() {
+                                @Override
+                                public void onAdLoaded() {
+                                    mInterstitialAd.show();
+                                }
+
+                                @Override
+                                public void onAdFailedToLoad(int errCode) {
+
+                                }
+                            });
+                        }
+                        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+                    fInterstitialAd.show();
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
+                }
+            });
+            fInterstitialAd.loadAd();
         }
     }
 
@@ -226,7 +289,11 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     btnOnOff.setActivated(false);
                     txtStatus.setText(R.string.disconnecting);
                 } else {
-                    loadAds();
+                    if (App.isAdMobPrimary()) {
+                        loadAdMob();
+                    } else {
+                        loadFan();
+                    }
                     Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
                             .putCustomAttribute("type", "connect from status")
                             .putCustomAttribute("ip", mVpnGateConnection.getIp())
@@ -320,6 +387,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mDestroyCalled = true;
         try {
             getActivity().unregisterReceiver(brStatus);
             getActivity().unregisterReceiver(trafficReceiver);
