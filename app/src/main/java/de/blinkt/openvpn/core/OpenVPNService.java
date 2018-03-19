@@ -425,7 +425,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         ProfileManager.setConnectedVpnProfile(this, mProfile);
         /* TODO: At the moment we have no way to handle asynchronous PW input
          * Fixing will also allow to handle challenge/response authentication */
-        if (mProfile.needUserPWInput(true) != 0)
+        if (mProfile != null && mProfile.needUserPWInput(true) != 0)
             return START_NOT_STICKY;
 
         return START_STICKY;
