@@ -39,6 +39,10 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+        <!--Facebook ads activity-->
+        <activity
+            android:name="com.facebook.ads.AudienceNetworkActivity"
+            android:hardwareAccelerated="true" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6076c879f71c414d238d016bbba4f52daf45970a" />
