@@ -91,6 +91,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private InterstitialAd mInterstitialAd;
     private com.facebook.ads.InterstitialAd fInterstitialAd;
     private AdView adView;
+    private com.facebook.ads.AdView fAdView;
     private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -189,7 +190,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             adView.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
-                    final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                    fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
                     fAdView.setAdListener(new com.facebook.ads.AdListener() {
                         @Override
                         public void onError(Ad ad, AdError adError) {
@@ -265,7 +266,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void initFan() {
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
-            final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+            fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
             fAdView.setAdListener(new com.facebook.ads.AdListener() {
                 @Override
                 public void onError(Ad ad, AdError adError) {
@@ -359,6 +360,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
             if (adView != null) {
                 adView.setVisibility(View.GONE);
+            }
+            if (fAdView != null) {
+                fAdView.setVisibility(View.GONE);
             }
             scrollView.setLayoutParams(params);
         } catch (Exception e) {

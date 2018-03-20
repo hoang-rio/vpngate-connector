@@ -27,6 +27,7 @@
 }
 # SearchView
 -keep class android.support.v7.widget.SearchView { *; }
+-keep class com.facebook.ads.AudienceNetworkActivity
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics

@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private boolean disallowLoadHome = false;
     private AdView adView;
+    private com.facebook.ads.AdView fAdView;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         adView.setVisibility(View.GONE);
-                        final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                        fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
                         fAdView.setAdListener(new com.facebook.ads.AdListener() {
                             @Override
                             public void onError(Ad ad, AdError adError) {
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         try {
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this, dataUtil.getAdMobId());
-                final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
                 fAdView.setAdListener(new com.facebook.ads.AdListener() {
                     @Override
                     public void onError(Ad ad, AdError adError) {
@@ -287,6 +288,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
             if (adView != null) {
                 adView.setVisibility(View.GONE);
+            }
+            if (fAdView != null) {
+                fAdView.setVisibility(View.GONE);
             }
             findViewById(R.id.ad_container_home).setVisibility(View.GONE);
             frameContent.setLayoutParams(params);
