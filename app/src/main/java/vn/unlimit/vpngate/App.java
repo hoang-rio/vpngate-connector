@@ -33,8 +33,8 @@ public class App extends Application {
         super.onCreate();
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
-            Fabric.with(this, new Answers());
         }
+        Fabric.with(this, new Answers());
         instance = this;
         dataUtil = new DataUtil(this);
         isAdMobPrimary = dataUtil.getBooleanSetting(DataUtil.CONFIG_ADMOB_PRIMARY, isAdMobPrimary);
