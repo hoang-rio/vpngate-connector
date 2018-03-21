@@ -29,7 +29,6 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.SearchEvent;
@@ -41,7 +40,6 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HelpFragment;
@@ -136,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             vpnGateConnectionList = dataUtil.getConnectionsCache();
             disallowLoadHome = vpnGateConnectionList != null && vpnGateConnectionList.size() > 0;
         }
-        Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Answers());
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

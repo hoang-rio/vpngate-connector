@@ -25,7 +25,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.facebook.ads.Ad;
@@ -49,7 +48,6 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
-import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
@@ -125,8 +123,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Answers());
         dataUtil = ((App) getApplication()).getDataUtil();
         if (getIntent().getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             mVpnGateConnection = dataUtil.getLastVPNConnection();

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -12,7 +13,7 @@ import vn.unlimit.vpngate.ultils.DataUtil;
 public class App extends Application {
 
     private static App instance;
-    private static boolean isAdMobPrimary = false;
+    private static boolean isAdMobPrimary = true;
     private DataUtil dataUtil;
 
     public static String getResourceString(int resId) {
@@ -30,11 +31,13 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (!BuildConfig.DEBUG)
+        if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
-
+        }
+        Fabric.with(this, new Answers());
         instance = this;
         dataUtil = new DataUtil(this);
+        isAdMobPrimary = dataUtil.getBooleanSetting(DataUtil.CONFIG_ADMOB_PRIMARY, isAdMobPrimary);
         dataUtil.getIsAmobPrimary(new RequestListener() {
             @Override
             public void onSuccess(Object result) {

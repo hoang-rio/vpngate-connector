@@ -1,6 +1,5 @@
 package vn.unlimit.vpngate.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +42,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int lastPosition = 0;
     private DataUtil mDataUtil;
     private int adsPerItem = 3;
-    private Activity mActivity;
 
     public VPNGateListAdapter(Context context, DataUtil dataUtil) {
         mDataUtil = dataUtil;
@@ -127,9 +125,10 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         void bindViewHolder() {
             try {
+                final RelativeLayout adContainer = itemView.findViewById(R.id.ad_container);
                 if (App.isAdMobPrimary()) {
                     final AdView v = new AdView(mContext);
-                    v.setAdSize(AdSize.LARGE_BANNER);
+                    v.setAdSize(AdSize.SMART_BANNER);
                     if (BuildConfig.DEBUG) {
                         v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                     } else {
@@ -166,11 +165,13 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                                 }
                             });
-                            ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(fAdView);
+                            adContainer.removeAllViews();
+                            adContainer.addView(fAdView);
                             fAdView.loadAd();
                         }
                     });
-                    ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(v);
+                    adContainer.removeAllViews();
+                    adContainer.addView(v);
                     v.loadAd(new AdRequest.Builder().build());
                 } else {
                     final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
@@ -196,7 +197,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     v.setVisibility(View.GONE);
                                 }
                             });
-                            ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(v);
+                            adContainer.removeAllViews();
+                            adContainer.addView(v);
                             v.loadAd(new AdRequest.Builder().build());
                         }
 
@@ -215,7 +217,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                         }
                     });
-                    ((RelativeLayout) itemView.findViewById(R.id.ad_container)).addView(fAdView);
+                    adContainer.removeAllViews();
+                    adContainer.addView(fAdView);
                     fAdView.loadAd();
                 }
             } catch (IllegalStateException e) {
