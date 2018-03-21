@@ -1,6 +1,5 @@
 package vn.unlimit.vpngate.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +42,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int lastPosition = 0;
     private DataUtil mDataUtil;
     private int adsPerItem = 3;
-    private Activity mActivity;
 
     public VPNGateListAdapter(Context context, DataUtil dataUtil) {
         mDataUtil = dataUtil;
