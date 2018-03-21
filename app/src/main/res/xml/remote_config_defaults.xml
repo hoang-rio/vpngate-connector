@@ -2,6 +2,6 @@
 <defaultsMap>
     <entry>
         <key>vpn_admob_primary</key>
-        <value>false</value>
+        <value>true</value>
     </entry>
 </defaultsMap>

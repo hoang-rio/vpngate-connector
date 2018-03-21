@@ -89,6 +89,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private VpnProfile vpnProfile;
     private com.facebook.ads.InterstitialAd fInterstitialAd;
     private boolean mDestroyCalled = false;
+    private Context mContext;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -116,6 +117,12 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        mContext = context;
+        super.onAttach(context);
     }
 
     private void bindData() {
@@ -147,7 +154,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
     private void loadAdMob() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            mInterstitialAd = new InterstitialAd(getContext());
+            mInterstitialAd = new InterstitialAd(mContext);
             if (BuildConfig.DEBUG) {
                 //Test
                 mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -164,7 +171,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onAdFailedToLoad(int errCode) {
                     if (!mDestroyCalled) {
-                        fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
+                        fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_status));
                         fInterstitialAd.setAdListener(new InterstitialAdListener() {
                             @Override
                             public void onInterstitialDisplayed(Ad ad) {
@@ -205,7 +212,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
     private void loadFan() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            fInterstitialAd = new com.facebook.ads.InterstitialAd(getContext(), getString(R.string.fan_full_screen_status));
+            fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_status));
             fInterstitialAd.setAdListener(new InterstitialAdListener() {
                 @Override
                 public void onInterstitialDisplayed(Ad ad) {
@@ -221,7 +228,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 public void onError(Ad ad, AdError adError) {
                     try {
                         if (!mDestroyCalled) {
-                            mInterstitialAd = new InterstitialAd(getContext());
+                            mInterstitialAd = new InterstitialAd(mContext);
                             if (BuildConfig.DEBUG) {
                                 //Test
                                 mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -441,7 +448,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
     private void receiveStatus(Intent intent) {
         try {
-            txtStatus.setText(VpnStatus.getLastCleanLogMessage(getActivity().getApplicationContext()));
+            txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
             changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
 
             if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
@@ -498,7 +505,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             if (resultCode == Activity.RESULT_OK) {
                 switch (requestCode) {
                     case DetailActivity.START_VPN_PROFILE:
-                        VPNLaunchHelper.startOpenVpn(vpnProfile, getActivity().getBaseContext());
+                        VPNLaunchHelper.startOpenVpn(vpnProfile, mContext);
                         break;
                 }
             }

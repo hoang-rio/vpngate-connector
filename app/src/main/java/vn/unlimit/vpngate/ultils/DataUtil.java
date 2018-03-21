@@ -41,7 +41,7 @@ public class DataUtil {
     public static final String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
     public static final String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
     public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
-    private static String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
+    public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -304,7 +304,9 @@ public class DataUtil {
                                     mFirebaseRemoteConfig.activateFetched();
                                 }
                                 if (requestListener != null) {
-                                    requestListener.onSuccess(mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY));
+                                    boolean result = mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY);
+                                    setBooleanSetting(CONFIG_ADMOB_PRIMARY, result);
+                                    requestListener.onSuccess(result);
                                 }
                             }
                         });

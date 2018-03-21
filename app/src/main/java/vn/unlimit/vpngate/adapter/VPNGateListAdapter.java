@@ -129,7 +129,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             try {
                 if (App.isAdMobPrimary()) {
                     final AdView v = new AdView(mContext);
-                    v.setAdSize(AdSize.LARGE_BANNER);
+                    v.setAdSize(AdSize.SMART_BANNER);
                     if (BuildConfig.DEBUG) {
                         v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                     } else {
