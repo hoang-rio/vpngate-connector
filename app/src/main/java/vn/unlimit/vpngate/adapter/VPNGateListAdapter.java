@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.ads.Ad;
@@ -125,7 +125,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         void bindViewHolder() {
             try {
-                final RelativeLayout adContainer = itemView.findViewById(R.id.ad_container);
+                final LinearLayout adContainer = itemView.findViewById(R.id.ad_container);
                 if (App.isAdMobPrimary()) {
                     final AdView v = new AdView(mContext);
                     v.setAdSize(AdSize.SMART_BANNER);
@@ -134,10 +134,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     } else {
                         v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
                     }
-                    float density = mContext.getResources().getDisplayMetrics().density;
-                    int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
-                    AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
-                    v.setLayoutParams(params);
                     v.setAdListener(new AdListener() {
                         @Override
                         public void onAdFailedToLoad(int errorCode) {
