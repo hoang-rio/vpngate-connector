@@ -164,13 +164,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         lnContentDetail = findViewById(R.id.ln_content_detail);
         bindData();
         registerBroadCast();
-        if (App.isAdMobPrimary()) {
-            initAdMob();
-        } else {
-            initFan();
-        }
     }
-
     private void initAdMob() {
         if (dataUtil.hasAds()) {
             MobileAds.initialize(this, dataUtil.getAdMobId());
@@ -499,6 +493,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            if (App.isAdMobPrimary()) {
+                initAdMob();
+            } else {
+                initFan();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
