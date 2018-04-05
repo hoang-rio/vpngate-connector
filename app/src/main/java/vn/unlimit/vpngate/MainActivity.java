@@ -160,6 +160,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        if (App.isAdMobPrimary()) {
+            initAdMob();
+        } else {
+            initFan();
+        }
     }
 
     private void checkStatusMenu() {
@@ -333,11 +338,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onResume() {
         super.onResume();
-        if (App.isAdMobPrimary()) {
-            initAdMob();
-        } else {
-            initFan();
-        }
         if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
             initState();
         }
