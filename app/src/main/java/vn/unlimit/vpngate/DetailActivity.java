@@ -90,6 +90,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private com.facebook.ads.InterstitialAd fInterstitialAd;
     private AdView adView;
     private com.facebook.ads.AdView fAdView;
+    private AdView adViewBellow;
+    private com.facebook.ads.AdView fAdViewBellow;
     private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -215,7 +217,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
             adView.loadAd(new AdRequest.Builder().build());
             //Banner bellow
-            final AdView adViewBellow = new AdView(getApplicationContext());
+            adViewBellow = new AdView(getApplicationContext());
             if (BuildConfig.DEBUG) {
                 adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             } else {
@@ -226,7 +228,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     adViewBellow.setVisibility(View.GONE);
-                    final com.facebook.ads.AdView fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
+                    fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
                     fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
                         @Override
                         public void onError(Ad ad, AdError adError) {
@@ -303,12 +305,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
             fAdView.loadAd();
             //Banner bellow
-            final com.facebook.ads.AdView fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
+            fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
             fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
                 @Override
                 public void onError(Ad ad, AdError adError) {
                     fAdViewBellow.setVisibility(View.GONE);
-                    final AdView adViewBellow = new AdView(getApplicationContext());
+                    adViewBellow = new AdView(getApplicationContext());
                     if (BuildConfig.DEBUG) {
                         adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                     } else {
