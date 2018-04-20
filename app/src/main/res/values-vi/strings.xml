@@ -97,4 +97,5 @@
     <string name="connect_one_warning">Bạn cần kết nối tới ít nhất một máy chủ VPN để có thể truy cập chức năng này</string>
     <string name="disconnected">Đã ngắt kết nối</string>
     <string name="state_connected">Đã kết nối</string>
+    <string name="feature_available_in_pro">Tính năng này chỉ khả dụng trên phiên bản Pro</string>
 </resources>

@@ -214,6 +214,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     fAdView.loadAd();
                 }
             });
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            adView.setLayoutParams(params);
             ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
             adView.loadAd(new AdRequest.Builder().build());
             //Banner bellow
@@ -254,6 +258,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     fAdViewBellow.loadAd();
                 }
             });
+            adViewBellow.setLayoutParams(params);
             lnContentDetail.addView(adViewBellow);
             adViewBellow.loadAd(new AdRequest.Builder().build());
         } else {

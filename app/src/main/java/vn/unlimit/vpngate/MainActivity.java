@@ -446,12 +446,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             Toast.makeText(this, getResources().getText(R.string.feature_not_available), Toast.LENGTH_LONG).show();
             return true;
         }
-        switch (item.getItemId()) {
-            case R.id.action_sort:
+        if (item.getItemId() == R.id.action_sort) {
                 SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
                 sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
                     @Override
                     public void onApplyClick(String sortProperty, int sortType) {
+                        if(dataUtil.hasAds()) {
+                            Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         mSortProperty = sortProperty;
                         mSortType = sortType;
                         dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
