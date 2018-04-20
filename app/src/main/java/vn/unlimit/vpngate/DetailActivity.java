@@ -259,7 +259,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         fAdViewBellow.loadAd();
                     }
                 });
-                adViewBellow.setLayoutParams(params);
                 lnContentDetail.addView(adViewBellow);
                 adViewBellow.loadAd(new AdRequest.Builder().build());
             } else {
