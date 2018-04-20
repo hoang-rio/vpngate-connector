@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
     private Button btnClose;
     private DataUtil dataUtil;
 
-    public static MessageDialog newInstance(String message, DataUtil dataUtil) {
+    public static MessageDialog newInstance(String message, @NonNull DataUtil dataUtil) {
         MessageDialog f = new MessageDialog();
         f.operatorMessage = message;
         f.dataUtil = dataUtil;
@@ -35,7 +36,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.layout_message, container, false);
         txtOpMessage = rootView.findViewById(R.id.txt_message);
         txtOpMessage.setText(operatorMessage);
@@ -55,19 +56,27 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
 
     @Override
     public void onCheckedChanged(CompoundButton checkBox, boolean isChecked) {
-        if (checkBox.equals(chbHideAllMessage) && isChecked) {
-            dataUtil.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 5);
-        } else {
-            dataUtil.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0);
+        try {
+            if (checkBox.equals(chbHideAllMessage) && isChecked) {
+                dataUtil.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 5);
+            } else {
+                dataUtil.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-
-        // request a window without the title
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        try {
+            // request a window without the title
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return dialog;
     }
 }
