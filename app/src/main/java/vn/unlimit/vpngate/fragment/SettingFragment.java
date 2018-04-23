@@ -95,7 +95,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             return;
         }
         if (switchCompat.equals(swBlockAds)) {
-            dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, true);
+            Toast.makeText(getContext(), "This setting will apply on next connection time", Toast.LENGTH_SHORT).show();
+            dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked);
         }
     }
 
