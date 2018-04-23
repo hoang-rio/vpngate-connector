@@ -104,6 +104,11 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         btnClearStatistics = rootView.findViewById(R.id.btn_clear_statistics);
         btnClearStatistics.setOnClickListener(this);
         mVpnGateConnection = dataUtil.getLastVPNConnection();
+        if (App.isAdMobPrimary()) {
+            loadAdMob();
+        } else {
+            loadFan();
+        }
         bindData();
         registerBroadCast();
         return rootView;
@@ -151,7 +156,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             mVPNService.getManagement().stopVPN(false);
 
     }
-
+    private boolean isFullScreenAdsLoaded = false;
     private void loadAdMob() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
             mInterstitialAd = new InterstitialAd(mContext);
@@ -165,7 +170,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             mInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
-                    mInterstitialAd.show();
+                    isFullScreenAdsLoaded = true;
                 }
 
                 @Override
@@ -189,7 +194,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
                             @Override
                             public void onAdLoaded(Ad ad) {
-                                fInterstitialAd.show();
+                                isFullScreenAdsLoaded = true;
                             }
 
                             @Override
@@ -239,7 +244,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                             mInterstitialAd.setAdListener(new AdListener() {
                                 @Override
                                 public void onAdLoaded() {
-                                    mInterstitialAd.show();
+                                    isFullScreenAdsLoaded = true;
                                 }
 
                                 @Override
@@ -256,7 +261,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
                 @Override
                 public void onAdLoaded(Ad ad) {
-                    fInterstitialAd.show();
+                    isFullScreenAdsLoaded = true;
                 }
 
                 @Override
@@ -272,7 +277,23 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             fInterstitialAd.loadAd();
         }
     }
-
+    private void showAds(){
+        if(dataUtil.hasAds() && isFullScreenAdsLoaded){
+            if (App.isAdMobPrimary()) {
+                if(mInterstitialAd!=null && mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                }else if(fInterstitialAd!=null && fInterstitialAd.isAdLoaded()){
+                    fInterstitialAd.show();
+                }
+            } else {
+                if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
+                    fInterstitialAd.show();
+                }else if(mInterstitialAd!=null && mInterstitialAd.isLoaded()){
+                    mInterstitialAd.show();
+                }
+            }
+        }
+    }
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearStatistics)) {
@@ -296,11 +317,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     btnOnOff.setActivated(false);
                     txtStatus.setText(R.string.disconnecting);
                 } else {
-                    if (App.isAdMobPrimary()) {
-                        loadAdMob();
-                    } else {
-                        loadFan();
-                    }
+                    showAds();
                     Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
                             .putCustomAttribute("type", "connect from status")
                             .putCustomAttribute("ip", mVpnGateConnection.getIp())
