@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +27,14 @@ import vn.unlimit.vpngate.ultils.SpinnerInit;
  * Created by dongh on 31/01/2018.
  */
 
-public class SettingFragment extends Fragment implements View.OnClickListener, AppCompatSpinner.OnItemSelectedListener {
+public class SettingFragment extends Fragment implements View.OnClickListener, AppCompatSpinner.OnItemSelectedListener, SwitchCompat.OnCheckedChangeListener {
     private AppCompatSpinner spinnerCacheTime;
     private Button btnClearCache;
     private View lnClearCache;
     private DataUtil dataUtil;
     private TextView txtCacheExpires;
+    private SwitchCompat swBlockAds;
+    private View lnBlockAds;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
@@ -40,6 +44,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         spinnerCacheTime.setOnItemSelectedListener(this);
         btnClearCache = rootView.findViewById(R.id.btn_clear_cache);
         btnClearCache.setOnClickListener(this);
+        lnBlockAds = rootView.findViewById(R.id.ln_block_ads);
+        lnBlockAds.setOnClickListener(this);
+        swBlockAds = rootView.findViewById(R.id.sw_block_ads);
+        swBlockAds.setOnCheckedChangeListener(this);
+        swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false));
         lnClearCache = rootView.findViewById(R.id.ln_clear_cache);
         txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
         SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
@@ -74,12 +83,29 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             } else {
                 Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_error), Toast.LENGTH_SHORT).show();
             }
+        } else if (view.equals(lnBlockAds)) {
+            swBlockAds.setChecked(!swBlockAds.isChecked());
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
+        if (dataUtil.hasAds()) {
+            Toast.makeText(getContext(), getString(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (switchCompat.equals(swBlockAds)) {
+            dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, true);
         }
     }
 
     private void sendClearCache() {
-        Intent intent = new Intent(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
-        getContext().sendBroadcast(intent);
+        try {
+            Intent intent = new Intent(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
+            getContext().sendBroadcast(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

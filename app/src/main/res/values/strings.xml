@@ -97,6 +97,8 @@
     <string name="connect_one_warning">You need connect to at least one VPN Server before access this function</string>
     <string name="disconnected">Disconnected</string>
     <string name="feature_available_in_pro">This feature only available in Pro version</string>
+    <string name="block_ads_setting_label">Block Ads (Pro only)</string>
+    <string name="block_ads_setting_hint">Block ads when VPN is connected use DNS</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>
@@ -111,4 +113,7 @@
     <string name="fan_full_screen" translatable="false">201696243934523_201696323934515</string>
     <string name="fan_full_screen_status" translatable="false">201696243934523_202300953874052</string>
     <string name="fan_banner_bellow_detail" translatable="false">201696243934523_202328370537977</string>
+    <!--Adguard DNS -->
+    <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
+    <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
 </resources>

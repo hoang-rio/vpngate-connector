@@ -29,6 +29,7 @@ import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -357,6 +358,11 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
             vpnProfile.mName = mVpnGateConnection.getName();
+            if(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)){
+                vpnProfile.mOverrideDNS = true;
+                vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
+                vpnProfile.mDNS2 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_alternative_cfg_key));
+            }
             ProfileManager.setTemporaryProfile(vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {
             e.printStackTrace();

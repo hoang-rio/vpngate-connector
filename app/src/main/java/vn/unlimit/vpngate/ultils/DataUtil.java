@@ -41,6 +41,7 @@ public class DataUtil {
     public static final String SETTING_CACHE_TIME_KEY = "SETTING_CACHE_TIME_KEY";
     public static final String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
     public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
+    public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
