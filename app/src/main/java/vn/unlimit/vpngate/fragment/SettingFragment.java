@@ -14,6 +14,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+
 import java.text.DateFormat;
 
 import vn.unlimit.vpngate.App;
@@ -47,8 +50,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         lnBlockAds = rootView.findViewById(R.id.ln_block_ads);
         lnBlockAds.setOnClickListener(this);
         swBlockAds = rootView.findViewById(R.id.sw_block_ads);
-        swBlockAds.setOnCheckedChangeListener(this);
         swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false));
+        swBlockAds.setOnCheckedChangeListener(this);
         lnClearCache = rootView.findViewById(R.id.ln_clear_cache);
         txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
         SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
@@ -99,6 +102,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         if (!dataUtil.hasAds() && switchCompat.equals(swBlockAds)) {
             Toast.makeText(getContext(), getText(R.string.setting_apply_on_next_connection_time), Toast.LENGTH_SHORT).show();
             dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked);
+            Answers.getInstance().logCustom(new CustomEvent("Change Block Ads Setting").putCustomAttribute("enabled", isChecked + ""));
         }
     }
 
