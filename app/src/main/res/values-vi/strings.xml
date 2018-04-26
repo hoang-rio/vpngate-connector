@@ -98,4 +98,7 @@
     <string name="disconnected">Đã ngắt kết nối</string>
     <string name="state_connected">Đã kết nối</string>
     <string name="feature_available_in_pro">Tính năng này chỉ khả dụng trên phiên bản Pro</string>
+    <string name="block_ads_setting_label">Chặn quảng cáo (Chỉ bản Pro)</string>
+    <string name="block_ads_setting_hint">Chặn quảng cáo trên tất cả ứng dụng, trình duyệt khi VPN được kết nối sử dụng DNS</string>
+    <string name="setting_apply_on_next_connection_time">This setting will apply on next connection time</string>
 </resources>

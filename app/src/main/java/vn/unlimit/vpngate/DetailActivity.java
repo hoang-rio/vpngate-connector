@@ -36,6 +36,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -265,7 +266,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else {
                 hideAdContainer();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -357,7 +358,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else {
                 hideAdContainer();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -509,15 +510,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResume() {
-        super.onResume();
         try {
+            super.onResume();
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -605,9 +605,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
     }
+
     private boolean isFullScreenAdLoaded = false;
-    private void initInterstitialAd(){
-        if(dataUtil.hasAds()){
+
+    private void initInterstitialAd() {
+        if (dataUtil.hasAds()) {
             try {
                 if (App.isAdMobPrimary()) {
                     mInterstitialAd = new InterstitialAd(getApplicationContext());
@@ -686,7 +688,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 mInterstitialAd.setAdListener(new AdListener() {
                                     @Override
                                     public void onAdLoaded() {
-                                       isFullScreenAdLoaded = true;
+                                        isFullScreenAdLoaded = true;
                                     }
                                 });
                             }
@@ -709,30 +711,31 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     });
                     fInterstitialAd.loadAd();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     private void loadAds() {
         try {
             if (dataUtil.hasAds() && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false) && isFullScreenAdLoaded) {
                 isShowAds = true;
                 if (App.isAdMobPrimary()) {
-                    if(mInterstitialAd!=null && mInterstitialAd.isLoaded()) {
+                    if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
                         mInterstitialAd.show();
-                    }else if(fInterstitialAd!=null && fInterstitialAd.isAdLoaded()){
+                    } else if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
                         fInterstitialAd.show();
                     }
                 } else {
                     if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
                         fInterstitialAd.show();
-                    }else if(mInterstitialAd!=null && mInterstitialAd.isLoaded()){
+                    } else if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
                         mInterstitialAd.show();
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -758,6 +761,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
             vpnProfile.mName = mVpnGateConnection.getName();
+            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
+                vpnProfile.mOverrideDNS = true;
+                vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
+                vpnProfile.mDNS2 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_alternative_cfg_key));
+            }
             ProfileManager.setTemporaryProfile(vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {
             e.printStackTrace();
