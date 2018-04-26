@@ -90,11 +90,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
-        if (dataUtil.hasAds()) {
+        if (dataUtil.hasAds() && isChecked) {
+            switchCompat.setChecked(false);
             Toast.makeText(getContext(), getString(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
             return;
         }
-        if (switchCompat.equals(swBlockAds)) {
+        //Only save setting in pro version
+        if (!dataUtil.hasAds() && switchCompat.equals(swBlockAds)) {
             Toast.makeText(getContext(), getText(R.string.setting_apply_on_next_connection_time), Toast.LENGTH_SHORT).show();
             dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked);
         }
