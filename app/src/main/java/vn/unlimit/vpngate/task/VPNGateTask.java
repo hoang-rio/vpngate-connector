@@ -18,7 +18,6 @@ import vn.unlimit.vpngate.request.RequestListener;
  */
 
 public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
-    private static String VPN_GATE_API_URL = "http://www.vpngate.net/api/iphone/";
     private RequestListener requestListener;
 
     @Override
@@ -27,7 +26,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
-            URL url = new URL(VPN_GATE_API_URL);
+            URL url = new URL("http://www.vpngate.net/api/iphone/");
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(3000);
             connection.setConnectTimeout(3000);

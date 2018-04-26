@@ -1,7 +1,9 @@
 package vn.unlimit.vpngate.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.SwitchCompat;
@@ -31,19 +33,18 @@ import vn.unlimit.vpngate.ultils.SpinnerInit;
  */
 
 public class SettingFragment extends Fragment implements View.OnClickListener, AppCompatSpinner.OnItemSelectedListener, SwitchCompat.OnCheckedChangeListener {
-    private AppCompatSpinner spinnerCacheTime;
     private Button btnClearCache;
     private View lnClearCache;
     private DataUtil dataUtil;
-    private TextView txtCacheExpires;
     private SwitchCompat swBlockAds;
     private View lnBlockAds;
+    private Context mContext;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
         View rootView = inflater.inflate(R.layout.fragment_setting, container, false);
-        dataUtil = ((App) getActivity().getApplication()).getDataUtil();
-        spinnerCacheTime = rootView.findViewById(R.id.spin_cache_time);
+        dataUtil = App.getInstance().getDataUtil();
+        AppCompatSpinner spinnerCacheTime = rootView.findViewById(R.id.spin_cache_time);
         spinnerCacheTime.setOnItemSelectedListener(this);
         btnClearCache = rootView.findViewById(R.id.btn_clear_cache);
         btnClearCache.setOnClickListener(this);
@@ -53,7 +54,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false));
         swBlockAds.setOnCheckedChangeListener(this);
         lnClearCache = rootView.findViewById(R.id.ln_clear_cache);
-        txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
+        TextView txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
         SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
         String[] listCacheTime = getResources().getStringArray(R.array.setting_cache_time);
         spinnerInit.setStringArray(listCacheTime,
@@ -74,7 +75,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
 
         return rootView;
     }
-
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mContext = context;
+    }
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearCache)) {
@@ -109,7 +114,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private void sendClearCache() {
         try {
             Intent intent = new Intent(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
-            getContext().sendBroadcast(intent);
+            mContext.sendBroadcast(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
