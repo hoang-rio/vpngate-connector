@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onCreate(@Nullable Bundle savedBundle) {
         super.onCreate(savedBundle);
         try {
-            dataUtil = ((App) getActivity().getApplication()).getDataUtil();
+            dataUtil = App.getInstance().getDataUtil();
             vpnGateListAdapter = new VPNGateListAdapter(mContext, dataUtil);
             handler = new Handler();
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     /**
      * Search by keyword
      *
-     * @param keyword
+     * @param keyword search keyword
      */
     public void filter(String keyword) {
         stopTask();

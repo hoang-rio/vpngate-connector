@@ -119,7 +119,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            dataUtil = ((App) getActivity().getApplication()).getDataUtil();
+            dataUtil = App.getInstance().getDataUtil();
         } catch (Exception e) {
             e.printStackTrace();
         }
