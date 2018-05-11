@@ -151,7 +151,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         try {
             String channelName = "VPN Gate Background Service";
             NotificationChannel chan = new NotificationChannel(channelId,
-                    channelName, NotificationManager.IMPORTANCE_DEFAULT);
+                    channelName, NotificationManager.IMPORTANCE_LOW);
             chan.setLightColor(getColor(R.color.colorPrimary));
             chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
