@@ -50,23 +50,27 @@ public class DataUtil {
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public DataUtil(Context context) {
-        mContext = context;
-        sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
-        gson = new Gson();
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        // [END enable_dev_mode]
+        try {
+            mContext = context;
+            sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
+            gson = new Gson();
+            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .build();
+            mFirebaseRemoteConfig.setConfigSettings(configSettings);
+            // [END enable_dev_mode]
 
-        // Set default Remote Config parameter values. An app uses the in-app default values, and
-        // when you need to adjust those defaults, you set an updated value for only the values you
-        // want to change in the Firebase console. See Best Practices in the README for more
-        // information.
-        // [START set_default_values]
-        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-        // [END set_default_values]
+            // Set default Remote Config parameter values. An app uses the in-app default values, and
+            // when you need to adjust those defaults, you set an updated value for only the values you
+            // want to change in the Firebase console. See Best Practices in the README for more
+            // information.
+            // [START set_default_values]
+            mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+            // [END set_default_values]
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
