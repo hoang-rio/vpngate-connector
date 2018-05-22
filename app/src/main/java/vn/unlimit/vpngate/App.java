@@ -54,9 +54,4 @@ public class App extends Application {
     public DataUtil getDataUtil() {
         return dataUtil;
     }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-    }
 }
