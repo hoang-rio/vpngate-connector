@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate.ultils;
+package vn.unlimit.vpngate.utils;
 
 import android.content.Context;
 import android.content.Intent;

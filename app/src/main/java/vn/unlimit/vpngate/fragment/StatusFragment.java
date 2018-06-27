@@ -47,9 +47,9 @@ import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
-import vn.unlimit.vpngate.ultils.DataUtil;
-import vn.unlimit.vpngate.ultils.PropertiesService;
-import vn.unlimit.vpngate.ultils.TotalTraffic;
+import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.PropertiesService;
+import vn.unlimit.vpngate.utils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/9/2018.

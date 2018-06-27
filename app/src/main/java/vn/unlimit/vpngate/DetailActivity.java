@@ -52,8 +52,8 @@ import de.blinkt.openvpn.core.VpnStatus;
 import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
-import vn.unlimit.vpngate.ultils.DataUtil;
-import vn.unlimit.vpngate.ultils.TotalTraffic;
+import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/5/2018.

@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate.ultils;
+package vn.unlimit.vpngate.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -43,6 +43,7 @@ public class DataUtil {
     public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
     public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
+    private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -280,6 +281,30 @@ public class DataUtil {
             return info != null;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean willShowDetailOpenAds(boolean checkToShow) {
+        //Stop this ads if setting is zero
+        int adsInterval = Integer.parseInt(FirebaseRemoteConfig.getInstance().getString(mContext.getString(R.string.ads_open_detail_interval_cfg_key)));
+        if (adsInterval == 0) {
+            return false;
+        }
+        long lastTimeShowAds = sharedPreferencesSetting.getLong(LAST_TIME_SHOW_DETAIL_BACK_ADS, 0);
+        Date currentTime = new Date();
+        Calendar showAdCal = Calendar.getInstance();
+        showAdCal.setTimeInMillis(lastTimeShowAds);
+        showAdCal.add(Calendar.MINUTE, adsInterval);
+        boolean checkValue = currentTime.after(showAdCal.getTime());
+        if (lastTimeShowAds == 0 || checkValue) { //Covert to seconds
+            //Set last show ads time
+            if (checkToShow) {
+                SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+                editor.putLong(LAST_TIME_SHOW_DETAIL_BACK_ADS, currentTime.getTime());
+                editor.apply();
+            }
+            return true;
         }
         return false;
     }

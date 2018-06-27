@@ -18,8 +18,11 @@ import android.view.ViewGroup;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
@@ -33,7 +36,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
-import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by hoangnd on 1/30/2018.
@@ -52,6 +55,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private String mKeyword = "";
     private Handler handler;
     private MainActivity mActivity;
+    private InterstitialAd interstitialAd;
+    private com.facebook.ads.InterstitialAd fInterstitialAd;
 
     public HomeFragment() {
 
@@ -62,6 +67,50 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onDestroy();
         if (vpnGateTask != null) {
             vpnGateTask.stop();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(false)) {
+            if (App.isAdMobPrimary()) {
+                if (interstitialAd == null) {
+                    interstitialAd = new InterstitialAd(mContext);
+                    if (BuildConfig.DEBUG) {
+                        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                    } else {
+                        interstitialAd.setAdUnitId(getString(R.string.admob_full_screen_detail));
+                    }
+                }
+                if (isShowedAd) {
+                    interstitialAd.loadAd(new AdRequest.Builder().build());
+                    isShowedAd = false;
+                }
+            } else {
+                if (fInterstitialAd == null) {
+                    fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_detail));
+                }
+                if (isShowedAd) {
+                    fInterstitialAd.loadAd();
+                    isShowedAd = false;
+                }
+            }
+        }
+    }
+
+    //Flag ads is showed need request new ad
+    private boolean isShowedAd = true;
+
+    private void checkAndShowAd() {
+        if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(true)) {
+            if (App.isAdMobPrimary() && interstitialAd != null && interstitialAd.isLoaded()) {
+                interstitialAd.show();
+                isShowedAd = true;
+            } else if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
+                fInterstitialAd.show();
+                isShowedAd = true;
+            }
         }
     }
 
@@ -176,6 +225,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
         startActivity(intent);
+        checkAndShowAd();
     }
 
     @Override

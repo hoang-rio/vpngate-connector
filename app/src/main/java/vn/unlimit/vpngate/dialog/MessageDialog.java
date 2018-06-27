@@ -15,7 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import vn.unlimit.vpngate.R;
-import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by hoangnd on 2/6/2018.

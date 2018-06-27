@@ -51,7 +51,7 @@ import de.blinkt.openvpn.core.VpnStatus.StateListener;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
-import vn.unlimit.vpngate.ultils.TotalTraffic;
+import vn.unlimit.vpngate.utils.TotalTraffic;
 
 import static de.blinkt.openvpn.core.NetworkSpace.ipAddress;
 import static de.blinkt.openvpn.core.VpnStatus.ConnectionStatus.LEVEL_CONNECTED;

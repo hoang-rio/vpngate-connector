@@ -25,8 +25,8 @@ import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.provider.BaseProvider;
-import vn.unlimit.vpngate.ultils.DataUtil;
-import vn.unlimit.vpngate.ultils.SpinnerInit;
+import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.SpinnerInit;
 
 /**
  * Created by dongh on 31/01/2018.

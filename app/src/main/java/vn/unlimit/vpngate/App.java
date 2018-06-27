@@ -1,14 +1,13 @@
 package vn.unlimit.vpngate;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.request.RequestListener;
-import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 public class App extends Application {
 

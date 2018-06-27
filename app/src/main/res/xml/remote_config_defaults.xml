@@ -12,4 +12,8 @@
         <key>vpn_dns_block_ads_alternative</key>
         <value>176.103.130.131</value>
     </entry>
+    <entry>
+        <key>vpn_detail_open_ads_interval</key>
+        <value>30</value>
+    </entry>
 </defaultsMap>

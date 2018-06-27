@@ -24,7 +24,7 @@ import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
-import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by hoangnd on 1/29/2018.

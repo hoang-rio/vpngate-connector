@@ -50,7 +50,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
-import vn.unlimit.vpngate.ultils.DataUtil;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     //    // Used to load the 'native-lib' library on application startup.
