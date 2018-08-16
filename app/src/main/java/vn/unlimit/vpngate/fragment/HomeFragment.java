@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
@@ -98,20 +99,33 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         }
     }
-
+    public void startDetailAct(VPNGateConnection vpnGateConnection) {
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, vpnGateConnection);
+        startActivity(intent);
+    }
     //Flag ads is showed need request new ad
     private boolean isShowedAd = true;
 
-    private void checkAndShowAd() {
+    private boolean checkAndShowAd(final VPNGateConnection vpnGateConnection) {
         if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(true)) {
             if (App.isAdMobPrimary() && interstitialAd != null && interstitialAd.isLoaded()) {
+                interstitialAd.setAdListener(new AdListener(){
+                    @Override
+                    public void onAdClosed() {
+                        startDetailAct(vpnGateConnection);
+                    }
+                });
                 interstitialAd.show();
                 isShowedAd = true;
             } else if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
                 fInterstitialAd.show();
+                startDetailAct(vpnGateConnection);
                 isShowedAd = true;
             }
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -222,10 +236,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Answers.getInstance().logCustom(new CustomEvent("Select server")
                 .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
                 .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
-        Intent intent = new Intent(getContext(), DetailActivity.class);
-        intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, (VPNGateConnection) o);
-        startActivity(intent);
-        checkAndShowAd();
+        if (!checkAndShowAd((VPNGateConnection) o)) {
+            startDetailAct((VPNGateConnection) o);
+        }
     }
 
     @Override
