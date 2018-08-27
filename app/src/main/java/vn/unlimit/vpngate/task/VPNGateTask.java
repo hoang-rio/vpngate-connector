@@ -26,7 +26,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
-            URL url = new URL("http://www.vpngate.net/api/iphone/");
+            URL url = new URL("https://www.vpngate.net/api/iphone/");
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(3000);
             connection.setConnectTimeout(3000);
