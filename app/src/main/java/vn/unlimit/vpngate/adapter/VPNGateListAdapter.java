@@ -256,7 +256,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 position = getRealPosition(position);
                 VPNGateConnection vpnGateConnection = _list.get(position);
                 GlideApp.with(mContext)
-                        .load("http://www.vpngate.net/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
+                        .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
                         .error(R.color.colorOverlay)
                         .into(imgFlag);

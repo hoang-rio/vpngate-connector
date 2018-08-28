@@ -471,7 +471,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (mVpnGateConnection != null) {
             try {
                 GlideApp.with(this)
-                        .load("http://www.vpngate.net/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
+                        .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
                         .error(R.color.colorOverlay)
                         .into(imgFlag);
