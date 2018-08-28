@@ -44,6 +44,7 @@ public class DataUtil {
     public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
+    public static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -348,5 +349,18 @@ public class DataUtil {
                 }
             }
         }
+    }
+
+    public String getBaseUrl() {
+        if (sharedPreferencesSetting.getBoolean(USE_ALTERNATIVE_SERVER, false)) {
+            return "https://vpn-bridge.chiasenhac.us";
+        }
+        return "https://www.vpngate.net";
+    }
+
+    public void setUseAlternativeServer(Boolean useAlternativeServer) {
+        SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+        editor.putBoolean(USE_ALTERNATIVE_SERVER, useAlternativeServer);
+        editor.apply();
     }
 }

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -19,6 +20,7 @@ import vn.unlimit.vpngate.request.RequestListener;
 
 public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     private RequestListener requestListener;
+    private Boolean isRetried = false;
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {
@@ -26,7 +28,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
-            URL url = new URL("https://www.vpngate.net/api/iphone/");
+            URL url = new URL(App.getInstance().getDataUtil().getBaseUrl() + "/api/iphone/");
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(3000);
             connection.setConnectTimeout(3000);
@@ -42,6 +44,11 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if (vpnGateConnectionList.size() == 0 && !isRetried) {
+            isRetried = true;
+            App.getInstance().getDataUtil().setUseAlternativeServer(true);
+            return this.doInBackground(voids);
         }
         return vpnGateConnectionList;
     }
