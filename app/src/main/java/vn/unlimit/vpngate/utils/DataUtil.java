@@ -352,9 +352,9 @@ public class DataUtil {
     }
 
     public String getBaseUrl() {
-        if (sharedPreferencesSetting.getBoolean(USE_ALTERNATIVE_SERVER, false)) {
-            return "https://vpn-bridge.chiasenhac.us";
-        }
+//        if (sharedPreferencesSetting.getBoolean(USE_ALTERNATIVE_SERVER, false)) {
+//            return "https://vpn-bridge.chiasenhac.us";
+//        }
         return "https://www.vpngate.net";
     }
 
