@@ -120,4 +120,5 @@
     <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
     <string name="ads_open_detail_interval_cfg_key" translatable="false">vpn_detail_open_ads_interval</string>
+    <string name="alternative_api_cfg_key" translatable="false">vpn_alternative_api</string>
 </resources>

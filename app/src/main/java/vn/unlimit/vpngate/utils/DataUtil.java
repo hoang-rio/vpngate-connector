@@ -352,9 +352,13 @@ public class DataUtil {
     }
 
     public String getBaseUrl() {
-//        if (sharedPreferencesSetting.getBoolean(USE_ALTERNATIVE_SERVER, false)) {
-//            return "https://vpn-bridge.chiasenhac.us";
-//        }
+        try {
+            if (sharedPreferencesSetting.getBoolean(USE_ALTERNATIVE_SERVER, false)) {
+                return FirebaseRemoteConfig.getInstance().getString(mContext.getString(R.string.alternative_api_cfg_key));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "https://www.vpngate.net";
     }
 

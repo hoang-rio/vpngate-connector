@@ -16,4 +16,8 @@
         <key>vpn_detail_open_ads_interval</key>
         <value>30</value>
     </entry>
+    <entry>
+        <key>vpn_alternative_api</key>
+        <value>https://vpn-brigde.chiasenhac.us</value>
+    </entry>
 </defaultsMap>
