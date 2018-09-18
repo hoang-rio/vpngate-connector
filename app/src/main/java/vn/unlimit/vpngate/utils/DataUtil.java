@@ -311,42 +311,40 @@ public class DataUtil {
     }
 
     public void getIsAmobPrimary(final RequestListener requestListener) {
-        if (hasAds()) {
-            try {
-                long cacheExpiration = 3600; // 1 hour in seconds.
-                // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-                // retrieve values from the service.
-                if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-                    cacheExpiration = 0;
-                }
+        try {
+            long cacheExpiration = 3600; // 1 hour in seconds.
+            // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
+            // retrieve values from the service.
+            if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+                cacheExpiration = 0;
+            }
 
-                // [START fetch_config_with_callback]
-                // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
-                // will use fetch data from the Remote Config service, rather than cached parameter values,
-                // if cached parameter values are more than cacheExpiration seconds old.
-                // See Best Practices in the README for more information.
-                mFirebaseRemoteConfig.fetch(cacheExpiration)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    // After config data is successfully fetched, it must be activated before newly fetched
-                                    // values are returned.
-                                    mFirebaseRemoteConfig.activateFetched();
-                                }
-                                if (requestListener != null) {
-                                    boolean result = mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY);
-                                    setBooleanSetting(CONFIG_ADMOB_PRIMARY, result);
-                                    requestListener.onSuccess(result);
-                                }
+            // [START fetch_config_with_callback]
+            // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
+            // will use fetch data from the Remote Config service, rather than cached parameter values,
+            // if cached parameter values are more than cacheExpiration seconds old.
+            // See Best Practices in the README for more information.
+            mFirebaseRemoteConfig.fetch(cacheExpiration)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                // After config data is successfully fetched, it must be activated before newly fetched
+                                // values are returned.
+                                mFirebaseRemoteConfig.activateFetched();
                             }
-                        });
+                            if (requestListener != null) {
+                                boolean result = mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY);
+                                setBooleanSetting(CONFIG_ADMOB_PRIMARY, result);
+                                requestListener.onSuccess(result);
+                            }
+                        }
+                    });
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (requestListener != null) {
-                    requestListener.onError("general error");
-                }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (requestListener != null) {
+                requestListener.onError("general error");
             }
         }
     }

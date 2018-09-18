@@ -30,8 +30,8 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         try {
             URL url = new URL(App.getInstance().getDataUtil().getBaseUrl() + "/api/iphone/");
             connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(3000);
-            connection.setConnectTimeout(3000);
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(10000);
             connection.setRequestProperty("Accept-Encoding", "identity");
             connection.connect();
             vpnGateConnectionList = getConnectionList(connection.getInputStream());
