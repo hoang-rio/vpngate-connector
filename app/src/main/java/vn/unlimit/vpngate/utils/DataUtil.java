@@ -44,7 +44,8 @@ public class DataUtil {
     public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
-    public static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
+    private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
+    private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
@@ -255,7 +256,7 @@ public class DataUtil {
 
     public boolean hasAds() {
         try {
-            return BuildConfig.FLAVOR.equals("free") && getAdMobId() != null;
+            return this.isAcceptedPrivacyPolicy() && BuildConfig.FLAVOR.equals("free") && getAdMobId() != null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -365,4 +366,15 @@ public class DataUtil {
         editor.putBoolean(USE_ALTERNATIVE_SERVER, useAlternativeServer);
         editor.apply();
     }
+
+    public boolean isAcceptedPrivacyPolicy() {
+        return sharedPreferencesSetting.getBoolean(ACCEPTED_PRIVACY_POLICY, false);
+    }
+
+    public void setAcceptedPrivacyPolicy(boolean isAccepted) {
+        SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
+        editor.putBoolean(ACCEPTED_PRIVACY_POLICY, isAccepted);
+        editor.apply();
+    }
+
 }
