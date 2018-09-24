@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <WebView
+        android:layout_above="@+id/ln_button"
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/ln_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:weightSum="2"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_accept"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.Button"
+            android:layout_weight="1"
+            android:background="@android:color/holo_green_dark"
+            android:text="@string/btn_accept"/>
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btn_decide"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_decide"
+            android:background="@android:color/holo_red_dark"
+            android:theme="@style/AppTheme.Button"/>
+    </LinearLayout>
+</RelativeLayout>

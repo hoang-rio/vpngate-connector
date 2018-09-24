@@ -121,4 +121,9 @@
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
     <string name="ads_open_detail_interval_cfg_key" translatable="false">vpn_detail_open_ads_interval</string>
     <string name="alternative_api_cfg_key" translatable="false">vpn_alternative_api</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy_title">Privacy policy</string>
+    <string name="btn_accept">Accept</string>
+    <string name="btn_decide">Decide and exit</string>
+    <string name="must_accept_privacy_policy">You need accept privacy policy to use our app</string>
 </resources>

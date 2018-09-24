@@ -101,4 +101,9 @@
     <string name="block_ads_setting_label">Chặn quảng cáo (Chỉ bản Pro)</string>
     <string name="block_ads_setting_hint">Chặn quảng cáo trên tất cả ứng dụng, trình duyệt khi VPN được kết nối sử dụng DNS</string>
     <string name="setting_apply_on_next_connection_time">Cài đặt sẽ được áp dụng vào lần kết nối tiếp theo</string>
+    <!-- Privacy policy -->
+    <string name="privacy_policy_title">Chính sách quyền riêng tư</string>
+    <string name="btn_accept">Đồng ý</string>
+    <string name="btn_decide">Từ chối và thoát</string>
+    <string name="must_accept_privacy_policy">Bạn cần đồng ý chính sách quyền riêng tư để sử dụng app</string>
 </resources>

@@ -44,6 +44,7 @@ import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HelpFragment;
 import vn.unlimit.vpngate.fragment.HomeFragment;
+import vn.unlimit.vpngate.fragment.PrivacyPolicyFragment;
 import vn.unlimit.vpngate.fragment.SettingFragment;
 import vn.unlimit.vpngate.fragment.StatusFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -300,6 +301,14 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
      */
     private void initState() {
         checkStatusMenu();
+        if (!dataUtil.isAcceptedPrivacyPolicy()) {
+            replaceFragment("privacy-policy");
+            return;
+        }
+        this.loadData();
+    }
+
+    private void loadData(){
         if (!disallowLoadHome) {
             if (DataUtil.isOnline(getApplicationContext())) {
                 lnNoNetwork.setVisibility(View.GONE);
@@ -496,6 +505,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        if (!dataUtil.isAcceptedPrivacyPolicy()) {
+            Toast.makeText(this, getText(R.string.must_accept_privacy_policy), Toast.LENGTH_LONG).show();
+            return true;
+        }
         selectedMenuItem = menuItem;
         disallowLoadHome = true;
         Answers.getInstance().logCustom(new CustomEvent("Drawer select")
@@ -581,6 +594,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 String tag = "";
                 String title = getResources().getString(R.string.app_name);
                 switch (url) {
+                    case "privacy-policy":
+                        fragment = new PrivacyPolicyFragment();
+                        tag = PrivacyPolicyFragment.class.getName();
+                        title = getString(R.string.privacy_policy_title);
+                        break;
                     case "home":
                         fragment = new HomeFragment();
                         tag = HomeFragment.class.getName();
@@ -620,6 +638,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void startHome() {
+        this.loadData();
+        replaceFragment("home");
     }
 
     private void toggleAction(boolean visible) {
