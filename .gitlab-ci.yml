@@ -26,7 +26,7 @@ build_debug:
   - ./gradlew assembleProDebug
   - cd app/build/outputs/apk/pro/$DEBUG
   - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro-debug.apk
-  - ls -al $CI_PROJECT_DIR
+  - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
     - ./$CI_BUILD_REF-free-debug.apk
@@ -48,7 +48,7 @@ build_release:
   - cp app-pro-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro.apk
   - cd $CI_PROJECT_DIR/app/build/outputs/mapping/pro/$PROD
   - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-pro.txt
-  - ls -al $CI_PROJECT_DIR
+  - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
     - ./$CI_BUILD_REF-free.apk
