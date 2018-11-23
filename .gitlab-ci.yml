@@ -16,16 +16,21 @@ cache:
   - .gradle/
 build_debug:
   stage: debug
-  only:
-  - master
+  except:
+  - release
   script:
   - ./gradlew assembleFreeDebug
   - cd app/build/outputs/apk/free/$DEBUG
   - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
+  - cd $CI_PROJECT_DIR
+  - ./gradlew assembleProDebug
+  - cd app/build/outputs/apk/pro/$DEBUG
+  - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro-debug.apk
   - ls -al $CI_PROJECT_DIR
   artifacts:
     paths:
     - ./$CI_BUILD_REF-free-debug.apk
+    - ./$CI_BUILD_REF-pro-debug.apk
     expire_in: 5 day
 build_release:
   stage: release
