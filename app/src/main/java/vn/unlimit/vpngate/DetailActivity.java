@@ -365,18 +365,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     private void hideAdContainer() {
         try {
-            ScrollView scrollView = findViewById(R.id.scrollView);
-            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) scrollView.getLayoutParams();
             findViewById(R.id.ad_container_detail).setVisibility(View.GONE);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-            params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
             if (adView != null) {
                 adView.setVisibility(View.GONE);
             }
             if (fAdView != null) {
                 fAdView.setVisibility(View.GONE);
             }
-            scrollView.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
         }

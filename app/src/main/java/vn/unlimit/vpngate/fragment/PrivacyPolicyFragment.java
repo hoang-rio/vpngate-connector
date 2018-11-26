@@ -81,7 +81,7 @@ public class PrivacyPolicyFragment extends Fragment implements View.OnClickListe
         } else if(view.equals(btnAccept)) {
             //Start home fragment
             App.getInstance().getDataUtil().setAcceptedPrivacyPolicy(true);
-            mainActivity.startHome();
+            mainActivity.restartApp();
         }
     }
 }

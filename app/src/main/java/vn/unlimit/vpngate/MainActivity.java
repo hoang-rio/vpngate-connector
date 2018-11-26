@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this, dataUtil.getAdMobId());
                 adView = new AdView(getApplicationContext());
-                adView.setAdSize(AdSize.BANNER);
+                adView.setAdSize(AdSize.LARGE_BANNER);
                 if (BuildConfig.DEBUG) {
                     adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 } else {
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         adView.setVisibility(View.GONE);
-                        fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+                        fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
                         fAdView.setAdListener(new com.facebook.ads.AdListener() {
                             @Override
                             public void onError(Ad ad, AdError adError) {
@@ -280,17 +280,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void hideAdContainer() {
         try {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
-            params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
-            if (adView != null) {
-                adView.setVisibility(View.GONE);
-            }
-            if (fAdView != null) {
-                fAdView.setVisibility(View.GONE);
-            }
             findViewById(R.id.ad_container_home).setVisibility(View.GONE);
-            frameContent.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -308,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         this.loadData();
     }
 
-    private void loadData(){
+    private void loadData() {
         if (!disallowLoadHome) {
             if (DataUtil.isOnline(getApplicationContext())) {
                 lnNoNetwork.setVisibility(View.GONE);
@@ -456,29 +446,29 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
         if (item.getItemId() == R.id.action_sort) {
-                SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
-                sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
-                    @Override
-                    public void onApplyClick(String sortProperty, int sortType) {
-                        if(dataUtil.hasAds()) {
-                            Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        mSortProperty = sortProperty;
-                        mSortType = sortType;
-                        dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
-                        dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
-                        HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
-                        if (currentFragment != null) {
-                            Answers.getInstance().logCustom(new CustomEvent("Sort")
-                                    .putCustomAttribute("property", sortProperty)
-                                    .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
-                            currentFragment.sort(sortProperty, sortType);
-                        }
+            SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
+            sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
+                @Override
+                public void onApplyClick(String sortProperty, int sortType) {
+                    if (dataUtil.hasAds()) {
+                        Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
+                        return;
                     }
-                });
-                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
-                return true;
+                    mSortProperty = sortProperty;
+                    mSortType = sortType;
+                    dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
+                    dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
+                    HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                    if (currentFragment != null) {
+                        Answers.getInstance().logCustom(new CustomEvent("Sort")
+                                .putCustomAttribute("property", sortProperty)
+                                .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
+                        currentFragment.sort(sortProperty, sortType);
+                    }
+                }
+            });
+            sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -643,6 +633,18 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public void startHome() {
         this.loadData();
         replaceFragment("home");
+    }
+
+    public void restartApp() {
+        try {
+            Intent i = getBaseContext().getPackageManager()
+                    .getLaunchIntentForPackage(getBaseContext().getPackageName());
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.startHome();
+        }
     }
 
     private void toggleAction(boolean visible) {

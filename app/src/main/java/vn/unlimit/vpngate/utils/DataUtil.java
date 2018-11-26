@@ -268,7 +268,7 @@ public class DataUtil {
             ApplicationInfo app = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = app.metaData;
             if (bundle != null) {
-                return bundle.getString("vn.unlimit.vpngate.adMobID");
+                return bundle.getString("com.google.android.gms.ads.APPLICATION_ID");
             }
         } catch (Exception e) {
             e.printStackTrace();
