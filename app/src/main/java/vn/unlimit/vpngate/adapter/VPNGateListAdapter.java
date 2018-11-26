@@ -32,7 +32,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
 
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_NORMAL = 100000;
-    private static final int TYPE_ADS = 100001;
+    //private static final int TYPE_ADS = 100001;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
@@ -76,13 +76,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        if (
-                (position == 2 || (position > adsPerItem && (position + 1) % adsPerItem == 0))
-                        && mDataUtil.hasAds()
-                        && mDataUtil.getAdMobId() != null
-                ) {
-            return TYPE_ADS;
-        }
         return TYPE_NORMAL;
     }
 
@@ -111,9 +104,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ADS) {
-            return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, false));
-        }
         return new VHTypeVPN(layoutInflater.inflate(R.layout.item_vpn, parent, false));
     }
 
@@ -275,9 +265,9 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         private int getRealPosition(int position) {
-            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
-                return position - (int) Math.round((double) position / adsPerItem);
-            }
+//            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
+//                return position - (int) Math.round((double) position / adsPerItem);
+//            }
             return position;
         }
 
