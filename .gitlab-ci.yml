@@ -18,6 +18,7 @@ build_debug:
   stage: debug
   except:
   - release
+  - tags
   script:
   - ./gradlew assembleFreeDebug
   - cd app/build/outputs/apk/free/$DEBUG
