@@ -22,18 +22,14 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.SearchEvent;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -61,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private static String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
     private static String SORT_TYPE_KEY = "SORT_TYPE_KEY";
-    final String TAG = "Main";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     View lnLoading;
@@ -83,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private boolean disallowLoadHome = false;
     private AdView adView;
-    private com.facebook.ads.AdView fAdView;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -161,11 +155,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        if (App.isAdMobPrimary()) {
-            initAdMob();
-        } else {
-            initFan();
-        }
+        initAdMob();
     }
 
     private void checkStatusMenu() {
@@ -181,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this, dataUtil.getAdMobId());
                 adView = new AdView(getApplicationContext());
-                adView.setAdSize(AdSize.BANNER);
+                adView.setAdSize(AdSize.LARGE_BANNER);
                 if (BuildConfig.DEBUG) {
                     adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 } else {
@@ -191,29 +181,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         adView.setVisibility(View.GONE);
-                        fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
-                        fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-                                hideAdContainer();
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
-                            }
-                        });
-                        ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(fAdView);
-                        fAdView.loadAd();
+                        hideAdContainer();
+                        navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
                     }
                 });
                 ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(adView);
@@ -227,70 +196,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
-    private void initFan() {
-        try {
-            if (dataUtil.hasAds()) {
-                MobileAds.initialize(this, dataUtil.getAdMobId());
-                fAdView = new com.facebook.ads.AdView(MainActivity.this, getString(R.string.fan_banner_bottom_home), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
-                fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                    @Override
-                    public void onError(Ad ad, AdError adError) {
-                        fAdView.setVisibility(View.GONE);
-                        adView = new AdView(getApplicationContext());
-                        adView.setAdSize(AdSize.BANNER);
-                        if (BuildConfig.DEBUG) {
-                            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                        } else {
-                            adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
-                        }
-                        adView.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                                hideAdContainer();
-                            }
-                        });
-                        ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(adView);
-                        adView.loadAd(new AdRequest.Builder().build());
-                    }
-
-                    @Override
-                    public void onAdLoaded(Ad ad) {
-                    }
-
-                    @Override
-                    public void onAdClicked(Ad ad) {
-
-                    }
-
-                    @Override
-                    public void onLoggingImpression(Ad ad) {
-
-                    }
-                });
-                ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(fAdView);
-                fAdView.loadAd();
-            } else {
-                hideAdContainer();
-                navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void hideAdContainer() {
         try {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameContent.getLayoutParams();
-            params.setMargins(marginLayoutParams.leftMargin, marginLayoutParams.topMargin, marginLayoutParams.rightMargin, 0);
-            if (adView != null) {
-                adView.setVisibility(View.GONE);
-            }
-            if (fAdView != null) {
-                fAdView.setVisibility(View.GONE);
-            }
             findViewById(R.id.ad_container_home).setVisibility(View.GONE);
-            frameContent.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -308,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         this.loadData();
     }
 
-    private void loadData(){
+    private void loadData() {
         if (!disallowLoadHome) {
             if (DataUtil.isOnline(getApplicationContext())) {
                 lnNoNetwork.setVisibility(View.GONE);
@@ -456,29 +364,29 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
         if (item.getItemId() == R.id.action_sort) {
-                SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
-                sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
-                    @Override
-                    public void onApplyClick(String sortProperty, int sortType) {
-                        if(dataUtil.hasAds()) {
-                            Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        mSortProperty = sortProperty;
-                        mSortType = sortType;
-                        dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
-                        dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
-                        HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
-                        if (currentFragment != null) {
-                            Answers.getInstance().logCustom(new CustomEvent("Sort")
-                                    .putCustomAttribute("property", sortProperty)
-                                    .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
-                            currentFragment.sort(sortProperty, sortType);
-                        }
+            SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
+            sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
+                @Override
+                public void onApplyClick(String sortProperty, int sortType) {
+                    if (dataUtil.hasAds()) {
+                        Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
+                        return;
                     }
-                });
-                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
-                return true;
+                    mSortProperty = sortProperty;
+                    mSortType = sortType;
+                    dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
+                    dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
+                    HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                    if (currentFragment != null) {
+                        Answers.getInstance().logCustom(new CustomEvent("Sort")
+                                .putCustomAttribute("property", sortProperty)
+                                .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
+                        currentFragment.sort(sortProperty, sortType);
+                    }
+                }
+            });
+            sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -643,6 +551,19 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     public void startHome() {
         this.loadData();
         replaceFragment("home");
+    }
+
+    public void restartApp() {
+        try {
+            Intent i = getBaseContext().getPackageManager()
+                    .getLaunchIntentForPackage(getBaseContext().getPackageName());
+            assert i != null;
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.startHome();
+        }
     }
 
     private void toggleAction(boolean visible) {

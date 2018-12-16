@@ -1,18 +1,16 @@
 package vn.unlimit.vpngate.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -24,7 +22,6 @@ import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
-import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by hoangnd on 1/29/2018.
@@ -32,7 +29,6 @@ import vn.unlimit.vpngate.utils.DataUtil;
 
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_NORMAL = 100000;
-    private static final int TYPE_ADS = 100001;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
@@ -40,11 +36,8 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private VPNGateConnectionList _list;
     private LayoutInflater layoutInflater;
     private int lastPosition = 0;
-    private DataUtil mDataUtil;
-    private int adsPerItem = 3;
 
-    public VPNGateListAdapter(Context context, DataUtil dataUtil) {
-        mDataUtil = dataUtil;
+    public VPNGateListAdapter(Context context) {
         mContext = context;
         _list = new VPNGateConnectionList();
         this.layoutInflater = LayoutInflater.from(context);
@@ -76,18 +69,11 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        if (
-                (position == 2 || (position > adsPerItem && (position + 1) % adsPerItem == 0))
-                        && mDataUtil.hasAds()
-                        && mDataUtil.getAdMobId() != null
-                ) {
-            return TYPE_ADS;
-        }
         return TYPE_NORMAL;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @SuppressLint("RecyclerView") int position) {
         if (onScrollListener != null) {
             if (position > lastPosition || position == 0) {
                 onScrollListener.onScrollDown();
@@ -111,9 +97,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ADS) {
-            return new VHTypeAds(layoutInflater.inflate(R.layout.item_adv, parent, false));
-        }
         return new VHTypeVPN(layoutInflater.inflate(R.layout.item_vpn, parent, false));
     }
 
@@ -126,97 +109,23 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void bindViewHolder() {
             try {
                 final LinearLayout adContainer = itemView.findViewById(R.id.ad_container);
-                if (App.isAdMobPrimary()) {
-                    final AdView v = new AdView(mContext);
-                    v.setAdSize(AdSize.SMART_BANNER);
-                    if (BuildConfig.DEBUG) {
-                        v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                    } else {
-                        v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
-                    }
-                    v.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdFailedToLoad(int errorCode) {
-                            v.setVisibility(View.GONE);
-                            final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
-                            fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                                @Override
-                                public void onError(Ad ad, AdError adError) {
-                                    itemView.setVisibility(View.GONE);
-                                    fAdView.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAdLoaded(Ad ad) {
-
-                                }
-
-                                @Override
-                                public void onAdClicked(Ad ad) {
-
-                                }
-
-                                @Override
-                                public void onLoggingImpression(Ad ad) {
-
-                                }
-                            });
-                            adContainer.removeAllViews();
-                            adContainer.addView(fAdView);
-                            fAdView.loadAd();
-                        }
-                    });
-                    adContainer.removeAllViews();
-                    adContainer.addView(v);
-                    v.loadAd(new AdRequest.Builder().build());
+                final AdView v = new AdView(mContext);
+                v.setAdSize(AdSize.SMART_BANNER);
+                if (BuildConfig.DEBUG) {
+                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                 } else {
-                    final com.facebook.ads.AdView fAdView = new com.facebook.ads.AdView(mContext, mContext.getString(R.string.fan_banner_inside_list), com.facebook.ads.AdSize.BANNER_HEIGHT_90);
-                    fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                        @Override
-                        public void onError(Ad ad, AdError adError) {
-                            fAdView.setVisibility(View.GONE);
-                            final AdView v = new AdView(mContext);
-                            v.setAdSize(AdSize.LARGE_BANNER);
-                            if (BuildConfig.DEBUG) {
-                                v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                            } else {
-                                v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
-                            }
-                            float density = mContext.getResources().getDisplayMetrics().density;
-                            int height = Math.round(AdSize.SMART_BANNER.getHeight() * density);
-                            AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, height);
-                            v.setLayoutParams(params);
-                            v.setAdListener(new AdListener() {
-                                @Override
-                                public void onAdFailedToLoad(int errorCode) {
-                                    itemView.setVisibility(View.GONE);
-                                    v.setVisibility(View.GONE);
-                                }
-                            });
-                            adContainer.removeAllViews();
-                            adContainer.addView(v);
-                            v.loadAd(new AdRequest.Builder().build());
-                        }
-
-                        @Override
-                        public void onAdLoaded(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onAdClicked(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onLoggingImpression(Ad ad) {
-
-                        }
-                    });
-                    adContainer.removeAllViews();
-                    adContainer.addView(fAdView);
-                    fAdView.loadAd();
+                    v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
                 }
+                v.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        v.setVisibility(View.GONE);
+                        adContainer.removeAllViews();
+                    }
+                });
+                adContainer.removeAllViews();
+                adContainer.addView(v);
+                v.loadAd(new AdRequest.Builder().build());
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
@@ -275,9 +184,9 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         private int getRealPosition(int position) {
-            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
-                return position - (int) Math.round((double) position / adsPerItem);
-            }
+//            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
+//                return position - (int) Math.round((double) position / adsPerItem);
+//            }
             return position;
         }
 

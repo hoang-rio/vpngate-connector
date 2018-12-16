@@ -23,9 +23,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -88,8 +85,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private boolean isAuthFailed = false;
     private InterstitialAd mInterstitialAd;
     private VpnProfile vpnProfile;
-    private com.facebook.ads.InterstitialAd fInterstitialAd;
-    private boolean mDestroyCalled = false;
     private Context mContext;
 
     @Override
@@ -105,11 +100,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         btnClearStatistics = rootView.findViewById(R.id.btn_clear_statistics);
         btnClearStatistics.setOnClickListener(this);
         mVpnGateConnection = dataUtil.getLastVPNConnection();
-        if (App.isAdMobPrimary()) {
-            loadAdMob();
-        } else {
-            loadFan();
-        }
+        loadAdMob();
         bindData();
         registerBroadCast();
         return rootView;
@@ -157,7 +148,9 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             mVPNService.getManagement().stopVPN(false);
 
     }
+
     private boolean isFullScreenAdsLoaded = false;
+
     private void loadAdMob() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
             mInterstitialAd = new InterstitialAd(mContext);
@@ -173,128 +166,19 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 public void onAdLoaded() {
                     isFullScreenAdsLoaded = true;
                 }
-
-                @Override
-                public void onAdFailedToLoad(int errCode) {
-                    if (!mDestroyCalled) {
-                        fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_status));
-                        fInterstitialAd.setAdListener(new InterstitialAdListener() {
-                            @Override
-                            public void onInterstitialDisplayed(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onInterstitialDismissed(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-                                isFullScreenAdsLoaded = true;
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
-                            }
-                        });
-                        fInterstitialAd.loadAd();
-                    }
-                }
             });
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
     }
 
-    private void loadFan() {
-        if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_status));
-            fInterstitialAd.setAdListener(new InterstitialAdListener() {
-                @Override
-                public void onInterstitialDisplayed(Ad ad) {
-
-                }
-
-                @Override
-                public void onInterstitialDismissed(Ad ad) {
-
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    try {
-                        if (!mDestroyCalled) {
-                            mInterstitialAd = new InterstitialAd(mContext);
-                            if (BuildConfig.DEBUG) {
-                                //Test
-                                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                            } else {
-                                //Real
-                                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
-                            }
-                            mInterstitialAd.setAdListener(new AdListener() {
-                                @Override
-                                public void onAdLoaded() {
-                                    isFullScreenAdsLoaded = true;
-                                }
-
-                                @Override
-                                public void onAdFailedToLoad(int errCode) {
-
-                                }
-                            });
-                        }
-                        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    isFullScreenAdsLoaded = true;
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-
-                }
-            });
-            fInterstitialAd.loadAd();
-        }
-    }
-    private void showAds(){
-        if(dataUtil.hasAds() && isFullScreenAdsLoaded){
-            if (App.isAdMobPrimary()) {
-                if(mInterstitialAd!=null && mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                }else if(fInterstitialAd!=null && fInterstitialAd.isAdLoaded()){
-                    fInterstitialAd.show();
-                }
-            } else {
-                if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
-                    fInterstitialAd.show();
-                }else if(mInterstitialAd!=null && mInterstitialAd.isLoaded()){
-                    mInterstitialAd.show();
-                }
+    private void showAds() {
+        if (dataUtil.hasAds() && isFullScreenAdsLoaded) {
+            if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
             }
         }
     }
+
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearStatistics)) {
@@ -358,7 +242,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
             vpnProfile.mName = mVpnGateConnection.getName();
-            if(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)){
+            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile.mOverrideDNS = true;
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
                 vpnProfile.mDNS2 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_alternative_cfg_key));
@@ -417,7 +301,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mDestroyCalled = true;
         try {
             getActivity().unregisterReceiver(brStatus);
             getActivity().unregisterReceiver(trafficReceiver);

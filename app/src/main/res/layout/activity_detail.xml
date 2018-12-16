@@ -12,6 +12,7 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
         android:padding="5dp"
+        android:id="@+id/nav_detail"
         android:textAlignment="center">
 
         <ImageView
@@ -56,8 +57,8 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="50dp">
+        android:layout_above="@id/ad_container_detail"
+        android:layout_below="@id/nav_detail">
 
         <LinearLayout
             android:id="@+id/ln_content_detail"
