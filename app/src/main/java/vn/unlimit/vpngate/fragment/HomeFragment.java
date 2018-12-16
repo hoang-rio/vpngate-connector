@@ -57,7 +57,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private Handler handler;
     private MainActivity mActivity;
     private InterstitialAd interstitialAd;
-    private com.facebook.ads.InterstitialAd fInterstitialAd;
 
     public HomeFragment() {
 
@@ -75,52 +74,42 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onResume() {
         super.onResume();
         if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(false)) {
-            if (App.isAdMobPrimary()) {
-                if (interstitialAd == null) {
-                    interstitialAd = new InterstitialAd(mContext);
-                    if (BuildConfig.DEBUG) {
-                        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                    } else {
-                        interstitialAd.setAdUnitId(getString(R.string.admob_full_screen_detail));
-                    }
-                }
-                if (isShowedAd) {
-                    interstitialAd.loadAd(new AdRequest.Builder().build());
-                    isShowedAd = false;
-                }
-            } else {
-                if (fInterstitialAd == null) {
-                    fInterstitialAd = new com.facebook.ads.InterstitialAd(mContext, getString(R.string.fan_full_screen_detail));
-                }
-                if (isShowedAd) {
-                    fInterstitialAd.loadAd();
-                    isShowedAd = false;
+
+            if (interstitialAd == null) {
+                interstitialAd = new InterstitialAd(mContext);
+                if (BuildConfig.DEBUG) {
+                    interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+                } else {
+                    interstitialAd.setAdUnitId(getString(R.string.admob_full_screen_detail));
                 }
             }
+            if (isShowedAd) {
+                interstitialAd.loadAd(new AdRequest.Builder().build());
+                isShowedAd = false;
+            }
+
         }
     }
+
     public void startDetailAct(VPNGateConnection vpnGateConnection) {
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, vpnGateConnection);
         startActivity(intent);
     }
+
     //Flag ads is showed need request new ad
     private boolean isShowedAd = true;
 
     private boolean checkAndShowAd(final VPNGateConnection vpnGateConnection) {
         if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(true)) {
-            if (App.isAdMobPrimary() && interstitialAd != null && interstitialAd.isLoaded()) {
-                interstitialAd.setAdListener(new AdListener(){
+            if (interstitialAd != null && interstitialAd.isLoaded()) {
+                interstitialAd.setAdListener(new AdListener() {
                     @Override
                     public void onAdClosed() {
                         startDetailAct(vpnGateConnection);
                     }
                 });
                 interstitialAd.show();
-                isShowedAd = true;
-            } else if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
-                fInterstitialAd.show();
-                startDetailAct(vpnGateConnection);
                 isShowedAd = true;
             }
             return true;
@@ -139,7 +128,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onCreate(savedBundle);
         try {
             dataUtil = App.getInstance().getDataUtil();
-            vpnGateListAdapter = new VPNGateListAdapter(mContext, dataUtil);
+            vpnGateListAdapter = new VPNGateListAdapter(mContext);
             handler = new Handler();
         } catch (Exception e) {
             e.printStackTrace();
@@ -248,6 +237,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
                     .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
+            assert getFragmentManager() != null;
             dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
         } catch (Exception e) {
             e.printStackTrace();

@@ -16,20 +16,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -88,12 +83,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VpnProfile vpnProfile;
     private BroadcastReceiver brStatus;
     private InterstitialAd mInterstitialAd;
-    private com.facebook.ads.InterstitialAd fInterstitialAd;
     private AdView adView;
-    private com.facebook.ads.AdView fAdView;
     private AdView adViewBellow;
-    private com.facebook.ads.AdView fAdViewBellow;
-    private boolean mDestroyCalled = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -167,11 +158,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         lnContentDetail = findViewById(R.id.ln_content_detail);
         bindData();
         registerBroadCast();
-        if (App.isAdMobPrimary()) {
-            initAdMob();
-        } else {
-            initFan();
-        }
+        initAdMob();
         initInterstitialAd();
     }
 
@@ -191,30 +178,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adView.setAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
-                        fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
-                        fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-                                hideAdContainer();
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
-                            }
-                        });
-                        ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
-                        fAdView.loadAd();
+                        hideAdContainer();
                     }
                 });
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -235,126 +199,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         adViewBellow.setVisibility(View.GONE);
-                        fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
-                        fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
-                            @Override
-                            public void onError(Ad ad, AdError adError) {
-                                fAdViewBellow.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAdLoaded(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onAdClicked(Ad ad) {
-
-                            }
-
-                            @Override
-                            public void onLoggingImpression(Ad ad) {
-
-                            }
-                        });
-                        lnContentDetail.addView(fAdViewBellow);
-                        fAdViewBellow.loadAd();
                     }
                 });
                 lnContentDetail.addView(adViewBellow);
                 adViewBellow.loadAd(new AdRequest.Builder().build());
-            } else {
-                hideAdContainer();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initFan() {
-        try {
-            if (dataUtil.hasAds()) {
-                MobileAds.initialize(this, dataUtil.getAdMobId());
-                fAdView = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bottom_detail), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
-                fAdView.setAdListener(new com.facebook.ads.AdListener() {
-                    @Override
-                    public void onError(Ad ad, AdError adError) {
-                        adView = new AdView(getApplicationContext());
-                        adView.setAdSize(AdSize.BANNER);
-                        if (BuildConfig.DEBUG) {
-                            //Test
-                            adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                        } else {
-                            //Real
-                            adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
-                        }
-                        adView.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                                hideAdContainer();
-                            }
-                        });
-                        ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(adView);
-                        adView.loadAd(new AdRequest.Builder().build());
-                    }
-
-                    @Override
-                    public void onAdLoaded(Ad ad) {
-
-                    }
-
-                    @Override
-                    public void onAdClicked(Ad ad) {
-
-                    }
-
-                    @Override
-                    public void onLoggingImpression(Ad ad) {
-
-                    }
-                });
-                ((RelativeLayout) findViewById(R.id.ad_container_detail)).addView(fAdView);
-                fAdView.loadAd();
-                //Banner bellow
-                fAdViewBellow = new com.facebook.ads.AdView(getApplicationContext(), getString(R.string.fan_banner_bellow_detail), com.facebook.ads.AdSize.RECTANGLE_HEIGHT_250);
-                fAdViewBellow.setAdListener(new com.facebook.ads.AdListener() {
-                    @Override
-                    public void onError(Ad ad, AdError adError) {
-                        fAdViewBellow.setVisibility(View.GONE);
-                        adViewBellow = new AdView(getApplicationContext());
-                        if (BuildConfig.DEBUG) {
-                            adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                        } else {
-                            adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
-                        }
-                        adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
-                        adViewBellow.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                                adViewBellow.setVisibility(View.GONE);
-                            }
-                        });
-                        lnContentDetail.addView(adViewBellow);
-                        adViewBellow.loadAd(new AdRequest.Builder().build());
-                    }
-
-                    @Override
-                    public void onAdLoaded(Ad ad) {
-
-                    }
-
-                    @Override
-                    public void onAdClicked(Ad ad) {
-
-                    }
-
-                    @Override
-                    public void onLoggingImpression(Ad ad) {
-
-                    }
-                });
-                lnContentDetail.addView(fAdViewBellow);
-                fAdViewBellow.loadAd();
             } else {
                 hideAdContainer();
             }
@@ -369,9 +217,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (adView != null) {
                 adView.setVisibility(View.GONE);
             }
-            if (fAdView != null) {
-                fAdView.setVisibility(View.GONE);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -379,7 +224,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onDestroy() {
-        mDestroyCalled = true;
         super.onDestroy();
         unregisterReceiver(brStatus);
     }
@@ -606,106 +450,20 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void initInterstitialAd() {
         if (dataUtil.hasAds()) {
             try {
-                if (App.isAdMobPrimary()) {
-                    mInterstitialAd = new InterstitialAd(getApplicationContext());
-                    if (BuildConfig.DEBUG) {
-                        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                    } else {
-                        mInterstitialAd.setAdUnitId(getString(R.string.admob_full_screen));
-                    }
-                    mInterstitialAd.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdLoaded() {
-                            isFullScreenAdLoaded = true;
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int errorCode) {
-                            if (!mDestroyCalled) {
-                                fInterstitialAd = new com.facebook.ads.InterstitialAd(getApplicationContext(), getString(R.string.fan_full_screen));
-                                fInterstitialAd.setAdListener(new InterstitialAdListener() {
-                                    @Override
-                                    public void onInterstitialDisplayed(Ad ad) {
-
-                                    }
-
-                                    @Override
-                                    public void onInterstitialDismissed(Ad ad) {
-
-                                    }
-
-                                    @Override
-                                    public void onError(Ad ad, AdError adError) {
-                                    }
-
-                                    @Override
-                                    public void onAdLoaded(Ad ad) {
-                                        isFullScreenAdLoaded = true;
-                                    }
-
-                                    @Override
-                                    public void onAdClicked(Ad ad) {
-
-                                    }
-
-                                    @Override
-                                    public void onLoggingImpression(Ad ad) {
-
-                                    }
-                                });
-                                fInterstitialAd.loadAd();
-                            }
-                        }
-                    });
-                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                mInterstitialAd = new InterstitialAd(getApplicationContext());
+                if (BuildConfig.DEBUG) {
+                    mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
                 } else {
-                    fInterstitialAd = new com.facebook.ads.InterstitialAd(getApplicationContext(), getString(R.string.fan_full_screen));
-                    fInterstitialAd.setAdListener(new InterstitialAdListener() {
-                        @Override
-                        public void onInterstitialDisplayed(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onInterstitialDismissed(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onError(Ad ad, AdError adError) {
-                            if (!mDestroyCalled) {
-                                mInterstitialAd = new InterstitialAd(getApplicationContext());
-                                if (BuildConfig.DEBUG) {
-                                    mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                                } else {
-                                    mInterstitialAd.setAdUnitId(getString(R.string.admob_full_screen));
-                                }
-                                mInterstitialAd.setAdListener(new AdListener() {
-                                    @Override
-                                    public void onAdLoaded() {
-                                        isFullScreenAdLoaded = true;
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onAdLoaded(Ad ad) {
-                            isFullScreenAdLoaded = true;
-                        }
-
-                        @Override
-                        public void onAdClicked(Ad ad) {
-
-                        }
-
-                        @Override
-                        public void onLoggingImpression(Ad ad) {
-
-                        }
-                    });
-                    fInterstitialAd.loadAd();
+                    mInterstitialAd.setAdUnitId(getString(R.string.admob_full_screen));
                 }
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        isFullScreenAdLoaded = true;
+                    }
+
+                });
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -716,18 +474,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             if (dataUtil.hasAds() && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false) && isFullScreenAdLoaded) {
                 isShowAds = true;
-                if (App.isAdMobPrimary()) {
-                    if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-                        mInterstitialAd.show();
-                    } else if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
-                        fInterstitialAd.show();
-                    }
-                } else {
-                    if (fInterstitialAd != null && fInterstitialAd.isAdLoaded()) {
-                        fInterstitialAd.show();
-                    } else if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-                        mInterstitialAd.show();
-                    }
+                if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
                 }
             }
         } catch (Exception e) {
