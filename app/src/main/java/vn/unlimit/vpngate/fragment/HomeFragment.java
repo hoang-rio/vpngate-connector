@@ -92,9 +92,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void startDetailAct(VPNGateConnection vpnGateConnection) {
-        Intent intent = new Intent(getContext(), DetailActivity.class);
-        intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, vpnGateConnection);
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(getContext(), DetailActivity.class);
+            intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, vpnGateConnection);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Flag ads is showed need request new ad
