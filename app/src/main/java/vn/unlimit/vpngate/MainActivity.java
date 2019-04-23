@@ -182,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     public void onAdFailedToLoad(int errorCode) {
                         adView.setVisibility(View.GONE);
                         hideAdContainer();
-                        navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
                     }
                 });
                 ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(adView);
