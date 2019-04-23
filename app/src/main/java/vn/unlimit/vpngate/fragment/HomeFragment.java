@@ -115,8 +115,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 });
                 interstitialAd.show();
                 isShowedAd = true;
+                return true;
             }
-            return true;
         }
         return false;
     }
