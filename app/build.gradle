@@ -1,0 +1,93 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+android {
+    compileSdkVersion 27
+    buildToolsVersion "28.0.3"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        free {
+            storeFile file("../keyStore/release.jks")
+            storePassword String.valueOf(System.getenv("SIGN_KEY_PASSWORD"))
+            keyAlias "key0"
+            keyPassword String.valueOf(System.getenv("SIGN_KEY_PASSWORD"))
+        }
+        pro {
+            storeFile file("../keyStore/release.jks")
+            storePassword String.valueOf(System.getenv("SIGN_KEY_PASSWORD"))
+            keyAlias "key_pro"
+            keyPassword String.valueOf(System.getenv("SIGN_KEY_PASSWORD"))
+        }
+    }
+    flavorDimensions "tier"
+    productFlavors {
+        free {
+            dimension "tier"
+            applicationId "vn.unlimit.vpngate"
+            signingConfig signingConfigs.free
+            versionCode 26
+            versionName "1.2.7"
+        }
+
+        pro {
+            dimension "tier"
+            applicationId "vn.unlimit.vpngatepro"
+            signingConfig signingConfigs.pro
+            versionCode 22
+            versionName "1.2.3"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+//        debug {
+//            ext.enableCrashlytics = false
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        //}
+    }
+//    dexOptions {
+//        incremental true
+//        javaMaxHeapSize "4g"
+//    }
+}
+ext.supportVersion = "27.1.1"
+ext.glideVersion = "4.7.1"
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:customtabs:$supportVersion"
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation "com.android.support:support-v4:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
+    implementation("com.github.bumptech.glide:glide:$glideVersion") {
+        exclude group: "com.android.support"
+    }
+    implementation "com.google.firebase:firebase-core:16.0.8"
+    implementation "com.google.firebase:firebase-ads:17.2.0"
+    implementation "com.google.firebase:firebase-config:16.5.0"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.6@aar') {
+        transitive = true
+    }
+    implementation('com.crashlytics.sdk.android:answers:1.4.1@aar') {
+        transitive = true
+    }
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+apply plugin: 'com.google.gms.google-services'
