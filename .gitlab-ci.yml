@@ -38,6 +38,7 @@ build_release:
   only:
   - release
   script:
+  - echo $sign_key_password
   - ./gradlew assembleFreeRelease
   - cd app/build/outputs/apk/free/$PROD
   - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
