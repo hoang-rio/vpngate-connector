@@ -20,6 +20,8 @@ build_debug:
   - release
   - tags
   script:
+  - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+  - GPG=gpg2 blackbox_postdeploy
   - ./gradlew assembleFreeDebug
   - cd app/build/outputs/apk/free/$DEBUG
   - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
@@ -38,6 +40,8 @@ build_release:
   only:
   - release
   script:
+  - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+  - GPG=gpg2 blackbox_postdeploy
   - ./gradlew assembleFreeRelease
   - cd app/build/outputs/apk/free/$PROD
   - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
