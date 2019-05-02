@@ -9,3 +9,8 @@
 .externalNativeBuild
 app/release/
 .idea/
+/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
+/keyStore/release.jks
+/app/google-services.json
