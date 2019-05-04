@@ -321,35 +321,39 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 return true;
             }
         });
-        final SearchView searchView = (SearchView) menuSearch.getActionView();
-        if (searchManager != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        }
-        searchView.setMaxWidth(Integer.MAX_VALUE);
-        final EditText editText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        editText.setTextColor(getResources().getColor(R.color.colorWhite));
-        editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
+        try {
+            final SearchView searchView = (SearchView) menuSearch.getActionView();
+            if (searchManager != null) {
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            }
+            searchView.setMaxWidth(Integer.MAX_VALUE);
+            final EditText editText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+            editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            editText.setTextColor(getResources().getColor(R.color.colorWhite));
+            editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
 //        searchView.setSubmitButtonEnabled(true);
-        searchView.setQueryHint(getString(R.string.search_hint));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
-                if (currentFragment != null) {
-                    Answers.getInstance().logSearch(new SearchEvent()
-                            .putQuery(newText));
-                    currentFragment.filter(newText);
-                    return true;
+            searchView.setQueryHint(getString(R.string.search_hint));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
                 }
-                return false;
-            }
-        });
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                    if (currentFragment != null) {
+                        Answers.getInstance().logSearch(new SearchEvent()
+                                .putQuery(newText));
+                        currentFragment.filter(newText);
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
