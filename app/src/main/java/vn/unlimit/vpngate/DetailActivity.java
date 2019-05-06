@@ -339,12 +339,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 if (!isIncludeUDP || mVpnGateConnection.getTcpPort() == 0) {
                     lnTCP.setVisibility(View.GONE);
                 } else {
-                    txtTCP.setText(mVpnGateConnection.getTcpPort());
+                    txtTCP.setText(String.valueOf(mVpnGateConnection.getTcpPort()));
                 }
                 if (!isIncludeUDP || mVpnGateConnection.getUdpPort() == 0) {
                     lnUDP.setVisibility(View.GONE);
                 } else {
-                    txtUDP.setText(mVpnGateConnection.getUdpPort());
+                    txtUDP.setText(String.valueOf(mVpnGateConnection.getUdpPort()));
                 }
                 if (isCurrent() && checkStatus()) {
                     btnConnect.setText(getResources().getString(R.string.disconnect));
@@ -390,6 +390,38 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void handleConnection(final boolean useUdp) {
+        loadAds();
+        if (checkStatus()) {
+            stopVpn();
+            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
+                    .putCustomAttribute("type", "replace current")
+                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            linkCheckIp.setVisibility(View.GONE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    prepareVpn(useUdp);
+                }
+            }, 500);
+        } else {
+            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
+                    .putCustomAttribute("type", "connect new")
+                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            prepareVpn(useUdp);
+        }
+        if (Build.VERSION.SDK_INT >= 16) {
+            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
+            txtStatus.setText(getString(R.string.connecting));
+        }
+        isConnecting = true;
+        btnConnect.setText(R.string.cancel);
+        dataUtil.setLastVPNConnection(mVpnGateConnection);
+        sendConnectVPN();
+    }
+
     @Override
     public void onClick(View view) {
         try {
@@ -399,54 +431,28 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             if (view.equals(btnConnect)) {
                 if (!isConnecting) {
-                    ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, new ConnectionUseProtocol.ClickResult() {
-                        @Override
-                        public void onResult(final boolean useUdp) {
-                            if (checkStatus() && isCurrent()) {
-                                Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
-                                        .putCustomAttribute("type", "disconnect current")
-                                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                                stopVpn();
-                                if (Build.VERSION.SDK_INT >= 16) {
-                                    btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                                }
-                                btnConnect.setText(R.string.connect_to_this_server);
-                                txtStatus.setText(R.string.disconnecting);
-                            } else {
-                                loadAds();
-                                if (checkStatus()) {
-                                    stopVpn();
-                                    Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                                            .putCustomAttribute("type", "replace current")
-                                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                                    linkCheckIp.setVisibility(View.GONE);
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            prepareVpn(useUdp);
-                                        }
-                                    }, 500);
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                                            .putCustomAttribute("type", "connect new")
-                                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                                    prepareVpn(useUdp);
-                                }
-                                if (Build.VERSION.SDK_INT >= 16) {
-                                    btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
-                                    txtStatus.setText(getString(R.string.connecting));
-                                }
-                                isConnecting = true;
-                                btnConnect.setText(R.string.cancel);
-                                dataUtil.setLastVPNConnection(mVpnGateConnection);
-                                sendConnectVPN();
-                            }
+                    if (checkStatus() && isCurrent()) {
+                        Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
+                                .putCustomAttribute("type", "disconnect current")
+                                .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                                .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                        stopVpn();
+                        if (Build.VERSION.SDK_INT >= 16) {
+                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                         }
-                    });
-                    connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        btnConnect.setText(R.string.connect_to_this_server);
+                        txtStatus.setText(R.string.disconnecting);
+                    } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
+                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, new ConnectionUseProtocol.ClickResult() {
+                            @Override
+                            public void onResult(final boolean useUdp) {
+                                handleConnection(useUdp);
+                            }
+                        });
+                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                    } else {
+                        handleConnection(false);
+                    }
                 } else {
                     Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
                             .putCustomAttribute("type", "cancel connect to vpn")
@@ -542,7 +548,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
-            vpnProfile.mName = mVpnGateConnection.getName();
+            vpnProfile.mName = mVpnGateConnection.getName(useUDP);
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile.mOverrideDNS = true;
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));

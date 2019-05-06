@@ -76,5 +76,6 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
         } else {
             clickResult.onResult(true);
         }
+        this.dismiss();
     }
 }

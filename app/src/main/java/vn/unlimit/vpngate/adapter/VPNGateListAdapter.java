@@ -161,7 +161,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtPing = itemView.findViewById(R.id.txt_ping);
             txtSession = itemView.findViewById(R.id.txt_session);
             txtOwner = itemView.findViewById(R.id.txt_owner);
-            lnTCP = itemView.findViewById(R.id.ln_udp);
+            lnTCP = itemView.findViewById(R.id.ln_tcp);
             txtTCP = itemView.findViewById(R.id.txt_tcp_port);
             lnUDP = itemView.findViewById(R.id.ln_udp);
             txtUDP = itemView.findViewById(R.id.txt_udp_port);
@@ -192,12 +192,14 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (!isIncludeUdp || vpnGateConnection.getTcpPort() == 0) {
                     lnTCP.setVisibility(View.GONE);
                 } else {
-                    txtTCP.setText(vpnGateConnection.getTcpPort());
+                    lnTCP.setVisibility(View.VISIBLE);
+                    txtTCP.setText(String.valueOf(vpnGateConnection.getTcpPort()));
                 }
                 if (!isIncludeUdp || vpnGateConnection.getUdpPort() == 0) {
                     lnUDP.setVisibility(View.GONE);
                 } else {
-                    txtTCP.setText(vpnGateConnection.getUdpPort());
+                    lnUDP.setVisibility(View.VISIBLE);
+                    txtUDP.setText(String.valueOf(vpnGateConnection.getUdpPort()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -93,6 +93,9 @@ public class VPNGateConnection implements Parcelable {
             if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
                 vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
                 vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
+            } else {
+                vpnGateConnection.tcpPort = 0;
+                vpnGateConnection.udpPort = 0;
             }
             return vpnGateConnection;
         } catch (Exception e) {
@@ -319,8 +322,13 @@ public class VPNGateConnection implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
     public String getName() {
+        return this.getName(false);
+    }
+    public String getName(boolean useUdp) {
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            return String.format("%s[%s][%s]", countryLong, ip, useUdp || tcpPort == 0 ? "UDP:" + udpPort : "TCP:" + tcpPort);
+        }
         return String.format("%s[%s]", countryLong, ip);
     }
 
