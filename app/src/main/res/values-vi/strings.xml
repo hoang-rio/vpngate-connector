@@ -55,6 +55,7 @@
     <string name="total_traffic">Tổng lưu lượng</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Kết nối đến server này</string>
+    <string name="connect_use_protocol">Kết nối sử dụng giao thức:</string>
     <string name="retry_connect">Thử kết nối lại</string>
     <string name="vpn_auth_failure">Lỗi xác thực</string>
     <string name="disconnect">Ngắt kết nối</string>
@@ -100,6 +101,8 @@
     <string name="feature_available_in_pro">Tính năng này chỉ khả dụng trên phiên bản Pro</string>
     <string name="block_ads_setting_label">Chặn quảng cáo (Chỉ bản Pro)</string>
     <string name="block_ads_setting_hint">Chặn quảng cáo trên tất cả ứng dụng, trình duyệt khi VPN được kết nối sử dụng DNS</string>
+    <string name="udp_setting_label">Bao gồm cả các máy chủ UDP</string>
+    <string name="udp_setting_hint">Bao gồm cả các máy chủ UDP trong danh sách máy chủ</string>
     <string name="setting_apply_on_next_connection_time">Cài đặt sẽ được áp dụng vào lần kết nối tiếp theo</string>
     <!-- Privacy policy -->
     <string name="privacy_policy_title">Chính sách quyền riêng tư</string>

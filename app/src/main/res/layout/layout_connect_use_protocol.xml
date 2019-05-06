@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorOverlay"
+        android:paddingStart="10dp"
+        android:paddingLeft="20dp">
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/connect_use_protocol" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_use_tcp"
+            android:layout_width="wrap_content"
+            android:text="TCP 1194"
+            android:background="@drawable/selector_primary_button"
+            android:textAllCaps="false"
+            android:theme="@style/AppTheme.Button"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_use_udp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_apply_button"
+            android:theme="@style/AppTheme.Button"
+            android:textAllCaps="false"
+            android:text="UDP 1193"/>
+    </LinearLayout>
+</LinearLayout>

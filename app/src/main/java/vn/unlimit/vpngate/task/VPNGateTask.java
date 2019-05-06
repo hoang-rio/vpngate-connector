@@ -2,6 +2,8 @@ package vn.unlimit.vpngate.task;
 
 import android.os.AsyncTask;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,7 @@ import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.request.RequestListener;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by dongh on 14/01/2018.
@@ -24,11 +27,17 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {
+        DataUtil dataUtil = App.getInstance().getDataUtil();
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
-            URL url = new URL(App.getInstance().getDataUtil().getBaseUrl() + "/api/iphone/");
+            URL url;
+            if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+                url = new URL(FirebaseRemoteConfig.getInstance().getString("vpn_udp_api"));
+            } else {
+                url = new URL(App.getInstance().getDataUtil().getBaseUrl() + "/api/iphone/");
+            }
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(10000);
             connection.setConnectTimeout(10000);
@@ -47,7 +56,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         }
         if (vpnGateConnectionList.size() == 0 && !isRetried) {
             isRetried = true;
-            App.getInstance().getDataUtil().setUseAlternativeServer(true);
+            dataUtil.setUseAlternativeServer(true);
             return this.doInBackground(voids);
         }
         return vpnGateConnectionList;

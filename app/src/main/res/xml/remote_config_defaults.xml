@@ -20,4 +20,8 @@
         <key>vpn_alternative_api</key>
         <value>https://www.vpngate.net</value>
     </entry>
+    <entry>
+        <key>vpn_udp_api</key>
+        <value>https://www.vpngate.net/api/iphone/</value>
+    </entry>
 </defaultsMap>
