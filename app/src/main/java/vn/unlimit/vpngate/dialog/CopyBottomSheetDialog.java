@@ -31,21 +31,6 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     private VPNGateConnection mVpnGateConnection;
     private View btnCopyIp;
     private View btnCopyHostName;
-    private TextView txtTitle;
-    private ImageView imgFlag;
-    private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
-
-        @Override
-        public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                dismiss();
-            }
-        }
-
-        @Override
-        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        }
-    };
 
     public static CopyBottomSheetDialog newInstance(VPNGateConnection vpnGateConnection) {
         CopyBottomSheetDialog copyBottomSheetDialog = new CopyBottomSheetDialog();
@@ -77,20 +62,24 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
-        View contentView = View.inflate(getContext(), R.layout.layout_copy_bottom, null);
-        btnCopyIp = contentView.findViewById(R.id.btn_copy_ip);
-        txtTitle = contentView.findViewById(R.id.txt_title);
-        txtTitle.setText(mVpnGateConnection.getIp());
-        imgFlag = contentView.findViewById(R.id.img_flag);
-        GlideApp.with(this)
-                .load("http://www.vpngate.net/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
-                .placeholder(R.color.colorOverlay)
-                .error(R.color.colorOverlay)
-                .into(imgFlag);
-        btnCopyIp.setOnClickListener(this);
-        btnCopyHostName = contentView.findViewById(R.id.btn_copy_hostname);
-        btnCopyHostName.setOnClickListener(this);
-        dialog.setContentView(contentView);
+        try {
+            View contentView = View.inflate(getContext(), R.layout.layout_copy_bottom, null);
+            btnCopyIp = contentView.findViewById(R.id.btn_copy_ip);
+            TextView txtTitle = contentView.findViewById(R.id.txt_title);
+            txtTitle.setText(mVpnGateConnection.getIp());
+            ImageView imgFlag = contentView.findViewById(R.id.img_flag);
+            GlideApp.with(this)
+                    .load("http://www.vpngate.net/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
+                    .placeholder(R.color.colorOverlay)
+                    .error(R.color.colorOverlay)
+                    .into(imgFlag);
+            btnCopyIp.setOnClickListener(this);
+            btnCopyHostName = contentView.findViewById(R.id.btn_copy_hostname);
+            btnCopyHostName.setOnClickListener(this);
+            dialog.setContentView(contentView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

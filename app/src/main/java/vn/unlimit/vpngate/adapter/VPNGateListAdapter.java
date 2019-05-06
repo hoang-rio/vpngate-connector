@@ -22,6 +22,7 @@ import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by hoangnd on 1/29/2018.
@@ -143,6 +144,10 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView txtPing;
         TextView txtSession;
         TextView txtOwner;
+        View lnTCP;
+        TextView txtTCP;
+        View lnUDP;
+        TextView txtUDP;
 
         VHTypeVPN(View itemView) {
             super(itemView);
@@ -156,6 +161,10 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtPing = itemView.findViewById(R.id.txt_ping);
             txtSession = itemView.findViewById(R.id.txt_session);
             txtOwner = itemView.findViewById(R.id.txt_owner);
+            lnTCP = itemView.findViewById(R.id.ln_tcp);
+            txtTCP = itemView.findViewById(R.id.txt_tcp_port);
+            lnUDP = itemView.findViewById(R.id.ln_udp);
+            txtUDP = itemView.findViewById(R.id.txt_udp_port);
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
         }
@@ -178,6 +187,20 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 txtPing.setText(vpnGateConnection.getPingAsString());
                 txtSession.setText(vpnGateConnection.getNumVpnSessionAsString());
                 txtOwner.setText(vpnGateConnection.getOperator());
+                DataUtil dataUtil = App.getInstance().getDataUtil();
+                boolean isIncludeUdp = dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true);
+                if (!isIncludeUdp || vpnGateConnection.getTcpPort() == 0) {
+                    lnTCP.setVisibility(View.GONE);
+                } else {
+                    lnTCP.setVisibility(View.VISIBLE);
+                    txtTCP.setText(String.valueOf(vpnGateConnection.getTcpPort()));
+                }
+                if (!isIncludeUdp || vpnGateConnection.getUdpPort() == 0) {
+                    lnUDP.setVisibility(View.GONE);
+                } else {
+                    lnUDP.setVisibility(View.VISIBLE);
+                    txtUDP.setText(String.valueOf(vpnGateConnection.getUdpPort()));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

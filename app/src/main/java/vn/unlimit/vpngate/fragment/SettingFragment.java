@@ -38,6 +38,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private DataUtil dataUtil;
     private SwitchCompat swBlockAds;
     private View lnBlockAds;
+    private SwitchCompat swUdp;
+    private View lnUdp;
     private Context mContext;
 
     @Override
@@ -53,6 +55,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         swBlockAds = rootView.findViewById(R.id.sw_block_ads);
         swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false));
         swBlockAds.setOnCheckedChangeListener(this);
+        lnUdp = rootView.findViewById(R.id.ln_udp);
+        lnUdp.setOnClickListener(this);
+        swUdp = rootView.findViewById(R.id.sw_udp);
+        swUdp.setChecked(dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true));
+        swUdp.setOnCheckedChangeListener(this);
         lnClearCache = rootView.findViewById(R.id.ln_clear_cache);
         TextView txtCacheExpires = rootView.findViewById(R.id.txt_cache_expire);
         SpinnerInit spinnerInit = new SpinnerInit(getContext(), spinnerCacheTime);
@@ -80,24 +87,34 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         super.onAttach(context);
         mContext = context;
     }
+    private void clearListServerCache() {
+        MainActivity activity = (MainActivity) getActivity();
+        if (dataUtil.clearConnectionCache()) {
+            Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_success), Toast.LENGTH_SHORT).show();
+            lnClearCache.setVisibility(View.GONE);
+            sendClearCache();
+        } else {
+            Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_error), Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearCache)) {
-            MainActivity activity = (MainActivity) getActivity();
-            if (dataUtil.clearConnectionCache()) {
-                Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_success), Toast.LENGTH_SHORT).show();
-                lnClearCache.setVisibility(View.GONE);
-                sendClearCache();
-            } else {
-                Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_error), Toast.LENGTH_SHORT).show();
-            }
+            clearListServerCache();
         } else if (view.equals(lnBlockAds)) {
             swBlockAds.setChecked(!swBlockAds.isChecked());
+        } else if(view.equals(lnUdp)) {
+            swUdp.setChecked(!swUdp.isChecked());
         }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
+        if (switchCompat.equals(swUdp)) {
+            dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked);
+            clearListServerCache();
+            return;
+        }
         if (dataUtil.hasAds() && isChecked) {
             switchCompat.setChecked(false);
             Toast.makeText(getContext(), getString(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();

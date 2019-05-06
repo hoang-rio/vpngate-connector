@@ -7,7 +7,9 @@ import android.util.Base64;
 
 import java.text.DecimalFormat;
 
+import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.utils.DataUtil;
 
 /**
  * Created by dongh on 14/01/2018.
@@ -40,6 +42,8 @@ public class VPNGateConnection implements Parcelable {
     private String operator;
     private String message;
     private String openVpnConfigData;
+    private int tcpPort;
+    private int udpPort;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -57,6 +61,8 @@ public class VPNGateConnection implements Parcelable {
         operator = in.readString();
         message = in.readString();
         openVpnConfigData = in.readString();
+        tcpPort = in.readInt();
+        udpPort = in.readInt();
     }
 
     //Empty constructor
@@ -84,6 +90,13 @@ public class VPNGateConnection implements Parcelable {
             vpnGateConnection.setOperator(properties[index++]);
             vpnGateConnection.message = properties[index++];
             vpnGateConnection.setOpenVpnConfigData(properties[index]);
+            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+                vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
+                vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
+            } else {
+                vpnGateConnection.tcpPort = 0;
+                vpnGateConnection.udpPort = 0;
+            }
             return vpnGateConnection;
         } catch (Exception e) {
             return null;
@@ -106,6 +119,8 @@ public class VPNGateConnection implements Parcelable {
         out.writeString(operator);
         out.writeString(message);
         out.writeString(openVpnConfigData);
+        out.writeInt(tcpPort);
+        out.writeInt(udpPort);
     }
 
     private String decodeBase64(String base64str) {
@@ -227,6 +242,18 @@ public class VPNGateConnection implements Parcelable {
         return openVpnConfigData;
     }
 
+    public String getOpenVpnConfigDataUdp() {
+        if (this.tcpPort > 0) {
+            // Current config is config for tcp need for udp
+            String openVpnConfigDataUdp = openVpnConfigData
+                    .replace("proto tcp", "proto udp")
+                    .replace("remote " + ip + " " + tcpPort, "remote " + ip + " " + udpPort);
+            return  openVpnConfigDataUdp;
+        }
+        // Current config is udp only
+        return openVpnConfigData;
+    }
+
     public void setOpenVpnConfigData(String openVpnConfigData) {
         this.openVpnConfigData = decodeBase64(openVpnConfigData);
     }
@@ -295,9 +322,30 @@ public class VPNGateConnection implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
     public String getName() {
+        return this.getName(false);
+    }
+    public String getName(boolean useUdp) {
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            return String.format("%s[%s][%s]", countryLong, ip, useUdp || tcpPort == 0 ? "UDP:" + udpPort : "TCP:" + tcpPort);
+        }
         return String.format("%s[%s]", countryLong, ip);
+    }
+
+    public int getTcpPort() {
+        return tcpPort;
+    }
+
+    public void setTcpPort(int tcpPort) {
+        this.tcpPort = tcpPort;
+    }
+
+    public int getUdpPort() {
+        return udpPort;
+    }
+
+    public void setUdpPort(int udpPort) {
+        this.udpPort = udpPort;
     }
 
 }

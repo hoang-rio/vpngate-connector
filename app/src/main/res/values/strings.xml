@@ -17,6 +17,8 @@
     <string name="session">Session</string>
     <string name="uptime">Uptime</string>
     <string name="owner">Owner</string>
+    <string name="tcp_port" translatable="false">TCP</string>
+    <string name="udp_port" translatable="false">UDP</string>
     <string name="days">days</string>
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
@@ -55,6 +57,7 @@
     <string name="total_traffic">Total traffic</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Connect to this server</string>
+    <string name="connect_use_protocol">Connect use protocol:</string>
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>
     <string name="connecting">Connecting…</string>
@@ -99,6 +102,8 @@
     <string name="feature_available_in_pro">This feature only available in Pro version</string>
     <string name="block_ads_setting_label">Block Ads (Pro only)</string>
     <string name="block_ads_setting_hint">Block ads in all app and browser when VPN is connected use DNS</string>
+    <string name="udp_setting_label">Include UDP server</string>
+    <string name="udp_setting_hint">Include UDP server in server list</string>
     <string name="setting_apply_on_next_connection_time">This setting will apply on next connection time</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>

@@ -44,6 +44,7 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
+import vn.unlimit.vpngate.dialog.ConnectionUseProtocol;
 import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
@@ -74,6 +75,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView txtTotalTraffic;
     TextView txtLogType;
     TextView txtStatus;
+    private View lnTCP;
+    private TextView txtTCP;
+    private View lnUDP;
+    private TextView txtUDP;
     View linkCheckIp;
     LinearLayout lnContentDetail;
     private DataUtil dataUtil;
@@ -156,6 +161,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         linkCheckIp = findViewById(R.id.txt_check_ip);
         linkCheckIp.setOnClickListener(this);
         lnContentDetail = findViewById(R.id.ln_content_detail);
+        lnTCP = findViewById(R.id.ln_tcp);
+        txtTCP = findViewById(R.id.txt_tcp_port);
+        lnUDP = findViewById(R.id.ln_udp);
+        txtUDP = findViewById(R.id.txt_udp_port);
         bindData();
         registerBroadCast();
         initAdMob();
@@ -326,6 +335,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 txtTotalUser.setText(String.valueOf(mVpnGateConnection.getTotalUser()));
                 txtTotalTraffic.setText(mVpnGateConnection.getCalculateTotalTraffic());
                 txtLogType.setText(mVpnGateConnection.getLogType());
+                boolean isIncludeUDP = App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true);
+                if (!isIncludeUDP || mVpnGateConnection.getTcpPort() == 0) {
+                    lnTCP.setVisibility(View.GONE);
+                } else {
+                    txtTCP.setText(String.valueOf(mVpnGateConnection.getTcpPort()));
+                }
+                if (!isIncludeUDP || mVpnGateConnection.getUdpPort() == 0) {
+                    lnUDP.setVisibility(View.GONE);
+                } else {
+                    txtUDP.setText(String.valueOf(mVpnGateConnection.getUdpPort()));
+                }
                 if (isCurrent() && checkStatus()) {
                     btnConnect.setText(getResources().getString(R.string.disconnect));
                     if (Build.VERSION.SDK_INT >= 16) {
@@ -370,6 +390,38 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void handleConnection(final boolean useUdp) {
+        loadAds();
+        if (checkStatus()) {
+            stopVpn();
+            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
+                    .putCustomAttribute("type", "replace current")
+                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            linkCheckIp.setVisibility(View.GONE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    prepareVpn(useUdp);
+                }
+            }, 500);
+        } else {
+            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
+                    .putCustomAttribute("type", "connect new")
+                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            prepareVpn(useUdp);
+        }
+        if (Build.VERSION.SDK_INT >= 16) {
+            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
+            txtStatus.setText(getString(R.string.connecting));
+        }
+        isConnecting = true;
+        btnConnect.setText(R.string.cancel);
+        dataUtil.setLastVPNConnection(mVpnGateConnection);
+        sendConnectVPN();
+    }
+
     @Override
     public void onClick(View view) {
         try {
@@ -390,36 +442,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         }
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
+                    } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
+                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, new ConnectionUseProtocol.ClickResult() {
+                            @Override
+                            public void onResult(final boolean useUdp) {
+                                handleConnection(useUdp);
+                            }
+                        });
+                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     } else {
-                        loadAds();
-                        if (checkStatus()) {
-                            stopVpn();
-                            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                                    .putCustomAttribute("type", "replace current")
-                                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                            linkCheckIp.setVisibility(View.GONE);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    prepareVpn();
-                                }
-                            }, 500);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                                    .putCustomAttribute("type", "connect new")
-                                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
-                            prepareVpn();
-                        }
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
-                            txtStatus.setText(getString(R.string.connecting));
-                        }
-                        isConnecting = true;
-                        btnConnect.setText(R.string.cancel);
-                        dataUtil.setLastVPNConnection(mVpnGateConnection);
-                        sendConnectVPN();
+                        handleConnection(false);
                     }
                 } else {
                     Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
@@ -489,7 +521,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void prepareVpn() {
-        if (loadVpnProfile()) {
+        prepareVpn(false);
+    }
+
+    private void prepareVpn(boolean useUdp) {
+        if (loadVpnProfile(useUdp)) {
             startVpn();
         } else {
             Toast.makeText(this, getString(R.string.error_load_profile), Toast.LENGTH_SHORT).show();
@@ -497,13 +533,22 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private boolean loadVpnProfile() {
-        byte[] data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+        return this.loadVpnProfile(false);
+    }
+
+    private boolean loadVpnProfile(boolean useUDP) {
+        byte[] data;
+        if (useUDP) {
+            data = mVpnGateConnection.getOpenVpnConfigDataUdp().getBytes();
+        } else {
+            data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+        }
         ConfigParser cp = new ConfigParser();
         InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
         try {
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
-            vpnProfile.mName = mVpnGateConnection.getName();
+            vpnProfile.mName = mVpnGateConnection.getName(useUDP);
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile.mOverrideDNS = true;
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
@@ -531,8 +576,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void stopVpn() {
         //prepareStopVPN();
         ProfileManager.setConntectedVpnProfileDisconnected(this);
-        if (mVPNService != null && mVPNService.getManagement() != null)
+        if (mVPNService != null && mVPNService.getManagement() != null) {
             mVPNService.getManagement().stopVPN(false);
+        }
 
     }
 
