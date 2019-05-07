@@ -78,12 +78,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private boolean disallowLoadHome = false;
     private AdView adView;
+    private boolean isInFront = false;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE:
-                    initState();
+                    if (isInFront) {
+                        initState();
+                    }
                     break;
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
@@ -249,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onPause() {
         super.onPause();
+        isInFront = false;
     }
 
     @Override
@@ -257,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
             initState();
         }
+        isInFront = true;
     }
 
     @Override
