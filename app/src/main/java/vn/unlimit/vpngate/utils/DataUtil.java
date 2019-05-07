@@ -44,6 +44,7 @@ public class DataUtil {
     public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     public static final String INCLUDE_UDP_SERVER = "INCLUDE_UDP_SERVER";
+    public static final String LAST_CONNECT_USE_UDP = "LAST_CONNECT_USE_UDP";
     private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
