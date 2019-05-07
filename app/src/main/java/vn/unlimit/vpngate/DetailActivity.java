@@ -125,7 +125,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         dataUtil = ((App) getApplication()).getDataUtil();
         if (getIntent().getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             mVpnGateConnection = dataUtil.getLastVPNConnection();
-            loadVpnProfile();
+            loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false));
             try {
                 Answers.getInstance().logCustom(new CustomEvent("Open detail")
                         .putCustomAttribute("from", "Notification")
@@ -543,6 +543,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
         }
+        dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP);
         ConfigParser cp = new ConfigParser();
         InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
         try {

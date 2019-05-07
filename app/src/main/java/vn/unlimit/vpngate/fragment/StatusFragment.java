@@ -128,9 +128,9 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(), false));
             if (checkStatus()) {
                 btnOnOff.setActivated(true);
-                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_disconnect), mVpnGateConnection.getName()));
+                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_disconnect), getConnectionName()));
             } else if (mVpnGateConnection != null) {
-                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_connect_last), mVpnGateConnection.getName()));
+                txtStatus.setText(String.format(getResources().getString(R.string.tap_to_connect_last), getConnectionName()));
             } else {
                 btnOnOff.setActivated(false);
                 btnOnOff.setEnabled(false);
@@ -235,13 +235,19 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     }
 
     private boolean loadVpnProfile() {
-        byte[] data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+        boolean useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false);
+        byte[] data;
+        if (useUdp) {
+            data = mVpnGateConnection.getOpenVpnConfigDataUdp().getBytes();
+        } else {
+            data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+        }
         ConfigParser cp = new ConfigParser();
         InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
         try {
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
-            vpnProfile.mName = mVpnGateConnection.getName();
+            vpnProfile.mName = getConnectionName();
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile.mOverrideDNS = true;
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
@@ -369,6 +375,11 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private String getConnectionName() {
+        boolean useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false);
+        return mVpnGateConnection.getName(useUdp);
+    }
+
     private void changeServerStatus(VpnStatus.ConnectionStatus status) {
         try {
             dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
@@ -384,7 +395,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 case LEVEL_NOTCONNECTED:
                     if (!isConnecting && !isAuthFailed) {
                         btnOnOff.setActivated(false);
-                        txtStatus.setText(String.format(getString(R.string.tap_to_connect_last), mVpnGateConnection.getName()));
+                        txtStatus.setText(String.format(getString(R.string.tap_to_connect_last), getConnectionName()));
                     }
                     break;
                 case LEVEL_AUTH_FAILED:
