@@ -32,13 +32,17 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         HttpURLConnection connection = null;
         InputStreamReader inputStreamReader = null;
         try {
-            URL url;
+            String url;
             if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
-                url = new URL(FirebaseRemoteConfig.getInstance().getString("vpn_udp_api"));
+                url = FirebaseRemoteConfig.getInstance().getString("vpn_udp_api");
             } else {
-                url = new URL(App.getInstance().getDataUtil().getBaseUrl() + "/api/iphone/");
+                url = dataUtil.getBaseUrl() + "/api/iphone/";
             }
-            connection = (HttpURLConnection) url.openConnection();
+            if (!dataUtil.hasAds()) {
+                url += "?version=pro";
+            }
+            URL urlConnect = new URL(url);
+            connection = (HttpURLConnection) urlConnect.openConnection();
             connection.setReadTimeout(10000);
             connection.setConnectTimeout(10000);
             connection.setRequestProperty("Accept-Encoding", "identity");
