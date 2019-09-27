@@ -34,7 +34,7 @@
                         android:text="@string/udp_setting_label"
                         android:theme="@style/label" />
 
-                    <android.support.v7.widget.SwitchCompat
+                    <androidx.appcompat.widget.SwitchCompat
                         android:checked="true"
                         android:id="@+id/sw_udp"
                         android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
                         android:text="@string/setting_cache_label"
                         android:theme="@style/label" />
 
-                    <android.support.v7.widget.AppCompatSpinner
+                    <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spin_cache_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
                         android:text="@string/block_ads_setting_label"
                         android:theme="@style/label" />
 
-                    <android.support.v7.widget.SwitchCompat
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/sw_block_ads"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -4,14 +4,15 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion "28.0.3"
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 16
+        targetSdkVersion 28
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
         ndk {
-            abiFilters "arm64-v8a", "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
+            abiFilters "arm64", "arm64-v8a", "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
         }
     }
     signingConfigs {
@@ -67,20 +68,21 @@ android {
 //    }
 }
 ext.supportVersion = "27.1.1"
-ext.glideVersion = "4.7.1"
+ext.glideVersion = "4.10.0"
+def multidex_version = "2.0.1"
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support:appcompat-v7:$supportVersion"
-    implementation "com.android.support:customtabs:$supportVersion"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.browser:browser:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation "com.android.support:support-v4:$supportVersion"
-    implementation "com.android.support:design:$supportVersion"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
-    implementation "com.google.firebase:firebase-core:16.0.8"
-    implementation "com.google.firebase:firebase-ads:17.2.0"
-    implementation "com.google.firebase:firebase-config:16.5.0"
+    implementation "com.google.firebase:firebase-core:17.2.0"
+    implementation "com.google.firebase:firebase-ads:18.2.0"
+    implementation "com.google.firebase:firebase-config:19.0.2"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.6@aar') {
         transitive = true
@@ -88,9 +90,10 @@ dependencies {
     implementation('com.crashlytics.sdk.android:answers:1.4.1@aar') {
         transitive = true
     }
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'junit:junit:4.12'
+    implementation "androidx.multidex:multidex:$multidex_version"
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
