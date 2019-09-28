@@ -24,4 +24,8 @@
         <key>vpn_udp_api</key>
         <value>https://www.vpngate.net/api/iphone/</value>
     </entry>
+    <entry>
+        <key>vpn_check_ip_url</key>
+        <value>https://whatismyipaddress.com/</value>
+    </entry>
 </defaultsMap>

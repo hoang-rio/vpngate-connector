@@ -468,7 +468,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
             if (view.equals(linkCheckIp)) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://myiponline.com"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")));
                 startActivity(browserIntent);
             }
 
@@ -530,10 +530,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             Toast.makeText(this, getString(R.string.error_load_profile), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private boolean loadVpnProfile() {
-        return this.loadVpnProfile(false);
     }
 
     private boolean loadVpnProfile(boolean useUDP) {
@@ -607,10 +603,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         try {
             if (resultCode == Activity.RESULT_OK) {
-                switch (requestCode) {
-                    case START_VPN_PROFILE:
-                        VPNLaunchHelper.startOpenVpn(vpnProfile, getBaseContext());
-                        break;
+                if (requestCode == START_VPN_PROFILE) {
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, getBaseContext());
                 }
             }
         } catch (Exception e) {
