@@ -3,16 +3,23 @@ package vn.unlimit.vpngate.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
+
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +27,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
 import java.text.DateFormat;
+import java.util.regex.Pattern;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.MainActivity;
@@ -32,7 +40,7 @@ import vn.unlimit.vpngate.utils.SpinnerInit;
  * Created by dongh on 31/01/2018.
  */
 
-public class SettingFragment extends Fragment implements View.OnClickListener, AppCompatSpinner.OnItemSelectedListener, SwitchCompat.OnCheckedChangeListener {
+public class SettingFragment extends Fragment implements View.OnClickListener, AppCompatSpinner.OnItemSelectedListener, SwitchCompat.OnCheckedChangeListener, EditText.OnFocusChangeListener {
     private Button btnClearCache;
     private View lnClearCache;
     private DataUtil dataUtil;
@@ -41,6 +49,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private SwitchCompat swUdp;
     private View lnUdp;
     private Context mContext;
+    private View lnDns;
+    private SwitchCompat swDns;
+    private View lnDnsIP;
+    private EditText txtDns1;
+    private EditText txtDns2;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
@@ -79,32 +92,103 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             lnClearCache.setVisibility(View.VISIBLE);
             txtCacheExpires.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(dataUtil.getConnectionCacheExpires()));
         }
+        lnDns = rootView.findViewById(R.id.ln_dns);
+        lnDns.setOnClickListener(this);
+        lnDnsIP = rootView.findViewById(R.id.ln_dns_ip);
+        swDns = rootView.findViewById(R.id.sw_dns);
+        if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
+            swDns.setChecked(true);
+            lnDnsIP.setVisibility(View.VISIBLE);
+        } else {
+            swDns.setChecked(false);
+            lnDnsIP.setVisibility(View.GONE);
+        }
+        swDns.setOnCheckedChangeListener(this);
+        InputFilter[] inputFilters = this.getIpInputFilters();
+        txtDns1 = rootView.findViewById(R.id.txt_dns_1);
+        txtDns1.setFilters(inputFilters);
+        txtDns1.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8"));
+        txtDns1.setOnFocusChangeListener(this);
+        txtDns2 = rootView.findViewById(R.id.txt_dns_2);
+        txtDns2.setFilters(inputFilters);
+        txtDns2.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, ""));
+        txtDns2.setOnFocusChangeListener(this);
 
         return rootView;
     }
+
+    private InputFilter[] getIpInputFilters() {
+        InputFilter[] filters = new InputFilter[1];
+        filters[0] = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                if (end > start) {
+                    String destTxt = dest.toString();
+                    String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                    if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
+                        return "";
+                    } else {
+                        String[] splits = resultingTxt.split("\\.");
+                        for (String val : splits) {
+                            if (Integer.valueOf(val) > 255) {
+                                return "";
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+        };
+        return filters;
+
+    }
+
     @Override
-    public void onAttach(Context context){
+    public void onFocusChange(View view, boolean isFocus) {
+        if (!isFocus) {
+            String dnsIP;
+            String settingKey;
+            if (view.equals(txtDns1)) {
+                dnsIP = txtDns1.getText().toString();
+                settingKey = DataUtil.CUSTOM_DNS_IP_1;
+            } else {
+                dnsIP = txtDns2.getText().toString();
+                settingKey = DataUtil.CUSTOM_DNS_IP_2;
+            }
+            if (Patterns.IP_ADDRESS.matcher(dnsIP).matches()) {
+                dataUtil.setStringSetting(settingKey, dnsIP);
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
-    private void clearListServerCache() {
+
+    private void clearListServerCache(boolean showToast) {
         MainActivity activity = (MainActivity) getActivity();
         if (dataUtil.clearConnectionCache()) {
-            Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_success), Toast.LENGTH_SHORT).show();
+            if (showToast) {
+                Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_success), Toast.LENGTH_SHORT).show();
+            }
             lnClearCache.setVisibility(View.GONE);
             sendClearCache();
-        } else {
+        } else if (showToast) {
             Toast.makeText(activity, getResources().getString(R.string.setting_clear_cache_error), Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearCache)) {
-            clearListServerCache();
+            clearListServerCache(true);
         } else if (view.equals(lnBlockAds)) {
             swBlockAds.setChecked(!swBlockAds.isChecked());
-        } else if(view.equals(lnUdp)) {
+        } else if (view.equals(lnUdp)) {
             swUdp.setChecked(!swUdp.isChecked());
+        } else if (view.equals(lnDns)) {
+            swDns.setChecked(!swDns.isChecked());
         }
     }
 
@@ -112,7 +196,26 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
         if (switchCompat.equals(swUdp)) {
             dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked);
-            clearListServerCache();
+            clearListServerCache(false);
+            return;
+        }
+        if (switchCompat.equals(swDns)) {
+            dataUtil.setBooleanSetting(DataUtil.USE_CUSTOM_DNS, isChecked);
+            if (isChecked) {
+                if (swBlockAds.isChecked()) {
+                    // Turn off Block Ads if custom DNS is enabled
+                    swBlockAds.setChecked(false);
+                    dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false);
+                }
+                lnDnsIP.setVisibility(View.VISIBLE);
+                txtDns1.requestFocus();
+                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(txtDns1, InputMethodManager.SHOW_IMPLICIT);
+                }
+            } else {
+                lnDnsIP.setVisibility(View.GONE);
+            }
             return;
         }
         if (dataUtil.hasAds() && isChecked) {
@@ -124,6 +227,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         if (!dataUtil.hasAds() && switchCompat.equals(swBlockAds)) {
             Toast.makeText(getContext(), getText(R.string.setting_apply_on_next_connection_time), Toast.LENGTH_SHORT).show();
             dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked);
+            if (isChecked && swDns.isChecked()) {
+                swDns.setChecked(false);
+            }
             Answers.getInstance().logCustom(new CustomEvent("Change Block Ads Setting").putCustomAttribute("enabled", isChecked + ""));
         }
     }

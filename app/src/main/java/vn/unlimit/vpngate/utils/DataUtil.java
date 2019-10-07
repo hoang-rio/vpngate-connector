@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +46,9 @@ public class DataUtil {
     public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     public static final String INCLUDE_UDP_SERVER = "INCLUDE_UDP_SERVER";
     public static final String LAST_CONNECT_USE_UDP = "LAST_CONNECT_USE_UDP";
+    public static final String USE_CUSTOM_DNS = "USE_CUSTOM_DNS";
+    public static final String CUSTOM_DNS_IP_1 = "CUSTOM_DNS_IP_1";
+    public static final String CUSTOM_DNS_IP_2 = "CUSTOM_DNS_IP_2";
     private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
