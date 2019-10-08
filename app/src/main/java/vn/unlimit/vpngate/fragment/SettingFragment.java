@@ -3,12 +3,6 @@ package vn.unlimit.vpngate.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.AppCompatSpinner;
-import androidx.appcompat.widget.SwitchCompat;
-
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Patterns;
@@ -23,11 +17,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
 import java.text.DateFormat;
-import java.util.regex.Pattern;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.MainActivity;
@@ -54,6 +52,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private View lnDnsIP;
     private EditText txtDns1;
     private EditText txtDns2;
+    private View lnDomain;
+    private SwitchCompat swDomain;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
@@ -113,6 +113,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         txtDns2.setFilters(inputFilters);
         txtDns2.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, ""));
         txtDns2.setOnFocusChangeListener(this);
+        lnDomain = rootView.findViewById(R.id.ln_domain);
+        lnDomain.setOnClickListener(this);
+        swDomain = rootView.findViewById(R.id.sw_domain);
+        swDomain.setChecked(dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false));
+        swDomain.setOnCheckedChangeListener(this);
 
         return rootView;
     }
@@ -189,6 +194,15 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             swUdp.setChecked(!swUdp.isChecked());
         } else if (view.equals(lnDns)) {
             swDns.setChecked(!swDns.isChecked());
+        } else if (view.equals(lnDomain)) {
+            swDomain.setChecked(!swDomain.isChecked());
+        }
+    }
+
+    private void hideKeyBroad() {
+        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(txtDns1.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
         }
     }
 
@@ -214,8 +228,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
                     imm.showSoftInput(txtDns1, InputMethodManager.SHOW_IMPLICIT);
                 }
             } else {
+                hideKeyBroad();
                 lnDnsIP.setVisibility(View.GONE);
             }
+            return;
+        }
+        if (switchCompat.equals(swDomain)) {
+            dataUtil.setBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, isChecked);
             return;
         }
         if (dataUtil.hasAds() && isChecked) {

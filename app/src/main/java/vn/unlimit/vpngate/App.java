@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.security.ProviderInstaller;
 
 import io.fabric.sdk.android.Fabric;
