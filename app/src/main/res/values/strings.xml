@@ -105,6 +105,14 @@
     <string name="udp_setting_label">Include UDP server</string>
     <string name="udp_setting_hint">Include UDP server in server list</string>
     <string name="setting_apply_on_next_connection_time">This setting will apply on next connection time</string>
+    <string name="dns_setting_label">Use custom DNS</string>
+    <string name="dns_setting_hint">Use custom DNS when connected to VPN Server instead of default Google DNS (8.8.8.8/8.8.4.4).\nThis setting will turn off Block Ads setting when enabled</string>
+    <string name="dns_ip_1" translatable="false">DNS 1</string>
+    <string name="dns_ip_2">DNS 2 (optional)</string>
+    <string name="dns_ip_1_hint" translatable="false">8.8.8.8</string>
+    <string name="dns_ip_2_hint" translatable="false">8.8.4.4</string>
+    <string name="use_domain_label">Use domain to connect</string>
+    <string name="use_domain_hint">Use domain .opengw.net to connect to VPN Server instead of Server IP Address</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>

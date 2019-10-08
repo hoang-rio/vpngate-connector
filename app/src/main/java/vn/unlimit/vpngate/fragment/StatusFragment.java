@@ -11,8 +11,6 @@ import android.content.ServiceConnection;
 import android.net.VpnService;
 import android.os.Bundle;
 import android.os.IBinder;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -252,6 +253,13 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 vpnProfile.mOverrideDNS = true;
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key));
                 vpnProfile.mDNS2 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_alternative_cfg_key));
+            } else if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
+                vpnProfile.mOverrideDNS = true;
+                vpnProfile.mDNS1 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8");
+                String dns2 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, null);
+                if (dns2 != null) {
+                    vpnProfile.mDNS2 = dns2;
+                }
             }
             ProfileManager.setTemporaryProfile(vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {

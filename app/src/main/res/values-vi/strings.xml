@@ -104,6 +104,11 @@
     <string name="udp_setting_label">Bao gồm cả các máy chủ UDP</string>
     <string name="udp_setting_hint">Bao gồm cả các máy chủ UDP trong danh sách máy chủ</string>
     <string name="setting_apply_on_next_connection_time">Cài đặt sẽ được áp dụng vào lần kết nối tiếp theo</string>
+    <string name="dns_setting_label">Dùng DNS tuỳ chỉnh</string>
+    <string name="dns_setting_hint">Dùng DNS tuỳ chỉnh thay thế Google DNS (8.8.8.8/8.8.4.4) mặc định khi kết nối VPN.\nNếu bật cài đặt này sẽ tắt cài đặt chặn quảng cáo</string>
+    <string name="dns_ip_2">DNS 2 (tuỳ chọn)</string>
+    <string name="use_domain_label">Dùng tên miền để kết nối</string>
+    <string name="use_domain_hint">Dùng tên miền .opengw.net để kết nối tới máy chủ VPN thay vì sử dụng địa chỉ IP</string>
     <!-- Privacy policy -->
     <string name="privacy_policy_title">Chính sách quyền riêng tư</string>
     <string name="btn_accept">Đồng ý</string>

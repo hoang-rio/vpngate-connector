@@ -44,6 +44,7 @@ public class VPNGateConnection implements Parcelable {
     private String openVpnConfigData;
     private int tcpPort;
     private int udpPort;
+    private String address;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -239,19 +240,30 @@ public class VPNGateConnection implements Parcelable {
     }
 
     public String getOpenVpnConfigData() {
-        return openVpnConfigData;
+        String openVpnConfigDataTmp = openVpnConfigData;
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+            String dDomain = hostName + ".opengw.net";
+            openVpnConfigDataTmp = openVpnConfigDataTmp.replace(ip, dDomain);
+
+        }
+        return openVpnConfigDataTmp;
     }
 
     public String getOpenVpnConfigDataUdp() {
+        String openVpnConfigDataUdp = openVpnConfigData;
         if (this.tcpPort > 0) {
             // Current config is config for tcp need for udp
-            String openVpnConfigDataUdp = openVpnConfigData
+            openVpnConfigDataUdp = openVpnConfigDataUdp
                     .replace("proto tcp", "proto udp")
                     .replace("remote " + ip + " " + tcpPort, "remote " + ip + " " + udpPort);
-            return  openVpnConfigDataUdp;
+        }
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+            String dDomain = hostName + ".opengw.net";
+            openVpnConfigDataUdp = openVpnConfigDataUdp.replace(ip, dDomain);
+
         }
         // Current config is udp only
-        return openVpnConfigData;
+        return openVpnConfigDataUdp;
     }
 
     public void setOpenVpnConfigData(String openVpnConfigData) {
@@ -322,14 +334,20 @@ public class VPNGateConnection implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
     public String getName() {
         return this.getName(false);
     }
+
     public String getName(boolean useUdp) {
-        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
-            return String.format("%s[%s][%s]", countryLong, ip, useUdp || tcpPort == 0 ? "UDP:" + udpPort : "TCP:" + tcpPort);
+        String address = ip;
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+            address = hostName + ".opengw.net";
         }
-        return String.format("%s[%s]", countryLong, ip);
+        if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            return String.format("%s[%s][%s]", countryLong, address, useUdp || tcpPort == 0 ? "UDP:" + udpPort : "TCP:" + tcpPort);
+        }
+        return String.format("%s[%s]", countryLong, address);
     }
 
     public int getTcpPort() {

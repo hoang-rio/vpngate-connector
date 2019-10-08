@@ -3,13 +3,15 @@ package vn.unlimit.vpngate.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;

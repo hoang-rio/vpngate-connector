@@ -72,6 +72,54 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:id="@+id/ln_domain">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/use_domain_label"
+                        android:theme="@style/label" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:checked="true"
+                        android:id="@+id/sw_domain"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:minHeight="30dp"
+                        android:minWidth="100dp"
+                        android:popupElevation="3dp" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/use_domain_hint"
+                        android:theme="@style/AppTheme.Setting.SubText" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:theme="@style/AppTheme.Setting.Line" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:theme="@style/AppTheme.Setting.Item">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
                     android:paddingTop="5dp">
 
                     <TextView
@@ -105,6 +153,58 @@
                         android:text="@string/setting_cache_subtitle"
                         android:theme="@style/AppTheme.Setting.SubText" />
                 </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ln_clear_cache"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:theme="@style/AppTheme.Setting.Item">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:theme="@style/AppTheme.Setting.Line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/setting_cache_auto_clear_label"
+                        android:theme="@style/label" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/txt_cache_expire"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="2018-01-31 19:40"
+                        android:textColor="@color/colorRed"
+                        android:theme="@style/AppTheme.Setting.SubText" />
+
+                    <Button
+                        android:id="@+id/btn_clear_cache"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/selector_apply_button"
+                        android:elevation="5dp"
+                        android:minWidth="100dp"
+                        android:text="@string/setting_cache_clear"
+                        android:textAllCaps="false"
+                        android:theme="@style/AppTheme.Button" />
+                </RelativeLayout>
 
             </LinearLayout>
             <LinearLayout
@@ -156,9 +256,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-
             <LinearLayout
-                android:id="@+id/ln_clear_cache"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -169,44 +267,80 @@
                     android:layout_height="1dp"
                     android:theme="@style/AppTheme.Setting.Line" />
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:id="@+id/ln_dns">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/dns_setting_label"
+                        android:theme="@style/label" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/sw_dns"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:minHeight="30dp"
+                        android:minWidth="100dp"
+                        android:popupElevation="3dp" />
+                </RelativeLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setting_cache_auto_clear_label"
-                        android:theme="@style/label" />
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/txt_cache_expire"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="2018-01-31 19:40"
-                        android:textColor="@color/colorRed"
+                        android:text="@string/dns_setting_hint"
                         android:theme="@style/AppTheme.Setting.SubText" />
-
-                    <Button
-                        android:id="@+id/btn_clear_cache"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/selector_apply_button"
-                        android:elevation="5dp"
-                        android:minWidth="100dp"
-                        android:text="@string/setting_cache_clear"
-                        android:textAllCaps="false"
-                        android:theme="@style/AppTheme.Button" />
-                </RelativeLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ln_dns_ip"
+                    android:visibility="visible"
+                    android:orientation="vertical">
+                    <TextView
+                        android:theme="@style/label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/dns_ip_1"/>
+                    <EditText
+                        android:id="@+id/txt_dns_1"
+                        android:background="@color/browser_actions_bg_grey"
+                        android:padding="@dimen/padding_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:digits="0123456789."
+                        android:hint="@string/dns_ip_1_hint"/>
+                    <TextView
+                        android:theme="@style/label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/dns_ip_2"/>
+                    <EditText
+                        android:id="@+id/txt_dns_2"
+                        android:inputType="number"
+                        android:digits="0123456789."
+                        android:background="@color/browser_actions_bg_grey"
+                        android:padding="@dimen/padding_medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/dns_ip_2_hint"/>
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
