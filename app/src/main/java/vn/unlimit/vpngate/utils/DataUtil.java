@@ -49,6 +49,7 @@ public class DataUtil {
     public static final String USE_CUSTOM_DNS = "USE_CUSTOM_DNS";
     public static final String CUSTOM_DNS_IP_1 = "CUSTOM_DNS_IP_1";
     public static final String CUSTOM_DNS_IP_2 = "CUSTOM_DNS_IP_2";
+    public static final String USE_DOMAIN_TO_CONNECT = "USE_DOMAIN_TO_CONNECT";
     private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";

@@ -111,6 +111,8 @@
     <string name="dns_ip_2">DNS 2 (optional)</string>
     <string name="dns_ip_1_hint" translatable="false">8.8.8.8</string>
     <string name="dns_ip_2_hint" translatable="false">8.8.4.4</string>
+    <string name="use_domain_label">Use domain to connect</string>
+    <string name="use_domain_hint">Use domain .opengw.net to connect to VPN Server instead of Server IP Address</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>
