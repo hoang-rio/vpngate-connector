@@ -521,10 +521,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         sendBroadcast(intent);
     }
 
-    private void prepareVpn() {
-        prepareVpn(false);
-    }
-
     private void prepareVpn(boolean useUdp) {
         if (loadVpnProfile(useUdp)) {
             startVpn();
