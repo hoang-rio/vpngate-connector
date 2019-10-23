@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             editText.setTextColor(getResources().getColor(R.color.colorWhite));
             editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
 //        searchView.setSubmitButtonEnabled(true);
+            searchView.setQueryHint(getString(R.string.search_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -347,11 +348,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    searchView.setQueryHint(getString(R.string.search_hint));
-                    View closeBtn = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-                    if (closeBtn != null) {
-                        closeBtn.setVisibility(View.GONE);
-                    }
                     HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                     if (currentFragment != null) {
                         Answers.getInstance().logSearch(new SearchEvent()

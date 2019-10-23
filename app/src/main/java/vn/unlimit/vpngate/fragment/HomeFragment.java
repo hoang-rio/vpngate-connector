@@ -172,7 +172,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     public void filter(String keyword) {
         stopTask();
-        if (!"".equals(keyword) && mActivity.getVpnGateConnectionList() != null) {
+        if (mActivity.getVpnGateConnectionList() == null) {
+            return;
+        }
+        if (!"".equals(keyword)) {
             mKeyword = keyword;
             isSearching = true;
             VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(keyword);
@@ -185,6 +188,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 recyclerViewVPN.setVisibility(View.VISIBLE);
             }
             vpnGateListAdapter.initialize(filterResult);
+        } else {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         }
     }
 
