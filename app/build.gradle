@@ -36,16 +36,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 43
-            versionName "1.4.4"
+            versionCode 44
+            versionName "1.4.5"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 38
-            versionName "1.3.9"
+            versionCode 39
+            versionName "1.4.0"
         }
     }
 
