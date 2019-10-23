@@ -24,6 +24,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
@@ -338,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             editText.setTextColor(getResources().getColor(R.color.colorWhite));
             editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
 //        searchView.setSubmitButtonEnabled(true);
-            searchView.setQueryHint(getString(R.string.search_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -347,6 +347,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
+                    searchView.setQueryHint(getString(R.string.search_hint));
+                    View closeBtn = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+                    if (closeBtn != null) {
+                        closeBtn.setVisibility(View.GONE);
+                    }
                     HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                     if (currentFragment != null) {
                         Answers.getInstance().logSearch(new SearchEvent()
@@ -357,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     return false;
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return super.onCreateOptionsMenu(menu);
@@ -608,7 +613,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 replaceFragment("home");
                 break;
         }
-        drawerLayout.closeDrawer(Gravity.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void setTitleActionbar(String title) {

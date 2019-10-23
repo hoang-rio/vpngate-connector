@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -24,6 +25,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
 public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     private RequestListener requestListener;
     private Boolean isRetried = false;
+    private static final String TAG = "VPNGateTask";
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {
@@ -50,11 +52,13 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
             vpnGateConnectionList = getConnectionList(connection.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         } finally {
             try {
                 connection.disconnect();
                 inputStreamReader.close();
             } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
         }
@@ -85,6 +89,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         } finally {
             if (br != null) {
                 try {
