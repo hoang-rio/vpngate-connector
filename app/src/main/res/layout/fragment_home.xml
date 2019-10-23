@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAlignment="center"
-        android:visibility="visible"
+        android:visibility="gone"
         android:text="@string/empty_search_result" />
     <ImageView
         android:id="@+id/btn_to_top"
