@@ -370,8 +370,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResume() {
+        super.onResume();
         try {
-            super.onResume();
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -519,10 +519,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void sendConnectVPN() {
         Intent intent = new Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN);
         sendBroadcast(intent);
-    }
-
-    private void prepareVpn() {
-        prepareVpn(false);
     }
 
     private void prepareVpn(boolean useUdp) {

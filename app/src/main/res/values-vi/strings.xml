@@ -109,6 +109,7 @@
     <string name="dns_ip_2">DNS 2 (tuỳ chọn)</string>
     <string name="use_domain_label">Dùng tên miền để kết nối</string>
     <string name="use_domain_hint">Dùng tên miền .opengw.net để kết nối tới máy chủ VPN thay vì sử dụng địa chỉ IP</string>
+    <string name="empty_search_result">Không tìm thấy máy chủ nào với từ khoá \"%1$s\"</string>
     <!-- Privacy policy -->
     <string name="privacy_policy_title">Chính sách quyền riêng tư</string>
     <string name="btn_accept">Đồng ý</string>

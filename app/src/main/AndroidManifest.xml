@@ -13,7 +13,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="vn.unlimit.vpngate.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -31,7 +32,6 @@
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             tools:replace="android:theme" />
-
         <service
             android:name="de.blinkt.openvpn.core.OpenVPNService"
             android:permission="android.permission.BIND_VPN_SERVICE">
@@ -39,10 +39,6 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
-        <!--Facebook ads activity-->
-        <activity
-            android:name="com.facebook.ads.AudienceNetworkActivity"
-            android:hardwareAccelerated="true" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6076c879f71c414d238d016bbba4f52daf45970a" />

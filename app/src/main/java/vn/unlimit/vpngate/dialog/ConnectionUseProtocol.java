@@ -43,10 +43,14 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                BottomSheetDialog d = (BottomSheetDialog) dialog;
+                try {
+                    BottomSheetDialog d = (BottomSheetDialog) dialog;
 
-                FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+                    FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                    BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -56,7 +60,7 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
     }
 
     @Override
-    public void setupDialog(Dialog dialog, int style) {
+    public void setupDialog(@NonNull Dialog dialog, int style) {
         try {
             View contentView = View.inflate(getContext(), R.layout.layout_connect_use_protocol, null);
             btnUseTCP = contentView.findViewById(R.id.btn_use_tcp);

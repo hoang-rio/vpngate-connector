@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +59,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private Handler handler;
     private MainActivity mActivity;
     private InterstitialAd interstitialAd;
+    private TextView txtEmpty;
 
     public HomeFragment() {
 
@@ -92,13 +94,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    public void startDetailAct(VPNGateConnection vpnGateConnection) {
+    private void startDetailAct(VPNGateConnection vpnGateConnection) {
         try {
             Intent intent = new Intent(getContext(), DetailActivity.class);
             intent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, vpnGateConnection);
             startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -123,7 +126,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }
@@ -137,7 +140,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             handler = new Handler();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -158,6 +161,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         btnToTop = rootView.findViewById(R.id.btn_to_top);
         btnToTop.setOnClickListener(this);
+        txtEmpty = rootView.findViewById(R.id.txt_empty);
         return rootView;
     }
 
@@ -168,11 +172,24 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     public void filter(String keyword) {
         stopTask();
-        if (!"".equals(keyword) && mActivity.getVpnGateConnectionList() != null) {
+        if (mActivity.getVpnGateConnectionList() == null) {
+            return;
+        }
+        if (!"".equals(keyword)) {
             mKeyword = keyword;
             isSearching = true;
             VPNGateConnectionList filterResult = mActivity.getVpnGateConnectionList().filter(keyword);
+            if (filterResult.size() == 0) {
+                txtEmpty.setText(getString(R.string.empty_search_result, keyword));
+                txtEmpty.setVisibility(View.VISIBLE);
+                recyclerViewVPN.setVisibility(View.GONE);
+            } else {
+                txtEmpty.setVisibility(View.GONE);
+                recyclerViewVPN.setVisibility(View.VISIBLE);
+            }
             vpnGateListAdapter.initialize(filterResult);
+        } else {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         }
     }
 
@@ -191,6 +208,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -207,6 +225,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     public void closeSearch() {
         isSearching = false;
+        txtEmpty.setVisibility(View.GONE);
+        recyclerViewVPN.setVisibility(View.VISIBLE);
         vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         handler.postDelayed(new Runnable() {
             @Override
@@ -246,6 +266,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -275,6 +296,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (!"".equals(mActivity.getSortProperty())) {
             mActivity.getVpnGateConnectionList().sort(mActivity.getSortProperty(), mActivity.getSortType());
         }
+        txtEmpty.setVisibility(View.GONE);
+        recyclerViewVPN.setVisibility(View.VISIBLE);
         vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         dataUtil.setConnectionsCache(mActivity.getVpnGateConnectionList());
         lnSwipeRefresh.setRefreshing(false);
@@ -287,6 +310,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             ((MainActivity) getActivity()).onError(error);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 }

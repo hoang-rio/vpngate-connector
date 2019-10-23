@@ -20,6 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
@@ -70,7 +71,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
             txtTitle.setText(mVpnGateConnection.getIp());
             ImageView imgFlag = contentView.findViewById(R.id.img_flag);
             GlideApp.with(this)
-                    .load("http://www.vpngate.net/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
+                    .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
                     .placeholder(R.color.colorOverlay)
                     .error(R.color.colorOverlay)
                     .into(imgFlag);

@@ -14,8 +14,8 @@ Pro Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro
 
 # LICENSE
 
-This project under GPLv3 LICENSE. It mean if you use this project or a part of this project in your project it must be open source.
+This project is under GPLv3 LICENSE. It mean if you use this project or a part of this project in your project it must be open source.
 
-This project use another open source project as libary detail bellow.
+This project use another open source project as library detail bellow.
 * [**EasyVPN-Free**](https://github.com/MaxSmile/EasyVPN-Free) under GPLv3 LICENSE (https://github.com/MaxSmile/EasyVPN-Free/blob/master/LICENSE)
 * [**glide**](https://github.com/bumptech/glide) under Apache License, Version 2.0 (https://github.com/bumptech/glide/blob/master/LICENSE)

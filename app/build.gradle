@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
@@ -75,7 +76,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.browser:browser:1.0.0'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
@@ -83,7 +84,8 @@ dependencies {
     }
     implementation "com.google.firebase:firebase-core:17.2.0"
     implementation "com.google.firebase:firebase-ads:18.2.0"
-    implementation "com.google.firebase:firebase-config:19.0.2"
+    implementation "com.google.firebase:firebase-config:19.0.3"
+    implementation "com.google.firebase:firebase-perf:19.0.1"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true
