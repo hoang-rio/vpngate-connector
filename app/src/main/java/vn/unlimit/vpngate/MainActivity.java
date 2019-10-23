@@ -348,6 +348,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
+                    View closeBtn = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+                    if (closeBtn != null) {
+                        closeBtn.setVisibility(View.GONE);
+                    }
                     HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                     if (currentFragment != null) {
                         Answers.getInstance().logSearch(new SearchEvent()
