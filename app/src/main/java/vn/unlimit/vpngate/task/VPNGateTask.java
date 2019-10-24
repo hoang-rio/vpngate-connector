@@ -32,7 +32,6 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
         DataUtil dataUtil = App.getInstance().getDataUtil();
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
         HttpURLConnection connection = null;
-        InputStreamReader inputStreamReader = null;
         try {
             String url;
             if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
@@ -54,12 +53,8 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
             e.printStackTrace();
             Log.e(TAG, e.getMessage(), e);
         } finally {
-            try {
+            if (connection != null) {
                 connection.disconnect();
-                inputStreamReader.close();
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage(), e);
-                e.printStackTrace();
             }
         }
         if (vpnGateConnectionList.size() == 0 && !isRetried) {

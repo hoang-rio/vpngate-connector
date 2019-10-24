@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.google.firebase.firebase-perf'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion "28.0.3"
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "arm64-v8a", "armeabi", "armeabi-v7a", "mips", "x86", "x86_64"
@@ -85,7 +84,6 @@ dependencies {
     implementation "com.google.firebase:firebase-core:17.2.0"
     implementation "com.google.firebase:firebase-ads:18.2.0"
     implementation "com.google.firebase:firebase-config:19.0.3"
-    implementation "com.google.firebase:firebase-perf:19.0.1"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true
