@@ -50,7 +50,7 @@ build_release:
   - cd $CI_PROJECT_DIR
   - ./gradlew :app:bundleFreeRelease
   - cd app/build/outputs/bundle/freeRelease
-  - cp app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
+  - cp app.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
   - cd $CI_PROJECT_DIR
   - ./gradlew assembleProRelease
   - cd app/build/outputs/apk/pro/$PROD
@@ -60,7 +60,7 @@ build_release:
   - cd $CI_PROJECT_DIR
   - ./gradlew :app:bundleProRelease
   - cd app/build/outputs/bundle/proRelease
-  - cp app-pro-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
+  - cp app.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
   - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
