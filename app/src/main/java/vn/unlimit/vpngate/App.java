@@ -5,6 +5,7 @@ import android.app.Application;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
 import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.request.RequestListener;
@@ -30,6 +31,10 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
+            // Skip app initialization.
+            return;
+        }
         super.onCreate();
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
