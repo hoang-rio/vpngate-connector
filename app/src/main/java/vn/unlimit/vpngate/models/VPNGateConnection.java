@@ -345,6 +345,10 @@ public class VPNGateConnection implements Parcelable {
             address = hostName + ".opengw.net";
         }
         if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            if (tcpPort == 0 && udpPort == 0) {
+                // Current profile from non udp but open status page with include udp option
+                return String.format("%s[%s]", countryLong, address);
+            }
             return String.format("%s[%s][%s]", countryLong, address, useUdp || tcpPort == 0 ? "UDP:" + udpPort : "TCP:" + tcpPort);
         }
         return String.format("%s[%s]", countryLong, address);
