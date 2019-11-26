@@ -137,10 +137,10 @@ public class DataUtil {
         try {
             Cache cache = new Cache();
             Calendar calendar = Calendar.getInstance();
-            //Cache in hours get from setting
-            int[] cacheTime = new int[]{1, 3, 5, 7, 12};
-            int hour = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)];
-            calendar.add(Calendar.HOUR, hour);
+            //Cache in minute get from setting
+            int[] cacheTime = new int[]{15, 30, 60, 120};
+            int minute = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)];
+            calendar.add(Calendar.MINUTE, minute);
             cache.expires = calendar.getTime();
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);

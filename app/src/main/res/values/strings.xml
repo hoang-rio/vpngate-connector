@@ -45,11 +45,10 @@
     <string name="setting_clear_cache_success">Clear cache success</string>
     <string name="setting_clear_cache_error">Some thing when wrong. Cache can\'t clear</string>
     <string-array name="setting_cache_time">
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>5 hours</item>
-        <item>7 hours</item>
-        <item>12 hours</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hours</item>
+        <item>2 hours</item>
     </string-array>
     <string name="press_back_again_to_exit">Please click BACK again to exit</string>
     <!-- Detail -->
