@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.google.firebase.firebase-perf'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
@@ -57,9 +56,6 @@ android {
         }
 
         debug {
-            FirebasePerformance {
-                instrumentationEnabled false
-            }
 //            ext.enableCrashlytics = false
 //            minifyEnabled true
 //            shrinkResources true
