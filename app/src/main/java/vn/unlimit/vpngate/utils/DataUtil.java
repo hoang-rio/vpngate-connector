@@ -138,7 +138,7 @@ public class DataUtil {
             Cache cache = new Cache();
             Calendar calendar = Calendar.getInstance();
             //Cache in minute get from setting
-            int[] cacheTime = new int[]{15, 30, 60, 120, 240};
+            int[] cacheTime = new int[]{15, 30, 60, 120, 240, 480, 960};
             int minute = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)];
             calendar.add(Calendar.MINUTE, minute);
             cache.expires = calendar.getTime();
