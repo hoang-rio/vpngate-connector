@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onResume() {
         super.onResume();
-        if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(false)) {
+        if (dataUtil.hasAds()) {
 
             if (interstitialAd == null) {
                 interstitialAd = new InterstitialAd(mContext);
@@ -109,7 +109,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private boolean isShowedAd = true;
 
     private boolean checkAndShowAd(final VPNGateConnection vpnGateConnection) {
-        if (dataUtil.hasAds() && dataUtil.willShowDetailOpenAds(true)) {
+        if (dataUtil.hasAds()) {
             if (interstitialAd != null && interstitialAd.isLoaded()) {
                 interstitialAd.setAdListener(new AdListener() {
                     @Override

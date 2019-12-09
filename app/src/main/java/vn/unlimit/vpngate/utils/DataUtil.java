@@ -50,7 +50,6 @@ public class DataUtil {
     public static final String CUSTOM_DNS_IP_1 = "CUSTOM_DNS_IP_1";
     public static final String CUSTOM_DNS_IP_2 = "CUSTOM_DNS_IP_2";
     public static final String USE_DOMAIN_TO_CONNECT = "USE_DOMAIN_TO_CONNECT";
-    private static final String LAST_TIME_SHOW_DETAIL_BACK_ADS = "LAST_TIME_SHOW_DETAIL_BACK_ADS";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
     private Context mContext;
@@ -66,18 +65,10 @@ public class DataUtil {
             gson = new Gson();
             mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .setMinimumFetchIntervalInSeconds(3600)
                     .build();
-            mFirebaseRemoteConfig.setConfigSettings(configSettings);
-            // [END enable_dev_mode]
-
-            // Set default Remote Config parameter values. An app uses the in-app default values, and
-            // when you need to adjust those defaults, you set an updated value for only the values you
-            // want to change in the Firebase console. See Best Practices in the README for more
-            // information.
-            // [START set_default_values]
-            mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-            // [END set_default_values]
+            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+            mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -290,30 +281,6 @@ public class DataUtil {
             return info != null;
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean willShowDetailOpenAds(boolean checkToShow) {
-        //Stop this ads if setting is zero
-        int adsInterval = Integer.parseInt(FirebaseRemoteConfig.getInstance().getString(mContext.getString(R.string.ads_open_detail_interval_cfg_key)));
-        if (adsInterval == 0) {
-            return false;
-        }
-        long lastTimeShowAds = sharedPreferencesSetting.getLong(LAST_TIME_SHOW_DETAIL_BACK_ADS, 0);
-        Date currentTime = new Date();
-        Calendar showAdCal = Calendar.getInstance();
-        showAdCal.setTimeInMillis(lastTimeShowAds);
-        showAdCal.add(Calendar.MINUTE, adsInterval);
-        boolean checkValue = currentTime.after(showAdCal.getTime());
-        if (lastTimeShowAds == 0 || checkValue) { //Covert to seconds
-            //Set last show ads time
-            if (checkToShow) {
-                SharedPreferences.Editor editor = sharedPreferencesSetting.edit();
-                editor.putLong(LAST_TIME_SHOW_DETAIL_BACK_ADS, currentTime.getTime());
-                editor.apply();
-            }
-            return true;
         }
         return false;
     }
