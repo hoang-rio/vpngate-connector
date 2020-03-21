@@ -24,14 +24,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.ByteArrayInputStream;
@@ -128,10 +127,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             mVpnGateConnection = dataUtil.getLastVPNConnection();
             loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false));
             try {
-                Answers.getInstance().logCustom(new CustomEvent("Open detail")
-                        .putCustomAttribute("from", "Notification")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                Bundle params = new Bundle();
+                params.putString("from", "Notification");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Open_Detail", params);
             } catch (NullPointerException ex) {
                 ex.printStackTrace();
             }
@@ -295,9 +295,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 case LEVEL_AUTH_FAILED:
                     isAuthFailed = true;
                     btnConnect.setText(getString(R.string.retry_connect));
-                    Answers.getInstance().logCustom(new CustomEvent("Connect Error")
-                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    Bundle params = new Bundle();
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
                     if (Build.VERSION.SDK_INT >= 16) {
                         btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                     }
@@ -395,10 +396,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         loadAds();
         if (checkStatus()) {
             stopVpn();
-            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                    .putCustomAttribute("type", "replace current")
-                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            Bundle params = new Bundle();
+            params.putString("type", "replace current");
+            params.putString("ip", mVpnGateConnection.getIp());
+            params.putString("country", mVpnGateConnection.getCountryLong());
+            FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             linkCheckIp.setVisibility(View.GONE);
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -407,10 +409,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }, 500);
         } else {
-            Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                    .putCustomAttribute("type", "connect new")
-                    .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                    .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+            Bundle params = new Bundle();
+            params.putString("type", "connect new");
+            params.putString("ip", mVpnGateConnection.getIp());
+            params.putString("country", mVpnGateConnection.getCountryLong());
+            FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             prepareVpn(useUdp);
         }
         if (Build.VERSION.SDK_INT >= 16) {
@@ -433,10 +436,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (view.equals(btnConnect)) {
                 if (!isConnecting) {
                     if (checkStatus() && isCurrent()) {
-                        Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
-                                .putCustomAttribute("type", "disconnect current")
-                                .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                                .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                        Bundle params = new Bundle();
+                        params.putString("type", "disconnect current");
+                        params.putString("ip", mVpnGateConnection.getIp());
+                        params.putString("country", mVpnGateConnection.getCountryLong());
+                        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Disconnect_VPN", params);
                         stopVpn();
                         if (Build.VERSION.SDK_INT >= 16) {
                             btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
@@ -455,10 +459,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         handleConnection(false);
                     }
                 } else {
-                    Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
-                            .putCustomAttribute("type", "cancel connect to vpn")
-                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    Bundle params = new Bundle();
+                    params.putString("type", "cancel connect to vpn");
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Cancel_VPN", params);
                     stopVpn();
                     if (Build.VERSION.SDK_INT >= 16) {
                         btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
@@ -469,10 +474,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
             if (view.equals(linkCheckIp)) {
-                Answers.getInstance().logCustom(new CustomEvent("Click Check IP")
-                        .putCustomAttribute("type", "check ip click")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                Bundle params = new Bundle();
+                params.putString("type", "check ip click");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Click_Check_IP", params);
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")));
                 startActivity(browserIntent);
             }

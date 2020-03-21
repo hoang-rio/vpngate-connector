@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,15 +27,13 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
-import com.crashlytics.android.answers.SearchEvent;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
@@ -354,8 +351,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     }
                     HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                     if (currentFragment != null) {
-                        Answers.getInstance().logSearch(new SearchEvent()
-                                .putQuery(newText));
+                        Bundle params = new Bundle();
+                        params.putString(FirebaseAnalytics.Param.SEARCH_TERM, newText);
+                        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent(FirebaseAnalytics.Event.SEARCH, params);
                         currentFragment.filter(newText);
                         return true;
                     }
@@ -369,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -392,9 +390,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
                     HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                     if (currentFragment != null) {
-                        Answers.getInstance().logCustom(new CustomEvent("Sort")
-                                .putCustomAttribute("property", sortProperty)
-                                .putCustomAttribute("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC"));
+                        Bundle params = new Bundle();
+                        params.putString("property", sortProperty);
+                        params.putString("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC");
+                        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Sort", params);
                         currentFragment.sort(sortProperty, sortType);
                     }
                 }
@@ -433,8 +432,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
         selectedMenuItem = menuItem;
         disallowLoadHome = true;
-        Answers.getInstance().logCustom(new CustomEvent("Drawer select")
-                .putCustomAttribute("title", menuItem.getTitle().toString()));
+        Bundle params = new Bundle();
+        params.putString("title", menuItem.getTitle().toString());
+        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Drawer_select", params);
         switch (menuItem.getItemId()) {
             case R.id.nav_get_pro:
                 if (dataUtil.hasAds() && dataUtil.hasProInstalled()) {
@@ -625,7 +625,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onError(String error) {
-        Answers.getInstance().logCustom(new CustomEvent("Error").putCustomAttribute("screen", "home"));
+        Bundle params = new Bundle();
+        params.putString("screen", "home");
+        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Error", params);
         frameContent.setVisibility(View.GONE);
         lnLoading.setVisibility(View.GONE);
         lnError.setVisibility(View.VISIBLE);

@@ -14,11 +14,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.GlideApp;
@@ -90,16 +89,18 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = null;
             if (view.equals(btnCopyIp)) {
-                Answers.getInstance().logCustom(new CustomEvent("Copy")
-                        .putCustomAttribute("type", "ip")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                Bundle params = new Bundle();
+                params.putString("type", "ip");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getIp());
             } else if (view.equals(btnCopyHostName)) {
-                Answers.getInstance().logCustom(new CustomEvent("Copy")
-                        .putCustomAttribute("type", "hostname")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                Bundle params = new Bundle();
+                params.putString("type", "hostname");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getCalculateHostName());
             }
             if (clip != null) {
