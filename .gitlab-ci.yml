@@ -42,21 +42,9 @@ build_release:
   script:
   - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
   - GPG=gpg2 blackbox_postdeploy
-  - ./gradlew assembleFreeRelease
-  - cd app/build/outputs/apk/free/$PROD
-  - cp app-free-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free.apk
-  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/free/$PROD
-  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-free.txt
-  - cd $CI_PROJECT_DIR
   - ./gradlew :app:bundleFreeRelease
   - cd app/build/outputs/bundle/freeRelease
   - cp app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
-  - cd $CI_PROJECT_DIR
-  - ./gradlew assembleProRelease
-  - cd app/build/outputs/apk/pro/$PROD
-  - cp app-pro-$PROD.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro.apk
-  - cd $CI_PROJECT_DIR/app/build/outputs/mapping/pro/$PROD
-  - cp mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-pro.txt
   - cd $CI_PROJECT_DIR
   - ./gradlew :app:bundleProRelease
   - cd app/build/outputs/bundle/proRelease
@@ -64,10 +52,6 @@ build_release:
   - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-    - ./$CI_BUILD_REF-free.apk
     - ./$CI_BUILD_REF-free.aab
-    - ./$CI_BUILD_REF-free.txt
-    - ./$CI_BUILD_REF-pro.apk
     - ./$CI_BUILD_REF-pro.aab
-    - ./$CI_BUILD_REF-pro.txt
     expire_in: 5 day
