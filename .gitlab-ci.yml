@@ -1,57 +1,56 @@
 image: hoangnd4rikkei/android-sdk
 
 stages:
-- debug
-- release
+  - build
 
 before_script:
-- export GRADLE_USER_HOME=$(pwd)/.gradle
-- export DEBUG="debug"
-- export PROD="release"
-- chmod +x ./gradlew
+  - export GRADLE_USER_HOME=$(pwd)/.gradle
+  - export DEBUG="debug"
+  - export PROD="release"
+  - chmod +x ./gradlew
 
 cache:
   key: ${CI_PROJECT_ID}
   paths:
-  - .gradle/
-build_debug:
-  stage: debug
+    - .gradle/
+build_debug_apk:
+  stage: build
   except:
-  - release
-  - tags
+    - release
+    - tags
   script:
-  - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
-  - GPG=gpg2 blackbox_postdeploy
-  - ./gradlew assembleFreeDebug
-  - cd app/build/outputs/apk/free/$DEBUG
-  - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
-  - cd $CI_PROJECT_DIR
-  - ./gradlew assembleProDebug
-  - cd app/build/outputs/apk/pro/$DEBUG
-  - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro-debug.apk
-  - ls -alh $CI_PROJECT_DIR
+    - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+    - GPG=gpg2 blackbox_postdeploy
+    - ./gradlew assembleFreeDebug
+    - cd app/build/outputs/apk/free/$DEBUG
+    - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
+    - cd $CI_PROJECT_DIR
+    - ./gradlew assembleProDebug
+    - cd app/build/outputs/apk/pro/$DEBUG
+    - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro-debug.apk
+    - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-    - ./$CI_BUILD_REF-free-debug.apk
-    - ./$CI_BUILD_REF-pro-debug.apk
+      - ./$CI_BUILD_REF-free-debug.apk
+      - ./$CI_BUILD_REF-pro-debug.apk
     expire_in: 5 day
-build_release:
-  stage: release
+build_release_aar:
+  stage: build
   only:
-  - release
+    - release
   script:
-  - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
-  - GPG=gpg2 blackbox_postdeploy
-  - ./gradlew :app:bundleFreeRelease
-  - cd app/build/outputs/bundle/freeRelease
-  - cp app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
-  - cd $CI_PROJECT_DIR
-  - ./gradlew :app:bundleProRelease
-  - cd app/build/outputs/bundle/proRelease
-  - cp app-pro-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
-  - ls -alh $CI_PROJECT_DIR
+    - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+    - GPG=gpg2 blackbox_postdeploy
+    - ./gradlew :app:bundleFreeRelease
+    - cd app/build/outputs/bundle/freeRelease
+    - cp app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
+    - cd $CI_PROJECT_DIR
+    - ./gradlew :app:bundleProRelease
+    - cd app/build/outputs/bundle/proRelease
+    - cp app-pro-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
+    - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-    - ./$CI_BUILD_REF-free.aab
-    - ./$CI_BUILD_REF-pro.aab
+      - ./$CI_BUILD_REF-free.aab
+      - ./$CI_BUILD_REF-pro.aab
     expire_in: 5 day
