@@ -18,11 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
@@ -247,9 +246,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onItemClick(Object o, int position) {
-        Answers.getInstance().logCustom(new CustomEvent("Select server")
-                .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
-                .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
+        Bundle params = new Bundle();
+        params.putString("ip", ((VPNGateConnection) o).getIp());
+        params.putString("country", ((VPNGateConnection) o).getCountryLong());
+        FirebaseAnalytics.getInstance(mContext).logEvent("Select_Server", params);
         if (!checkAndShowAd((VPNGateConnection) o)) {
             startDetailAct((VPNGateConnection) o);
         }
@@ -258,9 +258,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onItemLongClick(Object o, int position) {
         try {
-            Answers.getInstance().logCustom(new CustomEvent("Long click server")
-                    .putCustomAttribute("ip", ((VPNGateConnection) o).getIp())
-                    .putCustomAttribute("country", ((VPNGateConnection) o).getCountryLong()));
+            Bundle params = new Bundle();
+            params.putString("ip", ((VPNGateConnection) o).getIp());
+            params.putString("country", ((VPNGateConnection) o).getCountryLong());
+            FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
             assert getFragmentManager() != null;
             dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
