@@ -254,7 +254,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             txtStatus.setText(VpnStatus.getLastCleanLogMessage(getApplicationContext()));
             changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
 
-            if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
+            if ("NOPROCESS".equals(intent.getStringExtra("detailstatus"))) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -469,6 +469,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
             if (view.equals(linkCheckIp)) {
+                Answers.getInstance().logCustom(new CustomEvent("Click Check IP")
+                        .putCustomAttribute("type", "check ip click")
+                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
+                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")));
                 startActivity(browserIntent);
             }

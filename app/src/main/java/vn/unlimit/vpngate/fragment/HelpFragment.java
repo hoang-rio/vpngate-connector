@@ -99,7 +99,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
                     String subject = getResources().getString(R.string.help_request_from) + " " + edtName.getText();
                     String body = edtContent.getText().toString();
                     Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
-                    mailIntent.setData(Uri.parse(String.format("mailto:support@chiasenhac.us?subject=%s&body=%s", subject, body)));
+                    mailIntent.setData(Uri.parse(String.format("mailto:support@vpngate-connector.com?subject=%s&body=%s", subject, body)));
                     startActivity(Intent.createChooser(mailIntent, getResources().getString(R.string.send_email)));
                 } else {
                     Toast.makeText(getContext(), getResources().getString(R.string.email_error_fix), Toast.LENGTH_LONG).show();

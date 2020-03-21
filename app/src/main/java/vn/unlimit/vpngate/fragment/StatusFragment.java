@@ -22,11 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.ByteArrayInputStream;
@@ -118,7 +117,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         mContext = context;
         super.onAttach(context);
     }
@@ -194,20 +193,22 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             }
             if (!isConnecting) {
                 if (checkStatus()) {
-                    Answers.getInstance().logCustom(new CustomEvent("Disconnect VPN")
-                            .putCustomAttribute("type", "disconnect current")
-                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    Bundle params = new Bundle();
+                    params.putString("type", "disconnect current");
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(mContext).logEvent("Disconnect_VPN", params);
                     stopVpn();
                     isConnecting = false;
                     btnOnOff.setActivated(false);
                     txtStatus.setText(R.string.disconnecting);
                 } else {
                     showAds();
-                    Answers.getInstance().logCustom(new CustomEvent("Connect VPN")
-                            .putCustomAttribute("type", "connect from status")
-                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    Bundle params = new Bundle();
+                    params.putString("type", "connect from status");
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(mContext).logEvent("Connect_VPN", params);
                     prepareVpn();
                     txtStatus.setText(getString(R.string.connecting));
                     btnOnOff.setActivated(true);
@@ -215,10 +216,11 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     dataUtil.setLastVPNConnection(mVpnGateConnection);
                 }
             } else {
-                Answers.getInstance().logCustom(new CustomEvent("Cancel VPN")
-                        .putCustomAttribute("type", "cancel connect to vpn")
-                        .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                        .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                Bundle params = new Bundle();
+                params.putString("type", "cancel connect to vpn");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(mContext).logEvent("Cancel_VPN", params);
                 stopVpn();
                 btnOnOff.setActivated(false);
                 txtStatus.setText(getString(R.string.canceled));
@@ -371,7 +373,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
             txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
             changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
 
-            if (intent.getStringExtra("detailstatus").equals("NOPROCESS")) {
+            if ("NOPROCESS".equals(intent.getStringExtra("detailstatus"))) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -409,9 +411,10 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 case LEVEL_AUTH_FAILED:
                     isAuthFailed = true;
                     btnOnOff.setActivated(false);
-                    Answers.getInstance().logCustom(new CustomEvent("Connect Error")
-                            .putCustomAttribute("ip", mVpnGateConnection.getIp())
-                            .putCustomAttribute("country", mVpnGateConnection.getCountryLong()));
+                    Bundle params = new Bundle();
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(mContext).logEvent("Connect_Error", params);
                     txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                     isConnecting = false;
                     break;

@@ -201,13 +201,14 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
         if (tickerText != null && !tickerText.equals(""))
             nbuilder.setTicker(tickerText);
-
-        @SuppressWarnings("deprecation")
-        Notification notification = nbuilder.getNotification();
-
-
-        mNotificationManager.notify(OPENVPN_STATUS, notification);
-        startForeground(OPENVPN_STATUS, notification);
+        try {
+            @SuppressWarnings("deprecation")
+            Notification notification = nbuilder.getNotification();
+            mNotificationManager.notify(OPENVPN_STATUS, notification);
+            startForeground(OPENVPN_STATUS, notification);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Check if running on a TV
         if (runningOnAndroidTV() && !lowpriority)

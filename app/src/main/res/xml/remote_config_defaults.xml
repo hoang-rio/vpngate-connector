@@ -28,4 +28,8 @@
         <key>vpn_check_ip_url</key>
         <value>https://whatismyipaddress.com/</value>
     </entry>
+    <entry>
+        <key>vpn_paid_server_api</key>
+        <value>https://www.vpngate.net/api/</value>
+    </entry>
 </defaultsMap>

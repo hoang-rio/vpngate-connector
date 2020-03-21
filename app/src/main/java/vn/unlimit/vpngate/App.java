@@ -3,7 +3,6 @@ package vn.unlimit.vpngate;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 
@@ -39,7 +38,6 @@ public class App extends Application {
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
-        Fabric.with(this, new Answers());
         instance = this;
         dataUtil = new DataUtil(this);
         isAdMobPrimary = dataUtil.getBooleanSetting(DataUtil.CONFIG_ADMOB_PRIMARY, isAdMobPrimary);
@@ -56,7 +54,7 @@ public class App extends Application {
         });
         try {
             ProviderInstaller.installIfNeeded(getApplicationContext());
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

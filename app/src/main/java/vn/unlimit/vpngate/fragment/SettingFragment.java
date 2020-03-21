@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +21,7 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.DateFormat;
 
@@ -80,12 +78,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         spinnerInit.setStringArray(listCacheTime,
                 listCacheTime[dataUtil.getIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, 0)]
         );
-        spinnerInit.setOnItemSelectedIndexListener(new SpinnerInit.OnItemSelectedIndexListener() {
-            @Override
-            public void onItemSelected(String name, int index) {
-                dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index);
-            }
-        });
+        spinnerInit.setOnItemSelectedIndexListener((name, index) -> dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index));
         if (dataUtil.getConnectionCacheExpires() == null) {
             lnClearCache.setVisibility(View.GONE);
         } else {
@@ -124,24 +117,22 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
 
     private InputFilter[] getIpInputFilters() {
         InputFilter[] filters = new InputFilter[1];
-        filters[0] = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                if (end > start) {
-                    String destTxt = dest.toString();
-                    String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
-                    if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
-                        return "";
-                    } else {
-                        String[] splits = resultingTxt.split("\\.");
-                        for (String val : splits) {
-                            if (Integer.valueOf(val) > 255) {
-                                return "";
-                            }
+        filters[0] = (source, start, end, dest, dstart, dend) -> {
+            if (end > start) {
+                String destTxt = dest.toString();
+                String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
+                    return "";
+                } else {
+                    String[] splits = resultingTxt.split("\\.");
+                    for (String val : splits) {
+                        if (Integer.valueOf(val) > 255) {
+                            return "";
                         }
                     }
                 }
-                return null;
             }
+            return null;
         };
         return filters;
 
@@ -249,7 +240,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             if (isChecked && swDns.isChecked()) {
                 swDns.setChecked(false);
             }
-            Answers.getInstance().logCustom(new CustomEvent("Change Block Ads Setting").putCustomAttribute("enabled", isChecked + ""));
+            Bundle params = new Bundle();
+            params.putString("enabled", isChecked + "");
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Block_Ads_Setting", params);
         }
     }
 
