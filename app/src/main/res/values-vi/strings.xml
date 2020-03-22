@@ -57,6 +57,9 @@
     <string name="total_traffic">Tổng lưu lượng</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Kết nối đến server này</string>
+    <string name="install_openvpn">Cài đặt OpenVPN Connect</string>
+    <string name="save_config_file">Lưu file cấu hình OpenVPN</string>
+    <string name="saved_ovpn_file_in">Đã lưu file cấu hình tại %s. Nhập vào OpenVPN để sử dụng</string>
     <string name="connect_use_protocol">Kết nối sử dụng giao thức:</string>
     <string name="retry_connect">Thử kết nối lại</string>
     <string name="vpn_auth_failure">Lỗi xác thực</string>

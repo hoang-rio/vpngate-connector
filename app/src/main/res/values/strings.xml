@@ -59,6 +59,9 @@
     <string name="total_traffic">Total traffic</string>
     <string name="log_type">Log type</string>
     <string name="connect_to_this_server">Connect to this server</string>
+    <string name="install_openvpn">Install OpenVPN Connect</string>
+    <string name="save_config_file">Save OpenVPN config file</string>
+    <string name="saved_ovpn_file_in">Saved ovpn file in %s. Import to OpenVPN Connect to use it</string>
     <string name="connect_use_protocol">Connect use protocol:</string>
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>

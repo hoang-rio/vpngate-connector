@@ -32,4 +32,8 @@
         <key>vpn_paid_server_api</key>
         <value>https://www.vpngate.net/api/</value>
     </entry>
+    <entry>
+        <key>vpn_import_open_vpn</key>
+        <value>true</value>
+    </entry>
 </defaultsMap>

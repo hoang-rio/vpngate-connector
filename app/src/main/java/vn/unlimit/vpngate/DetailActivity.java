@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -8,10 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
@@ -23,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -34,6 +39,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
@@ -90,6 +97,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private InterstitialAd mInterstitialAd;
     private AdView adView;
     private AdView adViewBellow;
+    private View btnInstallOpenVpn;
+    private View btnSaveConfigFile;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -142,6 +151,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         checkConnectionData();
         setContentView(R.layout.activity_detail);
         btnConnect = findViewById(R.id.btn_connect);
+        btnSaveConfigFile = findViewById(R.id.btn_save_config_file);
+        btnSaveConfigFile.setOnClickListener(this);
+        btnInstallOpenVpn = findViewById(R.id.btn_install_openvpn);
+        btnInstallOpenVpn.setOnClickListener(this);
         btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(this);
         btnConnect.setOnClickListener(this);
@@ -376,6 +389,20 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            if (!App.isIsImportToOpenVPN()) {
+                btnInstallOpenVpn.setVisibility(View.GONE);
+                btnInstallOpenVpn.setVisibility(View.GONE);
+                btnConnect.setVisibility(View.VISIBLE);
+            } else {
+                btnConnect.setVisibility(View.GONE);
+                if (dataUtil.hasOpenVPNInstalled()) {
+                    btnSaveConfigFile.setVisibility(View.VISIBLE);
+                    btnInstallOpenVpn.setVisibility(View.GONE);
+                } else {
+                    btnSaveConfigFile.setVisibility(View.GONE);
+                    btnInstallOpenVpn.setVisibility(View.VISIBLE);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -387,6 +414,37 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             TotalTraffic.saveTotal();
             unbindService(mConnection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleImport(final boolean useUdp) {
+        loadAds();
+        String data;
+        if (useUdp) {
+            data = mVpnGateConnection.getOpenVpnConfigDataUdp();
+        } else {
+            data = mVpnGateConnection.getOpenVpnConfigData();
+        }
+        try {
+            while (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+            }
+            String fileName = mVpnGateConnection.getName(useUdp) + ".ovpn";
+            File writeFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+            FileOutputStream fileOutputStream = new FileOutputStream(writeFile);
+            fileOutputStream.write(data.getBytes());
+            Toast.makeText(getApplicationContext(), getString(R.string.saved_ovpn_file_in, "Download/" + fileName), Toast.LENGTH_LONG).show();
+            final Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                PackageManager packageManager = getPackageManager();
+                Intent intent = packageManager.getLaunchIntentForPackage("net.openvpn.openvpn");
+                if (intent != null) {
+                    intent.setAction(Intent.ACTION_VIEW);
+                    startActivity(intent);
+                }
+            }, 500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -448,12 +506,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
-                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, new ConnectionUseProtocol.ClickResult() {
-                            @Override
-                            public void onResult(final boolean useUdp) {
-                                handleConnection(useUdp);
-                            }
-                        });
+                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, useUdp -> handleConnection(useUdp));
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     } else {
                         handleConnection(false);
@@ -482,7 +535,21 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")));
                 startActivity(browserIntent);
             }
-
+            if (view.equals(btnInstallOpenVpn)) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.openvpn.openvpn")));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")));
+                }
+            }
+            if (view.equals(btnSaveConfigFile)) {
+                if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
+                    ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, useUdp -> handleImport(useUdp));
+                    connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                } else {
+                    handleImport(false);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

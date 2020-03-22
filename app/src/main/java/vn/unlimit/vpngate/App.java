@@ -5,15 +5,15 @@ import android.app.Application;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import io.fabric.sdk.android.Fabric;
-import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.utils.DataUtil;
 
 public class App extends Application {
 
     private static App instance;
-    private static boolean isAdMobPrimary = true;
+    private static boolean isImportToOpenVPN = true;
     private DataUtil dataUtil;
 
     public static String getResourceString(int resId) {
@@ -24,8 +24,12 @@ public class App extends Application {
         return instance;
     }
 
-    public static boolean isAdMobPrimary() {
-        return isAdMobPrimary;
+    public static boolean isIsImportToOpenVPN() {
+        return isImportToOpenVPN;
+    }
+
+    public DataUtil getDataUtil() {
+        return dataUtil;
     }
 
     @Override
@@ -40,26 +44,11 @@ public class App extends Application {
         }
         instance = this;
         dataUtil = new DataUtil(this);
-        isAdMobPrimary = dataUtil.getBooleanSetting(DataUtil.CONFIG_ADMOB_PRIMARY, isAdMobPrimary);
-        dataUtil.getIsAmobPrimary(new RequestListener() {
-            @Override
-            public void onSuccess(Object result) {
-                isAdMobPrimary = (boolean) result;
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });
+        isImportToOpenVPN = FirebaseRemoteConfig.getInstance().getBoolean("vpn_import_open_vpn");
         try {
             ProviderInstaller.installIfNeeded(getApplicationContext());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public DataUtil getDataUtil() {
-        return dataUtil;
     }
 }

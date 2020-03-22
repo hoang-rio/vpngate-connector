@@ -42,10 +42,12 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private DataUtil dataUtil;
     private SwitchCompat swBlockAds;
     private View lnBlockAds;
+    private View lnBlockAdsWrap;
     private SwitchCompat swUdp;
     private View lnUdp;
     private Context mContext;
     private View lnDns;
+    private View lnDnsWrap;
     private SwitchCompat swDns;
     private View lnDnsIP;
     private EditText txtDns1;
@@ -62,6 +64,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         btnClearCache = rootView.findViewById(R.id.btn_clear_cache);
         btnClearCache.setOnClickListener(this);
         lnBlockAds = rootView.findViewById(R.id.ln_block_ads);
+        lnBlockAdsWrap = rootView.findViewById(R.id.ln_block_ads_wrap);
+        lnDnsWrap = rootView.findViewById(R.id.ln_dns_wrap);
         lnBlockAds.setOnClickListener(this);
         swBlockAds = rootView.findViewById(R.id.sw_block_ads);
         swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false));
@@ -160,6 +164,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (App.isIsImportToOpenVPN()) {
+            lnBlockAdsWrap.setVisibility(View.GONE);
+            lnDnsWrap.setVisibility(View.GONE);
+        } else {
+            lnBlockAdsWrap.setVisibility(View.VISIBLE);
+            lnDnsWrap.setVisibility(View.VISIBLE);
+        }
     }
 
     private void clearListServerCache(boolean showToast) {

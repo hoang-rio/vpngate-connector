@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
      * Check network and process first state
      */
     private void initState() {
-        checkStatusMenu();
+//        checkStatusMenu();
         if (!dataUtil.isAcceptedPrivacyPolicy()) {
             replaceFragment("privacy-policy");
             return;
