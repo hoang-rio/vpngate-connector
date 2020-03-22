@@ -391,7 +391,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             if (!App.isIsImportToOpenVPN()) {
                 btnInstallOpenVpn.setVisibility(View.GONE);
-                btnInstallOpenVpn.setVisibility(View.GONE);
+                btnSaveConfigFile.setVisibility(View.GONE);
                 btnConnect.setVisibility(View.VISIBLE);
             } else {
                 btnConnect.setVisibility(View.GONE);

@@ -13,7 +13,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
 public class App extends Application {
 
     private static App instance;
-    private static boolean isImportToOpenVPN = true;
+    private static boolean isImportToOpenVPN = false;
     private DataUtil dataUtil;
 
     public static String getResourceString(int resId) {

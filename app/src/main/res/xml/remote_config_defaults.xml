@@ -34,6 +34,6 @@
     </entry>
     <entry>
         <key>vpn_import_open_vpn</key>
-        <value>true</value>
+        <value>false</value>
     </entry>
 </defaultsMap>
