@@ -248,6 +248,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onItemClick(Object o, int position) {
         Bundle params = new Bundle();
         params.putString("ip", ((VPNGateConnection) o).getIp());
+        params.putString("hostname", ((VPNGateConnection) o).getCalculateHostName());
         params.putString("country", ((VPNGateConnection) o).getCountryLong());
         FirebaseAnalytics.getInstance(mContext).logEvent("Select_Server", params);
         if (!checkAndShowAd((VPNGateConnection) o)) {
@@ -260,6 +261,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         try {
             Bundle params = new Bundle();
             params.putString("ip", ((VPNGateConnection) o).getIp());
+            params.putString("hostname", ((VPNGateConnection) o).getCalculateHostName());
             params.putString("country", ((VPNGateConnection) o).getCountryLong());
             FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);

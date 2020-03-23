@@ -142,6 +142,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 Bundle params = new Bundle();
                 params.putString("from", "Notification");
                 params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Open_Detail", params);
             } catch (NullPointerException ex) {
@@ -317,6 +318,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     btnConnect.setText(getString(R.string.retry_connect));
                     Bundle params = new Bundle();
                     params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
                     if (Build.VERSION.SDK_INT >= 16) {
@@ -471,6 +473,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             stopVpn();
             Bundle params = new Bundle();
             params.putString("type", "replace current");
+            params.putString("hostname", mVpnGateConnection.getCalculateHostName());
             params.putString("ip", mVpnGateConnection.getIp());
             params.putString("country", mVpnGateConnection.getCountryLong());
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
@@ -484,6 +487,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             Bundle params = new Bundle();
             params.putString("type", "connect new");
+            params.putString("hostname", mVpnGateConnection.getCalculateHostName());
             params.putString("ip", mVpnGateConnection.getIp());
             params.putString("country", mVpnGateConnection.getCountryLong());
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
@@ -511,6 +515,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     if (checkStatus() && isCurrent()) {
                         Bundle params = new Bundle();
                         params.putString("type", "disconnect current");
+                        params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                         params.putString("ip", mVpnGateConnection.getIp());
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Disconnect_VPN", params);
@@ -521,7 +526,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
-                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, useUdp -> handleConnection(useUdp));
+                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     } else {
                         handleConnection(false);
@@ -529,6 +534,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     Bundle params = new Bundle();
                     params.putString("type", "cancel connect to vpn");
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                     params.putString("ip", mVpnGateConnection.getIp());
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Cancel_VPN", params);
@@ -543,6 +549,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else if (view.equals(linkCheckIp)) {
                 Bundle params = new Bundle();
                 params.putString("type", "check ip click");
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("ip", mVpnGateConnection.getIp());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Click_Check_IP", params);
@@ -551,6 +558,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else if (view.equals(btnConnectL2TP)) {
                 Bundle params = new Bundle();
                 params.putString("type", "connect via L2TP");
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("ip", mVpnGateConnection.getIp());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_L2TP", params);
@@ -575,6 +583,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private boolean isFullScreenAdLoaded = false;
