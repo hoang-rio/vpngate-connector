@@ -19,6 +19,8 @@
     <string name="owner">Owner</string>
     <string name="tcp_port" translatable="false">TCP</string>
     <string name="udp_port" translatable="false">UDP</string>
+    <string name="l2tp_support">L2TP Support</string>
+    <string name="l2tp_supported">Yes</string>
     <string name="days">days</string>
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
@@ -62,6 +64,7 @@
     <string name="install_openvpn">Install OpenVPN Connect</string>
     <string name="save_config_file">Save OpenVPN config file</string>
     <string name="saved_ovpn_file_in">Saved ovpn file in %s. Import to OpenVPN Connect to use it</string>
+    <string name="connect_via_l2tp">Connect via L2TP VPN</string>
     <string name="connect_use_protocol">Connect use protocol:</string>
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>

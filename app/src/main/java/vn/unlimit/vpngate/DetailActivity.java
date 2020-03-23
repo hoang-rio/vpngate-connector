@@ -86,6 +86,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private TextView txtTCP;
     private View lnUDP;
     private TextView txtUDP;
+    private View lnL2TP;
+    private View getLnL2TPBtn;
+    private Button btnConnectL2TP;
     View linkCheckIp;
     LinearLayout lnContentDetail;
     private DataUtil dataUtil;
@@ -179,6 +182,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         txtTCP = findViewById(R.id.txt_tcp_port);
         lnUDP = findViewById(R.id.ln_udp);
         txtUDP = findViewById(R.id.txt_udp_port);
+        lnL2TP = findViewById(R.id.ln_l2tp);
+        getLnL2TPBtn = findViewById(R.id.ln_l2tp_btn);
+        btnConnectL2TP = findViewById(R.id.btn_l2tp_connect);
+        btnConnectL2TP.setOnClickListener(this);
         bindData();
         registerBroadCast();
         initAdMob();
@@ -361,6 +368,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     txtUDP.setText(String.valueOf(mVpnGateConnection.getUdpPort()));
                 }
+                if (mVpnGateConnection.isL2TPSupport()) {
+                    lnL2TP.setVisibility(View.VISIBLE);
+                    getLnL2TPBtn.setVisibility(View.VISIBLE);
+                } else {
+                    lnL2TP.setVisibility(View.GONE);
+                    getLnL2TPBtn.setVisibility(View.GONE);
+                }
+
                 if (isCurrent() && checkStatus()) {
                     btnConnect.setText(getResources().getString(R.string.disconnect));
                     if (Build.VERSION.SDK_INT >= 16) {
@@ -525,8 +540,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     txtStatus.setText(getString(R.string.canceled));
                     isConnecting = false;
                 }
-            }
-            if (view.equals(linkCheckIp)) {
+            } else if (view.equals(linkCheckIp)) {
                 Bundle params = new Bundle();
                 params.putString("type", "check ip click");
                 params.putString("ip", mVpnGateConnection.getIp());
@@ -534,6 +548,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Click_Check_IP", params);
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")));
                 startActivity(browserIntent);
+            } else if (view.equals(btnConnectL2TP)) {
+                Bundle params = new Bundle();
+                params.putString("type", "connect via L2TP");
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_L2TP", params);
+                loadAds();
+                // TODO: Open L2TP Connection instruction activity here
             }
             if (view.equals(btnInstallOpenVpn)) {
                 try {

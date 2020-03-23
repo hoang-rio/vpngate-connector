@@ -17,6 +17,8 @@
     <string name="session">Số kết nối</string>
     <string name="uptime">T.gian bật</string>
     <string name="owner">Chủ sở hữu</string>
+    <string name="l2tp_support">Hỗ trợ L2TP</string>
+    <string name="l2tp_supported">Có</string>
     <string name="days">ngày</string>
     <string name="hours">giờ</string>
     <string name="minutes">phút</string>
@@ -60,6 +62,7 @@
     <string name="install_openvpn">Cài đặt OpenVPN Connect</string>
     <string name="save_config_file">Lưu file cấu hình OpenVPN</string>
     <string name="saved_ovpn_file_in">Đã lưu file cấu hình tại %s. Nhập vào OpenVPN để sử dụng</string>
+    <string name="connect_via_l2tp">Kết nối qua L2TP VPN</string>
     <string name="connect_use_protocol">Kết nối sử dụng giao thức:</string>
     <string name="retry_connect">Thử kết nối lại</string>
     <string name="vpn_auth_failure">Lỗi xác thực</string>
