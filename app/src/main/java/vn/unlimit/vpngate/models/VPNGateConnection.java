@@ -92,7 +92,11 @@ public class VPNGateConnection implements Parcelable {
             vpnGateConnection.setOperator(properties[index++]);
             vpnGateConnection.message = properties[index++];
             vpnGateConnection.setOpenVpnConfigData(properties[index]);
+<<<<<<< HEAD
             if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true) && properties.length >= index + 2) {
+=======
+            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true) && properties.length >= index + 1) {
+>>>>>>> Check array length before access index
                 vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
                 vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
                 if (properties.length >= index + 1) {
