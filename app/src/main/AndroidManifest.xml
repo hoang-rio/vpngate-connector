@@ -16,8 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.L2TPConnectActivity"></activity>
         <activity
-            android:name="vn.unlimit.vpngate.MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,13 +27,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name=".activities.DetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             tools:replace="android:theme" />
+
         <service
             android:name="de.blinkt.openvpn.core.OpenVPNService"
             android:permission="android.permission.BIND_VPN_SERVICE">
@@ -40,12 +42,13 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6076c879f71c414d238d016bbba4f52daf45970a" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3085232976681422~6517719190"/>
+            android:value="ca-app-pub-3085232976681422~6517719190" />
     </application>
 
 </manifest>

@@ -25,9 +25,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
-import vn.unlimit.vpngate.DetailActivity;
-import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.DetailActivity;
+import vn.unlimit.vpngate.activities.MainActivity;
 import vn.unlimit.vpngate.adapter.OnItemClickListener;
 import vn.unlimit.vpngate.adapter.OnItemLongClickListener;
 import vn.unlimit.vpngate.adapter.OnScrollListener;

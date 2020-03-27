@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate;
+package vn.unlimit.vpngate.activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -51,6 +51,10 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
+import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
+import vn.unlimit.vpngate.GlideApp;
+import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol;
 import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
@@ -563,7 +567,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_L2TP", params);
                 loadAds();
-                // TODO: Open L2TP Connection instruction activity here
+                Intent l2tpIntent = new Intent(this, L2TPConnectActivity.class);
+                l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection);
+                startActivity(l2tpIntent);
             }
             if (view.equals(btnInstallOpenVpn)) {
                 try {

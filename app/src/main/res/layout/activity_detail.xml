@@ -405,19 +405,20 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ln_l2tp_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btn_connect"
+                    android:id="@+id/btn_l2tp_connect"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/selector_primary_button"
-                    android:text="@string/connect_to_this_server"
+                    android:background="@drawable/selector_apply_button"
+                    android:text="@string/connect_via_l2tp"
                     android:textAllCaps="false"
                     android:visibility="visible"
                     android:theme="@style/AppTheme.Button" />
@@ -444,21 +445,19 @@
                     android:theme="@style/AppTheme.Button"
                     android:visibility="gone" />
             </LinearLayout>
-
             <LinearLayout
-                android:id="@+id/ln_l2tp_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btn_l2tp_connect"
+                    android:id="@+id/btn_connect"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/selector_apply_button"
-                    android:text="@string/connect_via_l2tp"
+                    android:background="@drawable/selector_primary_button"
+                    android:text="@string/connect_to_this_server"
                     android:textAllCaps="false"
                     android:theme="@style/AppTheme.Button" />
             </LinearLayout>

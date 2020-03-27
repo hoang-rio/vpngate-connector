@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate;
+package vn.unlimit.vpngate.activities;
 
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -35,6 +35,11 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.Objects;
+
+import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
+import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HelpFragment;
@@ -81,12 +86,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
+            switch (Objects.requireNonNull(intent.getAction())) {
                 case BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE:
                     if (isInFront) {
                         initState();
                     }
                     break;
+
                 case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
                     vpnGateConnectionList = null;
                     break;
@@ -152,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         filter.addAction(BaseProvider.ACTION.ACTION_CONNECT_VPN);
         registerReceiver(broadcastReceiver, filter);
         try {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -381,25 +387,22 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
         if (item.getItemId() == R.id.action_sort) {
             SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
-            sortBottomSheetDialog.setOnApplyClickListener(new SortBottomSheetDialog.OnApplyClickListener() {
-                @Override
-                public void onApplyClick(String sortProperty, int sortType) {
-                    if (dataUtil.hasAds()) {
-                        Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    mSortProperty = sortProperty;
-                    mSortType = sortType;
-                    dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
-                    dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
-                    HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
-                    if (currentFragment != null) {
-                        Bundle params = new Bundle();
-                        params.putString("property", sortProperty);
-                        params.putString("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC");
-                        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Sort", params);
-                        currentFragment.sort(sortProperty, sortType);
-                    }
+            sortBottomSheetDialog.setOnApplyClickListener((sortProperty, sortType) -> {
+                if (dataUtil.hasAds()) {
+                    Toast.makeText(getApplicationContext(), getText(R.string.feature_available_in_pro), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                mSortProperty = sortProperty;
+                mSortType = sortType;
+                dataUtil.setStringSetting(SORT_PROPERTY_KEY, mSortProperty);
+                dataUtil.setIntSetting(SORT_TYPE_KEY, mSortType);
+                HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
+                if (currentFragment != null) {
+                    Bundle params = new Bundle();
+                    params.putString("property", sortProperty);
+                    params.putString("type", sortType == VPNGateConnectionList.ORDER.ASC ? "ASC" : "DESC");
+                    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Sort", params);
+                    currentFragment.sort(sortProperty, sortType);
                 }
             });
             sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
@@ -593,29 +596,20 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onBackPressed() {
-        switch (currentUrl) {
-            case "home":
-                if (doubleBackToExitPressedOnce) {
-                    super.onBackPressed();
-                    return;
-                }
-                this.doubleBackToExitPressedOnce = true;
-                Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-                new Handler().postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        doubleBackToExitPressedOnce = false;
-                    }
-                }, 2000);
-                break;
-            default:
-                if (vpnGateConnectionList == null) {
-                    getDataServer();
-                }
-                navigationView.setCheckedItem(R.id.nav_home);
-                replaceFragment("home");
-                break;
+        if ("home".equals(currentUrl)) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+        } else {
+            if (vpnGateConnectionList == null) {
+                getDataServer();
+            }
+            navigationView.setCheckedItem(R.id.nav_home);
+            replaceFragment("home");
         }
         drawerLayout.closeDrawer(GravityCompat.START);
     }
