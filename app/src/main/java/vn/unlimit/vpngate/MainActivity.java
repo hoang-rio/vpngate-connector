@@ -438,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         disallowLoadHome = true;
         Bundle params = new Bundle();
         params.putString("title", menuItem.getTitle().toString());
-        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Drawer_select", params);
+        FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Drawer_Select", params);
         switch (menuItem.getItemId()) {
             case R.id.nav_get_pro:
                 if (dataUtil.hasAds() && dataUtil.hasProInstalled()) {
