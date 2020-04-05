@@ -25,9 +25,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
-import vn.unlimit.vpngate.DetailActivity;
-import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.DetailActivity;
+import vn.unlimit.vpngate.activities.MainActivity;
 import vn.unlimit.vpngate.adapter.OnItemClickListener;
 import vn.unlimit.vpngate.adapter.OnItemLongClickListener;
 import vn.unlimit.vpngate.adapter.OnScrollListener;
@@ -248,6 +248,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onItemClick(Object o, int position) {
         Bundle params = new Bundle();
         params.putString("ip", ((VPNGateConnection) o).getIp());
+        params.putString("hostname", ((VPNGateConnection) o).getCalculateHostName());
         params.putString("country", ((VPNGateConnection) o).getCountryLong());
         FirebaseAnalytics.getInstance(mContext).logEvent("Select_Server", params);
         if (!checkAndShowAd((VPNGateConnection) o)) {
@@ -260,6 +261,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         try {
             Bundle params = new Bundle();
             params.putString("ip", ((VPNGateConnection) o).getIp());
+            params.putString("hostname", ((VPNGateConnection) o).getCalculateHostName());
             params.putString("country", ((VPNGateConnection) o).getCountryLong());
             FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);

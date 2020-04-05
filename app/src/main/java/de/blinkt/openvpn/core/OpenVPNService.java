@@ -28,11 +28,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
-import androidx.annotation.RequiresApi;
 import android.system.OsConstants;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -49,8 +50,8 @@ import de.blinkt.openvpn.core.VpnStatus.ByteCountListener;
 import de.blinkt.openvpn.core.VpnStatus.ConnectionStatus;
 import de.blinkt.openvpn.core.VpnStatus.StateListener;
 import vn.unlimit.vpngate.BuildConfig;
-import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.utils.TotalTraffic;
 
 import static de.blinkt.openvpn.core.NetworkSpace.ipAddress;

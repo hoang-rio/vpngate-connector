@@ -41,8 +41,8 @@ import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
-import vn.unlimit.vpngate.DetailActivity;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.utils.DataUtil;
 import vn.unlimit.vpngate.utils.PropertiesService;
@@ -196,6 +196,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     Bundle params = new Bundle();
                     params.putString("type", "disconnect current");
                     params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(mContext).logEvent("Disconnect_VPN", params);
                     stopVpn();
@@ -207,6 +208,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     Bundle params = new Bundle();
                     params.putString("type", "connect from status");
                     params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(mContext).logEvent("Connect_VPN", params);
                     prepareVpn();
@@ -219,6 +221,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                 Bundle params = new Bundle();
                 params.putString("type", "cancel connect to vpn");
                 params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(mContext).logEvent("Cancel_VPN", params);
                 stopVpn();
@@ -413,6 +416,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     btnOnOff.setActivated(false);
                     Bundle params = new Bundle();
                     params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(mContext).logEvent("Connect_Error", params);
                     txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));

@@ -92,6 +92,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 Bundle params = new Bundle();
                 params.putString("type", "ip");
                 params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getIp());
@@ -99,6 +100,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 Bundle params = new Bundle();
                 params.putString("type", "hostname");
                 params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getCalculateHostName());

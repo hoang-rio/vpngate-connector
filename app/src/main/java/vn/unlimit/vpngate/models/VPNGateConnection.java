@@ -44,7 +44,7 @@ public class VPNGateConnection implements Parcelable {
     private String openVpnConfigData;
     private int tcpPort;
     private int udpPort;
-    private String address;
+    private int isL2TPSupport;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -64,6 +64,7 @@ public class VPNGateConnection implements Parcelable {
         openVpnConfigData = in.readString();
         tcpPort = in.readInt();
         udpPort = in.readInt();
+        isL2TPSupport = in.readInt();
     }
 
     //Empty constructor
@@ -91,12 +92,16 @@ public class VPNGateConnection implements Parcelable {
             vpnGateConnection.setOperator(properties[index++]);
             vpnGateConnection.message = properties[index++];
             vpnGateConnection.setOpenVpnConfigData(properties[index]);
-            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true) && properties.length >= index + 2) {
                 vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
                 vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
+                if (properties.length >= index + 1) {
+                    vpnGateConnection.isL2TPSupport = Integer.parseInt(properties[++index]);
+                }
             } else {
                 vpnGateConnection.tcpPort = 0;
                 vpnGateConnection.udpPort = 0;
+                vpnGateConnection.isL2TPSupport = 0;
             }
             return vpnGateConnection;
         } catch (Exception e) {
@@ -122,6 +127,7 @@ public class VPNGateConnection implements Parcelable {
         out.writeString(openVpnConfigData);
         out.writeInt(tcpPort);
         out.writeInt(udpPort);
+        out.writeInt(isL2TPSupport);
     }
 
     private String decodeBase64(String base64str) {
@@ -368,6 +374,10 @@ public class VPNGateConnection implements Parcelable {
 
     public void setUdpPort(int udpPort) {
         this.udpPort = udpPort;
+    }
+
+    public boolean isL2TPSupport() {
+        return isL2TPSupport == 1;
     }
 
 }

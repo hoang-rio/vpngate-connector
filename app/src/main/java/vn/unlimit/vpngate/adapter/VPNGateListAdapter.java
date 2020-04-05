@@ -149,6 +149,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView txtTCP;
         View lnUDP;
         TextView txtUDP;
+        View lnL2TP;
 
         VHTypeVPN(View itemView) {
             super(itemView);
@@ -166,14 +167,14 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             txtTCP = itemView.findViewById(R.id.txt_tcp_port);
             lnUDP = itemView.findViewById(R.id.ln_udp);
             txtUDP = itemView.findViewById(R.id.txt_udp_port);
+            lnL2TP = itemView.findViewById(R.id.ln_l2tp);
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         void bindViewHolder(int position) {
             try {
-                position = getRealPosition(position);
-                VPNGateConnection vpnGateConnection = _list.get(position);
+                VPNGateConnection vpnGateConnection = _list.get(getRealPosition(position));
                 GlideApp.with(mContext)
                         .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
@@ -202,6 +203,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     lnUDP.setVisibility(View.VISIBLE);
                     txtUDP.setText(String.valueOf(vpnGateConnection.getUdpPort()));
                 }
+                lnL2TP.setVisibility(vpnGateConnection.isL2TPSupport() ? View.VISIBLE : View.GONE);
             } catch (Exception e) {
                 e.printStackTrace();
             }

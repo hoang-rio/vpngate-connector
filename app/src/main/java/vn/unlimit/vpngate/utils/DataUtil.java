@@ -9,9 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -24,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,7 +30,6 @@ import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.Cache;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
-import vn.unlimit.vpngate.request.RequestListener;
 
 /**
  * Manager shared preferences data
@@ -56,19 +53,18 @@ public class DataUtil {
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
     private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public DataUtil(Context context) {
         try {
             mContext = context;
             sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
             gson = new Gson();
-            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(3600)
+                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 3600)
                     .build();
-            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
             mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener((Task<Void> task) -> mFirebaseRemoteConfig.fetchAndActivate());
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -136,7 +132,7 @@ public class DataUtil {
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
             FileOutputStream out = new FileOutputStream(outFile);
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
             gson.toJson(cache, Cache.class, writer);
             writer.close();
             setConnectionCacheExpire(cache.expires);
@@ -285,43 +281,15 @@ public class DataUtil {
         return false;
     }
 
-    public void getIsAmobPrimary(final RequestListener requestListener) {
+    public boolean hasOpenVPNInstalled() {
         try {
-            long cacheExpiration = 3600; // 1 hour in seconds.
-            // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-            // retrieve values from the service.
-            if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-                cacheExpiration = 0;
-            }
-
-            // [START fetch_config_with_callback]
-            // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
-            // will use fetch data from the Remote Config service, rather than cached parameter values,
-            // if cached parameter values are more than cacheExpiration seconds old.
-            // See Best Practices in the README for more information.
-            mFirebaseRemoteConfig.fetch(cacheExpiration)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                // After config data is successfully fetched, it must be activated before newly fetched
-                                // values are returned.
-                                mFirebaseRemoteConfig.activateFetched();
-                            }
-                            if (requestListener != null) {
-                                boolean result = mFirebaseRemoteConfig.getBoolean(CONFIG_ADMOB_PRIMARY);
-                                setBooleanSetting(CONFIG_ADMOB_PRIMARY, result);
-                                requestListener.onSuccess(result);
-                            }
-                        }
-                    });
-
+            android.content.pm.PackageManager mPm = mContext.getPackageManager();  // 1
+            PackageInfo info = mPm.getPackageInfo("net.openvpn.openvpn", 0);  // 2,3
+            return info != null;
         } catch (Exception e) {
             e.printStackTrace();
-            if (requestListener != null) {
-                requestListener.onError("general error");
-            }
         }
+        return false;
     }
 
     public String getBaseUrl() {

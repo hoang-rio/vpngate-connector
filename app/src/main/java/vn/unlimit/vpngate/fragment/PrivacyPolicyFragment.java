@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.MainActivity;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.MainActivity;
 
 public class PrivacyPolicyFragment extends Fragment implements View.OnClickListener {
     private View btnAccept;
