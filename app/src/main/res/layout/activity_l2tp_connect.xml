@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context=".activities.L2TPConnectActivity">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/nav_detail"
@@ -13,6 +11,7 @@
         android:layout_height="50dp"
         android:layout_gravity="center_vertical"
         android:background="@color/colorPrimary"
+        android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp"
         android:textAlignment="center">
@@ -32,14 +31,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/img_flag"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center" />
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/btn_back"
+            android:layout_toRightOf="@id/btn_back"
+            android:gravity="start">
 
             <TextView
                 android:id="@+id/txt_title"
@@ -47,7 +42,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingLeft="10dp"
-                android:text="Việt Nam"
+                android:paddingRight="10dp"
+                android:text="@string/l2tp_connect_title"
                 android:textAlignment="center"
                 android:textColor="@color/colorWhite"
                 android:textSize="14sp"
@@ -61,17 +57,107 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/ad_container_l2tp"
         android:layout_below="@id/nav_detail">
-        <TextView
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="L2TP Connect screen"
-            />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/l2tp_connect_hint"
+                android:theme="@style/AppTheme.Setting.SubText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/l2tp_connect_add"
+                android:textColor="#333"
+                android:theme="@style/AppTheme.Setting.Item" />
+
+            <RelativeLayout
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_step1"
+                    android:layout_width="match_parent"
+                    android:layout_height="600dp" />
+
+                <TextView
+                    android:id="@+id/txt_end_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="27dp"
+                    android:layout_marginTop="217dp"
+                    android:background="@color/colorWhite"
+                    android:text="haha.opengw.net"
+                    android:textColor="@color/colorAccent"
+                    android:textIsSelectable="true"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="27dp"
+                    android:layout_marginTop="337dp"
+                    android:background="@color/colorWhite"
+                    android:text="vpn"
+                    android:textColor="@color/colorAccent"
+                    android:textIsSelectable="true"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="27dp"
+                    android:layout_marginTop="413dp"
+                    android:background="@color/colorWhite"
+                    android:text="vpn"
+                    android:textColor="@color/colorAccent"
+                    android:textIsSelectable="true"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="27dp"
+                    android:layout_marginTop="455dp"
+                    android:background="@color/colorWhite"
+                    android:text="vpn"
+                    android:textColor="@color/colorAccent"
+                    android:textIsSelectable="true"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/l2tp_tap_to_connect"
+                android:textColor="#333"
+                android:theme="@style/AppTheme.Setting.Item" />
+
+            <ImageView
+                android:id="@+id/iv_step2"
+                android:layout_width="350dp"
+                android:layout_height="600dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="30dp" />
+        </LinearLayout>
     </ScrollView>
 
     <RelativeLayout
         android:id="@+id/ad_container_l2tp"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical" />

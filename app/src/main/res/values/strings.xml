@@ -130,6 +130,7 @@
     <string name="admob_full_screen_status" translatable="false">ca-app-pub-3085232976681422/1038355322</string>
     <string name="admob_banner_bellow_detail" translatable="false">ca-app-pub-3085232976681422/9538848174</string>
     <string name="admob_full_screen_detail" translatable="false">ca-app-pub-3085232976681422/4760681369</string>
+    <string name="admob_banner_bottom_l2tp" translatable="false">ca-app-pub-3085232976681422/1423139298</string>
     <!--Firebase remote config -->
     <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
@@ -141,6 +142,11 @@
     <string name="btn_accept">Accept</string>
     <string name="btn_decide">Decide and exit</string>
     <string name="must_accept_privacy_policy">You need accept privacy policy to use our app</string>
+    <!-- L2TPConnect -->
+    <string name="l2tp_connect_title">Connect to \"%s\" via L2TP/IPSec</string>
+    <string name="l2tp_connect_hint">To connect to server \"%s\" via L2TP/IPSec VPN. Please follow several step bellow</string>
+    <string name="l2tp_connect_add">1. Add new VPN Connection in VPN Setting like this</string>
+    <string name="l2tp_tap_to_connect">2. Tap to created VPN Connection to connect</string>
     <!-- Paid server consumer product -->
     <string-array name="free_paid_skus">
         <item>vn.unlimit.vpngate.2gb</item>

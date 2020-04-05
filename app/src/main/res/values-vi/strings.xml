@@ -123,4 +123,9 @@
     <string name="btn_accept">Đồng ý</string>
     <string name="btn_decide">Từ chối và thoát</string>
     <string name="must_accept_privacy_policy">Bạn cần đồng ý chính sách quyền riêng tư để sử dụng app</string>
+    <!-- L2TPConnect -->
+    <string name="l2tp_connect_title">Kết nối đến \"%s\" bằng L2TP/IPSec</string>
+    <string name="l2tp_connect_hint">Để kết nối đến máy chủ \"%s\" bằng L2TP/IPSec VPN. Vui lòng làm theo các hướng dẫn bên dưới</string>
+    <string name="l2tp_connect_add">1. Thêm mới kết nối VPN tương tự bên dưới</string>
+    <string name="l2tp_tap_to_connect">2. Bấm vào kết nối VPN vừa tạo để kết nối</string>
 </resources>
