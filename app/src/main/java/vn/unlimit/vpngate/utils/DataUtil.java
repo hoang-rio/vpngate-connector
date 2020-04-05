@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
@@ -52,19 +53,18 @@ public class DataUtil {
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
     private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public DataUtil(Context context) {
         try {
             mContext = context;
             sharedPreferencesSetting = mContext.getSharedPreferences("vpn_setting_data_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE);
             gson = new Gson();
-            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(3600)
+                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 3600)
                     .build();
-            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
             mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener((Task<Void> task) -> mFirebaseRemoteConfig.fetchAndActivate());
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

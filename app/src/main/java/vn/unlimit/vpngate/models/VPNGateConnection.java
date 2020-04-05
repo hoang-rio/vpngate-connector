@@ -44,7 +44,6 @@ public class VPNGateConnection implements Parcelable {
     private String openVpnConfigData;
     private int tcpPort;
     private int udpPort;
-    private String address;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -91,7 +90,7 @@ public class VPNGateConnection implements Parcelable {
             vpnGateConnection.setOperator(properties[index++]);
             vpnGateConnection.message = properties[index++];
             vpnGateConnection.setOpenVpnConfigData(properties[index]);
-            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+            if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true) && properties.length >= index + 2) {
                 vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
                 vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
             } else {

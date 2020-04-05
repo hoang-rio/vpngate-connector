@@ -1,9 +1,11 @@
 package vn.unlimit.vpngate;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -38,13 +40,19 @@ public class App extends Application {
             // Skip app initialization.
             return;
         }
-        super.onCreate();
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
         instance = this;
         dataUtil = new DataUtil(this);
-        isImportToOpenVPN = FirebaseRemoteConfig.getInstance().getBoolean("vpn_import_open_vpn");
+        FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener((Task<Boolean> task) -> {
+            if (task.isSuccessful()) {
+                Boolean updated = task.getResult();
+                Log.e("RemoteConfigUpdated", updated + "");
+                isImportToOpenVPN = FirebaseRemoteConfig.getInstance().getBoolean("vpn_import_open_vpn");
+            }
+        });
+        super.onCreate();
         try {
             ProviderInstaller.installIfNeeded(getApplicationContext());
         } catch (Exception ex) {
