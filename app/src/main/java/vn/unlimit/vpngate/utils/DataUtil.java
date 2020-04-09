@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -132,7 +131,7 @@ public class DataUtil {
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
             FileOutputStream out = new FileOutputStream(outFile);
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "utf8"));
             gson.toJson(cache, Cache.class, writer);
             writer.close();
             setConnectionCacheExpire(cache.expires);

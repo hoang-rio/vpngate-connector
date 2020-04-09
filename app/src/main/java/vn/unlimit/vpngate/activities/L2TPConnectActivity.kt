@@ -1,8 +1,6 @@
 package vn.unlimit.vpngate.activities
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -46,34 +44,29 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     override fun onResume() {
         super.onResume()
-        mVPNGateConnection = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
-        txtTitle?.text = getString(R.string.l2tp_connect_title, mVPNGateConnection?.hostName)
-        txtHint?.text = getString(R.string.l2tp_connect_hint, mVPNGateConnection?.hostName)
-        val step1Drawable: Drawable
-        val step2Drawable: Drawable
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            step1Drawable = resources.getDrawable(R.drawable.add_vpn_connection, applicationContext.theme)
-            step2Drawable = resources.getDrawable(R.drawable.connected_vpn, applicationContext.theme)
-        } else {
-            step1Drawable = resources.getDrawable(R.drawable.add_vpn_connection)
-            step2Drawable = resources.getDrawable(R.drawable.connected_vpn)
+        try {
+            mVPNGateConnection = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
+            txtTitle?.text = getString(R.string.l2tp_connect_title, mVPNGateConnection?.hostName)
+            txtHint?.text = getString(R.string.l2tp_connect_hint, mVPNGateConnection?.hostName)
+            GlideApp.with(this)
+                    .load(R.drawable.add_vpn_connection)
+                    .placeholder(R.color.colorOverlay)
+                    .error(R.color.colorOverlay)
+                    .into(ivStep1!!)
+            GlideApp.with(this)
+                    .load(R.drawable.connected_vpn)
+                    .placeholder(R.color.colorOverlay)
+                    .error(R.color.colorOverlay)
+                    .into(ivStep2!!)
+            if (dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+                txtEndPoint?.text = mVPNGateConnection?.hostName + ".opengw.net"
+            } else {
+                txtEndPoint?.text = mVPNGateConnection?.ip
+            }
+            loadBannerAds()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        GlideApp.with(this)
-                .load(step1Drawable)
-                .placeholder(R.color.colorOverlay)
-                .error(R.color.colorOverlay)
-                .into(ivStep1!!)
-        GlideApp.with(this)
-                .load(step2Drawable)
-                .placeholder(R.color.colorOverlay)
-                .error(R.color.colorOverlay)
-                .into(ivStep2!!)
-        if (dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
-            txtEndPoint?.text = mVPNGateConnection?.hostName + ".opengw.net"
-        } else {
-            txtEndPoint?.text = mVPNGateConnection?.ip
-        }
-        loadBannerAds()
     }
 
     private fun loadBannerAds() {

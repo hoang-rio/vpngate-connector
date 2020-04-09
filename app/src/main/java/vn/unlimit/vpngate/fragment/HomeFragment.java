@@ -265,8 +265,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             params.putString("country", ((VPNGateConnection) o).getCountryLong());
             FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
-            assert getFragmentManager() != null;
-            dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
+            if (!mActivity.isFinishing()) {
+                assert getFragmentManager() != null;
+                dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage(), e);

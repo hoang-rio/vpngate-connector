@@ -301,7 +301,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.VISIBLE);
                     if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                         MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                        messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                        if (!isFinishing()) {
+                            messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                        }
                     }
                     break;
                 case LEVEL_WAITING_FOR_USER_INPUT:
@@ -405,8 +407,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResume() {
+        super.onResume();
         try {
-            super.onResume();
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -531,7 +533,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                         ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
-                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        if (!isFinishing()) {
+                            connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        }
                     } else {
                         handleConnection(false);
                     }
@@ -580,8 +584,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             if (view.equals(btnSaveConfigFile)) {
                 if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
-                    ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, useUdp -> handleImport(useUdp));
-                    connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                    ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleImport);
+                    if (!isFinishing()) {
+                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                    }
                 } else {
                     handleImport(false);
                 }

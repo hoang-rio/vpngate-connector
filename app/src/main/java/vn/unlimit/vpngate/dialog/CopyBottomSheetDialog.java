@@ -19,6 +19,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
@@ -44,7 +48,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         BottomSheetDialog dialog =
-                new BottomSheetDialog(getActivity());
+                new BottomSheetDialog(Objects.requireNonNull(getActivity()));
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -52,6 +56,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 BottomSheetDialog d = (BottomSheetDialog) dialog;
 
                 FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                assert bottomSheet != null;
                 BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
@@ -62,7 +67,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     }
 
     @Override
-    public void setupDialog(Dialog dialog, int style) {
+    public void setupDialog(@NotNull Dialog dialog, int style) {
         try {
             View contentView = View.inflate(getContext(), R.layout.layout_copy_bottom, null);
             btnCopyIp = contentView.findViewById(R.id.btn_copy_ip);
@@ -86,7 +91,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     @Override
     public void onClick(View view) {
         try {
-            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipboardManager clipboard = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = null;
             if (view.equals(btnCopyIp)) {
                 Bundle params = new Bundle();
@@ -106,6 +111,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getCalculateHostName());
             }
             if (clip != null) {
+                assert clipboard != null;
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(getContext(), getResources().getString(R.string.copied), Toast.LENGTH_SHORT).show();
             }

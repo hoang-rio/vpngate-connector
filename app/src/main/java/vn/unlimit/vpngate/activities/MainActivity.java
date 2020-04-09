@@ -262,8 +262,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     protected void onResume() {
+        super.onResume();
         try {
-            super.onResume();
             if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
                 initState();
             }
@@ -405,7 +405,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     currentFragment.sort(sortProperty, sortType);
                 }
             });
-            sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            if (!isFinishing()) {
+                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            }
             return true;
         }
 
