@@ -405,7 +405,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     currentFragment.sort(sortProperty, sortType);
                 }
             });
-            sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            if (!isFinishing()) {
+                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            }
             return true;
         }
 
