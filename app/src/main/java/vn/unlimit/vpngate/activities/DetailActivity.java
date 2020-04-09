@@ -405,8 +405,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResume() {
+        super.onResume();
         try {
-            super.onResume();
             Intent intent = new Intent(this, OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
