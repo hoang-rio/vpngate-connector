@@ -409,9 +409,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onResume() {
         super.onResume();
         try {
-            Intent intent = new Intent(this, OpenVPNService.class);
-            intent.setAction(OpenVPNService.START_SERVICE);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(this, OpenVPNService.class);
+                intent.setAction(OpenVPNService.START_SERVICE);
+                bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            }, 300);
             if (!App.isIsImportToOpenVPN()) {
                 btnInstallOpenVpn.setVisibility(View.GONE);
                 btnSaveConfigFile.setVisibility(View.GONE);
@@ -484,12 +486,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             params.putString("country", mVpnGateConnection.getCountryLong());
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             linkCheckIp.setVisibility(View.GONE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    prepareVpn(useUdp);
-                }
-            }, 500);
+            new Handler().postDelayed(() -> prepareVpn(useUdp), 500);
         } else {
             Bundle params = new Bundle();
             params.putString("type", "connect new");
