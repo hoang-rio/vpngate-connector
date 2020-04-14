@@ -301,7 +301,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.VISIBLE);
                     if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                         MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                        if (!isFinishing()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                            messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                        } else if (!isFinishing()) {
                             messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                         }
                     }
@@ -409,9 +411,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onResume() {
         super.onResume();
         try {
-            Intent intent = new Intent(this, OpenVPNService.class);
-            intent.setAction(OpenVPNService.START_SERVICE);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(this, OpenVPNService.class);
+                intent.setAction(OpenVPNService.START_SERVICE);
+                bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            }, 300);
             if (!App.isIsImportToOpenVPN()) {
                 btnInstallOpenVpn.setVisibility(View.GONE);
                 btnSaveConfigFile.setVisibility(View.GONE);
@@ -484,12 +488,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             params.putString("country", mVpnGateConnection.getCountryLong());
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             linkCheckIp.setVisibility(View.GONE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    prepareVpn(useUdp);
-                }
-            }, 500);
+            new Handler().postDelayed(() -> prepareVpn(useUdp), 500);
         } else {
             Bundle params = new Bundle();
             params.putString("type", "connect new");
@@ -533,7 +532,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                         ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
-                        if (!isFinishing()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                            connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        } else if (!isFinishing()) {
                             connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                         }
                     } else {
@@ -585,7 +586,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (view.equals(btnSaveConfigFile)) {
                 if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                     ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleImport);
-                    if (!isFinishing()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                    } else if (!isFinishing()) {
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     }
                 } else {

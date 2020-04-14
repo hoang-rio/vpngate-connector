@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -45,7 +46,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
  */
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, RequestListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener, OnScrollListener {
-    final String TAG = "HOME";
+    private final String TAG = "HOME";
     private SwipeRefreshLayout lnSwipeRefresh;
     private Context mContext;
     private RecyclerView recyclerViewVPN;
@@ -227,12 +228,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         txtEmpty.setVisibility(View.GONE);
         recyclerViewVPN.setVisibility(View.VISIBLE);
         vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                lnSwipeRefresh.setEnabled(true);
-                lnSwipeRefresh.setRefreshing(false);
-            }
+        handler.postDelayed(() -> {
+            lnSwipeRefresh.setEnabled(true);
+            lnSwipeRefresh.setRefreshing(false);
         }, 300);
 
     }
@@ -265,7 +263,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             params.putString("country", ((VPNGateConnection) o).getCountryLong());
             FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
-            if (!mActivity.isFinishing()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !mActivity.isFinishing() && !mActivity.isDestroyed()) {
+                assert getFragmentManager() != null;
+                dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
+            } else if (!mActivity.isFinishing()) {
                 assert getFragmentManager() != null;
                 dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
             }
@@ -312,7 +313,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onError(String error) {
         try {
             lnSwipeRefresh.setRefreshing(false);
-            ((MainActivity) getActivity()).onError(error);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.onError(error);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage(), e);
