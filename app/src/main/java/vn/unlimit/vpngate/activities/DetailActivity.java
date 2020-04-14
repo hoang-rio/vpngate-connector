@@ -301,7 +301,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.VISIBLE);
                     if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                         MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                        if (!isFinishing()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                            messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                        } else if (!isFinishing()) {
                             messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                         }
                     }
@@ -530,7 +532,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                         ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
-                        if (!isFinishing()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                            connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        } else if (!isFinishing()) {
                             connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                         }
                     } else {
@@ -582,7 +586,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (view.equals(btnSaveConfigFile)) {
                 if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                     ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleImport);
-                    if (!isFinishing()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                        connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                    } else if (!isFinishing()) {
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     }
                 } else {

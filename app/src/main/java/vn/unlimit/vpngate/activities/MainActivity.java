@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -405,7 +406,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     currentFragment.sort(sortProperty, sortType);
                 }
             });
-            if (!isFinishing()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
+            } else if (!isFinishing()) {
                 sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
             }
             return true;
