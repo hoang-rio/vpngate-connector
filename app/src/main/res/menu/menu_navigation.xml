@@ -19,6 +19,12 @@
             android:icon="@drawable/ic_home_black"
             android:title="@string/home" />
         <item
+            android:id="@+id/nav_paid_server"
+            android:checkable="true"
+            android:checked="true"
+            android:icon="@drawable/ic_cash_black"
+            android:title="@string/home" />
+        <item
             android:id="@+id/nav_status"
             android:checkable="true"
             android:icon="@drawable/ic_earth_grey"

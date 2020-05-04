@@ -507,6 +507,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 replaceFragment("home");
                 disallowLoadHome = false;
                 break;
+            case R.id.nav_paid_server:
+                Intent intentPaidServer = new Intent(this, PaidServerActivity.class);
+                startActivity(intentPaidServer);
+                finish();
+                break;
             case R.id.nav_status:
                 if (dataUtil.getLastVPNConnection() == null) {
                     Toast.makeText(getApplicationContext(), getString(R.string.connect_one_warning), Toast.LENGTH_LONG).show();
