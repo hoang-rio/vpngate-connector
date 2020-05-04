@@ -21,7 +21,6 @@
         <item
             android:id="@+id/nav_paid_server"
             android:checkable="true"
-            android:checked="true"
             android:icon="@drawable/ic_cash_black"
             android:title="@string/paid_server" />
         <item
