@@ -11,7 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
 
-class PaidServerActivity : AppCompatActivity() {
+class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,12 +22,13 @@ class PaidServerActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home, R.id.navigation_dashboard))
+                R.id.navigation_home, R.id.navigation_server_list))
         setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setOnNavigationItemSelectedListener(this)
         navView.setupWithNavController(navController)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.navigation_free_server) {
             val intent: Intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

@@ -23,7 +23,7 @@
             android:checkable="true"
             android:checked="true"
             android:icon="@drawable/ic_cash_black"
-            android:title="@string/home" />
+            android:title="@string/paid_server" />
         <item
             android:id="@+id/nav_status"
             android:checkable="true"

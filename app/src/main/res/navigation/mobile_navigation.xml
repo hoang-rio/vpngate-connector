@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_server_list"
         android:name="vn.unlimit.vpngate.fragment.paidserver.servers.ServersFragment"
         android:label="@string/title_servers"
         tools:layout="@layout/fragment_server_list" />
