@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="vn.unlimit.vpngate.fragment.paidserver.home.HomeFragment"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_server_list"
-        android:name="vn.unlimit.vpngate.fragment.paidserver.servers.ServersFragment"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.ServersFragment"
         android:label="@string/title_servers"
         tools:layout="@layout/fragment_server_list" />
 </navigation>
