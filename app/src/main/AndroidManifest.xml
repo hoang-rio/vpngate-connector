@@ -18,7 +18,8 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".activities.PaidServerActivity"
-            android:label="@string/title_activity_paid_server"></activity>
+            android:label="@string/title_activity_paid_server"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
