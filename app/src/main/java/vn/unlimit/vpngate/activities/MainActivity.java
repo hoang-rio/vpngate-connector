@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void initAdMob() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this, dataUtil.getAdMobId());
+                MobileAds.initialize(this);
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.LARGE_BANNER);
                 if (BuildConfig.DEBUG) {
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
      * Check network and process first state
      */
     private void initState() {
-//        checkStatusMenu();
+        checkStatusMenu();
         if (!dataUtil.isAcceptedPrivacyPolicy()) {
             replaceFragment("privacy-policy");
             return;

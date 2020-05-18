@@ -33,6 +33,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_l2tp_connect)
         ivBack = findViewById(R.id.btn_back)
+        ivBack!!.setOnClickListener(this)
         txtTitle = findViewById(R.id.txt_title)
         txtHint = findViewById(R.id.txt_hint)
         ivStep1 = findViewById(R.id.iv_step1)
@@ -72,7 +73,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     private fun loadBannerAds() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this, dataUtil.adMobId)
+                MobileAds.initialize(this)
                 adView = AdView(applicationContext)
                 adView!!.adSize = AdSize.LARGE_BANNER
                 if (BuildConfig.DEBUG) { //Test

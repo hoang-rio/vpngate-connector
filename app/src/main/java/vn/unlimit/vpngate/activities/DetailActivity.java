@@ -200,7 +200,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void initAdMob() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this, dataUtil.getAdMobId());
+                MobileAds.initialize(this);
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.BANNER);
                 if (BuildConfig.DEBUG) {
