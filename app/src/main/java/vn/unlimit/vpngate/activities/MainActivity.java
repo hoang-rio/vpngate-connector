@@ -56,6 +56,7 @@ import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.PaidServerUtil;
 
 public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     //    // Used to load the 'native-lib' library on application startup.
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private boolean disallowLoadHome = false;
     private AdView adView;
     private boolean isInFront = false;
+    private PaidServerUtil paidServerUtil;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         navigationView.setNavigationItemSelectedListener(this);
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
+        paidServerUtil = new PaidServerUtil(getApplicationContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
@@ -508,9 +511,14 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 disallowLoadHome = false;
                 break;
             case R.id.nav_paid_server:
-                Intent intentPaidServer = new Intent(this, PaidServerActivity.class);
-                startActivity(intentPaidServer);
-                finish();
+                if (paidServerUtil.isLoggedIn()) {
+                    Intent intentPaidServer = new Intent(this, PaidServerActivity.class);
+                    startActivity(intentPaidServer);
+                    finish();
+                } else {
+                    Intent intentLogin = new Intent(this, LoginActivity.class);
+                    startActivity(intentLogin);
+                }
                 break;
             case R.id.nav_status:
                 if (dataUtil.getLastVPNConnection() == null) {

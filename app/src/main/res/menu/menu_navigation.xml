@@ -20,7 +20,7 @@
             android:title="@string/home" />
         <item
             android:id="@+id/nav_paid_server"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_cash_black"
             android:title="@string/paid_server" />
         <item

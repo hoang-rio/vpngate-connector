@@ -180,8 +180,9 @@
     <string name="l2tp_connect_hint">To connect to server \"%s\" via L2TP/IPSec VPN. Please follow several step bellow</string>
     <string name="l2tp_connect_add">1. Add new VPN Connection in VPN Setting like this</string>
     <string name="l2tp_tap_to_connect">2. Tap to created VPN Connection to connect</string>
-    <!--- use "vpn_paid_server_api" for production -->
+    <!--- TODO: use "vpn_paid_server_api" for production -->
     <string name="cfg_paid_server_api_base_url" translatable="false">vpn_paid_staging_api</string>
+    <string name="cfg_paid_server_session_header_key" translatable="false">vpn_header_session_name</string>
     <!-- Paid server consumer product -->
     <string-array name="free_paid_skus">
         <item>vn.unlimit.vpngate.2gb</item>
@@ -195,8 +196,19 @@
         <item>vn.unlimit.vpngatepro.10gb</item>
         <item>vn.unlimit.vpngatepro.15gb</item>
     </string-array>
+    <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
     <string name="title_home">Home</string>
     <string name="title_servers">Servers</string>
     <string name="title_free_server">Free Server</string>
+    <!-- Login screen -->
+    <string name="title_activity_login">Login to Paid Server</string>
+    <string name="prompt_user">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="action_back_to_free">Back to free server</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>

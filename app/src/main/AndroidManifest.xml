@@ -34,8 +34,14 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.LoginActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
             android:name=".activities.PaidServerActivity"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.PaidServer"
             android:label="@string/title_activity_paid_server" />
         <activity
             android:name="com.google.android.gms.ads.AdActivity"

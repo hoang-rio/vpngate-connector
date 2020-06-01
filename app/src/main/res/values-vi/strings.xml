@@ -159,8 +159,19 @@
     <string name="l2tp_connect_hint">Để kết nối đến máy chủ \"%s\" bằng L2TP/IPSec VPN. Vui lòng làm theo các hướng dẫn bên dưới</string>
     <string name="l2tp_connect_add">1. Thêm mới kết nối VPN tương tự bên dưới</string>
     <string name="l2tp_tap_to_connect">2. Bấm vào kết nối VPN vừa tạo để kết nối</string>
+    <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
     <string name="title_home">Home</string>
     <string name="title_servers">Máy chủ</string>
     <string name="title_free_server">Server miễn phí</string>
+    <!-- Login screen -->
+    <string name="title_activity_login">Đăng nhập vào máy chủ trả phí</string>
+    <string name="prompt_user">Tài khoản</string>
+    <string name="prompt_password">Mật khẩu</string>
+    <string name="action_sign_in">Đăng nhập</string>
+    <string name="action_sign_up">Đăng ký</string>
+    <string name="action_back_to_free">Quay lại máy chủ miễn phí</string>
+    <string name="invalid_username">Tài khoản không hợp lệ</string>
+    <string name="invalid_password">Mật khẩu phải chứa nhiều hơn 5 ký tự</string>
+    <string name="login_failed">"Đăng nhập thất bại"</string>
 </resources>

@@ -108,6 +108,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation('com.amitshekhar.android:android-networking:1.0.2') {
+        exclude group: 'com.android.support'
+    }
     implementation project(path: ':vpnLib')
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     // Add the Firebase Crashlytics SDK.
