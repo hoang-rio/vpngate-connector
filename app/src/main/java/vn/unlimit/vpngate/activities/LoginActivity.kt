@@ -22,6 +22,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!txtPassword!!.isFocused) {
+            txtUsername!!.requestFocus()
+        }
+    }
+
     override fun onClick(v: View?) {
         when (v) {
             btnBackToFree -> onBackPressed()
