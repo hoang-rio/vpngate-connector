@@ -16,4 +16,10 @@
         android:name="vn.unlimit.vpngate.fragment.paidserver.ServersFragment"
         android:label="@string/title_servers"
         tools:layout="@layout/fragment_server_list" />
+
+    <fragment
+        android:id="@+id/navigation_free_server"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.ServersFragment"
+        android:label="@string/title_free_server"
+        tools:layout="@layout/fragment_server_list" />
 </navigation>

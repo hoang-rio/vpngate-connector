@@ -2,7 +2,6 @@ package vn.unlimit.vpngate.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,7 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
 
-class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class PaidServerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,19 +21,15 @@ class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigatio
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home, R.id.navigation_server_list))
+                R.id.navigation_home, R.id.navigation_server_list, R.id.navigation_free_server))
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setOnNavigationItemSelectedListener(this)
         navView.setupWithNavController(navController)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.navigation_free_server) {
-            val intent: Intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-            return false
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.navigation_free_server) {
+                val intent: Intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
 }
