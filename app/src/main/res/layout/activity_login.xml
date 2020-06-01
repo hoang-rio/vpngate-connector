@@ -12,6 +12,7 @@
     tools:context=".activities.LoginActivity">
 
     <EditText
+        android:autofillHints="@string/prompt_user"
         android:id="@+id/txt_username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -20,16 +21,20 @@
         android:layout_marginEnd="15dp"
         android:hint="@string/prompt_user"
         android:inputType="text"
+        android:backgroundTint="@color/colorPaidServer"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:targetApi="lollipop" />
 
     <EditText
+        android:autofillHints="@string/prompt_password"
         android:id="@+id/txt_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
+        android:backgroundTint="@color/colorPaidServer"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:hint="@string/prompt_password"
@@ -39,7 +44,8 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_username" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_username"
+        tools:targetApi="lollipop" />
 
     <LinearLayout
         android:id="@+id/ln_login_btn"
@@ -63,7 +69,6 @@
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/selector_paid_button"
-            android:enabled="false"
             android:text="@string/action_sign_in"
             android:theme="@style/AppTheme.Button"
             app:layout_constraintVertical_bias="0.2" />
@@ -79,7 +84,6 @@
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/selector_apply_button"
-            android:enabled="false"
             android:text="@string/action_sign_up"
             android:theme="@style/AppTheme.Button"
             app:layout_constraintVertical_bias="0.2" />
@@ -95,7 +99,6 @@
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="64dp"
         android:background="@drawable/selector_primary_button"
-        android:enabled="false"
         android:text="@string/action_back_to_free"
         android:theme="@style/AppTheme.Button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -114,8 +117,8 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/password"
-        app:layout_constraintStart_toStartOf="@+id/password"
+        app:layout_constraintEnd_toEndOf="@+id/txt_password"
+        app:layout_constraintStart_toStartOf="@+id/txt_password"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 </androidx.constraintlayout.widget.ConstraintLayout>
