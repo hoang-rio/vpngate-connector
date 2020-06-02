@@ -11,8 +11,17 @@ import vn.unlimit.vpngate.R
  * @param context Application Context
  */
 class PaidServerUtil(context: Context) {
-    private val IS_LOGGED_IN = "IS_LOGGED_IN"
-    val SESSIONID_KEY = "SESSIONID_KEY"
+
+    companion object {
+        private const val IS_LOGGED_IN = "IS_LOGGED_IN"
+        const val SESSION_ID_KEY = "SESSION_ID_KEY"
+        private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
+    }
+
+    enum class StartUpScreen {
+        FREE_SERVER,
+        PAID_SERVER
+    }
 
     private val sharedPreferencesSetting: SharedPreferences = context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
     var mContext: Context = context
@@ -62,7 +71,7 @@ class PaidServerUtil(context: Context) {
      * @param key Setting key
      * @param defVal Default value if get null from storage
      */
-    fun getStringSetting(key: String, value: String = ""): String? = sharedPreferencesSetting.getString(key, value)
+    fun getStringSetting(key: String, defVal: String = ""): String? = sharedPreferencesSetting.getString(key, defVal)
 
     /**
      * Set string setting to storage
@@ -73,5 +82,19 @@ class PaidServerUtil(context: Context) {
         val editor = sharedPreferencesSetting.edit()
         editor.putString(key, value)
         editor.apply()
+    }
+
+    /**
+     * Get startup screen
+     */
+    fun getStartUpScreen(): StartUpScreen {
+        return StartUpScreen.valueOf(getStringSetting(STARTUP_SCREEN_KEY, StartUpScreen.FREE_SERVER.toString()) as String)
+    }
+
+    /**
+     * Set startup screen
+     */
+    fun setStartupScreen(startupScreen: StartUpScreen) {
+        setStringSetting(STARTUP_SCREEN_KEY, startupScreen.toString())
     }
 }
