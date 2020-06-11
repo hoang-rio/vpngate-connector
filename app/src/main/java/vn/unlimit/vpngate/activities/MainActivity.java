@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         navigationView.setNavigationItemSelectedListener(this);
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
-        paidServerUtil = new PaidServerUtil(getApplicationContext());
+        paidServerUtil = App.getInstance().getPaidServerUtil();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
