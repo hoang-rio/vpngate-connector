@@ -17,14 +17,17 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.DetailActivity"
             android:configChanges="orientation|screenSize"
@@ -41,8 +44,8 @@
         <activity
             android:name=".activities.PaidServerActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.PaidServer"
-            android:label="@string/title_activity_paid_server" />
+            android:label="@string/title_activity_paid_server"
+            android:theme="@style/AppTheme.PaidServer" />
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

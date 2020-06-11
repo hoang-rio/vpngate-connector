@@ -13,12 +13,14 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.activities.MainActivity;
 import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.PaidServerUtil;
 
 public class App extends Application {
 
     private static App instance;
     private static boolean isImportToOpenVPN = false;
     private DataUtil dataUtil;
+    private PaidServerUtil paidServerUtil;
 
     public static String getResourceString(int resId) {
         return instance.getString(resId);
@@ -50,6 +52,7 @@ public class App extends Application {
         dataUtil = new DataUtil(this);
         // Make notification open DetailActivity
         OpenVPNService.setNotificationActivityClass(dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? DetailActivity.class : MainActivity.class);
+        paidServerUtil = new PaidServerUtil(this);
         FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener((Task<Boolean> task) -> {
             if (task.isSuccessful()) {
                 Boolean updated = task.getResult();
@@ -63,5 +66,13 @@ public class App extends Application {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public PaidServerUtil getPaidServerUtil() {
+        return paidServerUtil;
+    }
+
+    public void setPaidServerUtil(PaidServerUtil paidServerUtil) {
+        this.paidServerUtil = paidServerUtil;
     }
 }
