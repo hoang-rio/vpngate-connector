@@ -3,13 +3,12 @@ package vn.unlimit.vpngate;
 import android.app.Application;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import io.fabric.sdk.android.Fabric;
 import vn.unlimit.vpngate.utils.DataUtil;
 
 public class App extends Application {
@@ -41,7 +40,8 @@ public class App extends Application {
             return;
         }
         if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
+            // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
         }
         instance = this;
         dataUtil = new DataUtil(this);
