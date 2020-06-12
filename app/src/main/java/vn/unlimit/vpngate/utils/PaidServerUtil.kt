@@ -15,6 +15,7 @@ class PaidServerUtil(context: Context) {
     companion object {
         private const val IS_LOGGED_IN = "IS_LOGGED_IN"
         const val SESSION_ID_KEY = "SESSION_ID_KEY"
+        const val USER_INFO_KEY = "USER_INFO_KEY"
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
     }
 
