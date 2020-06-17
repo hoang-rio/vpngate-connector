@@ -86,6 +86,16 @@ class PaidServerUtil(context: Context) {
     }
 
     /**
+     * Remove setting key
+     * @param key Setting key want to remove
+     */
+    fun removeSetting(key: String) {
+        val editor = sharedPreferencesSetting.edit()
+        editor.remove(key)
+        editor.apply()
+    }
+
+    /**
      * Get startup screen
      */
     fun getStartUpScreen(): StartUpScreen {

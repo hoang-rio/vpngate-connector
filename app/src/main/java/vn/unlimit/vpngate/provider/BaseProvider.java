@@ -6,6 +6,7 @@ package vn.unlimit.vpngate.provider;
 
 public class BaseProvider {
     public final static String PASS_DETAIL_VPN_CONNECTION = "PASS_DETAIL_VPN_CONNECTION";
+    public final static String FROM_LOGIN = "FROM_LOGIN";
 
     public class ACTION {
         public final static String ACTION_CLEAR_CACHE = "vn.unlimit.vpngate.ACTION_CLEAR_CACHE";

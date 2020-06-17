@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -9,8 +10,19 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.provider.BaseProvider
+import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.task.ApiRequest
+import vn.unlimit.vpngate.task.UserApiRequest
 
 class PaidServerActivity : AppCompatActivity() {
+
+    var isFromLogin = false
+    val userApiRequest = UserApiRequest()
+
+    companion object {
+        const val TAG = "PaidServerActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +38,31 @@ class PaidServerActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.navigation_free_server) {
-                val intent: Intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
         }
+    }
+
+    override fun onResume() {
+        isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
+        if (!isFromLogin) {
+            userApiRequest.fetchUser(object : RequestListener {
+                override fun onSuccess(result: Any?) {
+                    Log.d(TAG, "fetch user success")
+                }
+
+                override fun onError(error: String?) {
+                    if (error!! == ApiRequest.ERROR_SESSION_EXPIRES) {
+                        val loginIntent = Intent(this@PaidServerActivity, LoginActivity::class.java)
+                        startActivity(loginIntent)
+                        finish()
+                    }
+                    Log.e(TAG, "fetch user error with error {}".format(error))
+                }
+            })
+        }
+        super.onResume()
     }
 }
