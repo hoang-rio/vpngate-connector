@@ -2,20 +2,20 @@ package vn.unlimit.vpngate.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.JSONObjectRequestListener
-import org.json.JSONObject
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.BaseProvider
-import vn.unlimit.vpngate.task.ApiRequest
+import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
@@ -23,7 +23,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var txtUsername: EditText? = null
     private var txtPassword: EditText? = null
     private var btnLogin: Button? = null
-    private val apiRequest = ApiRequest()
+    private var btnHidePassword: Button? = null
+    private val userApiRequest = UserApiRequest()
     private val paidServerUtil = App.getInstance().paidServerUtil
 
     companion object {
@@ -37,6 +38,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         txtUsername = findViewById(R.id.txt_username)
         txtPassword = findViewById(R.id.txt_password)
         btnBackToFree!!.setOnClickListener(this)
+        btnHidePassword = findViewById(R.id.btn_hide_password)
+        btnHidePassword!!.setOnClickListener(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         btnLogin = findViewById(R.id.btn_login)
         btnLogin!!.setOnClickListener(this)
@@ -54,18 +57,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         when (v) {
             btnBackToFree -> backToFree()
             btnLogin -> {
-                val loginData = HashMap<String, String>()
-                loginData["username"] = txtUsername!!.text.toString()
-                loginData["password"] = txtPassword!!.text.toString()
                 val loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
                 loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
 
-                apiRequest.post(ApiRequest.USER_LOGIN_URL, loginData, object : JSONObjectRequestListener {
-                    override fun onResponse(response: JSONObject?) {
-                        Log.e(TAG, response.toString())
-                        paidServerUtil.setStringSetting(PaidServerUtil.SESSION_ID_KEY, response!!.get("sessionId").toString())
-                        paidServerUtil.setStringSetting(PaidServerUtil.USER_INFO_KEY, response.get("user").toString())
-                        paidServerUtil.setIsLoggedIn(true)
+                userApiRequest.login(txtUsername!!.text.toString(), txtPassword!!.text.toString(), object : RequestListener {
+                    override fun onSuccess(result: Any?) {
+                        Log.e(TAG, result.toString())
                         loadingDialog.dismiss()
                         val paidServerIntent = Intent(this@LoginActivity, PaidServerActivity::class.java)
                         paidServerIntent.putExtra(BaseProvider.FROM_LOGIN, true)
@@ -73,12 +70,24 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         finish()
                     }
 
-                    override fun onError(anError: ANError?) {
-                        Log.e(TAG, anError.toString())
+                    override fun onError(error: String) {
+                        Log.e(TAG, error)
                         loadingDialog.dismiss()
                         Toast.makeText(applicationContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
                     }
                 })
+            }
+            btnHidePassword -> {
+                if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+                    txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
+                    txtPassword!!.transformationMethod = null
+                    btnHidePassword!!.text = getText(R.string.action_hide_password)
+                } else {
+                    txtPassword!!.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    txtPassword!!.transformationMethod = PasswordTransformationMethod.getInstance()
+                    btnHidePassword!!.text = getText(R.string.action_show_password)
+                }
+                txtPassword!!.setSelection(txtPassword!!.text.length)
             }
         }
     }

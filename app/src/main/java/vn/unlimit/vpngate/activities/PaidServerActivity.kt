@@ -10,10 +10,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.api.BaseApiRequest
+import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.request.RequestListener
-import vn.unlimit.vpngate.task.ApiRequest
-import vn.unlimit.vpngate.task.UserApiRequest
 
 class PaidServerActivity : AppCompatActivity() {
 
@@ -54,7 +54,7 @@ class PaidServerActivity : AppCompatActivity() {
                 }
 
                 override fun onError(error: String?) {
-                    if (error!! == ApiRequest.ERROR_SESSION_EXPIRES) {
+                    if (error!! == BaseApiRequest.ERROR_SESSION_EXPIRES) {
                         val loginIntent = Intent(this@PaidServerActivity, LoginActivity::class.java)
                         startActivity(loginIntent)
                         finish()

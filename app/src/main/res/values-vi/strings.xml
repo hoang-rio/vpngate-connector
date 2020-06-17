@@ -175,4 +175,6 @@
     <string name="invalid_password">Mật khẩu phải chứa nhiều hơn 5 ký tự</string>
     <string name="login_failed">"Đăng nhập thất bại"</string>
     <string name="login_loading_text">Đang đăng nhập…</string>
+    <string name="action_hide_password">Ẩn</string>
+    <string name="action_show_password">Hiện</string>
 </resources>

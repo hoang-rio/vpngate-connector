@@ -28,24 +28,48 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:targetApi="lollipop" />
 
-    <EditText
-        android:autofillHints="@string/prompt_password"
-        android:id="@+id/txt_password"
+    <RelativeLayout
+        android:id="@+id/ln_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:backgroundTint="@color/colorPaidServer"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
-        android:hint="@string/prompt_password"
-        android:imeActionLabel="@string/action_sign_in"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        android:selectAllOnFocus="true"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_username"
-        tools:targetApi="lollipop" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_username">
+
+        <EditText
+            android:id="@+id/txt_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/prompt_password"
+            android:backgroundTint="@color/colorPaidServer"
+            android:hint="@string/prompt_password"
+            android:imeActionLabel="@string/action_sign_in"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true"
+            tools:targetApi="lollipop" />
+
+        <Button
+            android:id="@+id/btn_hide_password"
+            android:layout_width="45dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="0dp"
+            android:background="@android:color/transparent"
+            android:padding="0dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/action_show_password"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPaidServer" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ln_login_btn"
@@ -56,7 +80,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_password">
+        app:layout_constraintTop_toBottomOf="@+id/ln_password">
 
         <Button
             android:id="@+id/btn_login"
@@ -66,6 +90,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="30dp"
             android:layout_marginTop="16dp"
+            android:textAllCaps="false"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/selector_paid_button"
@@ -83,6 +108,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp"
+            android:textAllCaps="false"
             android:background="@drawable/selector_apply_button"
             android:text="@string/action_sign_up"
             android:theme="@style/AppTheme.Button"
@@ -101,6 +127,7 @@
         android:background="@drawable/selector_primary_button"
         android:text="@string/action_back_to_free"
         android:theme="@style/AppTheme.Button"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ln_login_btn"

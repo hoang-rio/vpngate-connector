@@ -17,4 +17,6 @@
     <color name="colorLink">#1976d2</color>
     <color name="colorPaidServer">#4eda99</color>
     <color name="colorPaidServerTransparent">#994EDA99</color>
+    <color name="colorPaidServerDisabled">#234737</color>
+
 </resources>

@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate.task
+package vn.unlimit.vpngate.api
 
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
@@ -11,11 +11,10 @@ import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
 
-open class ApiRequest {
+open class BaseApiRequest {
     companion object {
         val jsonHeaders = HashMap<String, String>().put("Content-Type", "application/json")
         const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
-        const val USER_LOGIN_URL = "/user/login"
     }
 
     val paidServerUtil = App.getInstance().paidServerUtil

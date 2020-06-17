@@ -212,4 +212,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="login_loading_text">Logging in…</string>
+    <string name="action_hide_password">Hide</string>
+    <string name="action_show_password">Show</string>
 </resources>
