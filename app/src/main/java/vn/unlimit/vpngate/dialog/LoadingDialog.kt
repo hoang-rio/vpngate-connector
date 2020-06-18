@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 
 class LoadingDialog : DialogFragment() {
@@ -18,6 +19,12 @@ class LoadingDialog : DialogFragment() {
         fun newInstance(loadingText: String): LoadingDialog {
             val loadingDialog = LoadingDialog()
             loadingDialog.loadingText = loadingText
+            return loadingDialog
+        }
+
+        fun newInstance(): LoadingDialog {
+            val loadingDialog = LoadingDialog()
+            loadingDialog.loadingText = App.getInstance().getString(R.string.default_loading_text)
             return loadingDialog
         }
     }

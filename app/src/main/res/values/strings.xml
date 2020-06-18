@@ -203,6 +203,7 @@
     <string name="title_free_server">Free Server</string>
     <!-- Login screen -->
     <string name="title_activity_login">Login to Paid Server</string>
+    <string name="title_activity_singup">Sign up new Paid Server account</string>
     <string name="prompt_user">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
@@ -214,4 +215,13 @@
     <string name="login_loading_text">Logging in…</string>
     <string name="action_hide_password">Hide</string>
     <string name="action_show_password">Show</string>
+    <string name="default_loading_text">Loading…</string>
+    <string name="username_and_password_is_required">Username and password is required</string>
+    <!-- Sign up screen -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_retype_password">Retype password</string>
+    <string name="validate_field_cannot_empty">%s can not be empty</string>
+    <string name="hint_captcha_label">Answer bellow math question</string>
+    <string name="prompt_captcha_answer">Answer</string>
+    <string name="error_get_catpcha">Error when get captcha from server. Please try again</string>
 </resources>

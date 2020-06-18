@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate.activities
+package vn.unlimit.vpngate.activities.paid
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.provider.BaseProvider

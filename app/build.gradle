@@ -109,6 +109,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.pixplicity.sharp:library:1.1.0'
     implementation('com.amitshekhar.android:android-networking:1.0.2') {
         exclude group: 'com.android.support'
     }

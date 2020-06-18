@@ -22,6 +22,7 @@
             android:theme="@style/AppTheme.NoActionBar.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -37,12 +38,17 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".activities.paid.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
-            android:name=".activities.PaidServerActivity"
+            android:name=".activities.paid.SignUpActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_singup"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.PaidServerActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_paid_server"
             android:theme="@style/AppTheme.PaidServer" />
@@ -58,6 +64,7 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3085232976681422~6517719190" />

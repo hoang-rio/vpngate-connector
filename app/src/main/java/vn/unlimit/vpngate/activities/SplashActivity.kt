@@ -6,6 +6,8 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.LoginActivity
+import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.utils.PaidServerUtil
 
 class SplashActivity : AppCompatActivity() {

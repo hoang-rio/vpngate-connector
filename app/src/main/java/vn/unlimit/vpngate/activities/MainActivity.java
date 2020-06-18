@@ -44,6 +44,8 @@ import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog;
+import vn.unlimit.vpngate.activities.paid.LoginActivity;
+import vn.unlimit.vpngate.activities.paid.PaidServerActivity;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
 import vn.unlimit.vpngate.fragment.HelpFragment;
