@@ -10,30 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/txt_username"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="15dp"
                 android:autofillHints="@string/prompt_user"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_user"
                 android:inputType="text"
                 android:selectAllOnFocus="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_full_name"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_full_name"
+                android:inputType="text"
+                android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
 
             <EditText
                 android:id="@+id/txt_email"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
@@ -43,9 +55,34 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_username"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_birthday"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_birthday"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_timezone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_timezone"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_timezone"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
 
             <EditText
@@ -79,9 +116,6 @@
                 android:imeActionLabel="@string/action_sign_in"
                 android:inputType="textPassword"
                 android:selectAllOnFocus="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_password"
                 tools:targetApi="lollipop" />
 
             <LinearLayout
@@ -89,10 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_retype_password">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -132,7 +163,7 @@
                         tools:ignore="HardcodedText,UnusedAttribute" />
 
                     <EditText
-                        android:id="@+id/txt_captcha"
+                        android:id="@+id/txt_captcha_answer"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -147,33 +178,37 @@
                         android:selectAllOnFocus="true"
                         android:textAlignment="center"
                         android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txt_password"
                         tools:targetApi="lollipop" />
                 </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="@string/hint_captcha_tap_to_reload"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ln_signup_btn"
+                android:id="@+id/ln_sign_up_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln_captcha">
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp">
 
                 <Button
-                    android:id="@+id/btn_signup"
+                    android:id="@+id/btn_sign_up"
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="30dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="30dp"
-                    android:layout_marginBottom="20dp"
                     android:background="@drawable/selector_apply_button"
                     android:text="@string/action_sign_up"
                     android:textAllCaps="false"
@@ -190,9 +225,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="30dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="30dp"
-                    android:layout_marginBottom="20dp"
                     android:background="@drawable/selector_paid_button"
                     android:text="@string/action_sign_in"
                     android:textAllCaps="false"
@@ -204,7 +237,7 @@
                 android:id="@+id/btn_back_to_free"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginStart="48dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="48dp"
@@ -217,6 +250,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ln_signup_btn"
                 app:layout_constraintVertical_bias="0.2" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

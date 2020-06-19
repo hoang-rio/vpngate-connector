@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         btnLogin = findViewById(R.id.btn_login)
         btnLogin!!.setOnClickListener(this)
-        btnSignUp = findViewById(R.id.btn_signup)
+        btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
     }
 

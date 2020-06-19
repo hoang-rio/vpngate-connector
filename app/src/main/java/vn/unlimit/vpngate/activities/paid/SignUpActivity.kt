@@ -1,12 +1,12 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.pixplicity.sharp.Sharp
 import org.json.JSONObject
@@ -15,16 +15,22 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
+import java.util.*
 
-class SignUpActivity : AppCompatActivity(), View.OnClickListener {
+class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
 
     private var btnBackToFree: Button? = null
     private var btnSignUp: Button? = null
     private var btnLogin: Button? = null
     private var txtUserName: EditText? = null
     private var txtEmail: EditText? = null
+    private var txtBirthday: EditText? = null
+    private val calendar = Calendar.getInstance()
+    private var datePickerDialog: DatePickerDialog? = null
+    private var txtTimeZone: EditText? = null
     private var txtPassword: EditText? = null
     private var txtRetypePassword: EditText? = null
+    private var txtCaptchaAnswer: EditText? = null
     private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
     private val userApiRequest = UserApiRequest()
@@ -38,16 +44,23 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_sign_up)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         btnBackToFree = findViewById(R.id.btn_back_to_free)
-        btnSignUp = findViewById(R.id.btn_signup)
+        btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
         btnLogin = findViewById(R.id.btn_login)
         btnLogin!!.setOnClickListener(this)
         txtUserName = findViewById(R.id.txt_username)
         txtEmail = findViewById(R.id.txt_email)
+        txtBirthday = findViewById(R.id.txt_birthday)
+        txtBirthday!!.onFocusChangeListener = this
+        txtBirthday!!.setOnClickListener(this)
+        txtTimeZone = findViewById(R.id.txt_timezone)
         txtPassword = findViewById(R.id.txt_password)
         txtRetypePassword = findViewById(R.id.txt_retype_password)
+        txtCaptchaAnswer = findViewById(R.id.txt_captcha_answer)
         ivCaptcha = findViewById(R.id.iv_captcha)
         ivCaptcha!!.setOnClickListener(this)
+        datePickerDialog = DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE))
+        txtUserName!!.requestFocus()
     }
 
     private fun backToFree() {
@@ -58,7 +71,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener {
     private fun loadCaptcha(isReload: Boolean? = false) {
         lateinit var loadingDialog: LoadingDialog
         if (isReload!!) {
-            loadingDialog = LoadingDialog.newInstance()
+            loadingDialog = LoadingDialog.newInstance(getString(R.string.reloading_captcha))
             loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
         }
         userApiRequest.getCaptcha(object : RequestListener {
@@ -72,7 +85,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onError(error: String?) {
-                Toast.makeText(this@SignUpActivity, getString(R.string.error_get_catpcha), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SignUpActivity, getString(R.string.error_get_captcha), Toast.LENGTH_SHORT).show()
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -82,6 +95,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        datePickerDialog!!.datePicker.maxDate = calendar.time.time
         loadCaptcha()
     }
 
@@ -90,33 +104,49 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener {
         return super.onSupportNavigateUp()
     }
 
+    private fun checkDigit(number: Int): String? {
+        return if (number <= 9) "0$number" else number.toString()
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        txtBirthday!!.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
+    }
+
+    fun checkEmptyField(editText: EditText?, fieldPromptResId: Int) {
+        if (editText!!.text.isEmpty()) {
+            val toastMessage = getString(R.string.validate_field_cannot_empty, getString(fieldPromptResId))
+            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
+            editText.requestFocus()
+            throw Exception(toastMessage)
+        }
+    }
+
+    override fun onFocusChange(v: View?, hasFocus: Boolean) {
+        when (v) {
+            txtBirthday -> if (hasFocus) datePickerDialog!!.show()
+        }
+    }
+
     override fun onClick(v: View?) {
         when (v) {
             btnBackToFree -> backToFree()
             btnLogin -> onBackPressed()
             ivCaptcha -> loadCaptcha(true)
+            txtBirthday -> datePickerDialog!!.show()
             btnSignUp -> {
-                if (txtUserName!!.text.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_user)), Toast.LENGTH_SHORT).show()
-                    txtUserName?.requestFocus()
-                    return
+                try {
+                    checkEmptyField(txtUserName, R.string.prompt_user)
+                    checkEmptyField(txtEmail, R.string.prompt_email)
+                    checkEmptyField(txtBirthday, R.string.prompt_birthday)
+                    checkEmptyField(txtTimeZone, R.string.prompt_timezone)
+                    checkEmptyField(txtPassword, R.string.prompt_password)
+                    checkEmptyField(txtRetypePassword, R.string.prompt_retype_password)
+                    checkEmptyField(txtCaptchaAnswer, R.string.prompt_captcha_answer)
+                } catch (th: Throwable) {
+                    Log.w(TAG, "Validate sign up form error", th)
                 }
-                if (txtEmail!!.text.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_email)), Toast.LENGTH_SHORT).show()
-                    txtEmail?.requestFocus()
-                    return
-                }
-                if (txtPassword!!.text.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_password)), Toast.LENGTH_SHORT).show()
-                    txtPassword?.requestFocus()
-                    return
-                }
-                if (txtRetypePassword!!.text.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_retype_password)), Toast.LENGTH_SHORT).show()
-                    txtRetypePassword?.requestFocus()
-                    return
-                }
-                TODO("Must implement local validate here")
+//                TODO("Must implement local validate here")
             }
         }
     }

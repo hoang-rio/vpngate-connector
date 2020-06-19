@@ -168,6 +168,7 @@
     <string name="title_activity_login">Đăng nhập vào máy chủ trả phí</string>
     <string name="title_activity_singup">Đăng ký tài khoản máy chủ trả phí</string>
     <string name="prompt_user">Tài khoản</string>
+    <string name="prompt_full_name">Họ tên</string>
     <string name="prompt_password">Mật khẩu</string>
     <string name="action_sign_in">Đăng nhập</string>
     <string name="action_sign_up">Đăng ký</string>
@@ -182,9 +183,13 @@
     <string name="username_and_password_is_required">Tài khoản và mật khẩu là bắt buộc nhập</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
+    <string name="prompt_birthday">Ngày sinh</string>
+    <string name="prompt_timezone">Múi giờ</string>
     <string name="prompt_retype_password">Nhập lại mật khẩu</string>
     <string name="validate_field_cannot_empty">%s không được bỏ trống</string>
     <string name="hint_captcha_label">Trả lời phép toán phía dưới</string>
     <string name="prompt_captcha_answer">Kết quả</string>
-    <string name="error_get_catpcha">Lấy captcha từ máy chủ gặp lỗi. Vui lòng thử lại</string>
+    <string name="error_get_captcha">Lấy captcha từ máy chủ gặp lỗi. Vui lòng thử lại</string>
+    <string name="reloading_captcha">Đang tải captcha…</string>
+    <string name="hint_captcha_tap_to_reload">Chạm vào ảnh captcha để đổi ảnh khác</string>
 </resources>

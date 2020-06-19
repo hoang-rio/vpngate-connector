@@ -21,8 +21,20 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.SplashScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="link.vpngate-connector.com"
+                    android:scheme="https" />
+                <data
+                    android:host="vpngate.page.link"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

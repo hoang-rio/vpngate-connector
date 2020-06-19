@@ -13,6 +13,7 @@ class UserApiRequest : BaseApiRequest() {
         const val USER_LOGIN_URL = "/user/login"
         const val GET_USER_URL = "/user/get"
         const val GET_CAPTCHA_URL = "/user/captcha"
+        const val USER_REGISTER_URL = "/user/register"
     }
 
     fun login(username: String, password: String, requestListener: RequestListener) {
@@ -55,7 +56,7 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
-    fun signup(username: String, email: String, password: String, captcha: Int) {
+    fun register(username: String, email: String, password: String, captchaAnswer: Int, captchaSecret: String) {
         TODO("Must implement sign up api process here")
     }
 }

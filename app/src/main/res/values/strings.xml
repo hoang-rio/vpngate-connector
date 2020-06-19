@@ -205,6 +205,7 @@
     <string name="title_activity_login">Login to Paid Server</string>
     <string name="title_activity_singup">Sign up new Paid Server account</string>
     <string name="prompt_user">Username</string>
+    <string name="prompt_full_name">Full name</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Sign up</string>
@@ -219,9 +220,14 @@
     <string name="username_and_password_is_required">Username and password is required</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
+    <string name="prompt_birthday">Birthday</string>
+    <string name="prompt_timezone">Timezone</string>
     <string name="prompt_retype_password">Retype password</string>
     <string name="validate_field_cannot_empty">%s can not be empty</string>
     <string name="hint_captcha_label">Answer bellow math question</string>
-    <string name="prompt_captcha_answer">Answer</string>
-    <string name="error_get_catpcha">Error when get captcha from server. Please try again</string>
+    <string name="prompt_captcha_answer">Captcha answer</string>
+    <string name="error_get_captcha">Error when get captcha from server. Please try again</string>
+    <string name="reloading_captcha">Reloading captcha…</string>
+    <string name="hint_captcha_tap_to_reload">Tap to captcha image to change another</string>
+    <string name="default_timezone" translatable="false">Asia/Ho_Chi_Minh</string>
 </resources>
