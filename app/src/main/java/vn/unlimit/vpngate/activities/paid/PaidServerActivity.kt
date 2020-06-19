@@ -2,8 +2,9 @@ package vn.unlimit.vpngate.activities.paid
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -11,15 +12,13 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
-import vn.unlimit.vpngate.api.BaseApiRequest
-import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.provider.BaseProvider
-import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class PaidServerActivity : AppCompatActivity() {
 
-    var isFromLogin = false
-    val userApiRequest = UserApiRequest()
+    private var isFromLogin = false
+    private var userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -44,25 +43,20 @@ class PaidServerActivity : AppCompatActivity() {
                 finish()
             }
         }
+        userViewModel.isLoggedIn.observe(this, Observer<Boolean> { isLoggedIn ->
+            if (!isLoggedIn!!) {
+                // Go to login screen if user login status is changed
+                val intentLogin = Intent(this@PaidServerActivity, LoginActivity::class.java)
+                startActivity(intentLogin)
+                finish()
+            }
+        })
     }
 
     override fun onResume() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
-            userApiRequest.fetchUser(object : RequestListener {
-                override fun onSuccess(result: Any?) {
-                    Log.d(TAG, "fetch user success")
-                }
-
-                override fun onError(error: String?) {
-                    if (error!! == BaseApiRequest.ERROR_SESSION_EXPIRES) {
-                        val loginIntent = Intent(this@PaidServerActivity, LoginActivity::class.java)
-                        startActivity(loginIntent)
-                        finish()
-                    }
-                    Log.e(TAG, "fetch user error with error {}".format(error))
-                }
-            })
+            userViewModel.fetchUser()
         }
         super.onResume()
     }

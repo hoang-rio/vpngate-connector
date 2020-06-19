@@ -4,20 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
-import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
-import vn.unlimit.vpngate.provider.BaseProvider
-import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var btnBackToFree: Button? = null
@@ -26,8 +25,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var btnLogin: Button? = null
     private var btnSignUp: Button? = null
     private var btnHidePassword: Button? = null
-    private val userApiRequest = UserApiRequest()
+    private var userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
     private val paidServerUtil = App.getInstance().paidServerUtil
+    private val loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
 
     companion object {
         private val TAG = "LoginActivity"
@@ -47,6 +47,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         btnLogin!!.setOnClickListener(this)
         btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
+        userViewModel.isLoggingIn.observe(this, Observer<Boolean> { isLoggingIn ->
+            if (isLoggingIn!!) {
+                loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
+            } else if (loadingDialog.isVisible) {
+                loadingDialog.dismiss()
+            }
+        })
     }
 
     override fun onResume() {
@@ -65,25 +72,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(applicationContext, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
                     return
                 }
-                val loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
-                loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
-
-                userApiRequest.login(txtUsername!!.text.toString(), txtPassword!!.text.toString(), object : RequestListener {
-                    override fun onSuccess(result: Any?) {
-                        Log.e(TAG, result.toString())
-                        loadingDialog.dismiss()
-                        val paidServerIntent = Intent(this@LoginActivity, PaidServerActivity::class.java)
-                        paidServerIntent.putExtra(BaseProvider.FROM_LOGIN, true)
-                        startActivity(paidServerIntent)
-                        finish()
-                    }
-
-                    override fun onError(error: String) {
-                        Log.e(TAG, error)
-                        loadingDialog.dismiss()
-                        Toast.makeText(applicationContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
-                    }
-                })
+                userViewModel.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
             btnHidePassword -> {
                 if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
