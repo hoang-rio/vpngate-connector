@@ -18,7 +18,7 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 class PaidServerActivity : AppCompatActivity() {
 
     private var isFromLogin = false
-    private var userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+    private var userViewModel: UserViewModel? = null
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -43,7 +43,12 @@ class PaidServerActivity : AppCompatActivity() {
                 finish()
             }
         }
-        userViewModel.isLoggedIn.observe(this, Observer<Boolean> { isLoggedIn ->
+        bindViewModel()
+    }
+
+    private fun bindViewModel() {
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel!!.isLoggedIn.observe(this, Observer<Boolean> { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(this@PaidServerActivity, LoginActivity::class.java)
@@ -56,7 +61,7 @@ class PaidServerActivity : AppCompatActivity() {
     override fun onResume() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
-            userViewModel.fetchUser()
+            userViewModel!!.fetchUser()
         }
         super.onResume()
     }

@@ -25,12 +25,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var btnLogin: Button? = null
     private var btnSignUp: Button? = null
     private var btnHidePassword: Button? = null
-    private var userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+    private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.getInstance().paidServerUtil
-    private val loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
+    private var loadingDialog: LoadingDialog? = null
 
     companion object {
-        private val TAG = "LoginActivity"
+        private const val TAG = "LoginActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,11 +47,20 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         btnLogin!!.setOnClickListener(this)
         btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
-        userViewModel.isLoggingIn.observe(this, Observer<Boolean> { isLoggingIn ->
+        loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
+        bindViewModel()
+    }
+
+    private fun bindViewModel() {
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoggingIn ->
             if (isLoggingIn!!) {
-                loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
-            } else if (loadingDialog.isVisible) {
-                loadingDialog.dismiss()
+                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            } else if (loadingDialog!!.isVisible) {
+                if (!userViewModel!!.isLoggedIn.value!!) {
+                    Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
+                }
+                loadingDialog!!.dismiss()
             }
         })
     }
@@ -69,10 +78,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             btnBackToFree -> backToFree()
             btnLogin -> {
                 if (txtUsername!!.text.isEmpty() || txtPassword!!.text.isEmpty()) {
-                    Toast.makeText(applicationContext, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
                     return
                 }
-                userViewModel.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
+                userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
             btnHidePassword -> {
                 if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {

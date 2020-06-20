@@ -16,21 +16,24 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val paidServerDataUtil = App.getInstance().paidServerUtil
     private val userApiRequest = UserApiRequest()
+
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerDataUtil.isLoggedIn())
-    var isLoggingIn: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun login(username: String, password: String) {
+        isLoading.value = true
         userApiRequest.login(username, password, object : RequestListener {
             override fun onSuccess(result: Any?) {
                 Log.e(TAG, result.toString())
-                isLoggingIn.value = false
                 isLoggedIn.value = true
                 paidServerDataUtil.setIsLoggedIn(true)
+                isLoading.value = false
             }
 
             override fun onError(error: String) {
                 Log.e(TAG, error)
-                isLoggingIn.value = false
+                isLoading.value = false
             }
         })
     }

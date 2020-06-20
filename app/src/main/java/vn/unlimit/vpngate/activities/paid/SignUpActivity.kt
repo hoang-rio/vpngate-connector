@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
 import org.json.JSONObject
 import vn.unlimit.vpngate.R
@@ -15,6 +17,7 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.*
 
 class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
@@ -34,9 +37,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
     private val userApiRequest = UserApiRequest()
+    private var userViewModel: UserViewModel? = null
+    private var loadingDialog: LoadingDialog? = null
 
     companion object {
-        const val TAG = "SignUpActivity"
+        private const val TAG = "SignUpActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +66,19 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         ivCaptcha!!.setOnClickListener(this)
         datePickerDialog = DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE))
         txtUserName!!.requestFocus()
+        loadingDialog = LoadingDialog.newInstance()
+        bindViewModel()
+    }
+
+    private fun bindViewModel() {
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoading ->
+            if (isLoading) {
+                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            } else if (loadingDialog!!.isVisible) {
+                loadingDialog!!.dismiss()
+            }
+        })
     }
 
     private fun backToFree() {
@@ -68,9 +86,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         startActivity(intentFree)
     }
 
-    private fun loadCaptcha(isReload: Boolean? = false) {
+    private fun loadCaptcha(isReload: Boolean = false) {
         lateinit var loadingDialog: LoadingDialog
-        if (isReload!!) {
+        if (isReload) {
             loadingDialog = LoadingDialog.newInstance(getString(R.string.reloading_captcha))
             loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
         }
@@ -78,7 +96,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
             override fun onSuccess(result: Any?) {
                 val svgImage: String = (result as JSONObject).getString("image")
                 captchaSecret = result.getString("secret")
-                Sharp.loadString(svgImage).into(ivCaptcha as View)
+                Sharp.loadString(svgImage).into(ivCaptcha!!)
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -113,12 +131,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         txtBirthday!!.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
     }
 
-    fun checkEmptyField(editText: EditText?, fieldPromptResId: Int) {
+    private fun checkEmptyField(editText: EditText?, fieldPromptResId: Int) {
         if (editText!!.text.isEmpty()) {
-            val toastMessage = getString(R.string.validate_field_cannot_empty, getString(fieldPromptResId))
-            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
             editText.requestFocus()
-            throw Exception(toastMessage)
+            throw Exception(getString(R.string.validate_field_cannot_empty, getString(fieldPromptResId)))
         }
     }
 
@@ -144,7 +160,8 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                     checkEmptyField(txtRetypePassword, R.string.prompt_retype_password)
                     checkEmptyField(txtCaptchaAnswer, R.string.prompt_captcha_answer)
                 } catch (th: Throwable) {
-                    Log.w(TAG, "Validate sign up form error", th)
+                    Toast.makeText(this, th.message, Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Validate sign up form error", th)
                 }
 //                TODO("Must implement local validate here")
             }
