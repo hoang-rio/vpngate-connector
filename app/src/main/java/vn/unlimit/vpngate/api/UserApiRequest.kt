@@ -4,6 +4,7 @@ import android.util.Log
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import org.json.JSONObject
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 
@@ -56,7 +57,32 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
-    fun register(username: String, email: String, password: String, captchaAnswer: Int, captchaSecret: String) {
-        TODO("Must implement sign up api process here")
+    fun register(username: String, fullName: String, email: String, password: String, birthDay: String, timeZone: String, repassword: String, captchaAnswer: Int, captchaSecret: String, requestListener: RequestListener) {
+        val isPro = BuildConfig.FLAVOR == "pro"
+        val user = HashMap<String, String>()
+        user["username"] = username
+        user["fullname"] = fullName
+        user["email"] = email
+        user["birthday"] = birthDay
+        user["timezone"] = timeZone
+        user["password"] = password
+        user["repassword"] = repassword
+        val captcha = HashMap<String, String>()
+        captcha["answer"] = captchaAnswer.toString()
+        captcha["secret"] = captchaSecret
+        val data = HashMap<String, Any>()
+        data["user"] = user
+        data["captcha"] = captcha
+        post("$USER_REGISTER_URL${if (isPro) "?version=pro" else ""}", data, object: JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Register success with email: {}".format(email))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Register error with detail: {}".format(anError!!.errorDetail))
+                requestListener.onError(anError.response.body().toString())
+            }
+        })
     }
 }

@@ -17,8 +17,8 @@ open class BaseApiRequest {
         const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
     }
 
-    val paidServerUtil = App.getInstance().paidServerUtil
-    val sessionHeaderName = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_session_header_key))
+    val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+    private val sessionHeaderName = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_session_header_key))
 
     private val apiEndPoint: String = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
 
@@ -40,7 +40,7 @@ open class BaseApiRequest {
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
-    fun post(url: String, data: Map<String, String>, requestListener: JSONObjectRequestListener) {
+    fun post(url: String, data: Map<String, Any>, requestListener: JSONObjectRequestListener) {
         val networkRequest = AndroidNetworking.post("$apiEndPoint$url")
                 .addHeaders(jsonHeaders)
                 .addApplicationJsonBody(data)
@@ -50,7 +50,7 @@ open class BaseApiRequest {
         networkRequest.build().getAsJSONObject(requestListener)
     }
 
-    fun post(url: String, data: Map<String, String>, requestListener: JSONArrayRequestListener) {
+    fun post(url: String, data: Map<String, Any>, requestListener: JSONArrayRequestListener) {
         val networkRequest = AndroidNetworking.post("$apiEndPoint$url")
                 .addHeaders(jsonHeaders)
                 .addApplicationJsonBody(data)

@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import org.json.JSONObject
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.api.UserApiRequest
@@ -20,6 +21,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerDataUtil.isLoggedIn())
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
+    var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
 
     fun login(username: String, password: String) {
         isLoading.value = true
@@ -50,6 +52,25 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     paidServerDataUtil.setIsLoggedIn(false)
                 }
                 Log.e(TAG, "fetch user error with error {}".format(error))
+            }
+        })
+    }
+
+    fun register(username: String, fullName: String, email: String, birthDay: String, timeZone: String, password: String, repassword: String, captchaAnswer: Int, captchaSecret: String) {
+        isLoading.value = true
+        userApiRequest.register(username, fullName, email, birthDay, timeZone, password, repassword, captchaAnswer, captchaSecret, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isLoading.value = true
+                isRegisterSuccess.value = true
+            }
+
+            override fun onError(error: String?) {
+                val errorResponse = JSONObject(error!!.toString())
+                if (errorResponse.has("errorList")) {
+                    errorList.value = errorResponse.get("errorList") as JSONObject
+                }
+                isLoading.value = false
+                isRegisterSuccess.value = false
             }
         })
     }

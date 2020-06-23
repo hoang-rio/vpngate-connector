@@ -21,6 +21,7 @@ public class App extends Application {
     private static boolean isImportToOpenVPN = false;
     private DataUtil dataUtil;
     private PaidServerUtil paidServerUtil;
+    private static final String TAG = "VpnGateApp";
 
     public static String getResourceString(int resId) {
         return instance.getString(resId);
@@ -44,6 +45,7 @@ public class App extends Application {
             // Skip app initialization.
             return;
         }
+        super.onCreate();
         if (!BuildConfig.DEBUG) {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
@@ -56,11 +58,10 @@ public class App extends Application {
         FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener((Task<Boolean> task) -> {
             if (task.isSuccessful()) {
                 Boolean updated = task.getResult();
-                Log.e("RemoteConfigUpdated", updated + "");
+                Log.e(TAG, "RemoteConfigUpdated:" + updated);
                 isImportToOpenVPN = FirebaseRemoteConfig.getInstance().getBoolean("vpn_import_open_vpn");
             }
         });
-        super.onCreate();
         try {
             ProviderInstaller.installIfNeeded(getApplicationContext());
         } catch (Exception ex) {

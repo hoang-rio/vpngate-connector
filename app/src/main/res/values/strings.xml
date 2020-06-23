@@ -221,7 +221,8 @@
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Birthday</string>
-    <string name="prompt_timezone">Timezone</string>
+    <string name="timezone_field">Timezone</string>
+    <string name="prompt_timezone">Timezone. Example: Asia/Ho_Chi_Minh</string>
     <string name="prompt_retype_password">Retype password</string>
     <string name="validate_field_cannot_empty">%s can not be empty</string>
     <string name="hint_captcha_label">Answer bellow math question</string>
@@ -229,5 +230,10 @@
     <string name="error_get_captcha">Error when get captcha from server. Please try again</string>
     <string name="reloading_captcha">Reloading captcha…</string>
     <string name="hint_captcha_tap_to_reload">Tap to captcha image to change another</string>
-    <string name="default_timezone" translatable="false">Asia/Ho_Chi_Minh</string>
+    <string name="invalid_timezone">Invalid timezone. Please type keyword and select one from popup list.</string>
+    <string name="register_success">Register success. Please check email to activate your account</string>
+    <string name="register_failed">Register failed. Please check error list:\n%s</string>
+    <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
+    <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
+    <string name="re_type_password_does_not_match">Re type password does not match</string>
 </resources>

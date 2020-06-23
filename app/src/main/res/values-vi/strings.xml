@@ -184,7 +184,8 @@
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Ngày sinh</string>
-    <string name="prompt_timezone">Múi giờ</string>
+    <string name="timezone_field">Múi giờ</string>
+    <string name="prompt_timezone">Múi giờ. Ví dụ: Asia/Ho_Chi_Minh</string>
     <string name="prompt_retype_password">Nhập lại mật khẩu</string>
     <string name="validate_field_cannot_empty">%s không được bỏ trống</string>
     <string name="hint_captcha_label">Trả lời phép toán phía dưới</string>
@@ -192,4 +193,10 @@
     <string name="error_get_captcha">Lấy captcha từ máy chủ gặp lỗi. Vui lòng thử lại</string>
     <string name="reloading_captcha">Đang tải captcha…</string>
     <string name="hint_captcha_tap_to_reload">Chạm vào ảnh captcha để đổi ảnh khác</string>
+    <string name="invalid_timezone">Múi giờ không hợp lệ. Hãy gõ từ khoá rồi chọn từ danh sách bật lên.</string>
+    <string name="register_success">Đăng ký thành công. Vui lòng kiểm tra email để kích hoạt tài khoản</string>
+    <string name="register_failed">Đăng ký thất bại. Hãy kiểm tra danh sách lỗi:\n%s</string>
+    <string name="username_is_invalid">Tài khoản không hợp lệ. Tài khoản phải chứa 5 – 30 ký tự thường và số</string>
+    <string name="password_is_invalid">Mật khẩu không hợp lệ. Mật khẩu phải chứa 5 – 30 ký tự và số, cho phép các ký tự đặc biệt ($ ! * . -)</string>
+    <string name="re_type_password_does_not_match">Nhập lại mật khẩu không khớp.</string>
 </resources>
