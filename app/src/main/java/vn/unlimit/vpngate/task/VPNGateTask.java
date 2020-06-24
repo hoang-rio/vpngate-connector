@@ -37,7 +37,7 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
             if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
                 url = FirebaseRemoteConfig.getInstance().getString("vpn_udp_api");
             } else {
-                url = dataUtil.getBaseUrl() + "/api/iphone/";
+                url = dataUtil.getBaseUrl() + "/de/blinkt/openvpn/api/iphone/";
             }
             if (!dataUtil.hasAds()) {
                 url += "?version=pro";

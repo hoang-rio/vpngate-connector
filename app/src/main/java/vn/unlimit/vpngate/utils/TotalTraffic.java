@@ -22,23 +22,23 @@ public class TotalTraffic {
 
 
     public static void calcTraffic(Context context, long in, long out, long diffIn, long diffOut) {
-        List<String> totalTraffic = getTotalTraffic(diffIn, diffOut);
+        List<String> totalTraffic = getTotalTraffic(context, diffIn, diffOut);
 
         Intent traffic = new Intent();
         traffic.setAction(TRAFFIC_ACTION);
         traffic.putExtra(DOWNLOAD_ALL, totalTraffic.get(0));
-        traffic.putExtra(DOWNLOAD_SESSION, OpenVPNService.humanReadableByteCount(in, false));
+        traffic.putExtra(DOWNLOAD_SESSION, OpenVPNService.humanReadableByteCount(in, false, context.getResources()));
         traffic.putExtra(UPLOAD_ALL, totalTraffic.get(1));
-        traffic.putExtra(UPLOAD_SESSION, OpenVPNService.humanReadableByteCount(out, false));
+        traffic.putExtra(UPLOAD_SESSION, OpenVPNService.humanReadableByteCount(out, false, context.getResources()));
 
         context.sendBroadcast(traffic);
     }
 
-    public static List<String> getTotalTraffic() {
-        return getTotalTraffic(0, 0);
+    public static List<String> getTotalTraffic(Context context) {
+        return getTotalTraffic(context, 0, 0);
     }
 
-    public static List<String> getTotalTraffic(long in, long out) {
+    public static List<String> getTotalTraffic(Context context, long in, long out) {
         List<String> totalTraffic = new ArrayList<String>();
 
         if (inTotal == 0)
@@ -50,8 +50,8 @@ public class TotalTraffic {
         inTotal = inTotal + in;
         outTotal = outTotal + out;
 
-        totalTraffic.add(OpenVPNService.humanReadableByteCount(inTotal, false));
-        totalTraffic.add(OpenVPNService.humanReadableByteCount(outTotal, false));
+        totalTraffic.add(OpenVPNService.humanReadableByteCount(inTotal, false, context.getResources()));
+        totalTraffic.add(OpenVPNService.humanReadableByteCount(outTotal, false, context.getResources()));
 
         return totalTraffic;
     }
