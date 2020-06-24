@@ -276,7 +276,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
                 switch (status) {
                     case LEVEL_CONNECTED:
-                        btnConnect.setText(getString(R.string.disconnect));
+                        if (isCurrent()) {
+                            btnConnect.setText(getString(R.string.disconnect));
+                        }
                         isConnecting = false;
                         isAuthFailed = false;
                         linkCheckIp.setVisibility(View.VISIBLE);
