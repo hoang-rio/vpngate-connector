@@ -75,6 +75,7 @@
     <string name="copied">Đã sao chép</string>
     <!-- VPN String -->
     <string name="unknown_state">Không rõ</string>
+    <string name="cancel_connection">Ngằt kết nối</string>
     <string name="pauseVPN">Tạm dừng VPN</string>
     <string name="resumevpn">Tiếp tục VPN</string>
     <string name="check_ip">Kiểm tra IP hiện tại</string>

@@ -2,15 +2,15 @@ package vn.unlimit.vpngate.fragment;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.VpnService;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,28 +31,30 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
+import de.blinkt.openvpn.core.ConnectionStatus;
+import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
+import de.blinkt.openvpn.utils.PropertiesService;
+import de.blinkt.openvpn.utils.TotalTraffic;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.utils.DataUtil;
-import vn.unlimit.vpngate.utils.PropertiesService;
-import vn.unlimit.vpngate.utils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/9/2018.
  */
 
-public class StatusFragment extends Fragment implements View.OnClickListener {
+public class StatusFragment extends Fragment implements View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
     private ImageView btnOnOff;
     private TextView txtStatus;
     private TextView txtUploadSession;
@@ -60,19 +62,16 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private TextView txtUploadTotal;
     private TextView txtDownloadTotal;
     private Button btnClearStatistics;
-    private OpenVPNService mVPNService;
-    private BroadcastReceiver brStatus;
-    private BroadcastReceiver trafficReceiver;
+    private IOpenVPNServiceInternal mVPNService;
     private DataUtil dataUtil;
     private VPNGateConnection mVpnGateConnection;
+    private final String TAG = "StatusFragment";
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            OpenVPNService.LocalBinder binder = (OpenVPNService.LocalBinder) service;
-            mVPNService = binder.getService();
+
+            mVPNService = IOpenVPNServiceInternal.Stub.asInterface(service);
         }
 
         @Override
@@ -102,7 +101,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         mVpnGateConnection = dataUtil.getLastVPNConnection();
         loadAdMob();
         bindData();
-        registerBroadCast();
+        VpnStatus.addStateListener(this);
+        VpnStatus.addByteCountListener(this);
         return rootView;
     }
 
@@ -124,8 +124,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
     private void bindData() {
         try {
-            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getUploaded(), false));
-            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(), false));
+            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getUploaded(mContext), false, getResources()));
+            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(mContext), false, getResources()));
             if (checkStatus()) {
                 btnOnOff.setActivated(true);
                 txtStatus.setText(String.format(getResources().getString(R.string.tap_to_disconnect), getConnectionName()));
@@ -144,8 +144,13 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     private void stopVpn() {
         //prepareStopVPN();
         ProfileManager.setConntectedVpnProfileDisconnected(getContext());
-        if (mVPNService != null && mVPNService.getManagement() != null)
-            mVPNService.getManagement().stopVPN(false);
+        if (mVPNService != null) {
+            try {
+                mVPNService.stopVPN(false);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -182,10 +187,10 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearStatistics)) {
-            TotalTraffic.clearTotal();
+            TotalTraffic.clearTotal(mContext);
             Toast.makeText(getContext(), "Statistics clear completed", Toast.LENGTH_SHORT).show();
-            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(0, false));
-            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(0, false));
+            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(0, false, getResources()));
+            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(0, false, getResources()));
         }
         if (view.equals(btnOnOff)) {
             if (mVpnGateConnection == null) {
@@ -266,7 +271,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
                     vpnProfile.mDNS2 = dns2;
                 }
             }
-            ProfileManager.setTemporaryProfile(vpnProfile);
+            ProfileManager.setTemporaryProfile(getActivity(), vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {
             e.printStackTrace();
             return false;
@@ -280,7 +285,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
 
         if (intent != null) {
             VpnStatus.updateStateString("USER_VPN_PERMISSION", "", R.string.state_user_vpn_permission,
-                    VpnStatus.ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT);
+                    ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT);
             // Start the query
             try {
                 startActivityForResult(intent, DetailActivity.START_VPN_PROFILE);
@@ -300,7 +305,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         try {
             Intent intent = new Intent(getContext(), OpenVPNService.class);
             intent.setAction(OpenVPNService.START_SERVICE);
-            getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            Objects.requireNonNull(getActivity()).bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -310,8 +315,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         try {
-            TotalTraffic.saveTotal();
-            getActivity().unbindService(mConnection);
+            TotalTraffic.saveTotal(mContext);
+            Objects.requireNonNull(getActivity()).unbindService(mConnection);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -321,44 +326,28 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         try {
-            getActivity().unregisterReceiver(brStatus);
-            getActivity().unregisterReceiver(trafficReceiver);
+            VpnStatus.removeStateListener(this);
+            VpnStatus.removeByteCountListener(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void registerBroadCast() {
-        try {
-            brStatus = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    receiveStatus(intent);
-                }
-            };
-
-            getActivity().registerReceiver(brStatus, new IntentFilter(OpenVPNService.VPN_STATUS));
-            trafficReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    receiveTraffic(intent);
-                }
-            };
-
-            getActivity().registerReceiver(trafficReceiver, new IntentFilter(TotalTraffic.TRAFFIC_ACTION));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    public void setConnectedVPN(String uuid) {
+        // Do nothing
     }
 
-    private void receiveTraffic(Intent intent) {
-        if (checkStatus()) {
-            txtDownloadSession.setText(intent.getStringExtra(TotalTraffic.DOWNLOAD_SESSION));
-            txtUploadSession.setText(intent.getStringExtra(TotalTraffic.UPLOAD_SESSION));
-            txtDownloadTotal.setText(intent.getStringExtra(TotalTraffic.DOWNLOAD_ALL));
-            txtUploadTotal.setText(intent.getStringExtra(TotalTraffic.UPLOAD_ALL));
-        }
+    @Override
+    public void updateByteCount(long in, long out, long diffIn, long diffOut) {
+        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+            if (checkStatus()) {
+                txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
+                txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
+                txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, getResources()));
+                txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, getResources()));
+            }
+        });
     }
 
     private boolean checkStatus() {
@@ -371,63 +360,51 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         return false;
     }
 
-    private void receiveStatus(Intent intent) {
-        try {
-            txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
-            changeServerStatus(VpnStatus.ConnectionStatus.valueOf(intent.getStringExtra("status")));
-
-            if ("NOPROCESS".equals(intent.getStringExtra("detailstatus"))) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private String getConnectionName() {
         boolean useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false);
         return mVpnGateConnection.getName(useUdp);
     }
 
-    private void changeServerStatus(VpnStatus.ConnectionStatus status) {
-        try {
-            dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
-            switch (status) {
-                case LEVEL_CONNECTED:
-                    btnOnOff.setActivated(true);
-                    isConnecting = false;
-                    isAuthFailed = false;
-                    break;
-                case LEVEL_WAITING_FOR_USER_INPUT:
-                    dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
-                    break;
-                case LEVEL_NOTCONNECTED:
-                    if (!isConnecting && !isAuthFailed) {
+    @Override
+    public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
+        Objects.requireNonNull(getActivity()).runOnUiThread(()-> {
+            try {
+                txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
+                dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
+                switch (status) {
+                    case LEVEL_CONNECTED:
+                        btnOnOff.setActivated(true);
+                        isConnecting = false;
+                        isAuthFailed = false;
+                        break;
+                    case LEVEL_WAITING_FOR_USER_INPUT:
+                        dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
+                        break;
+                    case LEVEL_NOTCONNECTED:
+                        if (!isConnecting && !isAuthFailed) {
+                            btnOnOff.setActivated(false);
+                            txtStatus.setText(String.format(getString(R.string.tap_to_connect_last), getConnectionName()));
+                        }
+                        break;
+                    case LEVEL_AUTH_FAILED:
+                        isAuthFailed = true;
                         btnOnOff.setActivated(false);
-                        txtStatus.setText(String.format(getString(R.string.tap_to_connect_last), getConnectionName()));
-                    }
-                    break;
-                case LEVEL_AUTH_FAILED:
-                    isAuthFailed = true;
-                    btnOnOff.setActivated(false);
-                    Bundle params = new Bundle();
-                    params.putString("ip", mVpnGateConnection.getIp());
-                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
-                    params.putString("country", mVpnGateConnection.getCountryLong());
-                    FirebaseAnalytics.getInstance(mContext).logEvent("Connect_Error", params);
-                    txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
-                    isConnecting = false;
-                    break;
-                default:
-                    break;
+                        Bundle params = new Bundle();
+                        params.putString("ip", mVpnGateConnection.getIp());
+                        params.putString("hostname", mVpnGateConnection.getCalculateHostName());
+                        params.putString("country", mVpnGateConnection.getCountryLong());
+                        FirebaseAnalytics.getInstance(mContext).logEvent("Connect_Error", params);
+                        txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
+                        isConnecting = false;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Status update error", e);
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     @Override
@@ -435,10 +412,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             if (resultCode == Activity.RESULT_OK) {
-                switch (requestCode) {
-                    case DetailActivity.START_VPN_PROFILE:
-                        VPNLaunchHelper.startOpenVpn(vpnProfile, mContext);
-                        break;
+                if (requestCode == DetailActivity.START_VPN_PROFILE) {
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, mContext);
                 }
             }
         } catch (Exception e) {
