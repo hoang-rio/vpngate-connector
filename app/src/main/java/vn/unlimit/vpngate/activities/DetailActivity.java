@@ -52,6 +52,7 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
+import de.blinkt.openvpn.utils.TotalTraffic;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
@@ -61,7 +62,6 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
-import vn.unlimit.vpngate.utils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -272,6 +272,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
         runOnUiThread(() -> {
             try {
+                txtStatus.setText(VpnStatus.getLastCleanLogMessage(this));
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
                 switch (status) {
                     case LEVEL_CONNECTED:
@@ -421,7 +422,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onPause() {
         try {
             super.onPause();
-            TotalTraffic.saveTotal();
+            TotalTraffic.saveTotal(this);
             unbindService(mConnection);
         } catch (Exception e) {
             e.printStackTrace();

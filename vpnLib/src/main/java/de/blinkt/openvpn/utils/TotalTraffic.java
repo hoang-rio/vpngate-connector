@@ -1,4 +1,4 @@
-package vn.unlimit.vpngate.utils;
+package de.blinkt.openvpn.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,10 +42,10 @@ public class TotalTraffic {
         List<String> totalTraffic = new ArrayList<String>();
 
         if (inTotal == 0)
-            inTotal = PropertiesService.getDownloaded();
+            inTotal = PropertiesService.getDownloaded(context);
 
         if (outTotal == 0)
-            outTotal = PropertiesService.getUploaded();
+            outTotal = PropertiesService.getUploaded(context);
 
         inTotal = inTotal + in;
         outTotal = outTotal + out;
@@ -56,19 +56,19 @@ public class TotalTraffic {
         return totalTraffic;
     }
 
-    public static void saveTotal() {
+    public static void saveTotal(Context context) {
         if (inTotal != 0)
-            PropertiesService.setDownloaded(inTotal);
+            PropertiesService.setDownloaded(context, inTotal);
 
         if (outTotal != 0)
-            PropertiesService.setUploaded(outTotal);
+            PropertiesService.setUploaded(context, outTotal);
     }
 
-    public static void clearTotal() {
+    public static void clearTotal(Context context) {
         inTotal = 0;
-        PropertiesService.setDownloaded(inTotal);
+        PropertiesService.setDownloaded(context, inTotal);
         outTotal = 0;
-        PropertiesService.setUploaded(outTotal);
+        PropertiesService.setUploaded(context, outTotal);
     }
 
 }

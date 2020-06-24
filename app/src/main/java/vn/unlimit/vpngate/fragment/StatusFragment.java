@@ -41,14 +41,14 @@ import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
+import de.blinkt.openvpn.utils.PropertiesService;
+import de.blinkt.openvpn.utils.TotalTraffic;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.utils.DataUtil;
-import vn.unlimit.vpngate.utils.PropertiesService;
-import vn.unlimit.vpngate.utils.TotalTraffic;
 
 /**
  * Created by hoangnd on 2/9/2018.
@@ -124,8 +124,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     private void bindData() {
         try {
-            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getUploaded(), false, getResources()));
-            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(), false, getResources()));
+            txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getUploaded(mContext), false, getResources()));
+            txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(PropertiesService.getDownloaded(mContext), false, getResources()));
             if (checkStatus()) {
                 btnOnOff.setActivated(true);
                 txtStatus.setText(String.format(getResources().getString(R.string.tap_to_disconnect), getConnectionName()));
@@ -187,7 +187,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     @Override
     public void onClick(View view) {
         if (view.equals(btnClearStatistics)) {
-            TotalTraffic.clearTotal();
+            TotalTraffic.clearTotal(mContext);
             Toast.makeText(getContext(), "Statistics clear completed", Toast.LENGTH_SHORT).show();
             txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(0, false, getResources()));
             txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(0, false, getResources()));
@@ -315,7 +315,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     public void onPause() {
         super.onPause();
         try {
-            TotalTraffic.saveTotal();
+            TotalTraffic.saveTotal(mContext);
             Objects.requireNonNull(getActivity()).unbindService(mConnection);
         } catch (Exception e) {
             e.printStackTrace();
@@ -342,10 +342,10 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     public void updateByteCount(long in, long out, long diffIn, long diffOut) {
         Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             if (checkStatus()) {
-                txtDownloadSession.setText(String.valueOf(in));
-                txtUploadSession.setText(String.valueOf(out));
-                txtDownloadTotal.setText(String.valueOf(diffIn));
-                txtUploadTotal.setText(String.valueOf(diffOut));
+                txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
+                txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
+                txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, getResources()));
+                txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, getResources()));
             }
         });
     }
@@ -369,6 +369,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
         Objects.requireNonNull(getActivity()).runOnUiThread(()-> {
             try {
+                txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
                 switch (status) {
                     case LEVEL_CONNECTED:

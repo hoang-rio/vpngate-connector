@@ -60,6 +60,7 @@ import de.blinkt.openvpn.activities.DisconnectVPN;
 import de.blinkt.openvpn.api.ExternalAppDatabase;
 import de.blinkt.openvpn.core.VpnStatus.ByteCountListener;
 import de.blinkt.openvpn.core.VpnStatus.StateListener;
+import de.blinkt.openvpn.utils.TotalTraffic;
 
 import static de.blinkt.openvpn.core.ConnectionStatus.LEVEL_CONNECTED;
 import static de.blinkt.openvpn.core.ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT;
@@ -1227,6 +1228,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     @Override
     public void updateByteCount(long in, long out, long diffIn, long diffOut) {
+        TotalTraffic.calcTraffic(this, in, out, diffIn, diffOut);
         if (mDisplayBytecount) {
             String netstat = String.format(getString(R.string.statusline_bytecount),
                     humanReadableByteCount(in, false, getResources()),

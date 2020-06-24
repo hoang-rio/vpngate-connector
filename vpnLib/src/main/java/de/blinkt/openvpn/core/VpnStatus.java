@@ -383,11 +383,11 @@ public class VpnStatus {
     public synchronized static void updateStateString(String state, String msg, int resid, ConnectionStatus level, Intent intent) {
         // Workound for OpenVPN doing AUTH and wait and being connected
         // Simply ignore these state
-//        if (mLastLevel == ConnectionStatus.LEVEL_CONNECTED &&
-//                (state.equals("WAIT") || state.equals("AUTH"))) {
-//            newLogItem(new LogItem((LogLevel.DEBUG), String.format("Ignoring OpenVPN Status in CONNECTED state (%s->%s): %s", state, level.toString(), msg)));
-//            return;
-//        }
+        if (mLastLevel == ConnectionStatus.LEVEL_CONNECTED &&
+                (state.equals("WAIT") || state.equals("AUTH"))) {
+            newLogItem(new LogItem((LogLevel.DEBUG), String.format("Ignoring OpenVPN Status in CONNECTED state (%s->%s): %s", state, level.toString(), msg)));
+            return;
+        }
 
         mLaststate = state;
         mLaststatemsg = msg;
