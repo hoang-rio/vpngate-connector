@@ -5,6 +5,9 @@
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
     <string name="sort">Sort</string>
+    <string name="show_tcp_server">Show TCP Server</string>
+    <string name="show_udp_server">Show UDP Server</string>
+    <string name="show_l2tp_server">Show L2TP Server</string>
     <string name="about">About</string>
     <string name="setting">Setting</string>
     <string name="help">Help</string>

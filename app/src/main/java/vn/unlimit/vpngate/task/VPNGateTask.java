@@ -3,14 +3,13 @@ package vn.unlimit.vpngate.task;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.ANResponse;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.StringReader;
 
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.models.VPNGateConnection;
@@ -31,31 +30,23 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     protected VPNGateConnectionList doInBackground(Void... voids) {
         DataUtil dataUtil = App.getInstance().getDataUtil();
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
-        HttpURLConnection connection = null;
         try {
             String url;
             if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
                 url = FirebaseRemoteConfig.getInstance().getString("vpn_udp_api");
             } else {
-                url = dataUtil.getBaseUrl() + "/de/blinkt/openvpn/api/iphone/";
+                url = dataUtil.getBaseUrl() + "/api/iphone/";
             }
             if (!dataUtil.hasAds()) {
                 url += "?version=pro";
             }
-            URL urlConnect = new URL(url);
-            connection = (HttpURLConnection) urlConnect.openConnection();
-            connection.setReadTimeout(10000);
-            connection.setConnectTimeout(10000);
-            connection.setRequestProperty("Accept-Encoding", "identity");
-            connection.connect();
-            vpnGateConnectionList = getConnectionList(connection.getInputStream());
+            ANResponse anResponse = AndroidNetworking.get(url).build().executeForString();
+            if (anResponse.isSuccess()) {
+                vpnGateConnectionList = getConnectionList((String) anResponse.getResult());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage(), e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
         if (vpnGateConnectionList.size() == 0 && !isRetried) {
             isRetried = true;
@@ -66,13 +57,12 @@ public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
     }
 
     // convert InputStream to VPNGateConnectionList
-    private VPNGateConnectionList getConnectionList(InputStream is) {
+    private VPNGateConnectionList getConnectionList(String str) {
         VPNGateConnectionList vpnGateConnectionList = new VPNGateConnectionList();
         BufferedReader br = null;
-
-        String line;
         try {
-            br = new BufferedReader(new InputStreamReader(is));
+            br = new BufferedReader(new StringReader(str));
+            String line;
             while ((line = br.readLine()) != null) {
                 if (line.indexOf("*") != 0 && line.indexOf("#") != 0) {
                     VPNGateConnection vpnGateConnection = VPNGateConnection.fromCsv(line);

@@ -7,6 +7,9 @@
     <string name="about">Giới thiệu</string>
     <string name="setting">Cài đặt</string>
     <string name="sort">Sắp xếp</string>
+    <string name="show_tcp_server">Hiện máy chủ TCP</string>
+    <string name="show_udp_server">Hiện máy chủ UDP</string>
+    <string name="show_l2tp_server">Hiện máy chủ L2TP</string>
     <string name="help">Trợ giúp</string>
     <string name="refresh">Cập nhật</string>
     <string name="speed">Tốc độ</string>

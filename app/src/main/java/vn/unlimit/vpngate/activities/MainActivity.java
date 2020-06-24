@@ -386,7 +386,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             Toast.makeText(this, getResources().getText(R.string.feature_not_available), Toast.LENGTH_LONG).show();
             return true;
         }
-        if (item.getItemId() == R.id.action_sort) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_sort) {
             SortBottomSheetDialog sortBottomSheetDialog = SortBottomSheetDialog.newInstance(mSortProperty, mSortType);
             sortBottomSheetDialog.setOnApplyClickListener((sortProperty, sortType) -> {
                 if (dataUtil.hasAds()) {
@@ -412,6 +413,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
             }
             return true;
+        }
+
+        if (itemId == R.id.filter_tcp || itemId == R.id.filter_udp || itemId == R.id.filter_l2tp) {
+            item.setChecked(!item.isChecked());
         }
 
         return super.onOptionsItemSelected(item);
@@ -596,6 +601,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (mMenu != null) {
             mMenu.findItem(R.id.action_search).setVisible(visible);
             mMenu.findItem(R.id.action_sort).setVisible(visible);
+            mMenu.findItem(R.id.action_filter).setVisible(visible);
         }
     }
 
