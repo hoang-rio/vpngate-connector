@@ -389,7 +389,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     private boolean isCurrent() {
         VPNGateConnection vpnGateConnection = dataUtil.getLastVPNConnection();
-        return vpnGateConnection != null && vpnGateConnection.getName().equals(mVpnGateConnection.getName());
+        return vpnGateConnection != null && mVpnGateConnection != null && vpnGateConnection.getName().equals(mVpnGateConnection.getName());
     }
 
     @Override
