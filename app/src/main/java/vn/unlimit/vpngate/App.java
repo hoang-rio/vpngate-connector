@@ -9,6 +9,8 @@ import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
+import de.blinkt.openvpn.core.OpenVPNService;
+import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.utils.DataUtil;
 
 public class App extends Application {
@@ -43,6 +45,8 @@ public class App extends Application {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
         }
+        // Make notification open DetailActivity
+        OpenVPNService.setNotificationActivityClass(DetailActivity.class);
         instance = this;
         dataUtil = new DataUtil(this);
         FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener((Task<Boolean> task) -> {

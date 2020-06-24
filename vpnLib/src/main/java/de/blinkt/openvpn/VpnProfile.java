@@ -191,8 +191,8 @@ public class VpnProfile implements Serializable, Cloneable {
     }
 
     public static boolean doUseOpenVPN3(Context c) {
-        SharedPreferences prefs = Preferences.getDefaultSharedPreferences(c);
-        return prefs.getBoolean("ovpn3", false);
+        // Nerver use OpenVPN3
+        return false;
     }
 
     //! Put inline data inline and other data as normal escaped filename
