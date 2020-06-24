@@ -26,8 +26,11 @@
   public *;
 }
 # SearchView
--keep class android.support.v7.widget.SearchView { *; }
--keep class com.facebook.ads.AudienceNetworkActivity
+-keep class androidx.appcompat.widget.SearchView { *; }
+# Static final of Detail activity
+-keep public class vn.unlimit.vpngate.activities.DetailActivity {
+    public static final *;
+}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics
@@ -36,4 +39,3 @@
 -keep public class * extends java.lang.Exception
 #-keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
 -printmapping mapping.txt
--dontwarn com.crashlytics.**

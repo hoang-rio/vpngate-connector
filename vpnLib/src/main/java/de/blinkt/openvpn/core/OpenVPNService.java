@@ -203,6 +203,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                 return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             }
         } catch (Exception e) {
+            Log.e(this.getClass().getCanonicalName(), "Build detail intent error", e);
             e.printStackTrace();
         }
         return null;
@@ -317,6 +318,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             PendingIntent contentPendingIntent = getContentIntent();
             if (contentPendingIntent != null) {
                 nbuilder.setContentIntent(contentPendingIntent);
+            } else {
+                nbuilder.setContentIntent(getGraphPendingIntent());
             }
         }
 
