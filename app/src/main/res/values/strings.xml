@@ -28,6 +28,10 @@
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
     <string name="seconds">seconds</string>
+    <string name="cancel_connection">Disconnect</string>
+    <string name="pauseVPN">Pause VPN</string>
+    <string name="resumevpn">Resume VPN</string>
+    <string name="state_connected">Connected</string>
     <string name="connection_error">Error when trying get data from server. Tap to try again!</string>
     <string name="no_network">Your device is not connect to any network\nPlease connect any wifi or enable mobile data to continue</string>
     <string name="loading_text">App is fetching data from server\nPlease wait in a moment</string>

@@ -39,7 +39,6 @@ public class DataUtil {
     public static final String SETTING_HIDE_OPERATOR_MESSAGE_COUNT = "SETTING_HIDE_OPERATOR_MESSAGE_COUNT";
     public static final String USER_ALLOWED_VPN = "USER_ALLOWED_VPN";
     public static final String SETTING_BLOCK_ADS = "SETTING_BLOCK_ADS";
-    public static final String CONFIG_ADMOB_PRIMARY = "vpn_admob_primary";
     public static final String INCLUDE_UDP_SERVER = "INCLUDE_UDP_SERVER";
     public static final String LAST_CONNECT_USE_UDP = "LAST_CONNECT_USE_UDP";
     public static final String USE_CUSTOM_DNS = "USE_CUSTOM_DNS";
@@ -60,7 +59,7 @@ public class DataUtil {
             gson = new Gson();
             FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 3600)
+                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG || !this.getBooleanSetting(ACCEPTED_PRIVACY_POLICY, false) ? 0 : 3600)
                     .build();
             mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
             mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener((Task<Void> task) -> mFirebaseRemoteConfig.fetchAndActivate());
