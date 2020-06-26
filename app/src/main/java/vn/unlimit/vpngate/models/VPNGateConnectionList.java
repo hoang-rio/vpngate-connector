@@ -24,17 +24,12 @@ public class VPNGateConnectionList implements Parcelable {
         }
     };
     private List<VPNGateConnection> data;
-
     public VPNGateConnectionList() {
         data = new ArrayList<>();
     }
 
     private VPNGateConnectionList(Parcel in) {
         data = in.createTypedArrayList(VPNGateConnection.CREATOR);
-    }
-
-    public List<VPNGateConnection> getAll() {
-        return data;
     }
 
     /**
@@ -44,13 +39,74 @@ public class VPNGateConnectionList implements Parcelable {
      * @return
      */
     public VPNGateConnectionList filter(String keyword) {
+        keyword = keyword.toLowerCase();
         VPNGateConnectionList result = new VPNGateConnectionList();
         for (VPNGateConnection vpnGateConnection : data) {
-            if (vpnGateConnection.getCountryLong().toLowerCase().contains(keyword.toLowerCase())) {
+            if (
+                    vpnGateConnection.getCountryLong().toLowerCase().contains(keyword) ||
+                            vpnGateConnection.getHostName().toLowerCase().contains(keyword) ||
+                            vpnGateConnection.getOperator().toLowerCase().contains(keyword) ||
+                            vpnGateConnection.getIp().contains(keyword)
+            ) {
                 result.add(vpnGateConnection);
             }
         }
         return result;
+    }
+
+    public List<VPNGateConnection> getAll() {
+        return data;
+    }
+
+    /**
+     * Get ordered list
+     *
+     * @param property
+     * @param type     order type 0 = ASC, 1 = DESC
+     * @return
+     */
+    public void sort(final String property, final int type) {
+        Collections.sort(data, new Comparator<VPNGateConnection>() {
+            @Override
+            public int compare(VPNGateConnection o1, VPNGateConnection o2) {
+                if (type == ORDER.ASC) {
+                    switch (property) {
+                        case SortProperty.COUNTRY:
+                            return o1.getCountryLong().compareTo(o2.getCountryLong());
+                        case SortProperty.SPEED:
+                            return Integer.compare(o1.getSpeed(), o2.getSpeed());
+                        case SortProperty.PING:
+                            return Integer.compare(o1.getPing(), o2.getPing());
+                        case SortProperty.SCORE:
+                            return Integer.compare(o1.getScore(), o2.getScore());
+                        case SortProperty.UPTIME:
+                            return Integer.compare(o1.getUptime(), o2.getUptime());
+                        case SortProperty.SESSION:
+                            return Integer.compare(o1.getNumVpnSession(), o2.getNumVpnSession());
+                        default:
+                            return 0;
+                    }
+                } else if (type == ORDER.DESC) {
+                    switch (property) {
+                        case SortProperty.COUNTRY:
+                            return o2.getCountryLong().compareTo(o1.getCountryLong());
+                        case SortProperty.SPEED:
+                            return Integer.compare(o2.getSpeed(), o1.getSpeed());
+                        case SortProperty.PING:
+                            return Integer.compare(o2.getPing(), o1.getPing());
+                        case SortProperty.SCORE:
+                            return Integer.compare(o2.getScore(), o1.getScore());
+                        case SortProperty.UPTIME:
+                            return Integer.compare(o2.getUptime(), o1.getUptime());
+                        case SortProperty.SESSION:
+                            return Integer.compare(o2.getNumVpnSession(), o1.getNumVpnSession());
+                        default:
+                            return 0;
+                    }
+                }
+                return 0;
+            }
+        });
     }
 
     public void add(VPNGateConnection vpnGateConnection) {
@@ -77,55 +133,12 @@ public class VPNGateConnectionList implements Parcelable {
         return data.size();
     }
 
-    /**
-     * Get ordered list
-     *
-     * @param property
-     * @param type     order type 0 = ASC, 1 = DESC
-     * @return
-     */
-    public void sort(final String property, final int type) {
-        Collections.sort(data, new Comparator<VPNGateConnection>() {
-            @Override
-            public int compare(VPNGateConnection o1, VPNGateConnection o2) {
-                if (type == ORDER.ASC) {
-                    switch (property) {
-                        case SortProperty.COUNTRY:
-                            return o1.getCountryLong().compareTo(o2.getCountryLong());
-                        case SortProperty.SPEED:
-                            return Integer.valueOf(o1.getSpeed()).compareTo(o2.getSpeed());
-                        case SortProperty.PING:
-                            return Integer.valueOf(o1.getPing()).compareTo(o2.getPing());
-                        case SortProperty.SCORE:
-                            return Integer.valueOf(o1.getScore()).compareTo(o2.getScore());
-                        case SortProperty.UPTIME:
-                            return Integer.valueOf(o1.getUptime()).compareTo(o2.getUptime());
-                        case SortProperty.SESSION:
-                            return Integer.valueOf(o1.getNumVpnSession()).compareTo(o2.getNumVpnSession());
-                        default:
-                            return 0;
-                    }
-                } else if (type == ORDER.DESC) {
-                    switch (property) {
-                        case SortProperty.COUNTRY:
-                            return o2.getCountryLong().compareTo(o1.getCountryLong());
-                        case SortProperty.SPEED:
-                            return Integer.valueOf(o2.getSpeed()).compareTo(o1.getSpeed());
-                        case SortProperty.PING:
-                            return Integer.valueOf(o2.getPing()).compareTo(o1.getPing());
-                        case SortProperty.SCORE:
-                            return Integer.valueOf(o2.getScore()).compareTo(o1.getScore());
-                        case SortProperty.UPTIME:
-                            return Integer.valueOf(o2.getUptime()).compareTo(o1.getUptime());
-                        case SortProperty.SESSION:
-                            return Integer.valueOf(o2.getNumVpnSession()).compareTo(o1.getNumVpnSession());
-                        default:
-                            return 0;
-                    }
-                }
-                return 0;
-            }
-        });
+    enum NumberFilterOperator {
+        EQUAL,
+        GREATER,
+        GREATER_OR_EQUAL,
+        LESS,
+        LESS_OR_EQUAL
     }
 
     public List<VPNGateConnection> getData() {

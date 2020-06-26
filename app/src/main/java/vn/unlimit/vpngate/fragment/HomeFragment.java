@@ -189,6 +189,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
             vpnGateListAdapter.initialize(filterResult);
         } else {
+            recyclerViewVPN.setVisibility(View.VISIBLE);
+            txtEmpty.setVisibility(View.GONE);
             vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
         }
     }

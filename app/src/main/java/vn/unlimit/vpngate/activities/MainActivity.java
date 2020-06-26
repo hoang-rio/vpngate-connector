@@ -346,7 +346,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
             editText.setTextColor(getResources().getColor(R.color.colorWhite));
             editText.setHintTextColor(getResources().getColor(R.color.colorWhiteTransparent));
-//        searchView.setSubmitButtonEnabled(true);
             searchView.setQueryHint(getString(R.string.search_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override

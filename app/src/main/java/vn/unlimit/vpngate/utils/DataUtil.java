@@ -59,7 +59,7 @@ public class DataUtil {
             gson = new Gson();
             FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
             FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG || !this.getBooleanSetting(ACCEPTED_PRIVACY_POLICY, false) ? 0 : 3600)
+                    .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG || !this.isAcceptedPrivacyPolicy() ? 0 : 3600)
                     .build();
             mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
             mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener((Task<Void> task) -> mFirebaseRemoteConfig.fetchAndActivate());
