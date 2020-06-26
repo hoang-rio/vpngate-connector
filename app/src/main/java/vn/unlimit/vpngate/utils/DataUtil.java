@@ -127,6 +127,7 @@ public class DataUtil {
             int minute = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)];
             calendar.add(Calendar.MINUTE, minute);
             cache.expires = calendar.getTime();
+            vpnGateConnectionList.setFilter(null);
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
             FileOutputStream out = new FileOutputStream(outFile);

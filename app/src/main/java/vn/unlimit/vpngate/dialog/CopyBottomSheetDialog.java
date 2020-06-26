@@ -69,7 +69,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     @Override
     public void setupDialog(@NotNull Dialog dialog, int style) {
         try {
-            View contentView = View.inflate(getContext(), R.layout.layout_copy_bottom, null);
+            View contentView = View.inflate(getContext(), R.layout.layout_copy_bottom_dialog, null);
             btnCopyIp = contentView.findViewById(R.id.btn_copy_ip);
             TextView txtTitle = contentView.findViewById(R.id.txt_title);
             txtTitle.setText(mVpnGateConnection.getIp());

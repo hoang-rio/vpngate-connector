@@ -5,9 +5,20 @@
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
     <string name="sort">Sort</string>
-    <string name="show_tcp_server">Show TCP Server</string>
-    <string name="show_udp_server">Show UDP Server</string>
-    <string name="show_l2tp_server">Show L2TP Server</string>
+    <string name="filter">Filter</string>
+    <string name="filter_server_protocol">Show server with protocol</string>
+    <string name="reset">Reset</string>
+    <string name="show_tcp_server">TCP Server</string>
+    <string name="show_udp_server">UDP Server</string>
+    <string name="show_l2tp_server">L2TP Server</string>
+    <string name="must_check_at_least_1_protocol">You must check at least 1 server protocol to continue</string>
+    <string-array name="number_filter_operator">
+        <item>equal (=)</item>
+        <item>greater than (&gt;)</item>
+        <item>greater or equal (&gt;=)</item>
+        <item>less than (&lt;)</item>
+        <item>less than or equal (&lt;=)</item>
+    </string-array>
     <string name="about">About</string>
     <string name="setting">Setting</string>
     <string name="help">Help</string>
@@ -131,6 +142,7 @@
     <string name="use_domain_label">Use domain to connect</string>
     <string name="use_domain_hint">Use domain .opengw.net to connect to VPN Server instead of Server IP Address</string>
     <string name="empty_search_result">No sever found with keyword \"%1$s\"</string>
+    <string name="empty_filter_result">No sever found current filter</string>
     <!-- Admob -->
     <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>

@@ -141,6 +141,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical">
 
         <Button
@@ -148,10 +150,8 @@
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_gravity="end"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
             android:background="@drawable/selector_apply_button"
             android:padding="5dp"
             android:text="@string/apply"

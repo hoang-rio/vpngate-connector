@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,7 +22,18 @@ public class VPNGateConnectionList implements Parcelable {
             return new VPNGateConnectionList[size];
         }
     };
+    private Filter filter;
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
+
     private List<VPNGateConnection> data;
+
     public VPNGateConnectionList() {
         data = new ArrayList<>();
     }
@@ -51,6 +61,9 @@ public class VPNGateConnectionList implements Parcelable {
                 result.add(vpnGateConnection);
             }
         }
+        if (filter != null) {
+            return result.advancedFilter(filter);
+        }
         return result;
     }
 
@@ -66,46 +79,43 @@ public class VPNGateConnectionList implements Parcelable {
      * @return
      */
     public void sort(final String property, final int type) {
-        Collections.sort(data, new Comparator<VPNGateConnection>() {
-            @Override
-            public int compare(VPNGateConnection o1, VPNGateConnection o2) {
-                if (type == ORDER.ASC) {
-                    switch (property) {
-                        case SortProperty.COUNTRY:
-                            return o1.getCountryLong().compareTo(o2.getCountryLong());
-                        case SortProperty.SPEED:
-                            return Integer.compare(o1.getSpeed(), o2.getSpeed());
-                        case SortProperty.PING:
-                            return Integer.compare(o1.getPing(), o2.getPing());
-                        case SortProperty.SCORE:
-                            return Integer.compare(o1.getScore(), o2.getScore());
-                        case SortProperty.UPTIME:
-                            return Integer.compare(o1.getUptime(), o2.getUptime());
-                        case SortProperty.SESSION:
-                            return Integer.compare(o1.getNumVpnSession(), o2.getNumVpnSession());
-                        default:
-                            return 0;
-                    }
-                } else if (type == ORDER.DESC) {
-                    switch (property) {
-                        case SortProperty.COUNTRY:
-                            return o2.getCountryLong().compareTo(o1.getCountryLong());
-                        case SortProperty.SPEED:
-                            return Integer.compare(o2.getSpeed(), o1.getSpeed());
-                        case SortProperty.PING:
-                            return Integer.compare(o2.getPing(), o1.getPing());
-                        case SortProperty.SCORE:
-                            return Integer.compare(o2.getScore(), o1.getScore());
-                        case SortProperty.UPTIME:
-                            return Integer.compare(o2.getUptime(), o1.getUptime());
-                        case SortProperty.SESSION:
-                            return Integer.compare(o2.getNumVpnSession(), o1.getNumVpnSession());
-                        default:
-                            return 0;
-                    }
+        Collections.sort(data, (o1, o2) -> {
+            if (type == ORDER.ASC) {
+                switch (property) {
+                    case SortProperty.COUNTRY:
+                        return o1.getCountryLong().compareTo(o2.getCountryLong());
+                    case SortProperty.SPEED:
+                        return Integer.compare(o1.getSpeed(), o2.getSpeed());
+                    case SortProperty.PING:
+                        return Integer.compare(o1.getPing(), o2.getPing());
+                    case SortProperty.SCORE:
+                        return Integer.compare(o1.getScore(), o2.getScore());
+                    case SortProperty.UPTIME:
+                        return Integer.compare(o1.getUptime(), o2.getUptime());
+                    case SortProperty.SESSION:
+                        return Integer.compare(o1.getNumVpnSession(), o2.getNumVpnSession());
+                    default:
+                        return 0;
                 }
-                return 0;
+            } else if (type == ORDER.DESC) {
+                switch (property) {
+                    case SortProperty.COUNTRY:
+                        return o2.getCountryLong().compareTo(o1.getCountryLong());
+                    case SortProperty.SPEED:
+                        return Integer.compare(o2.getSpeed(), o1.getSpeed());
+                    case SortProperty.PING:
+                        return Integer.compare(o2.getPing(), o1.getPing());
+                    case SortProperty.SCORE:
+                        return Integer.compare(o2.getScore(), o1.getScore());
+                    case SortProperty.UPTIME:
+                        return Integer.compare(o2.getUptime(), o1.getUptime());
+                    case SortProperty.SESSION:
+                        return Integer.compare(o2.getNumVpnSession(), o1.getNumVpnSession());
+                    default:
+                        return 0;
+                }
             }
+            return 0;
         });
     }
 
@@ -133,12 +143,145 @@ public class VPNGateConnectionList implements Parcelable {
         return data.size();
     }
 
-    enum NumberFilterOperator {
+    public VPNGateConnectionList advancedFilter(Filter filter) {
+        this.setFilter(filter);
+        return advancedFilter();
+    }
+
+    public VPNGateConnectionList advancedFilter() {
+        if (filter == null) {
+            return this;
+        }
+        VPNGateConnectionList dataWithFilter = new VPNGateConnectionList();
+        // Apply or filter conditional
+        for (VPNGateConnection vpnGateConnection : data) {
+            if (filter.ping != null) {
+                switch (filter.pingFilterOperator) {
+                    case EQUAL:
+                        if (vpnGateConnection.getPing() != filter.ping) {
+                            continue;
+                        }
+                        break;
+                    case GREATER:
+                        if (vpnGateConnection.getPing() <= filter.ping) {
+                            continue;
+                        }
+                        break;
+                    case GREATER_OR_EQUAL:
+                        if (vpnGateConnection.getPing() < filter.ping) {
+                            continue;
+                        }
+                        break;
+                    case LESS:
+                        if (vpnGateConnection.getPing() >= filter.ping) {
+                            continue;
+                        }
+                        break;
+                    case LESS_OR_EQUAL:
+                        if (vpnGateConnection.getPing() > filter.ping) {
+                            continue;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (filter.speed != null) {
+                int speedInMb = filter.speed * 1024 * 1024;
+                switch (filter.speedFilterOperator) {
+                    case EQUAL:
+                        if (vpnGateConnection.getSpeed() != speedInMb) {
+                            continue;
+                        }
+                        break;
+                    case GREATER:
+                        if (vpnGateConnection.getSpeed() <= speedInMb) {
+                            continue;
+                        }
+                        break;
+                    case GREATER_OR_EQUAL:
+                        if (vpnGateConnection.getSpeed() < speedInMb) {
+                            continue;
+                        }
+                        break;
+                    case LESS:
+                        if (vpnGateConnection.getSpeed() >= speedInMb) {
+                            continue;
+                        }
+                        break;
+                    case LESS_OR_EQUAL:
+                        if (vpnGateConnection.getSpeed() > speedInMb) {
+                            continue;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (filter.sessionCount != null) {
+                switch (filter.sessionCountFilterOperator) {
+                    case EQUAL:
+                        if (vpnGateConnection.getNumVpnSession() != filter.sessionCount) {
+                            continue;
+                        }
+                        break;
+                    case GREATER:
+                        if (vpnGateConnection.getNumVpnSession() <= filter.sessionCount) {
+                            continue;
+                        }
+                        break;
+                    case GREATER_OR_EQUAL:
+                        if (vpnGateConnection.getNumVpnSession() < filter.sessionCount) {
+                            continue;
+                        }
+                        break;
+                    case LESS:
+                        if (vpnGateConnection.getNumVpnSession() >= filter.sessionCount) {
+                            continue;
+                        }
+                        break;
+                    case LESS_OR_EQUAL:
+                        if (vpnGateConnection.getNumVpnSession() > filter.sessionCount) {
+                            continue;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (filter.isShowTCP && vpnGateConnection.getTcpPort() > 0) {
+                dataWithFilter.add(vpnGateConnection);
+                continue;
+            }
+            if (filter.isShowUDP && vpnGateConnection.getUdpPort() > 0) {
+                dataWithFilter.add(vpnGateConnection);
+                continue;
+            }
+            if (filter.isShowL2TP && vpnGateConnection.isL2TPSupport()) {
+                dataWithFilter.add(vpnGateConnection);
+            }
+        }
+        return dataWithFilter;
+    }
+
+    public enum NumberFilterOperator {
         EQUAL,
         GREATER,
         GREATER_OR_EQUAL,
         LESS,
         LESS_OR_EQUAL
+    }
+
+    public static class Filter {
+        public Boolean isShowTCP = true;
+        public Boolean isShowUDP = true;
+        public Boolean isShowL2TP = true;
+        public Integer ping;
+        public NumberFilterOperator pingFilterOperator = NumberFilterOperator.LESS_OR_EQUAL;
+        public Integer speed;
+        public NumberFilterOperator speedFilterOperator = NumberFilterOperator.GREATER_OR_EQUAL;
+        public Integer sessionCount;
+        public NumberFilterOperator sessionCountFilterOperator = NumberFilterOperator.LESS_OR_EQUAL;
     }
 
     public List<VPNGateConnection> getData() {
@@ -157,12 +300,12 @@ public class VPNGateConnectionList implements Parcelable {
         out.writeTypedList(data);
     }
 
-    public final class ORDER {
+    public static final class ORDER {
         public static final int ASC = 0;
         public static final int DESC = 1;
     }
 
-    public final class SortProperty {
+    public static final class SortProperty {
         public static final String COUNTRY = "COUNTRY";
         public static final String SPEED = "SPEED";
         public static final String PING = "PING";

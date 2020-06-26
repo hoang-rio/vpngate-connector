@@ -158,11 +158,27 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         vpnGateListAdapter.setOnItemClickListener(this);
         vpnGateListAdapter.setOnItemLongClickListener(this);
         vpnGateListAdapter.setOnScrollListener(this);
-        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
         btnToTop = rootView.findViewById(R.id.btn_to_top);
         btnToTop.setOnClickListener(this);
         txtEmpty = rootView.findViewById(R.id.txt_empty);
         return rootView;
+    }
+
+    public void advanceFilter(VPNGateConnectionList.Filter filter) {
+        VPNGateConnectionList vpnGateConnectionList = mActivity.getVpnGateConnectionList().advancedFilter(filter);
+        if (isSearching && !"".equals(mKeyword)) {
+            vpnGateConnectionList = vpnGateConnectionList.filter(mKeyword);
+        } else {
+            vpnGateListAdapter.initialize(vpnGateConnectionList);
+        }
+        if (vpnGateConnectionList.size() == 0) {
+            txtEmpty.setText(R.string.empty_filter_result);
+            txtEmpty.setVisibility(View.VISIBLE);
+        } else {
+            txtEmpty.setVisibility(View.GONE);
+        }
+        vpnGateListAdapter.initialize(vpnGateConnectionList);
     }
 
     /**
@@ -191,7 +207,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         } else {
             recyclerViewVPN.setVisibility(View.VISIBLE);
             txtEmpty.setVisibility(View.GONE);
-            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
         }
     }
 
@@ -229,7 +245,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         isSearching = false;
         txtEmpty.setVisibility(View.GONE);
         recyclerViewVPN.setVisibility(View.VISIBLE);
-        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
         handler.postDelayed(() -> {
             lnSwipeRefresh.setEnabled(true);
             lnSwipeRefresh.setRefreshing(false);

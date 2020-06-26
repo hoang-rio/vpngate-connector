@@ -12,35 +12,9 @@
     <item
         android:id="@+id/action_filter"
         android:icon="@drawable/ic_filter_white"
-        android:title="@string/sort"
+        android:title="@string/filter"
         app:showAsAction="always"
         tools:ignore="MenuTitle">
-        <menu>
-            <item
-                android:id="@+id/filter_tcp"
-                android:checkable="true"
-                android:checked="true"
-                android:title="@string/show_tcp_server"
-                app:actionViewClass="android.widget.CheckBox"
-                app:showAsAction="ifRoom|withText"
-                tools:ignore="MenuTitle" />
-            <item
-                android:id="@+id/filter_udp"
-                android:checkable="true"
-                android:checked="true"
-                android:title="@string/show_udp_server"
-                app:actionViewClass="android.widget.CheckBox"
-                app:showAsAction="ifRoom|withText"
-                tools:ignore="MenuTitle" />
-            <item
-                android:id="@+id/filter_l2tp"
-                android:checkable="true"
-                android:checked="true"
-                android:title="@string/show_l2tp_server"
-                app:actionViewClass="android.widget.CheckBox"
-                app:showAsAction="ifRoom|withText"
-                tools:ignore="MenuTitle" />
-        </menu>
     </item>
     <item
         android:id="@+id/action_sort"
