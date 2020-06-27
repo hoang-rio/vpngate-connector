@@ -62,7 +62,7 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
     @Override
     public void setupDialog(@NonNull Dialog dialog, int style) {
         try {
-            View contentView = View.inflate(getContext(), R.layout.layout_connect_use_protocol, null);
+            View contentView = View.inflate(getContext(), R.layout.layout_connect_use_protocol_dialog, null);
             btnUseTCP = contentView.findViewById(R.id.btn_use_tcp);
             btnUseTCP.setOnClickListener(this);
             btnUseUDP = contentView.findViewById(R.id.btn_use_udp);

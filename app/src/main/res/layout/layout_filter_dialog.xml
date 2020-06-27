@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.BottomSheetDialog">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorOverlay"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/filter"
+            android:src="@drawable/ic_filter_orange" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/filter" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_server_protocol"
+                android:theme="@style/label" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/chb_filter_tcp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/show_tcp_server" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/chb_filter_udp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/show_udp_server" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/chb_filter_l2tp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/show_l2tp_server" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/lineColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:text="@string/ping"
+                android:theme="@style/label" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner_ping_operator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="2"
+                android:background="@color/colorAccent"
+                android:minWidth="100dp"
+                android:minHeight="30dp"
+                android:popupBackground="@color/colorPrimary"
+                android:popupElevation="3dp"
+                tools:ignore="UnusedAttribute" />
+
+            <EditText
+                android:id="@+id/txt_ping"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:autofillHints="@string/ping"
+                android:hint="@string/ping"
+                android:inputType="number"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/lineColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:text="@string/speed"
+                android:theme="@style/label" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner_speed_operator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="2"
+                android:background="@color/colorAccent"
+                android:minWidth="100dp"
+                android:minHeight="30dp"
+                android:popupBackground="@color/colorPrimary"
+                android:popupElevation="3dp"
+                tools:ignore="UnusedAttribute" />
+
+            <EditText
+                android:id="@+id/txt_speed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:autofillHints="@string/speed"
+                android:hint="@string/speed"
+                android:inputType="number"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/lineColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:text="@string/session"
+                android:theme="@style/label" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner_session_operator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="2"
+                android:background="@color/colorAccent"
+                android:minWidth="100dp"
+                android:minHeight="30dp"
+                android:popupBackground="@color/colorPrimary"
+                android:popupElevation="3dp"
+                tools:ignore="UnusedAttribute" />
+
+            <EditText
+                android:id="@+id/txt_session"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:autofillHints="@string/session"
+                android:hint="@string/session"
+                android:inputType="number"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/selector_red_button"
+            android:padding="5dp"
+            android:text="@string/reset"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite" />
+
+        <Button
+            android:id="@+id/btn_apply"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_apply_button"
+            android:padding="5dp"
+            android:text="@string/apply"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
+</LinearLayout>
