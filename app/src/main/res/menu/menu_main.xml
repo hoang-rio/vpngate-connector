@@ -10,6 +10,13 @@
         app:showAsAction="ifRoom|collapseActionView"
         tools:ignore="MenuTitle" />
     <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_filter_white"
+        android:title="@string/filter"
+        app:showAsAction="always"
+        tools:ignore="MenuTitle">
+    </item>
+    <item
         android:id="@+id/action_sort"
         android:icon="@drawable/ic_sort_white"
         android:title="@string/sort"

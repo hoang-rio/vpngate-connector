@@ -38,7 +38,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_message, container, false);
+        View rootView = inflater.inflate(R.layout.layout_message_dialog, container, false);
         txtOpMessage = rootView.findViewById(R.id.txt_message);
         txtOpMessage.setText(operatorMessage);
         chbHideAllMessage = rootView.findViewById(R.id.cbh_hide_5time);

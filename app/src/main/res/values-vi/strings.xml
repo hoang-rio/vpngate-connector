@@ -7,6 +7,20 @@
     <string name="about">Giới thiệu</string>
     <string name="setting">Cài đặt</string>
     <string name="sort">Sắp xếp</string>
+    <string name="filter">Lọc</string>
+    <string name="filter_server_protocol">Hiện máy chủ với giao thức</string>
+    <string name="show_tcp_server">Máy chủ TCP</string>
+    <string name="show_udp_server">Máy chủ UDP</string>
+    <string name="show_l2tp_server">Máy chủ L2TP</string>
+    <string name="must_check_at_least_1_protocol">Bạn cần chọn ít nhất một giao thức máy chủ để tiếp tục</string>
+    <string-array name="number_filter_operator">
+        <item>bằng (=)</item>
+        <item>lớn hơn (&gt;)</item>
+        <item>lớn hơn hoặc bằng (&gt;=)</item>
+        <item>nhỏ hơn (&lt;)</item>
+        <item>nhỏ hơn hoặc bằng (&lt;=)</item>
+    </string-array>
+    <string name="reset">Đặt lại</string>
     <string name="help">Trợ giúp</string>
     <string name="refresh">Cập nhật</string>
     <string name="speed">Tốc độ</string>
@@ -26,7 +40,7 @@
     <string name="connection_error">Có lỗi khi lấy dữ liệu từ máy chủ. Chạm để thử lại</string>
     <string name="no_network">Thiết bị của bạn chưa được kết nối mạng\nVui lòng kết nối wifi hoặc bật kết nối di động để tiếp tục</string>
     <string name="loading_text">Ứng dụng đang lấy dữ liệu từ máy chủ\nVui lòng đợi giây lát</string>
-    <string name="search_hint">Quốc gia</string>
+    <string name="search_hint">Quốc gia, IP, Tên máy chủ, Tên chủ sở hữu</string>
     <string name="to_top">Về đầu trang</string>
     <string name="country">Quốc gia</string>
     <string name="sort_property">Sắp xếp theo</string>
@@ -75,6 +89,7 @@
     <string name="copied">Đã sao chép</string>
     <!-- VPN String -->
     <string name="unknown_state">Không rõ</string>
+    <string name="cancel_connection">Ngằt kết nối</string>
     <string name="pauseVPN">Tạm dừng VPN</string>
     <string name="resumevpn">Tiếp tục VPN</string>
     <string name="check_ip">Kiểm tra IP hiện tại</string>
@@ -118,6 +133,7 @@
     <string name="use_domain_label">Dùng tên miền để kết nối</string>
     <string name="use_domain_hint">Dùng tên miền .opengw.net để kết nối tới máy chủ VPN thay vì sử dụng địa chỉ IP</string>
     <string name="empty_search_result">Không tìm thấy máy chủ nào với từ khoá \"%1$s\"</string>
+    <string name="empty_filter_result">Không tìm thấy máy chủ nào với điều kiện lọc hiện tại</string>
     <!-- Privacy policy -->
     <string name="privacy_policy_title">Chính sách quyền riêng tư</string>
     <string name="btn_accept">Đồng ý</string>
