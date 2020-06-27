@@ -27,8 +27,8 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = BottomSheetDialog(activity!!)
-        dialog.setOnShowListener { dialog ->
-            val d = dialog as BottomSheetDialog
+        dialog.setOnShowListener { localDialog ->
+            val d = localDialog as BottomSheetDialog
             val bottomSheet = d.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)!!
             BottomSheetBehavior.from<FrameLayout?>(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
         }
@@ -98,7 +98,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         } else {
             spinnerInitPing.setStringArray(listOperator, listOperator[0])
         }
-        spinnerInitPing.setOnItemSelectedIndexListener { name, index ->
+        spinnerInitPing.setOnItemSelectedIndexListener { _, index ->
             mFilter.pingFilterOperator = listOperatorEnum[index]
         }
         if (mFilter.speedFilterOperator != null) {
@@ -106,7 +106,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         } else {
             spinnerInitSpeed.setStringArray(listOperator, listOperator[0])
         }
-        spinnerInitSpeed.setOnItemSelectedIndexListener { name, index ->
+        spinnerInitSpeed.setOnItemSelectedIndexListener { _, index ->
             mFilter.speedFilterOperator = listOperatorEnum[index]
         }
         if (mFilter.sessionCountFilterOperator != null) {
