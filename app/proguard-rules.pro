@@ -31,6 +31,8 @@
 -keep public class vn.unlimit.vpngate.activities.DetailActivity {
     public static final *;
 }
+# VPNGate Connection List enum
+-keepclassmembers enum vn.unlimit.vpngate.models.* {*;}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics

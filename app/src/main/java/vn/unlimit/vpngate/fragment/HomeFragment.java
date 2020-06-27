@@ -158,7 +158,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         vpnGateListAdapter.setOnItemClickListener(this);
         vpnGateListAdapter.setOnItemLongClickListener(this);
         vpnGateListAdapter.setOnScrollListener(this);
-        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
+        if (mActivity.getVpnGateConnectionList() != null) {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
+        } else {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+        }
         btnToTop = rootView.findViewById(R.id.btn_to_top);
         btnToTop.setOnClickListener(this);
         txtEmpty = rootView.findViewById(R.id.txt_empty);
