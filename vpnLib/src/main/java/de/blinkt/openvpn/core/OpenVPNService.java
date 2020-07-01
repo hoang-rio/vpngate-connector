@@ -347,19 +347,21 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
         if (tickerText != null && !tickerText.equals(""))
             nbuilder.setTicker(tickerText);
+        try {
+            Notification notification = nbuilder.build();
 
-        @SuppressWarnings("deprecation")
-        Notification notification = nbuilder.getNotification();
+            int notificationId = channel.hashCode();
 
-        int notificationId = channel.hashCode();
+            mNotificationManager.notify(notificationId, notification);
 
-        mNotificationManager.notify(notificationId, notification);
+            startForeground(notificationId, notification);
 
-        startForeground(notificationId, notification);
-
-        if (lastChannel != null && !channel.equals(lastChannel)) {
-            // Cancel old notification
-            mNotificationManager.cancel(lastChannel.hashCode());
+            if (lastChannel != null && !channel.equals(lastChannel)) {
+                // Cancel old notification
+                mNotificationManager.cancel(lastChannel.hashCode());
+            }
+        } catch (Throwable th) {
+            Log.e(getClass().getCanonicalName(), "Error when show notification", th);
         }
 
         // Check if running on a TV
