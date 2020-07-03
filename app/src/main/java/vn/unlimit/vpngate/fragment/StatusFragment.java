@@ -340,7 +340,10 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     @Override
     public void updateByteCount(long in, long out, long diffIn, long diffOut) {
-        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+        if (isDetached()) {
+            return;
+        }
+        requireActivity().runOnUiThread(() -> {
             if (checkStatus()) {
                 txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
                 txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
