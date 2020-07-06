@@ -249,7 +249,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         isSearching = false;
         txtEmpty.setVisibility(View.GONE);
         recyclerViewVPN.setVisibility(View.VISIBLE);
-        vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
+        if (mActivity.getVpnGateConnectionList() != null) {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList().advancedFilter());
+        } else {
+            vpnGateListAdapter.initialize(mActivity.getVpnGateConnectionList());
+        }
         handler.postDelayed(() -> {
             lnSwipeRefresh.setEnabled(true);
             lnSwipeRefresh.setRefreshing(false);
