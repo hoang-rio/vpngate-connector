@@ -29,7 +29,7 @@ class UserApiRequest : BaseApiRequest() {
                 requestListener.onSuccess(response)
             }
 
-            override fun onError(anError: ANError?) = requestListener.onError(anError!!.toString())
+            override fun onError(anError: ANError?) = requestListener.onError(anError!!.errorBody)
         })
     }
 
@@ -57,7 +57,7 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
-    fun register(username: String, fullName: String, email: String, password: String, birthDay: String, timeZone: String, repassword: String, captchaAnswer: Int, captchaSecret: String, requestListener: RequestListener) {
+    fun register(username: String, fullName: String, email: String, password: String, repassword: String, birthDay: String, timeZone: String, captchaAnswer: Int, captchaSecret: String, requestListener: RequestListener) {
         val isPro = BuildConfig.FLAVOR == "pro"
         val user = HashMap<String, String>()
         user["username"] = username
@@ -73,15 +73,15 @@ class UserApiRequest : BaseApiRequest() {
         val data = HashMap<String, Any>()
         data["user"] = user
         data["captcha"] = captcha
-        post("$USER_REGISTER_URL${if (isPro) "?version=pro" else ""}", data, object: JSONObjectRequestListener {
+        post("$USER_REGISTER_URL${if (isPro) "?version=pro" else ""}", data, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 Log.d(TAG, "Register success with email: {}".format(email))
                 requestListener.onSuccess(response)
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Register error with detail: {}".format(anError!!.errorDetail))
-                requestListener.onError(anError.response.body().toString())
+                Log.e(TAG, "Register error with detail: %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
             }
         })
     }

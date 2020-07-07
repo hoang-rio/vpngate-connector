@@ -43,8 +43,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private var loadingDialog: LoadingDialog? = null
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
-    private val userNameRegex = "/^[a-z0-9]{5,30}\$/"
-    private val passWordRegex = "/^[-\\w.$@*!]{5,30}\$/"
+    private val userNameRegex = "^[a-z0-9]{5,30}$"
+    private val passWordRegex = "^[-\\w.$@*!]{5,30}$"
+
     companion object {
         private const val TAG = "SignUpActivity"
     }
@@ -96,6 +97,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     }
 
     private fun buildErrorList(): String {
+        Log.d(TAG, userViewModel!!.errorList.value.toString())
         return ""
     }
 
@@ -190,7 +192,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                 throw Exception(getString(R.string.password_is_invalid))
             }
             // Check retype password
-            if (txtPassword!!.text != txtRetypePassword!!.text) {
+            if (txtPassword!!.text.toString() != txtRetypePassword!!.text.toString()) {
                 throw Exception(getString(R.string.re_type_password_does_not_match))
             }
             // Validate timeZone
@@ -212,10 +214,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                     txtUserName!!.text.toString(),
                     txtFullName!!.text.toString(),
                     txtEmail!!.text.toString(),
-                    txtBirthday!!.text.toString(),
-                    txtTimeZone!!.text.toString(),
                     txtPassword!!.text.toString(),
                     txtRetypePassword!!.text.toString(),
+                    txtBirthday!!.text.toString(),
+                    txtTimeZone!!.text.toString(),
                     txtCaptchaAnswer!!.text.toString().toInt(),
                     captchaSecret!!
             )

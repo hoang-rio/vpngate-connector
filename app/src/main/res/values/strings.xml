@@ -213,6 +213,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="please_activate_account_first">Can not login. Please open email and activate your account first.</string>
     <string name="login_loading_text">Logging in…</string>
     <string name="action_hide_password">Hide</string>
     <string name="action_show_password">Show</string>

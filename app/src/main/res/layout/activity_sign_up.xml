@@ -39,7 +39,7 @@
                 android:autofillHints="@string/prompt_full_name"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_full_name"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
 
@@ -209,6 +209,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
+                    android:minWidth="120dp"
                     android:background="@drawable/selector_apply_button"
                     android:text="@string/action_sign_up"
                     android:textAllCaps="false"

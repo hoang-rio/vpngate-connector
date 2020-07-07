@@ -48,7 +48,7 @@ class SplashActivity : AppCompatActivity() {
                     var deepLink: Uri? = null
                     if (it != null) {
                         deepLink = it.link
-                        Log.d(TAG, "Got dynamic link: {}".format(deepLink))
+                        Log.w(TAG, "Got url from dynamic link: %s".format(deepLink))
                         startStartUpActivity()
 //                        TODO("Implement deep link check logic here (must remove startStartUpActivity cal above)")
                     } else {

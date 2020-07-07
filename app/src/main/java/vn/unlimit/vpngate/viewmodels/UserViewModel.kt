@@ -35,6 +35,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(error: String) {
                 Log.e(TAG, error)
+                errorList.value = JSONObject(error)
                 isLoading.value = false
             }
         })
@@ -56,9 +57,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun register(username: String, fullName: String, email: String, birthDay: String, timeZone: String, password: String, repassword: String, captchaAnswer: Int, captchaSecret: String) {
+    fun register(username: String, fullName: String, email: String, password: String, repassword: String, birthDay: String, timeZone: String, captchaAnswer: Int, captchaSecret: String) {
         isLoading.value = true
-        userApiRequest.register(username, fullName, email, birthDay, timeZone, password, repassword, captchaAnswer, captchaSecret, object : RequestListener {
+        userApiRequest.register(username, fullName, email, password, repassword, birthDay, timeZone, captchaAnswer, captchaSecret, object : RequestListener {
             override fun onSuccess(result: Any?) {
                 isLoading.value = true
                 isRegisterSuccess.value = true

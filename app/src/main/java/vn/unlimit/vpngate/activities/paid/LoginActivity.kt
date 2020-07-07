@@ -58,7 +58,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 if (!userViewModel!!.isLoggedIn.value!!) {
-                    Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
+                    if (userViewModel!!.errorList.value!!.get("code") == 101) {
+                        Toast.makeText(this, getString(R.string.please_activate_account_first), Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
+                    }
                 }
                 loadingDialog!!.dismiss()
             }

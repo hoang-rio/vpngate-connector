@@ -176,6 +176,7 @@
     <string name="invalid_username">Tài khoản không hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải chứa nhiều hơn 5 ký tự</string>
     <string name="login_failed">"Đăng nhập thất bại"</string>
+    <string name="please_activate_account_first">Không thể đăng nhập. Vui lòng mở email và kích hoạt tài khoản trước.</string>
     <string name="login_loading_text">Đang đăng nhập…</string>
     <string name="action_hide_password">Ẩn</string>
     <string name="action_show_password">Hiện</string>
