@@ -1,21 +1,25 @@
 package vn.unlimit.vpngate.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.ActivateActivity
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import java.util.regex.Pattern
 
 class SplashActivity : AppCompatActivity() {
     companion object {
         const val TAG = "SplashActivity"
+        const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +39,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             actIntent = Intent(this, MainActivity::class.java)
         }
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             startActivity(actIntent)
             finish()
         }, 500)
@@ -45,10 +49,21 @@ class SplashActivity : AppCompatActivity() {
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
                 .addOnSuccessListener {
                     // Get deep link from result (may be null if no link is found)
-                    var deepLink: Uri? = null
+                    var deepLink: String?
                     if (it != null) {
-                        deepLink = it.link
+                        deepLink = it.link.toString()
                         Log.w(TAG, "Got url from dynamic link: %s".format(deepLink))
+                        val matcherActivate = Pattern.compile(ACTIVATE_URL_REGEX).matcher(deepLink)
+                        if (matcherActivate.find()) {
+                            val userId = matcherActivate.group(1)
+                            val activateCode = matcherActivate.group(2)
+                            val intentActivate = Intent(this, ActivateActivity::class.java)
+                            intentActivate.putExtra(PaidServerProvider.USER_ID, userId)
+                            intentActivate.putExtra(PaidServerProvider.ACTIVATE_CODE, activateCode)
+                            startActivity(intentActivate)
+                            finish()
+                            return@addOnSuccessListener
+                        }
                         startStartUpActivity()
 //                        TODO("Implement deep link check logic here (must remove startStartUpActivity cal above)")
                     } else {

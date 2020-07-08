@@ -198,6 +198,7 @@
     </string-array>
     <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
+    <string name="title_activity_account_activate">User activate</string>
     <string name="title_home">Home</string>
     <string name="title_servers">Servers</string>
     <string name="title_free_server">Free Server</string>
@@ -237,4 +238,10 @@
     <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
     <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
+    <!-- Activate screen -->
+    <string name="account_activate_failed">Account activate failed: %s</string>
+    <string name="account_activate_failed_already_activate">Account already activated</string>
+    <string name="account_activate_failed_invalid_request">Invalid account activate request</string>
+    <string name="account_activating">Account is now activating…</string>
+    <string name="account_activate_successful">Account activate successful</string>
 </resources>

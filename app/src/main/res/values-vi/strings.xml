@@ -161,6 +161,7 @@
     <string name="l2tp_tap_to_connect">2. Bấm vào kết nối VPN vừa tạo để kết nối</string>
     <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
+    <string name="title_activity_account_activate">Kích hoạt tài khoản</string>
     <string name="title_home">Home</string>
     <string name="title_servers">Máy chủ</string>
     <string name="title_free_server">Server miễn phí</string>
@@ -200,4 +201,10 @@
     <string name="username_is_invalid">Tài khoản không hợp lệ. Tài khoản phải chứa 5 – 30 ký tự thường và số</string>
     <string name="password_is_invalid">Mật khẩu không hợp lệ. Mật khẩu phải chứa 5 – 30 ký tự và số, cho phép các ký tự đặc biệt ($ ! * . -)</string>
     <string name="re_type_password_does_not_match">Nhập lại mật khẩu không khớp.</string>
+    <!-- Activate screen -->
+    <string name="account_activate_failed">Kích hoạt tài khoản thất bại: %s</string>
+    <string name="account_activate_failed_already_activate">Tài khoản đã được kích hoạt trước đó</string>
+    <string name="account_activate_failed_invalid_request">Yêu cầu kích hoạt không hợp lệ</string>
+    <string name="account_activating">Đang kích hoạt tài khoản…</string>
+    <string name="account_activate_successful">Tài khoản đã được kích hoạt thành công</string>
 </resources>

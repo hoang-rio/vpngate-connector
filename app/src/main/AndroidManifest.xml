@@ -35,6 +35,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -63,6 +64,11 @@
             android:name=".activities.paid.PaidServerActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_paid_server"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.ActivateActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_account_activate"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
             android:name="com.google.android.gms.ads.AdActivity"

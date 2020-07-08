@@ -85,4 +85,18 @@ class UserApiRequest : BaseApiRequest() {
             }
         })
     }
+
+    fun activateUser(userId: String, activateCode: String, requestListener: RequestListener) {
+        get("/user/$userId/activate/$activateCode", object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "User activate success with response %s".format(response!!.toString()))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "User activate error with detail: %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
 }

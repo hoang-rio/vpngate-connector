@@ -22,6 +22,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
+    var isUserActivated: MutableLiveData<Boolean> = MutableLiveData(false)
+    var errorCode: Int? = null
 
     fun login(username: String, password: String) {
         isLoading.value = true
@@ -72,6 +74,25 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 isLoading.value = false
                 isRegisterSuccess.value = false
+            }
+        })
+    }
+
+    fun activateUser(userId: String, activateCode: String) {
+        isLoading.value = true
+        isUserActivated.value = false
+        userApiRequest.activateUser(userId, activateCode, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isUserActivated.value = !((result as JSONObject).has("result") && !result.getBoolean("result"))
+                if (!isUserActivated.value!!) {
+                    errorCode = result.getInt("errorCode")
+                }
+                isLoading.value = false
+            }
+
+            override fun onError(error: String?) {
+                isLoading.value = false
+                isUserActivated.value = true
             }
         })
     }
