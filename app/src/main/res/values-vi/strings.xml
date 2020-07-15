@@ -173,6 +173,7 @@
     <string name="prompt_password">Mật khẩu</string>
     <string name="action_sign_in">Đăng nhập</string>
     <string name="action_sign_up">Đăng ký</string>
+    <string name="action_forgot_pass">Quên mật khẩu?</string>
     <string name="action_back_to_free">Quay lại máy chủ miễn phí</string>
     <string name="invalid_username">Tài khoản không hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải chứa nhiều hơn 5 ký tự</string>
@@ -207,4 +208,8 @@
     <string name="account_activate_failed_invalid_request">Yêu cầu kích hoạt không hợp lệ</string>
     <string name="account_activating">Đang kích hoạt tài khoản…</string>
     <string name="account_activate_successful">Tài khoản đã được kích hoạt thành công</string>
+    <!-- Forgot pass screen -->
+    <string name="title_activity_forgot_pass">Quên mật khẩu</string>
+    <string name="action_reset_pass">Đặt lại mật khẩu</string>
+    <string name="prompt_email_or_username">Email hoặc tài khoản</string>
 </resources>

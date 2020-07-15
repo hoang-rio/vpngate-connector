@@ -210,6 +210,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Sign up</string>
+    <string name="action_forgot_pass">Forgot password?</string>
     <string name="action_back_to_free">Back to free server</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -244,4 +245,8 @@
     <string name="account_activate_failed_invalid_request">Invalid account activate request</string>
     <string name="account_activating">Account is now activating…</string>
     <string name="account_activate_successful">Account activate successful</string>
+    <!-- Forgot pass screen -->
+    <string name="title_activity_forgot_pass">Forgot password</string>
+    <string name="action_reset_pass">Reset password</string>
+    <string name="prompt_email_or_username">Email or username</string>
 </resources>

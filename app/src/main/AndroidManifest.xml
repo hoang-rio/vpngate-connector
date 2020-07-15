@@ -50,6 +50,7 @@
             android:name=".activities.L2TPConnectActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!-- Start paid activites -->
         <activity
             android:name=".activities.paid.LoginActivity"
             android:configChanges="orientation|screenSize"
@@ -70,6 +71,12 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_account_activate"
             android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.ForgotPassActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_forgot_pass"
+            android:theme="@style/AppTheme.PaidServer" />
+        <!-- End paid activites -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

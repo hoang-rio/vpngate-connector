@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
 import org.json.JSONObject
 import vn.unlimit.vpngate.R
-import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
@@ -22,8 +21,6 @@ import java.util.*
 import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
-
-    private var btnBackToFree: Button? = null
     private var btnSignUp: Button? = null
     private var btnLogin: Button? = null
     private var txtUserName: EditText? = null
@@ -54,7 +51,6 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        btnBackToFree = findViewById(R.id.btn_back_to_free)
         btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
         btnLogin = findViewById(R.id.btn_login)
@@ -93,17 +89,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                 loadingDialog!!.dismiss()
             }
         })
-
     }
 
     private fun buildErrorList(): String {
         Log.d(TAG, userViewModel!!.errorList.value.toString())
         return ""
-    }
-
-    private fun backToFree() {
-        val intentFree = Intent(this, MainActivity::class.java)
-        startActivity(intentFree)
     }
 
     private fun loadCaptcha(isReload: Boolean = false) {
@@ -229,7 +219,6 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
 
     override fun onClick(v: View?) {
         when (v) {
-            btnBackToFree -> backToFree()
             btnLogin -> onBackPressed()
             ivCaptcha -> loadCaptcha(true)
             txtBirthday -> datePickerDialog!!.show()

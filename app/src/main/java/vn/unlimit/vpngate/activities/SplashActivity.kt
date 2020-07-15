@@ -49,9 +49,8 @@ class SplashActivity : AppCompatActivity() {
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
                 .addOnSuccessListener {
                     // Get deep link from result (may be null if no link is found)
-                    var deepLink: String?
                     if (it != null) {
-                        deepLink = it.link.toString()
+                        val deepLink = it.link.toString()
                         Log.w(TAG, "Got url from dynamic link: %s".format(deepLink))
                         val matcherActivate = Pattern.compile(ACTIVATE_URL_REGEX).matcher(deepLink)
                         if (matcherActivate.find()) {
@@ -80,7 +79,7 @@ class SplashActivity : AppCompatActivity() {
                     // ...
                 }
                 .addOnFailureListener {
-                    Log.w(TAG, "getDynamicLink:onFailure", it)
+                    Log.e(TAG, "getDynamicLink:onFailure", it)
                     startStartUpActivity()
                 }
     }

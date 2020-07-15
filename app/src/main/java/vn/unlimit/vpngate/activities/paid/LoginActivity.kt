@@ -24,6 +24,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var txtPassword: EditText? = null
     private var btnLogin: Button? = null
     private var btnSignUp: Button? = null
+    private var btnForgotPass: Button? = null
     private var btnHidePassword: Button? = null
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.getInstance().paidServerUtil
@@ -47,6 +48,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         btnLogin!!.setOnClickListener(this)
         btnSignUp = findViewById(R.id.btn_sign_up)
         btnSignUp!!.setOnClickListener(this)
+        btnForgotPass = findViewById(R.id.btn_forgot_pass)
+        btnForgotPass!!.setOnClickListener(this)
         loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
         bindViewModel()
     }
@@ -102,6 +105,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             btnSignUp -> {
                 val intentSignUp = Intent(this, SignUpActivity::class.java)
                 startActivity(intentSignUp)
+            }
+            btnForgotPass -> {
+                val intentForgot = Intent(this, ForgotPassActivity::class.java)
+                startActivity(intentForgot)
             }
         }
     }

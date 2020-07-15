@@ -233,24 +233,6 @@
                     android:theme="@style/AppTheme.Button"
                     app:layout_constraintVertical_bias="0.2" />
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_back_to_free"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="48dp"
-                android:layout_marginBottom="64dp"
-                android:background="@drawable/selector_primary_button"
-                android:text="@string/action_back_to_free"
-                android:textAllCaps="false"
-                android:theme="@style/AppTheme.Button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln_signup_btn"
-                app:layout_constraintVertical_bias="0.2" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

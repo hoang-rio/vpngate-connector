@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Objects;
+
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.utils.DataUtil;
 

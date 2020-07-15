@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.paid.ForgotPassActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/txt_email_or_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="180dp"
+            android:layout_marginEnd="15dp"
+            android:autofillHints="@string/prompt_email_or_username"
+            android:backgroundTint="@color/colorPaidServer"
+            android:hint="@string/prompt_email_or_username"
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true"
+            tools:targetApi="lollipop" />
+
+        <LinearLayout
+            android:id="@+id/ln_captcha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:text="@string/hint_captcha_label"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="17sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/iv_captcha"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="3"
+                    android:contentDescription="@string/hint_captcha_label" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="="
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textFontWeight="700"
+                    android:textSize="25sp"
+                    tools:ignore="HardcodedText,UnusedAttribute" />
+
+                <EditText
+                    android:id="@+id/txt_captcha_answer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="6"
+                    android:autofillHints="@string/prompt_captcha_answer"
+                    android:backgroundTint="@color/colorPaidServer"
+                    android:hint="@string/prompt_captcha_answer"
+                    android:imeActionLabel="@string/action_sign_in"
+                    android:inputType="numberSigned"
+                    android:selectAllOnFocus="true"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    tools:targetApi="lollipop" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:text="@string/hint_captcha_tap_to_reload"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_sign_up_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <Button
+                android:id="@+id/btn_reset_pass"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/selector_apply_button"
+                android:minWidth="120dp"
+                android:text="@string/action_reset_pass"
+                android:textAllCaps="false"
+                android:theme="@style/AppTheme.Button" />
+
+            <Button
+                android:id="@+id/btn_login"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_sign_in"
+                android:textAllCaps="false"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintVertical_bias="0.2" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
