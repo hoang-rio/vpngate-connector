@@ -7,11 +7,13 @@ import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.LoadingDialog
@@ -25,10 +27,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var btnLogin: Button? = null
     private var btnSignUp: Button? = null
     private var btnForgotPass: Button? = null
-    private var btnHidePassword: Button? = null
+    private var ivHidePassword: ImageView? = null
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.getInstance().paidServerUtil
     private var loadingDialog: LoadingDialog? = null
+    private var isFirstTimeHidePass = true;
 
     companion object {
         private const val TAG = "LoginActivity"
@@ -41,8 +44,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         txtUsername = findViewById(R.id.txt_username)
         txtPassword = findViewById(R.id.txt_password)
         btnBackToFree!!.setOnClickListener(this)
-        btnHidePassword = findViewById(R.id.btn_hide_password)
-        btnHidePassword!!.setOnClickListener(this)
+        ivHidePassword = findViewById(R.id.iv_hide_password)
+        ivHidePassword!!.setOnClickListener(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         btnLogin = findViewById(R.id.btn_login)
         btnLogin!!.setOnClickListener(this)
@@ -92,15 +95,16 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
-            btnHidePassword -> {
-                if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+            ivHidePassword -> {
+                if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
                     txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
                     txtPassword!!.transformationMethod = null
-                    btnHidePassword!!.text = getText(R.string.action_hide_password)
+                    GlideApp.with(this).load(R.drawable.ic_eye_hide).into(ivHidePassword!!)
+                    isFirstTimeHidePass = false
                 } else {
                     txtPassword!!.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                     txtPassword!!.transformationMethod = PasswordTransformationMethod.getInstance()
-                    btnHidePassword!!.text = getText(R.string.action_show_password)
+                    GlideApp.with(this).load(R.drawable.ic_eye_show).into(ivHidePassword!!)
                 }
                 txtPassword!!.setSelection(txtPassword!!.text.length)
             }

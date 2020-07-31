@@ -61,8 +61,8 @@
                     android:selectAllOnFocus="true"
                     tools:targetApi="lollipop" />
 
-                <Button
-                    android:id="@+id/btn_hide_password"
+                <ImageView
+                    android:id="@+id/iv_hide_password"
                     android:layout_width="45dp"
                     android:layout_height="20dp"
                     android:layout_alignParentEnd="true"
@@ -71,12 +71,13 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="0dp"
                     android:background="@android:color/transparent"
+                    android:contentDescription="@string/action_hide_password"
                     android:padding="0dp"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:src="@drawable/ic_eye_show"
                     android:text="@string/action_show_password"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorPaidServer" />
+                    android:textAllCaps="false" />
             </RelativeLayout>
 
             <LinearLayout
