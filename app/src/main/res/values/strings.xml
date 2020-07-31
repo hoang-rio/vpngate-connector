@@ -214,13 +214,14 @@
     <string name="action_back_to_free">Back to free server</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="login_failed">Login failed. Incorrect username or password</string>
     <string name="please_activate_account_first">Can not login. Please open email and activate your account first.</string>
     <string name="login_loading_text">Logging in…</string>
     <string name="action_hide_password">Hide</string>
     <string name="action_show_password">Show</string>
     <string name="default_loading_text">Loading…</string>
     <string name="username_and_password_is_required">Username and password is required</string>
+    <string name="account_is_banned">You account is banned with reason: %s</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Birthday</string>

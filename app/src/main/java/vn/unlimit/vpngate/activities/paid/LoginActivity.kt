@@ -63,6 +63,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 if (!userViewModel!!.isLoggedIn.value!!) {
                     if (userViewModel!!.errorList.value!!.get("code") == 101) {
                         Toast.makeText(this, getString(R.string.please_activate_account_first), Toast.LENGTH_SHORT).show()
+                    } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
+                        Toast.makeText(this, getString(R.string.account_is_banned, userViewModel!!.errorList.value!!.get("banedReason")), Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
                     }

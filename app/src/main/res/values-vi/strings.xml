@@ -177,13 +177,14 @@
     <string name="action_back_to_free">Quay lại máy chủ miễn phí</string>
     <string name="invalid_username">Tài khoản không hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải chứa nhiều hơn 5 ký tự</string>
-    <string name="login_failed">"Đăng nhập thất bại"</string>
+    <string name="login_failed">Đăng nhập thất bại. Tài khoản hoặt mật khẩu không đúng.</string>
     <string name="please_activate_account_first">Không thể đăng nhập. Vui lòng mở email và kích hoạt tài khoản trước.</string>
     <string name="login_loading_text">Đang đăng nhập…</string>
     <string name="action_hide_password">Ẩn</string>
     <string name="action_show_password">Hiện</string>
     <string name="default_loading_text">Đang tải…</string>
     <string name="username_and_password_is_required">Tài khoản và mật khẩu là bắt buộc nhập</string>
+    <string name="account_is_banned">Tài khoản của bạn đã bị khoá với lý do: %s</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Ngày sinh</string>
