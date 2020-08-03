@@ -97,7 +97,7 @@
     <string name="connecting_use_protocol">Đang kết nối tới máy chủ VPN bằng giao thức [%s].</string>
     <!-- VPN String -->
     <string name="unknown_state">Không rõ</string>
-    <string name="cancel_connection">Ngằt kết nối</string>
+    <string name="cancel_connection">Ngắt kết nối</string>
     <string name="pauseVPN">Tạm dừng VPN</string>
     <string name="resumevpn">Tiếp tục VPN</string>
     <string name="check_ip">Kiểm tra IP hiện tại</string>
