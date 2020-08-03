@@ -68,6 +68,13 @@
         <item>12 giờ</item>
     </string-array>
     <string name="press_back_again_to_exit">Bấm quay lại lần nữa để thoát</string>
+    <string name="setting_default_protocol">Giao thức mặc định</string>
+    <string name="setting_protocol_subtitle">Giao thức mặc định để kết nối khi máy chủ có cả hai giao thức TCP và UDP</string>
+    <string-array name="list_protocol">
+        <item>Luôn hỏi</item>
+        <item>TCP</item>
+        <item>UDP</item>
+    </string-array>
     <!-- Detail -->
     <string name="total_user">Tổng người dùng</string>
     <string name="total_traffic">Tổng lưu lượng</string>
@@ -87,6 +94,7 @@
     <string name="copy_ip">Sao chép IP vào bộ nhớ đệm</string>
     <string name="copy_hostname">Sao chép tên máy chủ vào bộ nhớ đệm</string>
     <string name="copied">Đã sao chép</string>
+    <string name="connecting_use_protocol">Đang kết nối tới máy chủ VPN bằng giao thức [%s].</string>
     <!-- VPN String -->
     <string name="unknown_state">Không rõ</string>
     <string name="cancel_connection">Ngằt kết nối</string>

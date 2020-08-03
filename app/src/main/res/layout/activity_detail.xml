@@ -12,8 +12,7 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:id="@+id/nav_detail"
-        android:textAlignment="center">
+        android:id="@+id/nav_detail">
 
         <ImageView
             android:id="@+id/btn_back"

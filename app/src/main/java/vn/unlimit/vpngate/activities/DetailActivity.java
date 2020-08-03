@@ -447,7 +447,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             File writeFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
             FileOutputStream fileOutputStream = new FileOutputStream(writeFile);
             fileOutputStream.write(data.getBytes());
-            Toast.makeText(getApplicationContext(), getString(R.string.saved_ovpn_file_in, "Download/" + fileName), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.saved_ovpn_file_in, "Downloads/" + fileName), Toast.LENGTH_LONG).show();
             final Handler handler = new Handler();
             handler.postDelayed(() -> {
                 PackageManager packageManager = getPackageManager();
@@ -516,11 +516,23 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
-                        ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
-                            connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
-                        } else if (!isFinishing()) {
-                            connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                        if (dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0) != 0) {
+                            // Apply default protocol in setting
+                            String protocol = "TCP";
+                            if (dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0) == 1) {
+                                handleConnection(false);
+                            } else {
+                                protocol = "UDP";
+                                handleConnection(true);
+                            }
+                            Toast.makeText(this, getString(R.string.connecting_use_protocol, protocol), Toast.LENGTH_SHORT).show();
+                        } else {
+                            ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                                connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                            } else if (!isFinishing()) {
+                                connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
+                            }
                         }
                     } else {
                         handleConnection(false);

@@ -74,6 +74,13 @@
         <item>12 hours</item>
     </string-array>
     <string name="press_back_again_to_exit">Please click BACK again to exit</string>
+    <string name="setting_default_protocol">Default protocol</string>
+    <string name="setting_protocol_subtitle">Default protocol to connect when server has both TCP and UDP protocol</string>
+    <string-array name="list_protocol">
+        <item>Always ask</item>
+        <item>TCP</item>
+        <item>UDP</item>
+    </string-array>
     <!-- Detail -->
     <string name="total_user">Total user</string>
     <string name="total_traffic">Total traffic</string>
@@ -93,6 +100,7 @@
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
     <string name="copied">Copied</string>
+    <string name="connecting_use_protocol">Connecting to VPN server use [%s] protocol.</string>
     <!--VPN String -->
     <string name="unknown_state">Unknown</string>
     <string name="notification_title" translatable="false">VPN Gate - %s</string>

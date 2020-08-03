@@ -54,6 +54,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private EditText txtDns2;
     private View lnDomain;
     private SwitchCompat swDomain;
+    private View lnProtocol;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
@@ -115,6 +116,15 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         swDomain = rootView.findViewById(R.id.sw_domain);
         swDomain.setChecked(dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false));
         swDomain.setOnCheckedChangeListener(this);
+        lnProtocol = rootView.findViewById(R.id.ln_default_protocol);
+        AppCompatSpinner spinnerProto = rootView.findViewById(R.id.spin_proto);
+        spinnerProto.setOnItemSelectedListener(this);
+        String[] listProtocol = getResources().getStringArray(R.array.list_protocol);
+        SpinnerInit spinnerInitProto = new SpinnerInit(getContext(), spinnerProto);
+        spinnerInitProto.setStringArray(listProtocol,
+                listProtocol[dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0)]
+        );
+        spinnerInitProto.setOnItemSelectedIndexListener((name, index) -> dataUtil.setIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, index));
 
         return rootView;
     }
@@ -130,7 +140,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
                 } else {
                     String[] splits = resultingTxt.split("\\.");
                     for (String val : splits) {
-                        if (Integer.valueOf(val) > 255) {
+                        if (Integer.parseInt(val) > 255) {
                             return "";
                         }
                     }
@@ -217,6 +227,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
         if (switchCompat.equals(swUdp)) {
             dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked);
+            lnProtocol.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             clearListServerCache(false);
             return;
         }
@@ -250,7 +261,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             return;
         }
         //Only save setting in pro version
-        if (!dataUtil.hasAds() && switchCompat.equals(swBlockAds)) {
+        if (switchCompat.equals(swBlockAds)) {
             Toast.makeText(getContext(), getText(R.string.setting_apply_on_next_connection_time), Toast.LENGTH_SHORT).show();
             dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked);
             if (isChecked && swDns.isChecked()) {
