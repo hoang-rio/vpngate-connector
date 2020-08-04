@@ -55,6 +55,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private View lnDomain;
     private SwitchCompat swDomain;
     private View lnProtocol;
+    private View lnNotifySpeed;
+    private SwitchCompat swNotifySpeed;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
@@ -83,7 +85,12 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         spinnerInit.setStringArray(listCacheTime,
                 listCacheTime[dataUtil.getIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, 0)]
         );
-        spinnerInit.setOnItemSelectedIndexListener((name, index) -> dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index));
+        spinnerInit.setOnItemSelectedIndexListener((name, index) -> {
+            Bundle params = new Bundle();
+            params.putString("selected_cache_value", listCacheTime[index]);
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Cache_Time_Setting", params);
+            dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index);
+        });
         if (dataUtil.getConnectionCacheExpires() == null) {
             lnClearCache.setVisibility(View.GONE);
         } else {
@@ -124,7 +131,17 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         spinnerInitProto.setStringArray(listProtocol,
                 listProtocol[dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0)]
         );
-        spinnerInitProto.setOnItemSelectedIndexListener((name, index) -> dataUtil.setIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, index));
+        spinnerInitProto.setOnItemSelectedIndexListener((name, index) -> {
+            Bundle params = new Bundle();
+            params.putString("selected_protocol", listProtocol[index]);
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Default_Protocol_Setting", params);
+            dataUtil.setIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, index);
+        });
+        lnNotifySpeed = rootView.findViewById(R.id.ln_notify_speed);
+        lnNotifySpeed.setOnClickListener(this);
+        swNotifySpeed = rootView.findViewById(R.id.sw_notify_speed);
+        swNotifySpeed.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true));
+        swNotifySpeed.setOnCheckedChangeListener(this);
 
         return rootView;
     }
@@ -213,6 +230,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             swDns.setChecked(!swDns.isChecked());
         } else if (view.equals(lnDomain)) {
             swDomain.setChecked(!swDomain.isChecked());
+        } else if (view.equals(lnNotifySpeed)) {
+            swNotifySpeed.setChecked(!swNotifySpeed.isChecked());
         }
     }
 
@@ -225,10 +244,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onCheckedChanged(CompoundButton switchCompat, boolean isChecked) {
+        Bundle params = new Bundle();
+        params.putString("enabled", isChecked + "");
         if (switchCompat.equals(swUdp)) {
             dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked);
             lnProtocol.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             clearListServerCache(false);
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Include_UDP_Setting", params);
             return;
         }
         if (switchCompat.equals(swDns)) {
@@ -249,10 +271,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
                 hideKeyBroad();
                 lnDnsIP.setVisibility(View.GONE);
             }
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Custom_DNS_Setting", params);
             return;
         }
         if (switchCompat.equals(swDomain)) {
             dataUtil.setBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, isChecked);
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Use_Domain_To_Connect_Setting", params);
+            return;
+        }
+        if (switchCompat.equals(swNotifySpeed)) {
+            Toast.makeText(getContext(), getText(R.string.setting_apply_on_next_connection_time), Toast.LENGTH_SHORT).show();
+            dataUtil.setBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, isChecked);
+            FirebaseAnalytics.getInstance(mContext).logEvent("Change_Notify_Speed_Setting", params);
             return;
         }
         if (dataUtil.hasAds() && isChecked) {
@@ -267,8 +297,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             if (isChecked && swDns.isChecked()) {
                 swDns.setChecked(false);
             }
-            Bundle params = new Bundle();
-            params.putString("enabled", isChecked + "");
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Block_Ads_Setting", params);
         }
     }

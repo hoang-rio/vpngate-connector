@@ -81,6 +81,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     public static final String EXTRA_CHALLENGE_TXT = "de.blinkt.openvpn.core.CR_TEXT_CHALLENGE";
     public static final String EXTRA_CHALLENGE_OPENURL = "de.blinkt.openvpn.core.OPENURL_CHALLENGE";
+    public static boolean mDisplaySpeed = true;
 
     private static final int PRIORITY_MIN = -2;
     private static final int PRIORITY_DEFAULT = 0;
@@ -255,7 +256,9 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         synchronized (mProcessLock) {
             mProcessThread = null;
         }
-        VpnStatus.removeByteCountListener(this);
+        if (mDisplaySpeed) {
+            VpnStatus.removeByteCountListener(this);
+        }
         unregisterDeviceStateReceiver();
         ProfileManager.setConntectedVpnProfileDisconnected(this);
         mOpenVPNThread = null;
@@ -399,9 +402,10 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             if (priority != 0) {
                 Method setpriority = nbuilder.getClass().getMethod("setPriority", int.class);
                 setpriority.invoke(nbuilder, priority);
-
-                Method setUsesChronometer = nbuilder.getClass().getMethod("setUsesChronometer", boolean.class);
-                setUsesChronometer.invoke(nbuilder, true);
+                if (mDisplaySpeed) {
+                    Method setUsesChronometer = nbuilder.getClass().getMethod("setUsesChronometer", boolean.class);
+                    setUsesChronometer.invoke(nbuilder, true);
+                }
 
             }
 
@@ -518,7 +522,9 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             mNotificationAlwaysVisible = true;
 
         VpnStatus.addStateListener(this);
-        VpnStatus.addByteCountListener(this);
+        if (mDisplaySpeed) {
+            VpnStatus.addByteCountListener(this);
+        }
 
         guiHandler = new Handler(getMainLooper());
 
@@ -1249,7 +1255,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     @Override
     public void updateByteCount(long in, long out, long diffIn, long diffOut) {
         TotalTraffic.calcTraffic(this, in, out, diffIn, diffOut);
-        if (mDisplayBytecount) {
+        if (mDisplayBytecount && mDisplaySpeed) {
             String netstat = String.format(getString(R.string.statusline_bytecount),
                     humanReadableByteCount(in, false, getResources()),
                     humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, true, getResources()),

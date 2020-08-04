@@ -307,6 +307,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         super.onResume();
         try {
             Intent intent = new Intent(getContext(), OpenVPNService.class);
+            OpenVPNService.mDisplaySpeed = dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true);
             intent.setAction(OpenVPNService.START_SERVICE);
             Objects.requireNonNull(getActivity()).bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception ex) {

@@ -398,6 +398,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             new Handler().postDelayed(() -> {
                 Intent intent = new Intent(this, OpenVPNService.class);
+                OpenVPNService.mDisplaySpeed = dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true);
                 intent.setAction(OpenVPNService.START_SERVICE);
                 bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             }, 300);

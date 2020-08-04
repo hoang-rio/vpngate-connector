@@ -50,6 +50,8 @@
     <string name="cancel">Hủy</string>
     <string name="feature_not_available">Hiện tại bạn chưa thể sử dụng tính năng này</string>
     <!--- Settings -->
+    <string name="enable_notification_speed">Bật hiển thị tốc độ/thống kê ở thông báo</string>
+    <string name="enable_notification_speed_hint">Hiển thị tốc độ/thống kê lưu lượng ở bảng thông báo. Nếu tắt chỉ trạng thái kết nối được hiển thị và tiêu thụ pin có thể giảm một chút.</string>
     <string name="setting_cache_label">Thời gian lưu đệm</string>
     <string name="setting_cache_subtitle">Là thời gian dữ liệu được lưu vào bộ nhớ máy sau khi lấy dữ liệu từ máy chủ</string>
     <string name="setting_cache_auto_clear_label">Bộ nhớ đệm sẽ tự xóa vào lúc:</string>

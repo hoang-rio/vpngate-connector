@@ -56,6 +56,8 @@
     <string name="cancel">Cancel</string>
     <string name="feature_not_available">You can\'t do this action at this moment</string>
     <!--- Settings -->
+    <string name="enable_notification_speed">Enable speed/statistics in notify</string>
+    <string name="enable_notification_speed_hint">Display speed/statistics in notification. If turn off only connect status display in notification and battery usage may fewer.</string>
     <string name="setting_cache_label">Cache save time</string>
     <string name="setting_cache_subtitle">Is the time data will save in device after get data from server</string>
     <string name="setting_cache_auto_clear_label">Cache will auto clear at:</string>

@@ -28,7 +28,57 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:id="@+id/ln_udp">
+                    android:id="@+id/ln_notify_speed">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="@string/enable_notification_speed"
+                        android:theme="@style/label" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:checked="true"
+                        android:id="@+id/sw_notify_speed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:minHeight="30dp"
+                        android:minWidth="100dp"
+                        android:popupElevation="3dp" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/enable_notification_speed_hint"
+                        android:theme="@style/AppTheme.Setting.SubText" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:theme="@style/AppTheme.Setting.Line" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:theme="@style/AppTheme.Setting.Item">
+
+                <RelativeLayout
+                    android:id="@+id/ln_udp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -38,15 +88,15 @@
                         android:theme="@style/label" />
 
                     <androidx.appcompat.widget.SwitchCompat
-                        android:checked="true"
                         android:id="@+id/sw_udp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:minHeight="30dp"
+                        android:checked="true"
                         android:minWidth="100dp"
+                        android:minHeight="30dp"
                         android:popupElevation="3dp" />
                 </RelativeLayout>
 
@@ -125,11 +175,11 @@
                 android:theme="@style/AppTheme.Setting.Item">
 
                 <RelativeLayout
+                    android:id="@+id/ln_domain"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:id="@+id/ln_domain">
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -139,15 +189,15 @@
                         android:theme="@style/label" />
 
                     <androidx.appcompat.widget.SwitchCompat
-                        android:checked="true"
                         android:id="@+id/sw_domain"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:minHeight="30dp"
+                        android:checked="true"
                         android:minWidth="100dp"
+                        android:minHeight="30dp"
                         android:popupElevation="3dp" />
                 </RelativeLayout>
 
@@ -161,11 +211,13 @@
                         android:text="@string/use_domain_hint"
                         android:theme="@style/AppTheme.Setting.SubText" />
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:theme="@style/AppTheme.Setting.Line" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -175,8 +227,8 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp">
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -193,8 +245,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:background="@color/colorAccent"
-                        android:minHeight="30dp"
                         android:minWidth="100dp"
+                        android:minHeight="30dp"
                         android:popupBackground="@color/colorPrimary"
                         android:popupElevation="3dp" />
                 </RelativeLayout>
@@ -211,6 +263,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/ln_clear_cache"
                 android:layout_width="match_parent"
@@ -263,11 +316,12 @@
                 </RelativeLayout>
 
             </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/ln_block_ads_wrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/ln_block_ads_wrap"
                 android:theme="@style/AppTheme.Setting.Item">
 
                 <View
@@ -276,11 +330,11 @@
                     android:theme="@style/AppTheme.Setting.Line" />
 
                 <RelativeLayout
+                    android:id="@+id/ln_block_ads"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:id="@+id/ln_block_ads">
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -296,8 +350,8 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:minHeight="30dp"
                         android:minWidth="100dp"
+                        android:minHeight="30dp"
                         android:popupElevation="3dp" />
                 </RelativeLayout>
 
@@ -313,11 +367,12 @@
                 </LinearLayout>
 
             </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/ln_dns_wrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/ln_dns_wrap"
                 android:theme="@style/AppTheme.Setting.Item">
 
                 <View
@@ -326,11 +381,11 @@
                     android:theme="@style/AppTheme.Setting.Line" />
 
                 <RelativeLayout
+                    android:id="@+id/ln_dns"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:id="@+id/ln_dns">
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -346,8 +401,8 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:minHeight="30dp"
                         android:minWidth="100dp"
+                        android:minHeight="30dp"
                         android:popupElevation="3dp" />
                 </RelativeLayout>
 
@@ -361,43 +416,48 @@
                         android:text="@string/dns_setting_hint"
                         android:theme="@style/AppTheme.Setting.SubText" />
                 </LinearLayout>
+
                 <LinearLayout
+                    android:id="@+id/ln_dns_ip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/ln_dns_ip"
-                    android:visibility="visible"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
                     <TextView
-                        android:theme="@style/label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
-                        android:text="@string/dns_ip_1"/>
+                        android:text="@string/dns_ip_1"
+                        android:theme="@style/label" />
+
                     <EditText
                         android:id="@+id/txt_dns_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@color/browser_actions_bg_grey"
-                        android:padding="@dimen/padding_medium"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
                         android:digits="0123456789."
-                        android:hint="@string/dns_ip_1_hint"/>
+                        android:hint="@string/dns_ip_1_hint"
+                        android:inputType="number"
+                        android:padding="@dimen/padding_medium" />
+
                     <TextView
-                        android:theme="@style/label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
                         android:layout_marginTop="5dp"
-                        android:text="@string/dns_ip_2"/>
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/dns_ip_2"
+                        android:theme="@style/label" />
+
                     <EditText
                         android:id="@+id/txt_dns_2"
-                        android:inputType="number"
-                        android:digits="0123456789."
-                        android:background="@color/browser_actions_bg_grey"
-                        android:padding="@dimen/padding_medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/dns_ip_2_hint"/>
+                        android:background="@color/browser_actions_bg_grey"
+                        android:digits="0123456789."
+                        android:hint="@string/dns_ip_2_hint"
+                        android:inputType="number"
+                        android:padding="@dimen/padding_medium" />
                 </LinearLayout>
 
             </LinearLayout>
