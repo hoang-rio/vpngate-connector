@@ -66,6 +66,13 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     private DataUtil dataUtil;
     private VPNGateConnection mVpnGateConnection;
     private final String TAG = "StatusFragment";
+    private boolean isConnecting = false;
+    private boolean isAuthFailed = false;
+    private boolean isDetached = false;
+    private InterstitialAd mInterstitialAd;
+    private VpnProfile vpnProfile;
+    private Context mContext;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -80,11 +87,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         }
 
     };
-    private boolean isConnecting = false;
-    private boolean isAuthFailed = false;
-    private InterstitialAd mInterstitialAd;
-    private VpnProfile vpnProfile;
-    private Context mContext;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -119,6 +121,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     @Override
     public void onAttach(@NonNull Context context) {
         mContext = context;
+        isDetached = false;
         super.onAttach(context);
     }
 
@@ -344,13 +347,19 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
             return;
         }
         requireActivity().runOnUiThread(() -> {
-            if (checkStatus()) {
+            if (checkStatus() && !isDetached) {
                 txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
                 txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
                 txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, getResources()));
                 txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, getResources()));
             }
         });
+    }
+
+    @Override
+    public void onDetach() {
+        isDetached = true;
+        super.onDetach();
     }
 
     private boolean checkStatus() {
@@ -370,7 +379,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
-        Objects.requireNonNull(getActivity()).runOnUiThread(()-> {
+        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             try {
                 txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);

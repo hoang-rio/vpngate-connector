@@ -22,7 +22,6 @@
     </string-array>
     <string name="reset">Đặt lại</string>
     <string name="help">Trợ giúp</string>
-    <string name="refresh">Cập nhật</string>
     <string name="speed">Tốc độ</string>
     <string name="hostname">Tên máy chủ</string>
     <string name="score">Điểm(Chất lượng)</string>
@@ -49,7 +48,6 @@
     <string name="sort_desc">Giảm dần</string>
     <string name="apply">Áp dụng</string>
     <string name="cancel">Hủy</string>
-    <string name="sort_default">Mặc định</string>
     <string name="feature_not_available">Hiện tại bạn chưa thể sử dụng tính năng này</string>
     <!--- Settings -->
     <string name="setting_cache_label">Thời gian lưu đệm</string>
