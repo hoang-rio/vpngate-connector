@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,19 +49,17 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
         BottomSheetDialog dialog =
                 new BottomSheetDialog(Objects.requireNonNull(getActivity()));
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                BottomSheetDialog d = (BottomSheetDialog) dialog;
+        dialog.setOnShowListener(dialog1 -> {
+            try {
+                BottomSheetDialog d = (BottomSheetDialog) dialog1;
 
                 FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
                 assert bottomSheet != null;
                 BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+            } catch (Throwable th) {
+                th.printStackTrace();
             }
         });
-
-        //
-
         return dialog;
     }
 
