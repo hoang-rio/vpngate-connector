@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.activities;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -484,7 +485,12 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
                     } catch (android.content.ActivityNotFoundException ex) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                        } catch (ActivityNotFoundException exception) {
+                            // No activity to handle this action
+                            exception.printStackTrace();
+                        }
                     }
                 }
 

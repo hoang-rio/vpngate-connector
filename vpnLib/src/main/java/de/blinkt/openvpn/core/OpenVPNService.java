@@ -749,18 +749,22 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     @Override
     public void onDestroy() {
-        synchronized (mProcessLock) {
-            if (mProcessThread != null) {
-                mManagement.stopVPN(true);
+        try {
+            synchronized (mProcessLock) {
+                if (mProcessThread != null) {
+                    mManagement.stopVPN(true);
+                }
             }
-        }
 
-        if (mDeviceStateReceiver != null) {
-            this.unregisterReceiver(mDeviceStateReceiver);
+            if (mDeviceStateReceiver != null) {
+                this.unregisterReceiver(mDeviceStateReceiver);
+            }
+            // Just in case unregister for state
+            VpnStatus.removeStateListener(this);
+            VpnStatus.flushLog();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        // Just in case unregister for state
-        VpnStatus.removeStateListener(this);
-        VpnStatus.flushLog();
     }
 
     private String getTunConfigString() {
