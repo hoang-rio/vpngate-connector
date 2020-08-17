@@ -25,8 +25,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.DateFormat;
 
+import de.blinkt.openvpn.core.OpenVPNService;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.activities.MainActivity;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
@@ -142,6 +144,23 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
         swNotifySpeed = rootView.findViewById(R.id.sw_notify_speed);
         swNotifySpeed.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true));
         swNotifySpeed.setOnCheckedChangeListener(this);
+        View lnStartUpScreen = rootView.findViewById(R.id.ln_startup_screen);
+        if (dataUtil.getLastVPNConnection() != null) {
+            lnStartUpScreen.setVisibility(View.VISIBLE);
+            AppCompatSpinner spinnerStartupScreen = rootView.findViewById(R.id.spin_screen);
+            String[] listScreen = getResources().getStringArray(R.array.startup_screen);
+            SpinnerInit spinnerInitScreen = new SpinnerInit(getContext(), spinnerStartupScreen);
+            spinnerInitScreen.setStringArray(listScreen, listScreen[dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0)]);
+            spinnerInitScreen.setOnItemSelectedIndexListener(((name, index) -> {
+                Bundle params = new Bundle();
+                params.putString("selected_screen", listScreen[index]);
+                FirebaseAnalytics.getInstance(mContext).logEvent("Change_StartUp_Screen_Setting", params);
+                dataUtil.setIntSetting(DataUtil.SETTING_STARTUP_SCREEN, index);
+                OpenVPNService.setNotificationActivityClass(index == 0 ? DetailActivity.class : MainActivity.class);
+            }));
+        } else {
+            lnStartUpScreen.setVisibility(View.GONE);
+        }
 
         return rootView;
     }

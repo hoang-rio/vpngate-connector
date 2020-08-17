@@ -50,6 +50,12 @@
     <string name="cancel">Hủy</string>
     <string name="feature_not_available">Hiện tại bạn chưa thể sử dụng tính năng này</string>
     <!--- Settings -->
+    <string name="setting_startup_screen">Màn hình khởi động</string>
+    <string name="setting_startup_screen_subtitle">Chọn màn hình khởi động sau khi kết nối thành công ít nhất 1 lần.\nNếu không có kết nối thành công màn hình danh sách luôn được hiển thị.\nMàn hình khởi động cũng được mở khi bấm vào thông báo.</string>
+    <string-array name="startup_screen">
+        <item>Màn hình danh sách</item>
+        <item>Màn hình trạng thái</item>
+    </string-array>
     <string name="enable_notification_speed">Bật hiển thị tốc độ/thống kê ở thông báo</string>
     <string name="enable_notification_speed_hint">Hiển thị tốc độ/thống kê lưu lượng ở bảng thông báo. Nếu tắt chỉ trạng thái kết nối được hiển thị và tiêu thụ pin có thể giảm một chút.</string>
     <string name="setting_cache_label">Thời gian lưu đệm</string>

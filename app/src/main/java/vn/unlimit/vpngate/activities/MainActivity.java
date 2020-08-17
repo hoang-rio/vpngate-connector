@@ -224,6 +224,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             replaceFragment("privacy-policy");
             return;
         }
+        if (dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 1 && dataUtil.getLastVPNConnection() != null) {
+            replaceFragment("status");
+            navigationView.getMenu().findItem(R.id.nav_status).setChecked(true);
+            return;
+        }
         this.loadData();
     }
 
@@ -633,7 +638,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onBackPressed() {
-        if ("home".equals(currentUrl)) {
+        String startUpUrl = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? "home" : "status";
+        if (startUpUrl.equals(currentUrl)) {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;
@@ -646,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 getDataServer();
             }
             navigationView.setCheckedItem(R.id.nav_home);
-            replaceFragment("home");
+            replaceFragment(startUpUrl);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
     }
