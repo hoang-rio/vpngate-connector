@@ -48,6 +48,7 @@ import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
 import de.blinkt.openvpn.core.ConnectionStatus;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
+import de.blinkt.openvpn.core.OpenVPNManagement;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
@@ -63,11 +64,13 @@ import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
 
+import static de.blinkt.openvpn.core.OpenVPNService.humanReadableByteCount;
+
 /**
  * Created by hoangnd on 2/5/2018.
  */
 
-public class DetailActivity extends AppCompatActivity implements View.OnClickListener, VpnStatus.StateListener {
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
     public static final int TYPE_FROM_NOTIFY = 1001;
     public static final int TYPE_NORMAL = 1000;
     public static final String TYPE_START = "vn.ulimit.vpngate.TYPE_START";
@@ -107,6 +110,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private AdView adViewBellow;
     private View btnInstallOpenVpn;
     private View btnSaveConfigFile;
+    private TextView txtNetStats;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -190,10 +194,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         getLnL2TPBtn = findViewById(R.id.ln_l2tp_btn);
         btnConnectL2TP = findViewById(R.id.btn_l2tp_connect);
         btnConnectL2TP.setOnClickListener(this);
+        txtNetStats = findViewById(R.id.txt_net_stats);
         bindData();
         initAdMob();
         initInterstitialAd();
         VpnStatus.addStateListener(this);
+        VpnStatus.addByteCountListener(this);
         txtStatus.setText("");
     }
 
@@ -261,6 +267,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onDestroy() {
         super.onDestroy();
         VpnStatus.removeStateListener(this);
+        VpnStatus.removeByteCountListener(this);
     }
 
     @Override
@@ -278,6 +285,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     case LEVEL_CONNECTED:
                         if (isCurrent()) {
                             btnConnect.setText(getString(R.string.disconnect));
+                            txtNetStats.setVisibility(View.VISIBLE);
                         }
                         isConnecting = false;
                         isAuthFailed = false;
@@ -302,6 +310,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                             }
                             txtStatus.setText(R.string.disconnected);
+                            txtNetStats.setVisibility(View.GONE);
                         }
                         break;
                     case LEVEL_AUTH_FAILED:
@@ -377,6 +386,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
                     }
                     txtStatus.setText(VpnStatus.getLastCleanLogMessage(this));
+                    txtNetStats.setVisibility(View.VISIBLE);
+                } else {
+                    txtNetStats.setVisibility(View.GONE);
                 }
                 if (checkStatus()) {
                     linkCheckIp.setVisibility(View.VISIBLE);
@@ -741,4 +753,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    public void updateByteCount(long in, long out, long diffIn, long diffOut) {
+        if (!isCurrent()) {
+            return;
+        }
+        runOnUiThread(() -> {
+            String netstat = String.format(getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+                    humanReadableByteCount(in, false, getResources()),
+                    humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, true, getResources()),
+                    humanReadableByteCount(out, false, getResources()),
+                    humanReadableByteCount(diffOut / OpenVPNManagement.mBytecountInterval, true, getResources()));
+            txtNetStats.setText(netstat);
+        });
+    }
 }
