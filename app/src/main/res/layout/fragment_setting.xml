@@ -95,7 +95,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:background="@color/colorAccent"
-                        android:minWidth="150dp"
+                        android:minWidth="180dp"
                         android:minHeight="30dp"
                         android:popupBackground="@color/colorPrimary"
                         android:popupElevation="3dp" />
