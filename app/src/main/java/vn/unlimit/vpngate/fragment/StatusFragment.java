@@ -37,6 +37,7 @@ import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
 import de.blinkt.openvpn.core.ConnectionStatus;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
+import de.blinkt.openvpn.core.OpenVPNManagement;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
@@ -61,6 +62,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     private TextView txtDownloadSession;
     private TextView txtUploadTotal;
     private TextView txtDownloadTotal;
+    private TextView txtUploadSpeed;
+    private TextView txtDownloadSpeed;
     private Button btnClearStatistics;
     private IOpenVPNServiceInternal mVPNService;
     private DataUtil dataUtil;
@@ -98,6 +101,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         txtDownloadSession = rootView.findViewById(R.id.txt_download_session);
         txtUploadTotal = rootView.findViewById(R.id.txt_total_upload);
         txtDownloadTotal = rootView.findViewById(R.id.txt_total_download);
+        txtUploadSpeed = rootView.findViewById(R.id.txt_upload_speed);
+        txtDownloadSpeed = rootView.findViewById(R.id.txt_download_speed);
         btnClearStatistics = rootView.findViewById(R.id.btn_clear_statistics);
         btnClearStatistics.setOnClickListener(this);
         mVpnGateConnection = dataUtil.getLastVPNConnection();
@@ -350,7 +355,9 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         requireActivity().runOnUiThread(() -> {
             if (checkStatus() && !isDetached) {
                 txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
+                txtDownloadSpeed.setText(OpenVPNService.humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, true, getResources()));
                 txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
+                txtUploadSpeed.setText(OpenVPNService.humanReadableByteCount(diffOut / OpenVPNManagement.mBytecountInterval, true, getResources()));
                 txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, getResources()));
                 txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, getResources()));
             }
