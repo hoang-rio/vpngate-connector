@@ -5,7 +5,7 @@
     android:background="@drawable/selector_drawer"
     android:gravity="center"
     android:lines="1"
-    android:padding="5dp"
+    android:padding="3dp"
     android:textColor="@color/colorWhite"
     android:textSize="13dp"
     android:textStyle="italic" />

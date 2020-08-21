@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -63,8 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="7dp"
-                android:paddingRight="7dp"
                 android:paddingTop="10dp"
+                android:paddingRight="7dp"
                 android:text="@string/traffic_session"
                 android:theme="@style/label" />
 
@@ -79,10 +80,30 @@
                     android:text="@string/uploaded_data" />
 
                 <TextView
+                    android:id="@+id/txt_upload_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/txt_separate_upload"
+                    android:layout_toLeftOf="@+id/txt_separate_upload"
+                    android:text="0 kbps" />
+
+                <TextView
+                    android:id="@+id/txt_separate_upload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toStartOf="@+id/txt_upload_session"
+                    android:layout_toLeftOf="@+id/txt_upload_session"
+                    android:text="|"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
                     android:id="@+id/txt_upload_session"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:text="0 B" />
             </RelativeLayout>
 
@@ -99,10 +120,31 @@
                     android:text="@string/downloaded_data" />
 
                 <TextView
+                    android:id="@+id/txt_download_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/txt_separate_download"
+                    android:layout_toLeftOf="@+id/txt_separate_download"
+                    android:text="0 kbps"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/txt_separate_download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toStartOf="@+id/txt_download_session"
+                    android:layout_toLeftOf="@+id/txt_download_session"
+                    android:text="|"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
                     android:id="@+id/txt_download_session"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:text="0 B" />
             </RelativeLayout>
 
@@ -112,8 +154,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="7dp"
-                android:paddingRight="7dp"
                 android:paddingTop="10dp"
+                android:paddingRight="7dp"
                 android:text="@string/total_traffic"
                 android:theme="@style/label" />
 
@@ -126,6 +168,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/uploaded_data" />
+
 
                 <TextView
                     android:id="@+id/txt_total_upload"

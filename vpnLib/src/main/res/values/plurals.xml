@@ -12,8 +12,4 @@
         <item quantity="one">One hour left</item>
         <item quantity="other">%d hours left</item>
     </plurals>
-    <plurals name="minutes_left">
-        <item quantity="one">One minute left</item>
-        <item quantity="other">%d minutes left</item>
-    </plurals>
 </resources>

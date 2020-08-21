@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.activities;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -221,6 +222,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         checkStatusMenu();
         if (!dataUtil.isAcceptedPrivacyPolicy()) {
             replaceFragment("privacy-policy");
+            return;
+        }
+        if (dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 1 && dataUtil.getLastVPNConnection() != null) {
+            replaceFragment("status");
+            navigationView.getMenu().findItem(R.id.nav_status).setChecked(true);
             return;
         }
         this.loadData();
@@ -484,7 +490,12 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
                     } catch (android.content.ActivityNotFoundException ex) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
+                        } catch (ActivityNotFoundException exception) {
+                            // No activity to handle this action
+                            exception.printStackTrace();
+                        }
                     }
                 }
 
@@ -627,7 +638,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     @Override
     public void onBackPressed() {
-        if ("home".equals(currentUrl)) {
+        String startUpUrl = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? "home" : "status";
+        if (startUpUrl.equals(currentUrl)) {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;
@@ -640,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 getDataServer();
             }
             navigationView.setCheckedItem(R.id.nav_home);
-            replaceFragment("home");
+            replaceFragment(startUpUrl);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
     }

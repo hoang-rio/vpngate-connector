@@ -37,6 +37,7 @@ import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
 import de.blinkt.openvpn.core.ConnectionStatus;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
+import de.blinkt.openvpn.core.OpenVPNManagement;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
@@ -61,11 +62,20 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     private TextView txtDownloadSession;
     private TextView txtUploadTotal;
     private TextView txtDownloadTotal;
+    private TextView txtUploadSpeed;
+    private TextView txtDownloadSpeed;
     private Button btnClearStatistics;
     private IOpenVPNServiceInternal mVPNService;
     private DataUtil dataUtil;
     private VPNGateConnection mVpnGateConnection;
     private final String TAG = "StatusFragment";
+    private boolean isConnecting = false;
+    private boolean isAuthFailed = false;
+    private boolean isDetached = false;
+    private InterstitialAd mInterstitialAd;
+    private VpnProfile vpnProfile;
+    private Context mContext;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -80,11 +90,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         }
 
     };
-    private boolean isConnecting = false;
-    private boolean isAuthFailed = false;
-    private InterstitialAd mInterstitialAd;
-    private VpnProfile vpnProfile;
-    private Context mContext;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -96,6 +101,8 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         txtDownloadSession = rootView.findViewById(R.id.txt_download_session);
         txtUploadTotal = rootView.findViewById(R.id.txt_total_upload);
         txtDownloadTotal = rootView.findViewById(R.id.txt_total_download);
+        txtUploadSpeed = rootView.findViewById(R.id.txt_upload_speed);
+        txtDownloadSpeed = rootView.findViewById(R.id.txt_download_speed);
         btnClearStatistics = rootView.findViewById(R.id.btn_clear_statistics);
         btnClearStatistics.setOnClickListener(this);
         mVpnGateConnection = dataUtil.getLastVPNConnection();
@@ -119,6 +126,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     @Override
     public void onAttach(@NonNull Context context) {
         mContext = context;
+        isDetached = false;
         super.onAttach(context);
     }
 
@@ -304,6 +312,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         super.onResume();
         try {
             Intent intent = new Intent(getContext(), OpenVPNService.class);
+            OpenVPNService.mDisplaySpeed = dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true);
             intent.setAction(OpenVPNService.START_SERVICE);
             Objects.requireNonNull(getActivity()).bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception ex) {
@@ -344,13 +353,21 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
             return;
         }
         requireActivity().runOnUiThread(() -> {
-            if (checkStatus()) {
+            if (checkStatus() && !isDetached) {
                 txtDownloadSession.setText(OpenVPNService.humanReadableByteCount(in, false, getResources()));
+                txtDownloadSpeed.setText(OpenVPNService.humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, true, getResources()));
                 txtUploadSession.setText(OpenVPNService.humanReadableByteCount(out, false, getResources()));
+                txtUploadSpeed.setText(OpenVPNService.humanReadableByteCount(diffOut / OpenVPNManagement.mBytecountInterval, true, getResources()));
                 txtDownloadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, getResources()));
                 txtUploadTotal.setText(OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, getResources()));
             }
         });
+    }
+
+    @Override
+    public void onDetach() {
+        isDetached = true;
+        super.onDetach();
     }
 
     private boolean checkStatus() {
@@ -370,7 +387,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
-        Objects.requireNonNull(getActivity()).runOnUiThread(()-> {
+        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             try {
                 txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);

@@ -22,7 +22,6 @@
     <string name="about">About</string>
     <string name="setting">Setting</string>
     <string name="help">Help</string>
-    <string name="refresh">Refresh</string>
     <string name="speed">Speed</string>
     <string name="hostname">Hostname</string>
     <string name="score">Score</string>
@@ -55,9 +54,16 @@
     <string name="sort_desc">Descending</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
-    <string name="sort_default">Default</string>
     <string name="feature_not_available">You can\'t do this action at this moment</string>
     <!--- Settings -->
+    <string name="enable_notification_speed">Enable speed/statistics in notify</string>
+    <string name="setting_startup_screen">Startup screen</string>
+    <string-array name="startup_screen">
+        <item>List screen</item>
+        <item>Status screen</item>
+    </string-array>
+    <string name="setting_startup_screen_subtitle">Choose startup screen after app start with at least connection success.\nIf no connection success before list screen always display.\nStartup screen also display when tap to notification.</string>
+    <string name="enable_notification_speed_hint">Display speed/statistics in notification. If turn off only connect status display in notification and battery usage may fewer.</string>
     <string name="setting_cache_label">Cache save time</string>
     <string name="setting_cache_subtitle">Is the time data will save in device after get data from server</string>
     <string name="setting_cache_auto_clear_label">Cache will auto clear at:</string>
@@ -103,7 +109,6 @@
     <string name="connecting_use_protocol">Connecting to VPN server use [%s] protocol.</string>
     <!--VPN String -->
     <string name="unknown_state">Unknown</string>
-    <string name="notification_title" translatable="false">VPN Gate - %s</string>
     <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
     <string name="check_ip">Check your current public IP</string>
     <string name="about_html">%s is an application allow connection to free VPN server by volunteer around the world from VPN Gate open source project. More information about VPN Gate project in link bellow.</string>
@@ -163,9 +168,7 @@
     <!--Firebase remote config -->
     <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
-    <string name="ads_open_detail_interval_cfg_key" translatable="false">vpn_detail_open_ads_interval</string>
     <string name="alternative_api_cfg_key" translatable="false">vpn_alternative_api</string>
-    <string name="vpn_paid_server_api_cfg_key" translatable="false">vpn_paid_server_api</string>
     <!-- Privacy policy -->
     <string name="privacy_policy_title">Privacy policy</string>
     <string name="btn_accept">Accept</string>
@@ -177,16 +180,4 @@
     <string name="l2tp_connect_add">1. Add new VPN Connection in VPN Setting like this</string>
     <string name="l2tp_tap_to_connect">2. Tap to created VPN Connection to connect</string>
     <!-- Paid server consumer product -->
-    <string-array name="free_paid_skus">
-        <item>vn.unlimit.vpngate.2gb</item>
-        <item>vn.unlimit.vpngate.5gb</item>
-        <item>vn.unlimit.vpngate.10gb</item>
-        <item>vn.unlimit.vpngate.15gb</item>
-    </string-array>
-    <string-array name="pro_paid_skus">
-        <item>vn.unlimit.vpngatepro.2gb</item>
-        <item>vn.unlimit.vpngatepro.5gb</item>
-        <item>vn.unlimit.vpngatepro.10gb</item>
-        <item>vn.unlimit.vpngatepro.15gb</item>
-    </string-array>
 </resources>

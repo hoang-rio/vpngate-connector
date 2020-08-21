@@ -6,19 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
@@ -85,8 +78,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         if (viewHolder instanceof VHTypeVPN) {
             ((VHTypeVPN) viewHolder).bindViewHolder(position);
-        } else if (viewHolder instanceof VHTypeAds) {
-            ((VHTypeAds) viewHolder).bindViewHolder();
         }
         lastPosition = position;
     }
@@ -100,38 +91,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new VHTypeVPN(layoutInflater.inflate(R.layout.item_vpn, parent, false));
-    }
-
-    private class VHTypeAds extends RecyclerView.ViewHolder {
-
-        VHTypeAds(View itemView) {
-            super(itemView);
-        }
-
-        void bindViewHolder() {
-            try {
-                final LinearLayout adContainer = itemView.findViewById(R.id.ad_container);
-                final AdView v = new AdView(mContext);
-                v.setAdSize(AdSize.SMART_BANNER);
-                if (BuildConfig.DEBUG) {
-                    v.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                } else {
-                    v.setAdUnitId(mContext.getResources().getString(R.string.admob_banner_inside_list));
-                }
-                v.setAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int errorCode) {
-                        v.setVisibility(View.GONE);
-                        adContainer.removeAllViews();
-                    }
-                });
-                adContainer.removeAllViews();
-                adContainer.addView(v);
-                v.loadAd(new AdRequest.Builder().build());
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private class VHTypeVPN extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
