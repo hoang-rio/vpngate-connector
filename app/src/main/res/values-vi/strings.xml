@@ -213,4 +213,6 @@
     <string name="title_activity_forgot_pass">Quên mật khẩu</string>
     <string name="action_reset_pass">Đặt lại mật khẩu</string>
     <string name="prompt_email_or_username">Email hoặc tài khoản</string>
+    <!-- Reset pass screen -->
+    <string name="title_activity_reset_pass">Đặt lại mật khẩu</string>
 </resources>

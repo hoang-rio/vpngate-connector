@@ -250,4 +250,6 @@
     <string name="title_activity_forgot_pass">Forgot password</string>
     <string name="action_reset_pass">Reset password</string>
     <string name="prompt_email_or_username">Email or username</string>
+    <!-- Reset pass screen -->
+    <string name="title_activity_reset_pass">Reset password</string>
 </resources>

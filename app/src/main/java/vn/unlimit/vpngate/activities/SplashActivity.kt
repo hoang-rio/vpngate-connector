@@ -12,6 +12,7 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.ActivateActivity
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.activities.paid.ResetPassActivity
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.regex.Pattern
@@ -20,6 +21,7 @@ class SplashActivity : AppCompatActivity() {
     companion object {
         const val TAG = "SplashActivity"
         const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
+        const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,8 +65,16 @@ class SplashActivity : AppCompatActivity() {
                             finish()
                             return@addOnSuccessListener
                         }
+                        val matcherResetPass = Pattern.compile(PASS_RESET_URL_REGEX).matcher(deepLink)
+                        if (matcherResetPass.find()) {
+                            val token = matcherResetPass.group(1)
+                            val intentResetPass = Intent(this, ResetPassActivity::class.java)
+                            intentResetPass.putExtra(PaidServerProvider.RESET_PASS_TOKEN, token)
+                            startActivity(intentResetPass)
+                            finish()
+                            return@addOnSuccessListener
+                        }
                         startStartUpActivity()
-//                        TODO("Implement deep link check logic here (must remove startStartUpActivity cal above)")
                     } else {
                         Log.d(TAG, "No dynamic link found")
                         startStartUpActivity()
