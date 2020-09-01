@@ -23,6 +23,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
     var isUserActivated: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isPasswordReseted: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorCode: Int? = null
 
     fun login(username: String, password: String) {
@@ -95,6 +96,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 isUserActivated.value = true
             }
         })
+    }
+
+    fun resetPassword(resetPassToken: String, newPassword: String) {
+        isLoading.value = true
+        isPasswordReseted.value = false
+
     }
 
 }

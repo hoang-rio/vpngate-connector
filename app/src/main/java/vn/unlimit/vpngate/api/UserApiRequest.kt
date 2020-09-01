@@ -99,4 +99,8 @@ class UserApiRequest : BaseApiRequest() {
             }
         })
     }
+
+    fun resetPassword(resetPassToken: String, newPassword: String, reNewPassword: String) {
+//        post("/user/reset-pass/${resetPassToken}")
+    }
 }
