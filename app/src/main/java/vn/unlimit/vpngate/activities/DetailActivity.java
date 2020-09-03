@@ -286,18 +286,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         if (isCurrent()) {
                             btnConnect.setText(getString(R.string.disconnect));
                             txtNetStats.setVisibility(View.VISIBLE);
+                            if (isConnecting && !mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
+                                MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                                    messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                                } else if (!isFinishing()) {
+                                    messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
+                                }
+                            }
                         }
                         isConnecting = false;
                         isAuthFailed = false;
                         linkCheckIp.setVisibility(View.VISIBLE);
-                        if (!mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
-                            MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
-                                messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
-                            } else if (!isFinishing()) {
-                                messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
-                            }
-                        }
                         break;
                     case LEVEL_WAITING_FOR_USER_INPUT:
                         dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
