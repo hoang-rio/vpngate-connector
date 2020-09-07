@@ -100,6 +100,40 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
+    fun forgotPassword(usernameOrEmail: String, captchaSecret: String, captchaAnswer: Int, requestListener: RequestListener) {
+        val data = HashMap<String, Any>()
+        val captcha = HashMap<String, Any>()
+        captcha["secret"] = captchaSecret
+        captcha["answer"] = captchaAnswer
+        data["captcha"] = captcha
+        data["email"] = usernameOrEmail
+        post("/user/password/forgot", data, object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Forgot password success with response: %s".format(response!!.toString()))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Forgot password error with detail: %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
+
+    fun checkResetPassToken(resetPassToken: String, requestListener: RequestListener) {
+        get("/user/password-reset/${resetPassToken}", object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Valid reset pass token with response %s".format(response!!.toString()))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Invalid reset pass token with detail: %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
+
     fun resetPassword(resetPassToken: String, newPassword: String, reNewPassword: String) {
 //        post("/user/reset-pass/${resetPassToken}")
     }

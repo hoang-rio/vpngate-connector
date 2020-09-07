@@ -202,6 +202,7 @@
     <string name="register_failed">Đăng ký thất bại. Hãy kiểm tra danh sách lỗi:\n%s</string>
     <string name="username_is_invalid">Tài khoản không hợp lệ. Tài khoản phải chứa 5 – 30 ký tự thường và số</string>
     <string name="password_is_invalid">Mật khẩu không hợp lệ. Mật khẩu phải chứa 5 – 30 ký tự và số, cho phép các ký tự đặc biệt ($ ! * . -)</string>
+    <string name="email_is_invalid">Email không hợp lệ,vui lòng kiểm tra.</string>
     <string name="re_type_password_does_not_match">Nhập lại mật khẩu không khớp.</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Kích hoạt tài khoản thất bại: %s</string>
@@ -212,7 +213,14 @@
     <!-- Forgot pass screen -->
     <string name="title_activity_forgot_pass">Quên mật khẩu</string>
     <string name="action_reset_pass">Đặt lại mật khẩu</string>
-    <string name="prompt_email_or_username">Email hoặc tài khoản</string>
+    <string name="request_forgot_pass_success">Yêu cầu đặt lại mật khẩu thành công. Vui lòng kiểm tra email để tiếp tục.</string>
+    <string name="request_forgot_pass_failure">Yêu cầu đặt lại mật khẩu thất bại. Vui lòng thử lại</string>
     <!-- Reset pass screen -->
     <string name="title_activity_reset_pass">Đặt lại mật khẩu</string>
+    <string name="prompt_new_password">Mật khẩu mới</string>
+    <string name="prompt_re_new_password">Nhập lại mật khẩu mới</string>
+    <string name="action_reset_password">Đặt lại mật khẩu</string>
+    <string name="reset_pass_token_can_not_empty">Mã đặt lại mật khẩu không thể rỗng. Đã đóng màn hình đặt lại mật khẩu</string>
+    <string name="checking_reset_pass_token">Đang kiểm tra mã đặt lại mật khẩu\nVui lòng đợi trong giây lát</string>
+    <string name="invalid_reset_pass_token">Mã đặt lại mật khẩu không đúng. Dùng nút phía đưới quay lại.</string>
 </resources>

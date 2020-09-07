@@ -239,6 +239,7 @@
     <string name="register_failed">Register failed. Please check error list:\n%s</string>
     <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
     <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
+    <string name="email_is_invalid">Email is invalid,please check.</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Account activate failed: %s</string>
@@ -249,11 +250,14 @@
     <!-- Forgot pass screen -->
     <string name="title_activity_forgot_pass">Forgot password</string>
     <string name="action_reset_pass">Reset password</string>
-    <string name="prompt_email_or_username">Email or username</string>
+    <string name="request_forgot_pass_success">Forgot password request success. Please check email to continue.</string>
+    <string name="request_forgot_pass_failure">Forgot password failure. Please try again.</string>
     <!-- Reset pass screen -->
     <string name="title_activity_reset_pass">Reset password</string>
     <string name="prompt_new_password">New password</string>
     <string name="prompt_re_new_password">Retype new password</string>
     <string name="action_reset_password">Reset password</string>
-    <string name="reset_pass_token_can_not_empty">Reset password can not empty. Exited reset pass screen.</string>
+    <string name="reset_pass_token_can_not_empty">Reset password token can not empty. Exited reset pass screen.</string>
+    <string name="checking_reset_pass_token">Check reset pass token\nPlease wait in few second</string>
+    <string name="invalid_reset_pass_token">Invalid reset password token. Use button bellow to return.</string>
 </resources>

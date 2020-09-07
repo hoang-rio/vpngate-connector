@@ -23,7 +23,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
     var isUserActivated: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isForgotPassSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var isPasswordReseted: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isValidResetPassToken: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorCode: Int? = null
 
     fun login(username: String, password: String) {
@@ -98,10 +100,37 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    fun forgotPassword(usernameOrEmail: String, captchaSecret: String, captchaAnswer: Int) {
+        isLoading.value = true
+        isForgotPassSuccess.value = false
+        userApiRequest.forgotPassword(usernameOrEmail, captchaSecret, captchaAnswer, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isLoading.value = false
+                isForgotPassSuccess.value = true
+            }
+
+            override fun onError(error: String?) {
+                isLoading.value = false
+                isForgotPassSuccess.value = false
+            }
+        })
+    }
+
+    fun checkResetPassToken(resetPassToken: String) {
+        userApiRequest.checkResetPassToken(resetPassToken, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isValidResetPassToken.value = true
+            }
+
+            override fun onError(error: String?) {
+                isValidResetPassToken.value = false
+            }
+        })
+    }
+
     fun resetPassword(resetPassToken: String, newPassword: String) {
         isLoading.value = true
         isPasswordReseted.value = false
-
     }
 
 }

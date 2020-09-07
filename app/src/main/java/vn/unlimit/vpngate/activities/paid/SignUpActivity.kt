@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -184,6 +185,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
             // Check retype password
             if (txtPassword!!.text.toString() != txtRetypePassword!!.text.toString()) {
                 throw Exception(getString(R.string.re_type_password_does_not_match))
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
+                throw Exception(getString(R.string.email_is_invalid))
             }
             // Validate timeZone
             if (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) {

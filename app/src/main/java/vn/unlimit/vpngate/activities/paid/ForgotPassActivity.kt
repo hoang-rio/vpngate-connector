@@ -1,7 +1,12 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Patterns
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -23,6 +28,10 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private val userApiRequest = UserApiRequest()
     private var userViewModel: UserViewModel? = null
     private var txtCaptchaAnswer: EditText? = null
+    private var txtEmail: EditText? = null
+    private var btnLogin: Button? = null
+    private var btnResetPass: Button? = null
+    private var isResetPasClicked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +42,11 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         ivCaptcha = findViewById(R.id.iv_captcha)
         ivCaptcha!!.setOnClickListener(this)
         txtCaptchaAnswer = findViewById(R.id.txt_captcha_answer)
+        btnLogin = findViewById(R.id.btn_login)
+        btnResetPass = findViewById(R.id.btn_reset_pass)
+        btnLogin!!.setOnClickListener(this)
+        btnResetPass!!.setOnClickListener(this)
+        txtEmail = findViewById(R.id.txt_email)
         bindViewModel()
     }
 
@@ -49,10 +63,27 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoading ->
-            if (isLoading) {
+            if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
+            }
+        })
+        userViewModel!!.isForgotPassSuccess.observe(this, Observer {
+            if (userViewModel!!.isLoading.value!! || !isResetPasClicked) {
+                return@Observer
+            }
+            isResetPasClicked = false
+            if (it) {
+                // For got password success => show toast + back to login
+                Toast.makeText(this, getString(R.string.request_forgot_pass_success), Toast.LENGTH_LONG).show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    backToLogin()
+                }, 1000)
+            } else {
+                // Show toast try again
+                Toast.makeText(this, getString(R.string.request_forgot_pass_failure), Toast.LENGTH_LONG).show()
+                loadCaptcha(false)
             }
         })
     }
@@ -68,6 +99,7 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
                 val svgImage: String = (result as JSONObject).getString("image")
                 captchaSecret = result.getString("secret")
                 Sharp.loadString(svgImage).into(ivCaptcha!!)
+                txtCaptchaAnswer!!.setText("")
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -82,9 +114,24 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
 
+    private fun backToLogin() {
+        val loginIntent = Intent(this, LoginActivity::class.java)
+        startActivity(loginIntent)
+        finish()
+    }
+
     override fun onClick(view: View?) {
         when (view) {
             ivCaptcha -> loadCaptcha(true)
+            btnLogin -> backToLogin()
+            btnResetPass -> {
+                if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
+                    Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT).show()
+                    return
+                }
+                isResetPasClicked = true
+                userViewModel!!.forgotPassword(txtEmail!!.text.toString(), captchaSecret.toString(), txtCaptchaAnswer!!.text.toString().toInt())
+            }
         }
     }
 

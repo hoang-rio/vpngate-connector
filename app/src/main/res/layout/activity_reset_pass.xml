@@ -3,9 +3,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="vn.unlimit.vpngate.activities.paid.ResetPassActivity">
 
+    <LinearLayout
+        android:id="@+id/ln_checking_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="@string/checking_reset_pass_token" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ln_invalid_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/invalid_reset_pass_token" />
+
+        <Button
+            android:id="@+id/btn_back_to_free_error"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/selector_primary_button"
+            android:gravity="center"
+            android:text="@string/action_back_to_free"
+            android:textAllCaps="false"
+            android:theme="@style/AppTheme.Button" />
+    </LinearLayout>
+
     <ScrollView
+        android:id="@+id/ln_form"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
