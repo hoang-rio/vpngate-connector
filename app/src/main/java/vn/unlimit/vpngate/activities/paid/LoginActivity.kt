@@ -17,6 +17,7 @@ import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
@@ -63,6 +64,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             if (isLoggingIn!!) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
+                loadingDialog!!.dismiss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
                     if (userViewModel!!.errorList.value!!.get("code") == 101) {
                         Toast.makeText(this, getString(R.string.please_activate_account_first), Toast.LENGTH_SHORT).show()
@@ -71,8 +73,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                         Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    // Go to paid home screen
+                    val paidIntent = Intent(this, PaidServerActivity::class.java)
+                    paidIntent.putExtra(BaseProvider.FROM_LOGIN, true)
+                    startActivity(paidIntent)
+                    finish()
                 }
-                loadingDialog!!.dismiss()
             }
         })
     }

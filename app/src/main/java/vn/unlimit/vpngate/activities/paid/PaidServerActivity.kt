@@ -43,6 +43,7 @@ class PaidServerActivity : AppCompatActivity() {
                 finish()
             }
         }
+        supportActionBar!!.hide()
         bindViewModel()
     }
 

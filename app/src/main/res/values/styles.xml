@@ -21,6 +21,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.NoActionBar.SplashScreen" parent="AppTheme.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
@@ -34,6 +35,7 @@
         <item name="android:editTextColor">@color/colorWhite</item>
         <item name="android:textColorHint">@color/colorWhiteTransparent</item>
     </style>
+
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/colorWhite</item>

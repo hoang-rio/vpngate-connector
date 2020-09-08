@@ -23,10 +23,14 @@ class UserApiRequest : BaseApiRequest() {
         loginData["password"] = password
         post(USER_LOGIN_URL, loginData, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
-                paidServerUtil.setStringSetting(PaidServerUtil.SESSION_ID_KEY, response!!.get("sessionId").toString())
-                paidServerUtil.setStringSetting(PaidServerUtil.USER_INFO_KEY, response.get("user").toString())
-                paidServerUtil.setIsLoggedIn(true)
-                requestListener.onSuccess(response)
+                try {
+                    paidServerUtil.setStringSetting(PaidServerUtil.SESSION_ID_KEY, response!!.get("sessionId").toString())
+                    paidServerUtil.setStringSetting(PaidServerUtil.USER_INFO_KEY, response.get("user").toString())
+                    paidServerUtil.setIsLoggedIn(true)
+                    requestListener.onSuccess(response)
+                } catch (ex: Exception) {
+                    Log.e(TAG, "Process login error", ex)
+                }
             }
 
             override fun onError(anError: ANError?) = requestListener.onError(anError!!.errorBody)
