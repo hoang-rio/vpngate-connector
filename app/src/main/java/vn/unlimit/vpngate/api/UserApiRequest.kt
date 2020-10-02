@@ -79,7 +79,7 @@ class UserApiRequest : BaseApiRequest() {
         data["captcha"] = captcha
         post("$USER_REGISTER_URL${if (isPro) "?version=pro" else ""}", data, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
-                Log.d(TAG, "Register success with email: {}".format(email))
+                Log.d(TAG, "Register success with email: %s".format(email))
                 requestListener.onSuccess(response)
             }
 
@@ -138,7 +138,22 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
-    fun resetPassword(resetPassToken: String, newPassword: String, reNewPassword: String) {
-//        post("/user/reset-pass/${resetPassToken}")
+    fun resetPassword(resetPassToken: String, newPassword: String, reNewPassword: String, requestListener: RequestListener) {
+        val data = HashMap<String, Any>()
+        data["resetPassToken"] = resetPassToken
+        data["password"] = newPassword
+        data["repassword"] = reNewPassword
+        post("/user/password-reset", data, object: JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Reset pass success with response %s".format(response!!.toString()))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Invalid reset pass request %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+
+            }
+        })
     }
 }

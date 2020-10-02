@@ -260,4 +260,9 @@
     <string name="reset_pass_token_can_not_empty">Reset password token can not empty. Exited reset pass screen.</string>
     <string name="checking_reset_pass_token">Check reset pass token\nPlease wait in few second</string>
     <string name="invalid_reset_pass_token">Invalid reset password token. Use button bellow to return.</string>
+    <string name="password_updated_you_can_login_now">Password updated. You can login now!</string>
+    <string name="this_password_is_used_before_please_choose_another">This password is used before. Please choose another password!</string>
+    <string name="change_password_failed_with_unknow_error">Reset password failed by unknow error. Please retry!</string>
+    <!-- Home screen -->
+    <string name="home_paid_welcome">Hello %s!</string>
 </resources>

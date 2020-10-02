@@ -17,7 +17,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val paidServerDataUtil = App.getInstance().paidServerUtil
     private val userApiRequest = UserApiRequest()
-
+    var userInfo: MutableLiveData<JSONObject?> = MutableLiveData(paidServerDataUtil.getUserInfo())
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerDataUtil.isLoggedIn())
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -32,14 +32,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         isLoading.value = true
         userApiRequest.login(username, password, object : RequestListener {
             override fun onSuccess(result: Any?) {
-                Log.e(TAG, result.toString())
+                Log.e(TAG, "Login success with response %s".format(result!!.toString()))
+                val userInfoRes = (result as JSONObject).getJSONObject("user")
+                userInfo.value = userInfoRes
+                paidServerDataUtil.setUserInfo(userInfoRes)
                 isLoggedIn.value = true
                 paidServerDataUtil.setIsLoggedIn(true)
                 isLoading.value = false
             }
 
             override fun onError(error: String) {
-                Log.e(TAG, error)
+                Log.e(TAG, "Login failure with error %s".format(error))
                 errorList.value = JSONObject(error)
                 isLoading.value = false
             }
@@ -49,7 +52,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchUser() {
         userApiRequest.fetchUser(object : RequestListener {
             override fun onSuccess(result: Any?) {
-                Log.d(TAG, "fetch user success")
+                Log.d(TAG, "fetch user success with response %s".format(result!!.toString()))
+                val userInfoRes = (result as JSONObject)
+                userInfo.value = userInfoRes
+                paidServerDataUtil.setUserInfo(userInfoRes)
             }
 
             override fun onError(error: String?) {
@@ -57,7 +63,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     isLoggedIn.value = false
                     paidServerDataUtil.setIsLoggedIn(false)
                 }
-                Log.e(TAG, "fetch user error with error {}".format(error))
+                Log.e(TAG, "fetch user error with error %s".format(error))
             }
         })
     }
@@ -128,9 +134,24 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun resetPassword(resetPassToken: String, newPassword: String) {
+    fun resetPassword(resetPassToken: String, newPassword: String, renewPassword: String) {
         isLoading.value = true
         isPasswordReseted.value = false
+        userApiRequest.resetPassword(resetPassToken, newPassword, renewPassword, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isPasswordReseted.value = true
+                isLoading.value = false
+            }
+
+            override fun onError(error: String?) {
+                val errorResponse = JSONObject(error!!.toString())
+                if (errorResponse.has("errorList")) {
+                    errorList.value = errorResponse.get("errorList") as JSONObject
+                }
+                isPasswordReseted.value = false
+                isLoading.value = false
+            }
+        })
     }
 
 }

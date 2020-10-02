@@ -18,7 +18,7 @@ open class BaseApiRequest {
     }
 
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
-    private val sessionHeaderName = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_session_header_key))
+    private val sessionHeaderName = paidServerUtil.getSessionHeaderName()
 
     private val apiEndPoint: String = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
 

@@ -223,4 +223,9 @@
     <string name="reset_pass_token_can_not_empty">Mã đặt lại mật khẩu không thể rỗng. Đã đóng màn hình đặt lại mật khẩu</string>
     <string name="checking_reset_pass_token">Đang kiểm tra mã đặt lại mật khẩu\nVui lòng đợi trong giây lát</string>
     <string name="invalid_reset_pass_token">Mã đặt lại mật khẩu không đúng. Dùng nút phía đưới quay lại.</string>
+    <string name="password_updated_you_can_login_now">Mật khẩu đã được cập nhật. Bạn có thể đăng nhập rồi!</string>
+    <string name="this_password_is_used_before_please_choose_another">Mật khẩu này đã từng sủ dụng. Vui lòng chọn mật khẩu khác nhé!</string>
+    <string name="change_password_failed_with_unknow_error">Đặt lại mật khẩu thất bại do lỗi không xác định. Vui lòng thử lại!</string>
+    <!-- Home screen -->
+    <string name="home_paid_welcome">Xin chào %s!</string>
 </resources>

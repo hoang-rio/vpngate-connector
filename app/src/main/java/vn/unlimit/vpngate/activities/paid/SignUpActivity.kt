@@ -42,10 +42,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
     private val userNameRegex = "^[a-z0-9]{5,30}$"
-    private val passWordRegex = "^[-\\w.$@*!]{5,30}$"
 
     companion object {
         private const val TAG = "SignUpActivity"
+        const val passWordRegex = "^[-\\w.$@*!]{5,30}$"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

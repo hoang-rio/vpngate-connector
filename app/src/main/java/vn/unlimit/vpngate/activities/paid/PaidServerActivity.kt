@@ -18,13 +18,14 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 class PaidServerActivity : AppCompatActivity() {
 
     private var isFromLogin = false
-    private var userViewModel: UserViewModel? = null
+    var userViewModel: UserViewModel? = null
 
     companion object {
         const val TAG = "PaidServerActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        bindViewModel()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paid_server)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
@@ -44,7 +45,6 @@ class PaidServerActivity : AppCompatActivity() {
             }
         }
         supportActionBar!!.hide()
-        bindViewModel()
     }
 
     private fun bindViewModel() {
@@ -65,5 +65,9 @@ class PaidServerActivity : AppCompatActivity() {
             userViewModel!!.fetchUser()
         }
         super.onResume()
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

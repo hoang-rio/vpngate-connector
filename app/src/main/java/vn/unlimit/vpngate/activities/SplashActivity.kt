@@ -52,6 +52,10 @@ class SplashActivity : AppCompatActivity() {
                 startStartUpActivity()
             }
         }
+        appUpdateInfoTask.addOnFailureListener{ e ->
+            Log.e(TAG, "Update check failure", e)
+            startStartUpActivity()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

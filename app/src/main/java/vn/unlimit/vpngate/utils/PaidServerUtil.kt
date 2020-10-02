@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 
@@ -26,6 +27,7 @@ class PaidServerUtil(context: Context) {
 
     private val sharedPreferencesSetting: SharedPreferences = context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
     var mContext: Context = context
+    private var userInfo: JSONObject? = if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else JSONObject(getStringSetting(USER_INFO_KEY)!!)
 
     /**
      * Check paid user is logged in or not
@@ -46,7 +48,29 @@ class PaidServerUtil(context: Context) {
     fun setIsLoggedIn(isLoggedIn: Boolean) {
         val editor = sharedPreferencesSetting.edit()
         editor.putBoolean(IS_LOGGED_IN, isLoggedIn)
+        if (!isLoggedIn) {
+            // Remove user info
+            editor.remove(USER_INFO_KEY)
+        }
         editor.apply()
+    }
+
+    /**
+     * Set user info after login success
+     * @param userInfo user info from server or fetch user
+     */
+    fun setUserInfo(userInfo: JSONObject) {
+        this.userInfo = userInfo
+        val editor =  sharedPreferencesSetting.edit()
+        editor.putString(USER_INFO_KEY, this.userInfo!!.toString())
+        editor.apply()
+    }
+
+    /**
+     * Get logged in user info
+     */
+    fun getUserInfo(): JSONObject? {
+        return this.userInfo;
     }
 
     /**
