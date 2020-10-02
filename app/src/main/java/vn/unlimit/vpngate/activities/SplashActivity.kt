@@ -1,11 +1,15 @@
 package vn.unlimit.vpngate.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -22,11 +26,39 @@ class SplashActivity : AppCompatActivity() {
         const val TAG = "SplashActivity"
         const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
         const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
+        const val REQUEST_UPDATE_CODE = 100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+    }
+
+    private fun checkAppUpdateAndStartActivity() {
+        // Creates instance of the manager.
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+
+        // Returns an intent object that you use to check for an update.
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        // Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // For a flexible update, use AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, this, REQUEST_UPDATE_CODE)
+            } else {
+                startStartUpActivity()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_UPDATE_CODE && resultCode != Activity.RESULT_OK) {
+            checkAppUpdateAndStartActivity()
+        }
     }
 
     private fun startStartUpActivity() {
@@ -74,10 +106,10 @@ class SplashActivity : AppCompatActivity() {
                             finish()
                             return@addOnSuccessListener
                         }
-                        startStartUpActivity()
+                        checkAppUpdateAndStartActivity()
                     } else {
                         Log.d(TAG, "No dynamic link found")
-                        startStartUpActivity()
+                        checkAppUpdateAndStartActivity()
                     }
 
 
@@ -90,7 +122,7 @@ class SplashActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener {
                     Log.e(TAG, "getDynamicLink:onFailure", it)
-                    startStartUpActivity()
+                    checkAppUpdateAndStartActivity()
                 }
     }
 
