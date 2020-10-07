@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.api
 
+import android.app.Activity
 import android.util.Log
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
@@ -37,14 +38,14 @@ class UserApiRequest : BaseApiRequest() {
         })
     }
 
-    fun fetchUser(requestListener: RequestListener) {
+    fun fetchUser(requestListener: RequestListener, activity: Activity? = null) {
         get(GET_USER_URL, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 paidServerUtil.setStringSetting(PaidServerUtil.USER_INFO_KEY, response!!.toString())
                 requestListener.onSuccess(response)
             }
 
-            override fun onError(anError: ANError?) = errorHandle(anError, requestListener)
+            override fun onError(anError: ANError?) = errorHandle(anError, requestListener, activity)
         })
     }
 

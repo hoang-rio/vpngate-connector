@@ -2,8 +2,8 @@
     android:shape="rectangle">
 
     <corners
-        android:bottomLeftRadius="180dp"
-        android:bottomRightRadius="180dp" />
+        android:bottomLeftRadius="190dp"
+        android:bottomRightRadius="190dp" />
     <solid android:color="@color/colorPaidServer" />
     <stroke
         android:width="1dip"

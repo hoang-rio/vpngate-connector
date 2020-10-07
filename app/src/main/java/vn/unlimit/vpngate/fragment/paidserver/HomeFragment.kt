@@ -7,13 +7,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private val paidServerUtil = App.getInstance().paidServerUtil
     private var txtWelcome: TextView? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var userViewModel: UserViewModel? = null
+    private var paidServerActivity: PaidServerActivity? = null
+    private var txtDataSize: TextView? = null
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -21,20 +27,32 @@ class HomeFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_paid_server_home, container, false)
         txtWelcome = root.findViewById(R.id.text_home)
+        txtDataSize = root.findViewById(R.id.txt_data_size)
         if(paidServerUtil.getUserInfo() != null) {
             txtWelcome!!.text = getString(R.string.home_paid_welcome, paidServerUtil.getUserInfo()!!.getString("fullname"))
+            txtDataSize!!.text = paidServerUtil.getUserInfo()!!.getInt("dataSize").toString()
         }
+        swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
+        swipeRefreshLayout?.setOnRefreshListener(this)
         bindViewModel()
         return root
     }
 
     private fun bindViewModel() {
-        val paidServerActivity = (activity as PaidServerActivity)
-        val userViewModel = paidServerActivity.userViewModel
-        userViewModel?.userInfo?.observe(paidServerActivity, Observer { userInfo ->
+        paidServerActivity = (activity as PaidServerActivity)
+        this.userViewModel = paidServerActivity?.userViewModel
+        userViewModel?.userInfo?.observe(paidServerActivity!!, Observer { userInfo ->
             run {
                 txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                txtDataSize!!.text = userInfo?.getInt("dataSize").toString()
             }
         })
+        userViewModel?.isLoading?.observe(paidServerActivity!!, Observer {
+            swipeRefreshLayout?.isRefreshing = it
+        })
+    }
+
+    override fun onRefresh() {
+        userViewModel?.fetchUser(true, paidServerActivity)
     }
 }

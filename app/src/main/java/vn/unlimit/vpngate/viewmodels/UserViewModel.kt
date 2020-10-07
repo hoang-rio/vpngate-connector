@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.viewmodels
 
+import android.app.Activity
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -49,13 +50,19 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun fetchUser() {
+    fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null) {
+        if (updateLoading) {
+            isLoading.value = true;
+        }
         userApiRequest.fetchUser(object : RequestListener {
             override fun onSuccess(result: Any?) {
                 Log.d(TAG, "fetch user success with response %s".format(result!!.toString()))
                 val userInfoRes = (result as JSONObject)
                 userInfo.value = userInfoRes
                 paidServerDataUtil.setUserInfo(userInfoRes)
+                if (updateLoading) {
+                    isLoading.value = false;
+                }
             }
 
             override fun onError(error: String?) {
@@ -64,8 +71,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     paidServerDataUtil.setIsLoggedIn(false)
                 }
                 Log.e(TAG, "fetch user error with error %s".format(error))
+                if (updateLoading) {
+                    isLoading.value = false;
+                }
             }
-        })
+        }, activity)
     }
 
     fun register(username: String, fullName: String, email: String, password: String, repassword: String, birthDay: String, timeZone: String, captchaAnswer: Int, captchaSecret: String) {

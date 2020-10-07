@@ -11,31 +11,74 @@
         android:background="@drawable/paid_home_bg"
         android:layout_width="match_parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/text_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="start"
+        android:textAlignment="textStart"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp" />
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/ln_swipe_refresh"
         android:layout_width="match_parent"
         android:foregroundTint="@color/colorWhite"
+        android:layout_below="@id/text_home"
+        android:background="@android:color/transparent"
         android:layout_height="match_parent">
-
         <ScrollView
+            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/text_home"
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:gravity="start"
-                android:textAlignment="textStart"
-                android:textColor="@color/colorWhite"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:background="@color/colorWhite"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="160dp"
+                    android:elevation="8dp">
+                    <LinearLayout
+                        android:padding="10dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="textStart"
+                            android:gravity="start"
+                            style="@style/label"
+                            android:text="@string/remaining_data_size"/>
+                        <TextView
+                            android:id="@+id/txt_data_size"
+                            android:text=""
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:textAlignment="textEnd"
+                            android:gravity="end"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        style="@style/AppTheme.Setting.Line"
+                        android:layout_marginBottom="10dp"/>
+                </LinearLayout>
+                <TextView
+                    android:gravity="center"
+                    android:text="Another feature in inprogress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

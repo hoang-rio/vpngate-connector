@@ -1,5 +1,7 @@
 package vn.unlimit.vpngate.api
 
+import android.app.Activity
+import android.content.Intent
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
@@ -7,6 +9,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
@@ -60,12 +63,20 @@ open class BaseApiRequest {
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
-    fun errorHandle(anError: ANError?, requestListener: RequestListener) {
-        if (anError!!.errorCode == 401) {
+    fun errorHandle(anError: ANError?, requestListener: RequestListener, activity: Activity? = null) {
+        if (anError?.errorCode == 401) {
             // Session expires
             paidServerUtil.setIsLoggedIn(false)
             paidServerUtil.removeSetting(PaidServerUtil.USER_INFO_KEY)
             requestListener.onError(ERROR_SESSION_EXPIRES)
+            // Redirect to login screen
+            if (activity != null && !activity.isFinishing) {
+                val intentLogin = Intent(activity, LoginActivity::class.java)
+                activity.startActivity(intentLogin)
+                activity.finish()
+            }
+        } else {
+            requestListener.onError(anError?.errorBody)
         }
     }
 }

@@ -265,4 +265,5 @@
     <string name="change_password_failed_with_unknow_error">Reset password failed by unknow error. Please retry!</string>
     <!-- Home screen -->
     <string name="home_paid_welcome">Hello %s!</string>
+    <string name="remaining_data_size">Remaining data</string>
 </resources>
