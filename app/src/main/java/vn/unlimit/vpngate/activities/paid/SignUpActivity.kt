@@ -42,6 +42,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
     private val userNameRegex = "^[a-z0-9]{5,30}$"
+    private var isPressedSignup = false
 
     companion object {
         private const val TAG = "SignUpActivity"
@@ -83,8 +84,8 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoading ->
-            if (isLoading) {
+        userViewModel!!.isLoading.observe(this, { isLoading ->
+            if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
@@ -94,7 +95,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
 
     private fun buildErrorList(): String {
         Log.d(TAG, userViewModel!!.errorList.value.toString())
-        return ""
+        return userViewModel!!.errorList.value.toString()
     }
 
     private fun loadCaptcha(isReload: Boolean = false) {
@@ -195,6 +196,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                 throw Exception(resources.getString(R.string.invalid_timezone))
             }
             userViewModel!!.isRegisterSuccess.observe(this, Observer { isRegisterSuccess ->
+                if (!isPressedSignup) {
+                    return@Observer
+                }
+                isPressedSignup = false
                 if (isRegisterSuccess) {
                     Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_LONG).show()
                     val intentLogin = Intent(this, LoginActivity::class.java)
@@ -204,6 +209,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                     Toast.makeText(this, getString(R.string.register_failed, buildErrorList()), Toast.LENGTH_LONG).show()
                 }
             })
+            isPressedSignup = true
             userViewModel!!.register(
                     txtUserName!!.text.toString(),
                     txtFullName!!.text.toString(),

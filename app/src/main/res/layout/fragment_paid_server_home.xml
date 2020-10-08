@@ -48,7 +48,6 @@
                     android:background="@drawable/border_data"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
-                    android:elevation="5dp"
                     android:layout_height="150dp"
                     tools:ignore="UnusedAttribute">
                     <LinearLayout
