@@ -8,6 +8,8 @@ import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import java.util.*
+import kotlin.collections.HashMap
 
 class UserApiRequest : BaseApiRequest() {
     companion object {
@@ -72,6 +74,8 @@ class UserApiRequest : BaseApiRequest() {
         user["timezone"] = timeZone
         user["password"] = password
         user["repassword"] = repassword
+        user["userPlatform"] = "Android"
+        user["language"] = Locale.getDefault().language
         val captcha = HashMap<String, String>()
         captcha["answer"] = captchaAnswer.toString()
         captcha["secret"] = captchaSecret
@@ -153,7 +157,21 @@ class UserApiRequest : BaseApiRequest() {
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Invalid reset pass request %s".format(anError!!.errorBody))
                 requestListener.onError(anError.errorBody)
+            }
+        })
+    }
 
+    fun addDevice(fcmPushId: String, sessionId: String) {
+        val data = HashMap<String, String>()
+        data["fcmPushId"] = fcmPushId
+        data["sessionId"] = sessionId
+        post("/user/device/add", data, object : JSONObjectRequestListener{
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Add device success with message %s".format(response.toString()))
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Add device error with message %s".format(anError!!.errorBody))
             }
         })
     }

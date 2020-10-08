@@ -9,7 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="vn.unlimit.vpngate.fragment.paidserver.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_paid_server_home" />
 
     <fragment
         android:id="@+id/navigation_server_list"
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_free_server"
-        android:name="vn.unlimit.vpngate.fragment.paidserver.ServersFragment"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.HomeFragment"
         android:label="@string/title_free_server"
-        tools:layout="@layout/fragment_server_list" />
+        tools:layout="@layout/fragment_paid_server_home" />
 </navigation>

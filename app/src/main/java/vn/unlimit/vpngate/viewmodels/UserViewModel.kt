@@ -3,13 +3,19 @@ package vn.unlimit.vpngate.viewmodels
 import android.app.Activity
 import android.app.Application
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.utils.PaidServerUtil
+
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
@@ -52,7 +58,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null) {
         if (updateLoading) {
-            isLoading.value = true;
+            isLoading.value = true
         }
         userApiRequest.fetchUser(object : RequestListener {
             override fun onSuccess(result: Any?) {
@@ -61,7 +67,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 userInfo.value = userInfoRes
                 paidServerDataUtil.setUserInfo(userInfoRes)
                 if (updateLoading) {
-                    isLoading.value = false;
+                    isLoading.value = false
                 }
             }
 
@@ -72,7 +78,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 Log.e(TAG, "fetch user error with error %s".format(error))
                 if (updateLoading) {
-                    isLoading.value = false;
+                    isLoading.value = false
                 }
             }
         }, activity)
@@ -162,6 +168,30 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 isLoading.value = false
             }
         })
+    }
+
+    fun addDevice() {
+        FirebaseMessaging.getInstance().token
+                .addOnCompleteListener(object : OnCompleteListener<String?> {
+                    override fun onComplete(@NonNull task: Task<String?>) {
+                        if (!task.isSuccessful) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                            return
+                        }
+
+                        // Get new FCM registration token
+                        val token: String? = task.result
+
+                        // Log and toast
+                        Log.d(TAG, "After login addDevice with fcmId: %s".format(token))
+                        if (token != null) {
+                            val sessionId = paidServerDataUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY, "")
+                            if (sessionId != null) {
+                                userApiRequest.addDevice(token, sessionId)
+                            }
+                        }
+                    }
+                })
     }
 
 }

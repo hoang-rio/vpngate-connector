@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
@@ -41,13 +41,13 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun bindViewModel() {
         paidServerActivity = (activity as PaidServerActivity)
         this.userViewModel = paidServerActivity?.userViewModel
-        userViewModel?.userInfo?.observe(paidServerActivity!!, Observer { userInfo ->
+        userViewModel?.userInfo?.observe(paidServerActivity!!, { userInfo ->
             run {
                 txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
-                txtDataSize!!.text = userInfo?.getInt("dataSize").toString()
+                txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
             }
         })
-        userViewModel?.isLoading?.observe(paidServerActivity!!, Observer {
+        userViewModel?.isLoading?.observe(paidServerActivity!!, {
             swipeRefreshLayout?.isRefreshing = it
         })
     }

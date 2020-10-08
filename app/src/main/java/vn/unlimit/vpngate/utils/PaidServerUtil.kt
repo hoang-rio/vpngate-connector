@@ -17,6 +17,7 @@ class PaidServerUtil(context: Context) {
         private const val IS_LOGGED_IN = "IS_LOGGED_IN"
         const val SESSION_ID_KEY = "SESSION_ID_KEY"
         const val USER_INFO_KEY = "USER_INFO_KEY"
+        const val DEVICE_ID_KEY = "DEVICE_ID_KEY"
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
     }
 
@@ -70,7 +71,7 @@ class PaidServerUtil(context: Context) {
      * Get logged in user info
      */
     fun getUserInfo(): JSONObject? {
-        return this.userInfo;
+        return this.userInfo
     }
 
     /**

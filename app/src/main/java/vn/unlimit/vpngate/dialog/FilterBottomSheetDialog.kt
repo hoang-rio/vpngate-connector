@@ -26,7 +26,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     var onButtonClickListener: OnButtonClickListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = BottomSheetDialog(activity!!)
+        val dialog = BottomSheetDialog(requireActivity())
         dialog.setOnShowListener { localDialog ->
             val d = localDialog as BottomSheetDialog
             val bottomSheet = d.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)!!
@@ -114,7 +114,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         } else {
             spinnerInitSession.setStringArray(listOperator, listOperator[0])
         }
-        spinnerInitSession.setOnItemSelectedIndexListener { name, index ->
+        spinnerInitSession.setOnItemSelectedIndexListener { _, index ->
             mFilter.sessionCountFilterOperator = listOperatorEnum[index]
         }
     }

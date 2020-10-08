@@ -3,7 +3,6 @@ package vn.unlimit.vpngate.activities.paid
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -49,7 +48,7 @@ class PaidServerActivity : AppCompatActivity() {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoggedIn.observe(this, Observer<Boolean> { isLoggedIn ->
+        userViewModel!!.isLoggedIn.observe(this, { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(this@PaidServerActivity, LoginActivity::class.java)
@@ -62,7 +61,9 @@ class PaidServerActivity : AppCompatActivity() {
     override fun onResume() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
-            userViewModel!!.fetchUser()
+            userViewModel!!.fetchUser(true, this)
+        } else {
+            userViewModel!!.addDevice()
         }
         super.onResume()
     }
