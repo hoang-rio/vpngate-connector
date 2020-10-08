@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnBuyData: LinearLayout? = null
     private var lnPurchaseHistory: LinearLayout? = null
     private var isObsveredRefresh = false
+
+    companion object {
+        const val TAG = "HomeFragment"
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -52,23 +58,29 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         this.userViewModel = paidServerActivity?.userViewModel
         userViewModel?.userInfo?.observe(paidServerActivity!!, { userInfo ->
             run {
-                txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
-                txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                if (!isDetached) {
+                    txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                }
             }
         })
     }
 
     override fun onRefresh() {
-        if (!this.isDetached) {
-            userViewModel?.fetchUser(true, paidServerActivity, true)
-        } else {
-            swipeRefreshLayout?.isRefreshing = false
-        }
-        if (!isObsveredRefresh) {
-            userViewModel?.isLoading?.observe(paidServerActivity!!, {
-                swipeRefreshLayout?.isRefreshing = it
-            })
-            isObsveredRefresh = true
+        try {
+            if (!isDetached) {
+                userViewModel?.fetchUser(true, paidServerActivity, true)
+            } else {
+                swipeRefreshLayout?.isRefreshing = false
+            }
+            if (!isObsveredRefresh) {
+                userViewModel?.isLoading?.observe(paidServerActivity!!, {
+                    swipeRefreshLayout?.isRefreshing = it
+                })
+                isObsveredRefresh = true
+            }
+        } catch (th: Throwable) {
+            Log.e(TAG, "OnRefresh error", th)
         }
     }
 
@@ -80,7 +92,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     }
 
     override fun onClick(view: View?) {
-        when(view) {
+        when (view) {
             lnBuyData -> {
                 Toast.makeText(context, "Buy data is developing feature", Toast.LENGTH_SHORT).show()
             }
