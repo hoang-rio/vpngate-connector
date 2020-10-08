@@ -17,7 +17,7 @@ class PaidServerUtil(context: Context) {
         private const val IS_LOGGED_IN = "IS_LOGGED_IN"
         const val SESSION_ID_KEY = "SESSION_ID_KEY"
         const val USER_INFO_KEY = "USER_INFO_KEY"
-        const val DEVICE_ID_KEY = "DEVICE_ID_KEY"
+        const val LAST_USER_FETCH_TIME = "LAST_USER_FETCH_TIME"
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
     }
 
@@ -62,9 +62,7 @@ class PaidServerUtil(context: Context) {
      */
     fun setUserInfo(userInfo: JSONObject) {
         this.userInfo = userInfo
-        val editor =  sharedPreferencesSetting.edit()
-        editor.putString(USER_INFO_KEY, this.userInfo!!.toString())
-        editor.apply()
+        setStringSetting(USER_INFO_KEY, this.userInfo!!.toString())
     }
 
     /**
@@ -110,6 +108,23 @@ class PaidServerUtil(context: Context) {
         editor.apply()
     }
 
+    /**
+     * Get Long setting
+     * @param key Setting key
+     * @param defVal Default value if get null from storage
+     */
+    fun getLongSetting(key: String, defVal: Long = 0): Long? = sharedPreferencesSetting.getLong(key, defVal)
+
+    /**
+     * Set Long setting to storage
+     * @param key Setting key
+     * @param value Setting value
+     */
+    fun setLongSetting(key: String, value: Long) {
+        val editor = sharedPreferencesSetting.edit()
+        editor.putLong(key, value)
+        editor.apply()
+    }
     /**
      * Remove setting key
      * @param key Setting key want to remove

@@ -15,11 +15,13 @@ import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import java.util.*
 
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
-        const val TAG = "PaidServerViewModel"
+        const val TAG = "UserViewModel"
+        const val USER_CACHE_TIME = 10 * 60 * 1000 // 10 Minute
     }
 
     private val paidServerDataUtil = App.getInstance().paidServerUtil
@@ -56,7 +58,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null) {
+    fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null, forceFetch: Boolean = false) {
+        val lastFetchTime = paidServerDataUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
+        var date = Calendar.getInstance().time
+        var nowInMs = date.time
+        if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME < nowInMs) {
+            // Skip fetch user user in cache
+            return
+        }
         if (updateLoading) {
             isLoading.value = true
         }
@@ -69,6 +78,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 if (updateLoading) {
                     isLoading.value = false
                 }
+                date = Calendar.getInstance().time
+                nowInMs = date.time
+                paidServerDataUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
             }
 
             override fun onError(error: String?) {

@@ -48,7 +48,7 @@
                     android:background="@drawable/border_data"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
-                    android:layout_height="150dp"
+                    android:layout_height="152dp"
                     tools:ignore="UnusedAttribute">
                     <LinearLayout
                         android:padding="10dp"
@@ -84,6 +84,7 @@
                         android:layout_height="match_parent"
                         android:baselineAligned="false">
                         <LinearLayout
+                            android:id="@+id/ln_buy_data"
                             android:clickable="true"
                             android:orientation="vertical"
                             android:background="@drawable/border_buy_data"
@@ -110,6 +111,7 @@
                                 android:layout_height="wrap_content"/>
                         </LinearLayout>
                         <LinearLayout
+                            android:id="@+id/ln_purchase_history"
                             android:clickable="true"
                             android:orientation="vertical"
                             android:padding="10dp"

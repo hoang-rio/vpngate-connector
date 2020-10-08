@@ -18,6 +18,9 @@ class UserApiRequest : BaseApiRequest() {
         const val GET_USER_URL = "/user/get"
         const val GET_CAPTCHA_URL = "/user/captcha"
         const val USER_REGISTER_URL = "/user/register"
+        const val USER_DEVICE_ADD = "/user/device/add"
+        const val USER_PASSWORD_RESET = "/user/password-reset"
+        const val USER_PASSWORD_FORGOT = "/user/password/forgot"
     }
 
     fun login(username: String, password: String, requestListener: RequestListener) {
@@ -116,7 +119,7 @@ class UserApiRequest : BaseApiRequest() {
         captcha["answer"] = captchaAnswer
         data["captcha"] = captcha
         data["email"] = usernameOrEmail
-        post("/user/password/forgot", data, object : JSONObjectRequestListener {
+        post(USER_PASSWORD_FORGOT, data, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 Log.d(TAG, "Forgot password success with response: %s".format(response!!.toString()))
                 requestListener.onSuccess(response)
@@ -130,7 +133,7 @@ class UserApiRequest : BaseApiRequest() {
     }
 
     fun checkResetPassToken(resetPassToken: String, requestListener: RequestListener) {
-        get("/user/password-reset/${resetPassToken}", object : JSONObjectRequestListener {
+        get("$USER_PASSWORD_RESET/${resetPassToken}", object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 Log.d(TAG, "Valid reset pass token with response %s".format(response!!.toString()))
                 requestListener.onSuccess(response)
@@ -148,7 +151,7 @@ class UserApiRequest : BaseApiRequest() {
         data["resetPassToken"] = resetPassToken
         data["password"] = newPassword
         data["repassword"] = reNewPassword
-        post("/user/password-reset", data, object: JSONObjectRequestListener {
+        post(USER_PASSWORD_RESET, data, object: JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 Log.d(TAG, "Reset pass success with response %s".format(response!!.toString()))
                 requestListener.onSuccess(response)
@@ -162,10 +165,15 @@ class UserApiRequest : BaseApiRequest() {
     }
 
     fun addDevice(fcmPushId: String, sessionId: String) {
-        val data = HashMap<String, String>()
+        val data = HashMap<String, Any>()
         data["fcmPushId"] = fcmPushId
         data["sessionId"] = sessionId
-        post("/user/device/add", data, object : JSONObjectRequestListener{
+        data["platform"] = "Android"
+        val notificationSetting = HashMap<String, Boolean>()
+        notificationSetting["ticket"] = true
+        notificationSetting["data"] = true
+        data["notificationSetting"] = notificationSetting
+        post(USER_DEVICE_ADD, data, object : JSONObjectRequestListener{
             override fun onResponse(response: JSONObject?) {
                 Log.d(TAG, "Add device success with message %s".format(response.toString()))
             }
