@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,6 +27,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnBuyData: LinearLayout? = null
     private var lnPurchaseHistory: LinearLayout? = null
     private var isObsveredRefresh = false
+    private var isAttached = false
 
     companion object {
         const val TAG = "HomeFragment"
@@ -53,12 +55,22 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         return root
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        isAttached = true
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        isAttached = false
+    }
+
     private fun bindViewModel() {
         paidServerActivity = (activity as PaidServerActivity)
         this.userViewModel = paidServerActivity?.userViewModel
         userViewModel?.userInfo?.observe(paidServerActivity!!, { userInfo ->
             run {
-                if (!isDetached) {
+                if (isAttached) {
                     txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
                     txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
                 }
@@ -68,7 +80,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
 
     override fun onRefresh() {
         try {
-            if (!isDetached) {
+            if (isAttached) {
                 userViewModel?.fetchUser(true, paidServerActivity, true)
             } else {
                 swipeRefreshLayout?.isRefreshing = false
