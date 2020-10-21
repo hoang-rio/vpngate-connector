@@ -228,7 +228,7 @@
     <string name="change_password_failed_with_unknow_error">Đặt lại mật khẩu thất bại do lỗi không xác định. Vui lòng thử lại!</string>
     <!-- Home screen -->
     <string name="home_paid_welcome">Xin chào %s</string>
-    <string name="remaining_data_size">Dung lượng</string>
+    <string name="remaining_data_size">Dung lượng còn lại</string>
     <string name="action_buy_data">Mua dung lượng</string>
     <string name="action_purchase_history">Lịch sử thanh toán</string>
     <string name="calculating_data_size">Đang tính toán…</string>

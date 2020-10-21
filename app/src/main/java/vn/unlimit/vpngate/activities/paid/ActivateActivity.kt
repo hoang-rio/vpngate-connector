@@ -20,6 +20,7 @@ class ActivateActivity : AppCompatActivity() {
     private var lnActivated: View? = null
     private var lnActivateFailed: View? = null
     private var userViewModel: UserViewModel? = null
+    private var isDoingActivate = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,9 @@ class ActivateActivity : AppCompatActivity() {
         lnActivated!!.visibility = View.INVISIBLE
         lnActivating!!.visibility = View.VISIBLE
         userViewModel!!.isLoading.observe(this, Observer {
+            if (!isDoingActivate) {
+                return@Observer
+            }
             if (it) {
                 lnActivateFailed!!.visibility = View.INVISIBLE
                 lnActivated!!.visibility = View.INVISIBLE
@@ -78,6 +82,7 @@ class ActivateActivity : AppCompatActivity() {
             lnActivateFailed!!.visibility = View.VISIBLE
             return
         }
+        isDoingActivate = true
         userViewModel!!.activateUser(userId, activateCode)
     }
 }

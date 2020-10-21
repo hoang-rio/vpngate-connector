@@ -100,42 +100,31 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ln_sign_up_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp">
-
             <Button
                 android:id="@+id/btn_reset_pass"
                 style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
+                android:layout_margin="15dp"
                 android:background="@drawable/selector_apply_button"
                 android:minWidth="120dp"
                 android:text="@string/action_reset_pass"
-                android:textAllCaps="false"
+                android:textSize="18sp"
                 android:theme="@style/AppTheme.Button" />
 
             <Button
                 android:id="@+id/btn_login"
                 style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/selector_paid_button"
                 android:text="@string/action_sign_in"
-                android:textAllCaps="false"
+                android:textSize="18sp"
                 android:theme="@style/AppTheme.Button"
                 app:layout_constraintVertical_bias="0.2" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>

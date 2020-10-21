@@ -7,12 +7,13 @@
 
     <LinearLayout
         android:id="@+id/ln_activate_failed"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
+        android:padding="15dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/txt_error"
@@ -27,11 +28,12 @@
 
         <Button
             android:id="@+id/btn_back_to_free"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_primary_button"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
+            android:textAllCaps="false"
             android:text="@string/action_back_to_free"
             android:textColor="@color/colorWhite" />
     </LinearLayout>
@@ -43,7 +45,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -61,11 +63,12 @@
 
     <LinearLayout
         android:id="@+id/ln_activated"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
+        android:padding="15dp"
         android:visibility="gone">
 
         <TextView
@@ -79,8 +82,9 @@
             android:textStyle="bold" />
 
         <Button
+            android:textSize="18sp"
             android:id="@+id/btn_login"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_paid_button"
             android:paddingStart="15dp"

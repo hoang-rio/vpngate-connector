@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="vn.unlimit.vpngate.activities.paid.ResetPassActivity">
 
     <LinearLayout
         android:id="@+id/ln_checking_token"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="parent">
+        android:visibility="visible">
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -34,43 +30,43 @@
         android:id="@+id/ln_invalid_token"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="parent">
+        android:padding="15dp"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/invalid_reset_pass_token" />
+            android:text="@string/invalid_reset_pass_token"
+            android:textColor="@color/colorRed"
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/btn_back_to_free_error"
             style="?attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/selector_primary_button"
             android:gravity="center"
             android:text="@string/action_back_to_free"
-            android:textAllCaps="false"
+            android:textSize="18sp"
             android:theme="@style/AppTheme.Button" />
     </LinearLayout>
 
     <ScrollView
         android:id="@+id/ln_form"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <LinearLayout
-            android:layout_marginTop="220dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="220dp"
             android:orientation="vertical"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
@@ -91,9 +87,9 @@
 
             <EditText
                 android:id="@+id/txt_re_new_password"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:autofillHints="@string/prompt_re_new_password"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_re_new_password"
@@ -102,42 +98,29 @@
                 android:selectAllOnFocus="true"
                 tools:ignore="UnusedAttribute" />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/btn_reset_pass"
+                style="?attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:gravity="center">
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_reset_pass"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
 
-                <Button
-                    android:id="@+id/btn_reset_pass"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginRight="30dp"
-                    android:background="@drawable/selector_paid_button"
-                    android:text="@string/action_reset_pass"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button" />
-
-                <Button
-                    style="?attr/buttonBarButtonStyle"
-                    android:id="@+id/btn_back_to_free"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/selector_primary_button"
-                    android:text="@string/action_back_to_free"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btn_back_to_free"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_back_to_free"
+                android:textAllCaps="false"
+                android:theme="@style/AppTheme.Button" />
         </LinearLayout>
     </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

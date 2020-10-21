@@ -14,10 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin">
+            android:padding="15dp">
 
             <EditText
                 android:id="@+id/txt_username"
@@ -73,79 +70,77 @@
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/action_hide_password"
                     android:padding="0dp"
+
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:src="@drawable/ic_eye_show"
                     android:text="@string/action_show_password"
                     android:textAllCaps="false" />
             </RelativeLayout>
+            <Button
 
-            <LinearLayout
-                android:id="@+id/ln_login_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:gravity="center"
-                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln_password">
+                app:layout_constraintTop_toBottomOf="@+id/ln_password"
+                android:id="@+id/btn_login"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_sign_in"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintVertical_bias="0.2" />
 
-                <Button
-                    android:id="@+id/btn_login"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/selector_paid_button"
-                    android:text="@string/action_sign_in"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
-                    app:layout_constraintVertical_bias="0.2" />
-
-                <Button
-                    android:id="@+id/btn_sign_up"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/selector_apply_button"
-                    android:text="@string/action_sign_up"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
-                    app:layout_constraintVertical_bias="0.2" />
-            </LinearLayout>
+            <Button
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_login"
+                android:id="@+id/btn_sign_up"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_apply_button"
+                android:text="@string/action_sign_up"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintVertical_bias="0.2" />
 
             <Button
                 android:id="@+id/btn_forgot_pass"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorTransparent"
                 android:text="@string/action_forgot_pass"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln_login_btn"
+                app:layout_constraintTop_toBottomOf="@+id/btn_sign_up"
                 app:layout_constraintVertical_bias="0.2" />
 
             <Button
                 android:id="@+id/btn_back_to_free"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginStart="48dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="48dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginBottom="64dp"
                 android:background="@drawable/selector_primary_button"
                 android:text="@string/action_back_to_free"

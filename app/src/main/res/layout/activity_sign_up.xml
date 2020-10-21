@@ -192,47 +192,37 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ln_sign_up_btn"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btn_sign_up"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp">
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/selector_apply_button"
+                android:minWidth="120dp"
+                android:text="@string/action_sign_up"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_password"
+                app:layout_constraintVertical_bias="0.2" />
 
-                <Button
-                    android:id="@+id/btn_sign_up"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:minWidth="120dp"
-                    android:background="@drawable/selector_apply_button"
-                    android:text="@string/action_sign_up"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_password"
-                    app:layout_constraintVertical_bias="0.2" />
-
-                <Button
-                    android:id="@+id/btn_login"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:background="@drawable/selector_paid_button"
-                    android:text="@string/action_sign_in"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
-                    app:layout_constraintVertical_bias="0.2" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btn_login"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_sign_in"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintVertical_bias="0.2" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
