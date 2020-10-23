@@ -11,16 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.PaidServerAdapter
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 
-class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener {
 
     private var recyclerView: RecyclerView? = null
     private var mContext: Context? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var serverViewModel: ServerViewModel? = null
     private var paidServerAdapter: PaidServerAdapter? = null
+    private var lnLoadingWrap: View? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -31,17 +33,26 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         recyclerView = root.findViewById(R.id.rcv_list_server)
         recyclerView!!.layoutManager = LinearLayoutManager(mContext)
         paidServerAdapter = PaidServerAdapter((mContext))
+        paidServerAdapter!!.setOnItemClickListener(this)
         recyclerView!!.adapter = paidServerAdapter
         swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
+        lnLoadingWrap = root.findViewById(R.id.ln_loading_wrap)
         return root
     }
 
     private fun bindViewModel() {
-        serverViewModel?.isLoading?.observe(this, {isLoading ->
+        serverViewModel?.isLoading?.observe(this, { isLoading ->
+            if (serverViewModel?.serverList?.value.isNullOrEmpty()) {
+                lnLoadingWrap?.visibility = View.VISIBLE
+                swipeRefreshLayout!!.visibility = View.GONE
+                return@observe
+            }
+            swipeRefreshLayout!!.visibility = View.VISIBLE
+            lnLoadingWrap?.visibility = View.GONE
             swipeRefreshLayout?.isRefreshing = isLoading
         })
-        serverViewModel?.serverList?.observe(this, {listServer ->
+        serverViewModel?.serverList?.observe(this, { listServer ->
             paidServerAdapter?.initialize(listServer)
         })
     }
@@ -60,5 +71,9 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         serverViewModel?.loadServer(activity as PaidServerActivity, true)
+    }
+
+    override fun onItemClick(o: Any?, position: Int) {
+
     }
 }

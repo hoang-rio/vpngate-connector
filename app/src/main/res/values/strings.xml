@@ -29,6 +29,11 @@
     <string name="score_short">Score</string>
     <string name="ping">Ping</string>
     <string name="session">Session</string>
+    <string name="max_session">Max Session</string>
+    <string name="domain">Domain</string>
+    <string name="good">Good</string>
+    <string name="medium">Normal</string>
+    <string name="full">Full</string>
     <string name="uptime">Uptime</string>
     <string name="owner">Owner</string>
     <string name="tcp_port" translatable="false">TCP</string>

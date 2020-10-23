@@ -29,6 +29,11 @@
     <string name="score_short">Điểm</string>
     <string name="ping">Độ trễ</string>
     <string name="session">Số kết nối</string>
+    <string name="max_session">Số kết nối tối đa</string>
+    <string name="domain">Tên miền</string>
+    <string name="good">Tốt</string>
+    <string name="medium">Trung bình</string>
+    <string name="full">Đầy</string>
     <string name="uptime">T.gian bật</string>
     <string name="owner">Chủ sở hữu</string>
     <string name="l2tp_support">Hỗ trợ L2TP</string>

@@ -66,21 +66,21 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
     }
 
     inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, OnLongClickListener {
-        var imgFlag: ImageView
-        var txtCountry: TextView
-        var txtIp: TextView
-        var txtHostname: TextView
-        var txtScore: TextView
-        var txtUptime: TextView
-        var txtSpeed: TextView
-        var txtPing: TextView
-        var txtSession: TextView
-        var txtOwner: TextView
-        var lnTCP: View
-        var txtTCP: TextView
-        var lnUDP: View
-        var txtUDP: TextView
-        var lnL2TP: View
+        var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
+        private var txtCountry: TextView = itemView.findViewById(R.id.txt_country)
+        private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
+        private var txtHostname: TextView = itemView.findViewById(R.id.txt_hostname)
+        private var txtSession: TextView = itemView.findViewById(R.id.txt_session)
+        private var txtOwner: TextView
+        private var lnTCP: View
+        private var txtTCP: TextView
+        private var lnUDP: View
+        private var txtUDP: TextView
+        private var lnL2TP: View
+        private var txtStatusColor: TextView
+        private var txtStatusText: TextView
+        private var txtDomain: TextView
+        private var txtMaxSession: TextView
         fun bindViewHolder(position: Int) {
             try {
                 val paidServer: PaidServer = _list.get(getRealPosition(position))
@@ -92,6 +92,31 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 txtCountry.text = paidServer.serverLocation
                 txtIp.text = paidServer.serverIp
                 txtHostname.text = paidServer.serverName
+                txtDomain.text = paidServer.serverDomain
+                txtSession.text = paidServer.sessionCount.toString()
+                txtMaxSession.text = paidServer.maxSession.toString()
+                if (paidServer.serverStatus === "Full") {
+                    txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorRed))
+                    txtStatusText.text == mContext!!.getText(R.string.full)
+                } else if (paidServer.serverStatus === "Medium"){
+                    txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorAccent))
+                    txtStatusText.text == mContext!!.getText(R.string.medium)
+                } else {
+                    txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorPaidServer))
+                    txtStatusText.text == mContext!!.getText(R.string.good)
+                }
+                if (paidServer.tcpPort > 0) {
+                    lnTCP.visibility = VISIBLE
+                    txtTCP.text = paidServer.tcpPort.toString()
+                } else {
+                    lnTCP.visibility = GONE
+                }
+                if (paidServer.udpPort > 0) {
+                    lnUDP.visibility = VISIBLE
+                    txtUDP.text = paidServer.udpPort.toString()
+                } else {
+                    lnUDP.visibility = GONE
+                }
                 if (paidServer.l2tpSupport == 1) {
                     lnL2TP.visibility = VISIBLE
                 } else {
@@ -133,21 +158,16 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         }
 
         init {
-            imgFlag = itemView.findViewById(R.id.img_flag)
-            txtCountry = itemView.findViewById(R.id.txt_country)
-            txtIp = itemView.findViewById(R.id.txt_ip)
-            txtHostname = itemView.findViewById(R.id.txt_hostname)
-            txtScore = itemView.findViewById(R.id.txt_score)
-            txtUptime = itemView.findViewById(R.id.txt_uptime)
-            txtSpeed = itemView.findViewById(R.id.txt_speed)
-            txtPing = itemView.findViewById(R.id.txt_ping)
-            txtSession = itemView.findViewById(R.id.txt_session)
+            txtMaxSession = itemView.findViewById(R.id.txt_max_session)
             txtOwner = itemView.findViewById(R.id.txt_owner)
             lnTCP = itemView.findViewById(R.id.ln_tcp)
             txtTCP = itemView.findViewById(R.id.txt_tcp_port)
             lnUDP = itemView.findViewById(R.id.ln_udp)
             txtUDP = itemView.findViewById(R.id.txt_udp_port)
             lnL2TP = itemView.findViewById(R.id.ln_l2tp)
+            txtStatusColor = itemView.findViewById(R.id.txt_status_color)
+            txtStatusText = itemView.findViewById(R.id.txt_status_text)
+            txtDomain = itemView.findViewById(R.id.txt_domain)
             itemView.setOnLongClickListener(this)
             itemView.setOnClickListener(this)
         }
