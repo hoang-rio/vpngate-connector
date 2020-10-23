@@ -68,7 +68,7 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
 
     override fun onResume() {
         super.onResume()
-        serverViewModel?.loadServer(activity as PaidServerActivity, true)
+        serverViewModel?.loadServer(activity as PaidServerActivity)
     }
 
     override fun onRefresh() {
@@ -80,7 +80,7 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     }
 
     override fun onScrollDown() {
-
+        serverViewModel?.loadServer(activity as PaidServerActivity)
     }
 
     override fun onScrollUp() {

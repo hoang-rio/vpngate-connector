@@ -26,8 +26,8 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun loadServer(activity: PaidServerActivity, loadFromStart: Boolean = false) {
-        isLoading.value = true
         if (!isOutOfData || loadFromStart) {
+            isLoading.value = true
             var skip = serverList.value?.size
             if (loadFromStart) {
                 skip = 0
@@ -42,6 +42,7 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
                         serverList.value = listServer
                     } else {
                         serverList.value?.addAll(listServer)
+                        serverList.value = serverList.value
                     }
                     isOutOfData = serverList.value?.size!! >= result.get("countServer") as Int
                     isLoading.value = false
@@ -52,8 +53,6 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
                     Log.e(TAG, "Load paid server error with message: %s".format(error))
                 }
             }, activity)
-        } else {
-            isLoading.value = false
         }
     }
 }
