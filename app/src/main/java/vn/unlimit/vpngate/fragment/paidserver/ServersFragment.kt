@@ -12,10 +12,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
+import vn.unlimit.vpngate.adapter.OnScrollListener
 import vn.unlimit.vpngate.adapter.PaidServerAdapter
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 
-class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener {
+class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnScrollListener {
 
     private var recyclerView: RecyclerView? = null
     private var mContext: Context? = null
@@ -34,6 +35,7 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
         recyclerView!!.layoutManager = LinearLayoutManager(mContext)
         paidServerAdapter = PaidServerAdapter((mContext))
         paidServerAdapter!!.setOnItemClickListener(this)
+        paidServerAdapter!!.setOnScrollListener(this)
         recyclerView!!.adapter = paidServerAdapter
         swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
@@ -74,6 +76,14 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     }
 
     override fun onItemClick(o: Any?, position: Int) {
+
+    }
+
+    override fun onScrollDown() {
+
+    }
+
+    override fun onScrollUp() {
 
     }
 }
