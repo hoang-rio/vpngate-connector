@@ -138,9 +138,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataUtil = ((App) getApplication()).getDataUtil();
-        PaidServerUtil paidServerUtil = ((App) getApplication()).getPaidServerUtil();
-        // Set startup screen to free server when open MainActivity
-        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         if (savedInstanceState != null) {
             isLoading = false;
             currentUrl = savedInstanceState.getString("currentUrl");
@@ -164,6 +161,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
         paidServerUtil = App.getInstance().getPaidServerUtil();
+        // Set startup screen to free server when open MainActivity
+        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
@@ -179,11 +178,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void checkStatusMenu() {
-        if (dataUtil.getLastVPNConnection() != null) {
-            navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
-        } else {
-            navigationView.getMenu().findItem(R.id.nav_status).setVisible(false);
-        }
+        navigationView.getMenu().findItem(R.id.nav_status).setVisible(dataUtil.getLastVPNConnection() != null);
     }
 
     private void initAdMob() {
@@ -664,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             }
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+            new Handler(getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
         } else {
             if (vpnGateConnectionList == null) {
                 getDataServer();

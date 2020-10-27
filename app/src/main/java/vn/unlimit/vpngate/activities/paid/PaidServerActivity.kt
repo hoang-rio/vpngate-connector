@@ -2,13 +2,17 @@ package vn.unlimit.vpngate.activities.paid
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_paid_server.*
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
@@ -22,6 +26,7 @@ class PaidServerActivity : AppCompatActivity() {
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
     var serverViewModel: ServerViewModel? = null
+    private var doubleBackToExitPressedOnce = false
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -76,6 +81,17 @@ class PaidServerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        finish()
+        val currentFragmentId = NavHostFragment.findNavController(nav_host_fragment).currentDestination?.id
+        if (currentFragmentId == R.id.navigation_home) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed()
+                return
+            }
+            doubleBackToExitPressedOnce = true
+            Toast.makeText(this, resources.getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
+            Handler(mainLooper).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+        } else {
+            super.onBackPressed()
+        }
     }
 }
