@@ -18,7 +18,6 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.BaseProvider
-import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
@@ -86,7 +85,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         if (!txtPassword!!.isFocused) {
             txtUsername!!.requestFocus()
         }

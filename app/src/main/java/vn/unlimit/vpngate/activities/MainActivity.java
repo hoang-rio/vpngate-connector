@@ -138,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataUtil = ((App) getApplication()).getDataUtil();
+        PaidServerUtil paidServerUtil = ((App) getApplication()).getPaidServerUtil();
+        // Set startup screen to free server when open MainActivity
+        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         if (savedInstanceState != null) {
             isLoading = false;
             currentUrl = savedInstanceState.getString("currentUrl");

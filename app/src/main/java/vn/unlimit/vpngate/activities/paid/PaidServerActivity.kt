@@ -9,9 +9,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.provider.BaseProvider
+import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
@@ -29,6 +31,8 @@ class PaidServerActivity : AppCompatActivity() {
         bindViewModel()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paid_server)
+        val paidServerUtil = (application as App).paidServerUtil
+        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
