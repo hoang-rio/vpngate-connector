@@ -33,6 +33,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -138,9 +139,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataUtil = ((App) getApplication()).getDataUtil();
-        PaidServerUtil paidServerUtil = ((App) getApplication()).getPaidServerUtil();
-        // Set startup screen to free server when open MainActivity
-        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         if (savedInstanceState != null) {
             isLoading = false;
             currentUrl = savedInstanceState.getString("currentUrl");
@@ -164,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
         paidServerUtil = App.getInstance().getPaidServerUtil();
+        // Set startup screen to free server when open MainActivity
+        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 }
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(int errorCode) {
+                    public void onAdFailedToLoad(LoadAdError error) {
                         adView.setVisibility(View.GONE);
                         hideAdContainer();
                     }
