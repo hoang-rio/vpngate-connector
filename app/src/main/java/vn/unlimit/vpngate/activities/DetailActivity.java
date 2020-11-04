@@ -34,6 +34,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -218,7 +219,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(int errorCode) {
+                    public void onAdFailedToLoad(LoadAdError error) {
                         hideAdContainer();
                     }
                 });
@@ -238,7 +239,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
                 adViewBellow.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(int errorCode) {
+                    public void onAdFailedToLoad(LoadAdError error) {
                         adViewBellow.setVisibility(View.GONE);
                     }
                 });

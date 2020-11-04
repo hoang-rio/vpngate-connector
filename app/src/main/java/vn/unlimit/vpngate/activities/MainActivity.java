@@ -33,6 +33,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 }
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(int errorCode) {
+                    public void onAdFailedToLoad(LoadAdError error) {
                         adView.setVisibility(View.GONE);
                         hideAdContainer();
                     }
