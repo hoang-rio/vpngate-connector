@@ -170,6 +170,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Máy chủ</string>
     <string name="title_free_server">Server miễn phí</string>
+    <string name="vpn_pw_hint">[Mật khẩu của bạn]</string>
     <!-- Login screen -->
     <string name="title_activity_login">Đăng nhập vào máy chủ trả phí</string>
     <string name="title_activity_singup">Đăng ký tài khoản máy chủ trả phí</string>
@@ -190,6 +191,7 @@
     <string name="default_loading_text">Đang tải…</string>
     <string name="username_and_password_is_required">Tài khoản và mật khẩu là bắt buộc nhập</string>
     <string name="account_is_banned">Tài khoản của bạn đã bị khoá với lý do: %s</string>
+    <string name="save_pw_to_connect_vpn">Lưu mật khẩu để kết nối VPN tự động</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Ngày sinh</string>

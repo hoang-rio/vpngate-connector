@@ -77,11 +77,25 @@
                     android:text="@string/action_show_password"
                     android:textAllCaps="false" />
             </RelativeLayout>
+
+            <CheckBox
+                android:id="@+id/cb_save_pw"
+                app:layout_constraintTop_toBottomOf="@id/ln_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:buttonTint="@color/colorPaidServer"
+                android:checked="true"
+                android:textColor="@color/colorTextPrimary"
+                android:text="@string/save_pw_to_connect_vpn"/>
             <Button
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln_password"
+                app:layout_constraintTop_toBottomOf="@+id/cb_save_pw"
                 android:id="@+id/btn_login"
                 style="?attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"

@@ -19,6 +19,8 @@ class PaidServerUtil(context: Context) {
         const val USER_INFO_KEY = "USER_INFO_KEY"
         const val LAST_USER_FETCH_TIME = "LAST_USER_FETCH_TIME"
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
+        const val SAVED_VPN_USER = "SAVED_VPN_USER"
+        const val SAVED_VPN_PW = "SAVED_VPN_PW"
     }
 
     enum class StartUpScreen {

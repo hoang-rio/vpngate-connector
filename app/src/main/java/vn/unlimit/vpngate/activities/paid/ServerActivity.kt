@@ -1,21 +1,25 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.L2TPConnectActivity
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 
-class ServerActivity : AppCompatActivity(),View.OnClickListener {
+class ServerActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val TAG = "ServerActivity"
     }
+
     private var ivBack: ImageView? = null
     private var ivFlag: ImageView? = null
     private var txtCountry: TextView? = null
@@ -32,6 +36,8 @@ class ServerActivity : AppCompatActivity(),View.OnClickListener {
     private var txtStatusText: TextView? = null
     private var txtDomain: TextView? = null
     private var txtMaxSession: TextView? = null
+    private var btnL2TPConnect: Button? = null
+    private var mPaidServer: PaidServer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,62 +60,70 @@ class ServerActivity : AppCompatActivity(),View.OnClickListener {
         txtStatusColor = findViewById(R.id.txt_status_color)
         txtStatusText = findViewById(R.id.txt_status_text)
         txtDomain = findViewById(R.id.txt_domain)
+        btnL2TPConnect = findViewById(R.id.btn_l2tp_connect)
+        btnL2TPConnect?.setOnClickListener(this)
         bindData()
     }
 
     @Suppress("DEPRECATION")
     private fun bindData() {
-        val paidServer: PaidServer? = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
-        if (paidServer!=null) {
-            try {
-                GlideApp.with(this)
-                        .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
-                        .placeholder(R.color.colorOverlay)
-                        .error(R.color.colorOverlay)
-                        .into(ivFlag!!)
-                txtCountry?.text = paidServer.serverLocation
-                txtIp?.text = paidServer.serverIp
-                txtHostname?.text = paidServer.serverName
-                txtDomain?.text = paidServer.serverDomain
-                txtSession?.text = paidServer.sessionCount.toString()
-                txtMaxSession?.text = paidServer.maxSession.toString()
-                if (paidServer.serverStatus === "Full") {
-                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorRed))
-                    txtStatusText?.text = getText(R.string.full)
-                } else if (paidServer.serverStatus === "Medium"){
-                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorAccent))
-                    txtStatusText?.text = getText(R.string.medium)
-                } else {
-                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorGoodStatus))
-                    txtStatusText?.text = getText(R.string.good)
-                }
-                if (paidServer.tcpPort > 0) {
-                    lnTCP?.visibility = View.VISIBLE
-                    txtTCP?.text = paidServer.tcpPort.toString()
-                } else {
-                    lnTCP?.visibility = View.GONE
-                }
-                if (paidServer.udpPort > 0) {
-                    lnUDP?.visibility = View.VISIBLE
-                    txtUDP?.text = paidServer.udpPort.toString()
-                } else {
-                    lnUDP?.visibility = View.GONE
-                }
-                if (paidServer.l2tpSupport == 1) {
-                    lnL2TP?.visibility = View.VISIBLE
-                } else {
-                    lnL2TP?.visibility = View.GONE
-                }
-            } catch (th: Throwable) {
-                Log.e(TAG, "Bind data error", th)
-                th.printStackTrace()
+        mPaidServer = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
+        try {
+            GlideApp.with(this)
+                    .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
+                    .placeholder(R.color.colorOverlay)
+                    .error(R.color.colorOverlay)
+                    .into(ivFlag!!)
+            txtCountry?.text = mPaidServer!!.serverLocation
+            txtIp?.text = mPaidServer!!.serverIp
+            txtHostname?.text = mPaidServer!!.serverName
+            txtDomain?.text = mPaidServer!!.serverDomain
+            txtSession?.text = mPaidServer!!.sessionCount.toString()
+            txtMaxSession?.text = mPaidServer!!.maxSession.toString()
+            if (mPaidServer!!.serverStatus === "Full") {
+                txtStatusColor?.setTextColor(resources.getColor(R.color.colorRed))
+                txtStatusText?.text = getText(R.string.full)
+            } else if (mPaidServer!!.serverStatus === "Medium") {
+                txtStatusColor?.setTextColor(resources.getColor(R.color.colorAccent))
+                txtStatusText?.text = getText(R.string.medium)
+            } else {
+                txtStatusColor?.setTextColor(resources.getColor(R.color.colorGoodStatus))
+                txtStatusText?.text = getText(R.string.good)
             }
+            if (mPaidServer!!.tcpPort > 0) {
+                lnTCP?.visibility = View.VISIBLE
+                txtTCP?.text = mPaidServer!!.tcpPort.toString()
+            } else {
+                lnTCP?.visibility = View.GONE
+            }
+            if (mPaidServer!!.udpPort > 0) {
+                lnUDP?.visibility = View.VISIBLE
+                txtUDP?.text = mPaidServer!!.udpPort.toString()
+            } else {
+                lnUDP?.visibility = View.GONE
+            }
+            if (mPaidServer!!.l2tpSupport == 1) {
+                lnL2TP?.visibility = View.VISIBLE
+                btnL2TPConnect?.visibility = View.VISIBLE
+            } else {
+                lnL2TP?.visibility = View.GONE
+                btnL2TPConnect?.visibility = View.GONE
+            }
+        } catch (th: Throwable) {
+            Log.e(TAG, "Bind data error", th)
+            th.printStackTrace()
         }
     }
 
     override fun onClick(v: View?) {
-        when(v) {
+        when (v) {
             ivBack -> onBackPressed()
+            btnL2TPConnect -> {
+                val intentL2TP = Intent(this, L2TPConnectActivity::class.java)
+                intentL2TP.putExtra(BaseProvider.L2TP_SERVER_TYPE, L2TPConnectActivity.TYPE_PAID)
+                intentL2TP.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mPaidServer)
+                startActivity(intentL2TP)
+            }
         }
     }
 }
