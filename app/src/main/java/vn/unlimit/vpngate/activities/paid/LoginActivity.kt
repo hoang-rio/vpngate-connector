@@ -74,7 +74,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 } else {
                     if (cbSavePassword!!.isChecked) {
-                        paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_USER, txtUsername!!.text.toString())
                         paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
                     }
                     // Go to paid home screen
