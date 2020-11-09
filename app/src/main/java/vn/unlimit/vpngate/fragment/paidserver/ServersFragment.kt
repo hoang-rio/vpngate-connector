@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.activities.paid.ServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.OnScrollListener
 import vn.unlimit.vpngate.adapter.PaidServerAdapter
+import vn.unlimit.vpngate.models.PaidServer
+import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 
 class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnScrollListener {
@@ -76,7 +80,10 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     }
 
     override fun onItemClick(o: Any?, position: Int) {
-
+        val selectedServer: PaidServer = (o as PaidServer)
+        val intentServer = Intent(context, ServerActivity::class.java)
+        intentServer.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, selectedServer)
+        startActivity(intentServer)
     }
 
     override fun onScrollDown() {

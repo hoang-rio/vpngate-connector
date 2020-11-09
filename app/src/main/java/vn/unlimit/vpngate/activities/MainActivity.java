@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 //        System.loadLibrary("native-lib");
 //    }
 
-    private static String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
-    private static String SORT_TYPE_KEY = "SORT_TYPE_KEY";
+    private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
+    private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     View lnLoading;
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private AdView adView;
     private boolean isInFront = false;
     private PaidServerUtil paidServerUtil;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (Objects.requireNonNull(intent.getAction())) {
@@ -295,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         unregisterReceiver(broadcastReceiver);
     }
 
+    @SuppressWarnings("deprecation")
     private void getDataServer() {
         isLoading = true;
         lnLoading.setVisibility(View.VISIBLE);

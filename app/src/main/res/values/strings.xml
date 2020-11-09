@@ -274,4 +274,5 @@
     <string name="action_buy_data">Buy data</string>
     <string name="action_purchase_history">Purchase history</string>
     <string name="calculating_data_size">Calculating…</string>
+    <string name="status_dot" translatable="false">•</string>
 </resources>

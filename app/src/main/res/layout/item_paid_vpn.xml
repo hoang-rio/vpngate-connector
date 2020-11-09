@@ -263,12 +263,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
+                android:layout_marginTop="-5dp"
                 android:id="@+id/txt_status_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="50sp"
-                android:textColor="@color/colorPaidServer"
-                android:text="•"/>
+                android:textColor="@color/colorGoodStatus"
+                android:text="@string/status_dot"/>
             <TextView
                 android:id="@+id/txt_status_text"
                 android:layout_width="wrap_content"

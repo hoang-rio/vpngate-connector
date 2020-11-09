@@ -65,7 +65,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return _list.size
     }
 
-    inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, OnLongClickListener {
+    inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), OnClickListener, OnLongClickListener {
         var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
         private var txtCountry: TextView = itemView.findViewById(R.id.txt_country)
         private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
@@ -80,7 +80,8 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private var txtStatusColor: TextView
         private var txtStatusText: TextView
         private var txtDomain: TextView
-        private var txtMaxSession: TextView
+        private var txtMaxSession: TextView = itemView.findViewById(R.id.txt_max_session)
+        @Suppress("DEPRECATION")
         fun bindViewHolder(position: Int) {
             try {
                 val paidServer: PaidServer = _list.get(getRealPosition(position))
@@ -97,13 +98,13 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 txtMaxSession.text = paidServer.maxSession.toString()
                 if (paidServer.serverStatus === "Full") {
                     txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorRed))
-                    txtStatusText.text == mContext!!.getText(R.string.full)
+                    txtStatusText.text = mContext!!.getText(R.string.full)
                 } else if (paidServer.serverStatus === "Medium"){
                     txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorAccent))
-                    txtStatusText.text == mContext!!.getText(R.string.medium)
+                    txtStatusText.text = mContext!!.getText(R.string.medium)
                 } else {
-                    txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorPaidServer))
-                    txtStatusText.text == mContext!!.getText(R.string.good)
+                    txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorGoodStatus))
+                    txtStatusText.text = mContext!!.getText(R.string.good)
                 }
                 if (paidServer.tcpPort > 0) {
                     lnTCP.visibility = VISIBLE
@@ -158,7 +159,6 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         }
 
         init {
-            txtMaxSession = itemView.findViewById(R.id.txt_max_session)
             txtOwner = itemView.findViewById(R.id.txt_owner)
             lnTCP = itemView.findViewById(R.id.ln_tcp)
             txtTCP = itemView.findViewById(R.id.txt_tcp_port)

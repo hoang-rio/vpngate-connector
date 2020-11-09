@@ -46,7 +46,7 @@ android {
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
             versionCode 58
-            versionName "1.5.7-dev"
+            versionName "1.5.8-dev"
         }
     }
 
@@ -100,9 +100,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-inappmessaging-display'
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.android.play:core:1.8.2'
+    implementation 'com.google.android.play:core:1.8.3'
     implementation 'com.google.guava:guava:28.2-android'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.1'
