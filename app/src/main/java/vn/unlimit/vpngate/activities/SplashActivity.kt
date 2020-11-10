@@ -32,6 +32,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+        checkDynamicLink()
     }
 
     private fun checkAppUpdateAndStartActivity() {
@@ -49,7 +50,7 @@ class SplashActivity : AppCompatActivity() {
             ) {
                 appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, this, REQUEST_UPDATE_CODE)
             } else {
-                startStartUpActivity()
+                startStartUpActivity(100)
             }
         }
         appUpdateInfoTask.addOnFailureListener{ e ->
@@ -66,7 +67,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun startStartUpActivity() {
+    private fun startStartUpActivity(delay: Long = 300) {
         val actIntent: Intent
         val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
         if (paidServerUtil.getStartUpScreen() == PaidServerUtil.StartUpScreen.PAID_SERVER) {
@@ -81,7 +82,7 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(actIntent)
             finish()
-        }, 500)
+        }, delay)
     }
 
     private fun checkDynamicLink() {
@@ -129,10 +130,5 @@ class SplashActivity : AppCompatActivity() {
                     Log.e(TAG, "getDynamicLink:onFailure", it)
                     checkAppUpdateAndStartActivity()
                 }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        checkDynamicLink()
     }
 }
