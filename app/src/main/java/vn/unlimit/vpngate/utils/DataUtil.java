@@ -53,7 +53,7 @@ public class DataUtil {
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
-    private String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
+    private final String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
 
     public DataUtil(Context context) {
         try {

@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.api.ServerApiRequest
 import vn.unlimit.vpngate.models.PaidServer
@@ -15,8 +16,9 @@ import vn.unlimit.vpngate.request.RequestListener
 import java.lang.reflect.Type
 
 class ServerViewModel(application: Application) : AndroidViewModel(application) {
+    val paidServerUtil = App.getInstance().paidServerUtil
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    var serverList: MutableLiveData<ArrayList<PaidServer>> = MutableLiveData(ArrayList())
+    var serverList: MutableLiveData<ArrayList<PaidServer>> = MutableLiveData(paidServerUtil.getServersCache())
     private val serverApiRequest = ServerApiRequest()
     private var isOutOfData: Boolean = false
 
@@ -43,6 +45,9 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
                     } else {
                         serverList.value?.addAll(listServer)
                         serverList.value = serverList.value
+                    }
+                    if (serverList.value != null) {
+                        paidServerUtil.setServersCache(serverList.value!!)
                     }
                     isOutOfData = serverList.value?.size!! >= result.get("countServer") as Int
                     isLoading.value = false

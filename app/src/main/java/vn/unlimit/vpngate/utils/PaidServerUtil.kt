@@ -4,10 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
+import java.io.*
+import java.lang.reflect.Type
 
 /**
  * All process of paid server with device storage will do here
@@ -23,7 +28,10 @@ class PaidServerUtil(context: Context) {
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
         const val SAVED_VPN_PW = "SAVED_VPN_PW"
         private const val LAST_CONNECT_SERVER = "LAST_CONNECT_SERVER"
+        private const val SERVER_CACHE_KEY = "SERVER_CACHE_KEY"
     }
+
+    val gson = Gson()
 
     enum class StartUpScreen {
         FREE_SERVER,
@@ -157,7 +165,6 @@ class PaidServerUtil(context: Context) {
      * Set last connect server
      */
     fun setLastConnectServer(paidServer: PaidServer) {
-        val gson = Gson()
         setStringSetting(LAST_CONNECT_SERVER, gson.toJson(paidServer))
     }
 
@@ -166,7 +173,38 @@ class PaidServerUtil(context: Context) {
      */
     fun getLastConnectServer(): PaidServer? {
         val jsonStr = getStringSetting(LAST_CONNECT_SERVER) ?: return null
-        val gson = Gson()
         return gson.fromJson(jsonStr, PaidServer::class.java)
+    }
+
+    /**
+     * Set Servers cache
+     */
+    fun setServersCache(servers: List<PaidServer>) {
+        val outFile = File(mContext.filesDir, SERVER_CACHE_KEY)
+        val out = FileOutputStream(outFile)
+        val type: Type = object : TypeToken<List<PaidServer?>?>() {}.type
+        val writer = JsonWriter(OutputStreamWriter(out, "utf8"))
+        gson.toJson(servers, type, writer)
+        writer.close()
+    }
+
+    /**
+     * Get servers cache
+     */
+    fun getServersCache(): ArrayList<PaidServer> {
+        try {
+            val inFile = File(mContext.filesDir, SERVER_CACHE_KEY)
+            return if (!inFile.isFile) {
+                ArrayList()
+            } else {
+                val fileInputStream = FileInputStream(inFile)
+                val reader = JsonReader(InputStreamReader(fileInputStream))
+                val type: Type = object : TypeToken<List<PaidServer?>?>() {}.type
+                return gson.fromJson(reader, type)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return ArrayList()
     }
 }

@@ -52,8 +52,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(error: String) {
                 Log.e(TAG, "Login failure with error %s".format(error))
-                errorList.value = JSONObject(error)
-                isLoading.value = false
+                try {
+                    errorList.value = JSONObject(error)
+                    isLoading.value = false
+                } catch (e: Exception) {
+                    isLoading.value = false
+                }
             }
         })
     }
