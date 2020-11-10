@@ -170,6 +170,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Máy chủ</string>
     <string name="title_free_server">Server miễn phí</string>
+    <string name="title_buy_data">Mua dung lượng</string>
     <string name="vpn_pw_hint">[Mật khẩu của bạn]</string>
     <!-- Login screen -->
     <string name="title_activity_login">Đăng nhập vào máy chủ trả phí</string>

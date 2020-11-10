@@ -207,6 +207,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Servers</string>
     <string name="title_free_server">Free Server</string>
+    <string name="title_buy_data">Buy data</string>
     <string name="vpn_paid_shared_secret" translatable="false">vpngate</string>
     <string name="vpn_pw_hint">[Your password]</string>
     <!-- Login screen -->

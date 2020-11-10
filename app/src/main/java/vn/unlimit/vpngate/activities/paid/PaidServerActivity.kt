@@ -3,9 +3,11 @@ package vn.unlimit.vpngate.activities.paid
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,13 +23,14 @@ import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class PaidServerActivity : AppCompatActivity() {
+class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
     var serverViewModel: ServerViewModel? = null
     private var doubleBackToExitPressedOnce = false
     private var isPaused = false
+    var navController: NavController? = null
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -41,14 +44,14 @@ class PaidServerActivity : AppCompatActivity() {
         paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home, R.id.navigation_server_list, R.id.navigation_free_server))
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        setupActionBarWithNavController(navController!!, appBarConfiguration)
+        navView.setupWithNavController(navController!!)
+        navController!!.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.navigation_free_server) {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
@@ -56,6 +59,16 @@ class PaidServerActivity : AppCompatActivity() {
             }
         }
         supportActionBar!!.hide()
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.navigation_free_server) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return false
+        }
+        return true
     }
 
     private fun bindViewModel() {

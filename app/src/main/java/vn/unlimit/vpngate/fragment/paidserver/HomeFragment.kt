@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
@@ -106,7 +107,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onClick(view: View?) {
         when (view) {
             lnBuyData -> {
-                Toast.makeText(context, "Buy data is developing feature", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "Buy data is developing feature", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.navigation_buy_data)
             }
             lnPurchaseHistory -> {
                 Toast.makeText(context, "Purchase history is developing feature", Toast.LENGTH_SHORT).show()
