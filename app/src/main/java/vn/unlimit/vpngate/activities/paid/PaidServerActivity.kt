@@ -27,6 +27,7 @@ class PaidServerActivity : AppCompatActivity() {
     var userViewModel: UserViewModel? = null
     var serverViewModel: ServerViewModel? = null
     private var doubleBackToExitPressedOnce = false
+    private var isPaused = false
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -68,16 +69,25 @@ class PaidServerActivity : AppCompatActivity() {
                 finish()
             }
         })
-    }
-
-    override fun onResume() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
-            userViewModel!!.fetchUser(true, this)
+            userViewModel!!.fetchUser(true, this, true)
         } else {
             userViewModel!!.addDevice()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isPaused = true
+    }
+
+    override fun onResume() {
         super.onResume()
+        if (!isFromLogin && isPaused) {
+            userViewModel!!.fetchUser(true, this)
+        }
+        isPaused = false
     }
 
     override fun onBackPressed() {

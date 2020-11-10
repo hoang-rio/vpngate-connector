@@ -98,7 +98,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
 
     override fun onResume() {
         super.onResume()
-        if (!this.isDetached) {
+        if (isAttached) {
             userViewModel?.fetchUser(true, paidServerActivity)
         }
     }

@@ -70,9 +70,9 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
         bindViewModel()
     }
 
-    override fun onResume() {
-        super.onResume()
-        serverViewModel?.loadServer(activity as PaidServerActivity)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        serverViewModel?.loadServer(activity as PaidServerActivity, true)
     }
 
     override fun onRefresh() {

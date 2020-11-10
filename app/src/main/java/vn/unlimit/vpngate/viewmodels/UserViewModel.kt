@@ -66,7 +66,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         val lastFetchTime = paidServerDataUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
         var date = Calendar.getInstance().time
         var nowInMs = date.time
-        if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME < nowInMs) {
+        if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME > nowInMs || isLoading.value!!) {
             // Skip fetch user user in cache
             return
         }
