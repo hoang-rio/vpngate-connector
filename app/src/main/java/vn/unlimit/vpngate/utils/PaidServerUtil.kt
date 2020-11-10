@@ -3,9 +3,11 @@ package vn.unlimit.vpngate.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.gson.Gson
 import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.models.PaidServer
 
 /**
  * All process of paid server with device storage will do here
@@ -20,6 +22,7 @@ class PaidServerUtil(context: Context) {
         const val LAST_USER_FETCH_TIME = "LAST_USER_FETCH_TIME"
         private const val STARTUP_SCREEN_KEY = "STARTUP_SCREEN_KEY"
         const val SAVED_VPN_PW = "SAVED_VPN_PW"
+        private const val LAST_CONNECT_SERVER = "LAST_CONNECT_SERVER"
     }
 
     enum class StartUpScreen {
@@ -148,5 +151,22 @@ class PaidServerUtil(context: Context) {
      */
     fun setStartupScreen(startupScreen: StartUpScreen) {
         setStringSetting(STARTUP_SCREEN_KEY, startupScreen.toString())
+    }
+
+    /**
+     * Set last connect server
+     */
+    fun setLastConnectServer(paidServer: PaidServer) {
+        val gson = Gson()
+        setStringSetting(LAST_CONNECT_SERVER, gson.toJson(paidServer))
+    }
+
+    /**
+     * Get last connect server
+     */
+    fun getLastConnectServer(): PaidServer? {
+        val jsonStr = getStringSetting(LAST_CONNECT_SERVER) ?: return null
+        val gson = Gson()
+        return gson.fromJson(jsonStr, PaidServer::class.java)
     }
 }

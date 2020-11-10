@@ -191,7 +191,6 @@
     <string name="default_loading_text">Đang tải…</string>
     <string name="username_and_password_is_required">Tài khoản và mật khẩu là bắt buộc nhập</string>
     <string name="account_is_banned">Tài khoản của bạn đã bị khoá với lý do: %s</string>
-    <string name="save_pw_to_connect_vpn">Lưu mật khẩu để kết nối VPN tự động</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Ngày sinh</string>

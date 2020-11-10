@@ -93,7 +93,11 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 val paidServer: PaidServer = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)!!
                 txtTitle?.text = getString(R.string.l2tp_connect_title, paidServer.serverName)
                 txtHint?.text = getString(R.string.l2tp_connect_hint, paidServer.serverName)
-                txtEndPoint?.text = paidServer.serverDomain
+                if (dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+                    txtEndPoint?.text = paidServer.serverDomain
+                } else {
+                    txtEndPoint?.text = paidServer.serverIp
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

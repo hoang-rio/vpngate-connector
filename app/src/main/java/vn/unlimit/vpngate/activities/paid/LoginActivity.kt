@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +33,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private val paidServerUtil = App.getInstance().paidServerUtil
     private var loadingDialog: LoadingDialog? = null
     private var isFirstTimeHidePass = true;
-    private var cbSavePassword: CheckBox? = null
 
     companion object {
         private const val TAG = "LoginActivity"
@@ -53,7 +55,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         btnForgotPass = findViewById(R.id.btn_forgot_pass)
         btnForgotPass!!.setOnClickListener(this)
         loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
-        cbSavePassword = findViewById(R.id.cb_save_pw)
         bindViewModel()
     }
 
@@ -73,9 +74,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    if (cbSavePassword!!.isChecked) {
-                        paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
-                    }
+                    paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
                     // Go to paid home screen
                     val paidIntent = Intent(this, PaidServerActivity::class.java)
                     paidIntent.putExtra(BaseProvider.FROM_LOGIN, true)

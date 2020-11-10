@@ -229,7 +229,6 @@
     <string name="default_loading_text">Loading…</string>
     <string name="username_and_password_is_required">Username and password is required</string>
     <string name="account_is_banned">You account is banned with reason: %s</string>
-    <string name="save_pw_to_connect_vpn">Save password to auto connect to VPN Server</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Birthday</string>

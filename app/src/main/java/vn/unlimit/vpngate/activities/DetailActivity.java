@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -276,6 +277,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         // Do nothing
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
         runOnUiThread(() -> {
@@ -342,6 +344,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void bindData() {
         if (mVpnGateConnection != null) {
             try {
@@ -461,7 +464,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             File writeFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
             FileOutputStream fileOutputStream = new FileOutputStream(writeFile);
             fileOutputStream.write(data.getBytes());
-            Toast.makeText(getApplicationContext(), getString(R.string.saved_ovpn_file_in, "Downloads/" + fileName), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.saved_ovpn_file_in, "Download/" + fileName), Toast.LENGTH_LONG).show();
             final Handler handler = new Handler();
             handler.postDelayed(() -> {
                 PackageManager packageManager = getPackageManager();
@@ -476,6 +479,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void handleConnection(final boolean useUdp) {
         loadAds();
         if (checkStatus()) {
