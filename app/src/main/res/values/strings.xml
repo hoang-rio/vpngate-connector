@@ -247,7 +247,7 @@
     <string name="register_failed">Register failed. Please check error list:\n%s</string>
     <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
     <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
-    <string name="email_is_invalid">Email is invalid,please check.</string>
+    <string name="email_is_invalid">Email is invalid, please check.</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Account activate failed: %s</string>
@@ -278,4 +278,7 @@
     <string name="action_purchase_history">Purchase history</string>
     <string name="calculating_data_size">Calculating…</string>
     <string name="status_dot" translatable="false">•</string>
+    <!-- Buy data -->
+    <string name="btn_buy_data">Buy with %s</string>
+    <string name="get_sku_list_error">Get list package error. Please try again</string>
 </resources>

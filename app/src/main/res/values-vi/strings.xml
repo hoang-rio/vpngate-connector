@@ -209,7 +209,7 @@
     <string name="register_failed">Đăng ký thất bại. Hãy kiểm tra danh sách lỗi:\n%s</string>
     <string name="username_is_invalid">Tài khoản không hợp lệ. Tài khoản phải chứa 5 – 30 ký tự thường và số</string>
     <string name="password_is_invalid">Mật khẩu không hợp lệ. Mật khẩu phải chứa 5 – 30 ký tự và số, cho phép các ký tự đặc biệt ($ ! * . -)</string>
-    <string name="email_is_invalid">Email không hợp lệ,vui lòng kiểm tra.</string>
+    <string name="email_is_invalid">Email không hợp lệ, vui lòng kiểm tra.</string>
     <string name="re_type_password_does_not_match">Nhập lại mật khẩu không khớp.</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Kích hoạt tài khoản thất bại: %s</string>
@@ -239,4 +239,7 @@
     <string name="action_buy_data">Mua dung lượng</string>
     <string name="action_purchase_history">Lịch sử thanh toán</string>
     <string name="calculating_data_size">Đang tính toán…</string>
+    <!-- Buy data -->
+    <string name="btn_buy_data">Mua với %s</string>
+    <string name="get_sku_list_error">Lấy danh sách gói thất bại. Vui lòng thử lại</string>
 </resources>
