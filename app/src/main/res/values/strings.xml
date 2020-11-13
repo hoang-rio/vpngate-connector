@@ -281,4 +281,5 @@
     <!-- Buy data -->
     <string name="btn_buy_data">Buy with %s</string>
     <string name="get_sku_list_error">Get list package error. Please try again</string>
+    <string name="price_per_gb">Only %s%s per 1Gb</string>
 </resources>

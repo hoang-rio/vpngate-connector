@@ -242,4 +242,5 @@
     <!-- Buy data -->
     <string name="btn_buy_data">Mua với %s</string>
     <string name="get_sku_list_error">Lấy danh sách gói thất bại. Vui lòng thử lại</string>
+    <string name="price_per_gb">Chỉ với %s %s 1Gb</string>
 </resources>

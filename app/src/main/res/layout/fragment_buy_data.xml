@@ -42,6 +42,18 @@
                 android:textSize="16sp"
                 android:theme="@style/label" />
         </LinearLayout>
+        <TextView
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:id="@+id/txt_data_size"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/calculating_data_size"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            tools:ignore="RelativeOverlap" />
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/ln_loading_wrap"

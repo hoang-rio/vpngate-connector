@@ -39,6 +39,18 @@
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"
             tools:ignore="HardcodedText" />
+
+        <TextView
+            android:textAlignment="center"
+            android:layout_marginTop="3dp"
+            android:id="@+id/txt_price_per_gb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sku price per gb"
+            android:textStyle="italic"
+            android:textSize="13sp"
+            tools:ignore="HardcodedText"
+            android:gravity="center_horizontal" />
     </LinearLayout>
 
     <View

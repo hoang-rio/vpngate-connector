@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.*
+import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SkuDetailsAdapter
 import java.util.*
@@ -27,14 +30,20 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var btnBack: ImageView? = null
     private var listSkus: Array<String>? = null
     private var dataUtil = App.getInstance().dataUtil
+    private var paidServerUtil = App.getInstance().paidServerUtil
     private var billingClient: BillingClient? = null
     private var lnLoading: View? = null
-    private var rcvSkuDetail: RecyclerView? = null
+    private var rcvSkuDetails: RecyclerView? = null
     private var skuDetailsAdapter: SkuDetailsAdapter? = null
+    private var txtDataSize: TextView? = null
     private val purchasesUpdatedListener =
             PurchasesUpdatedListener { billingResult, purchases ->
                 // To be implemented in a later section.
             }
+
+    companion object {
+        const val TAG = "BuyDataFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,25 +52,35 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 .enablePendingPurchases()
                 .build()
         initBilling()
+        bindViewModel()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_buy_data, container, false)
+        txtDataSize = root.findViewById(R.id.txt_data_size)
+        txtDataSize?.text = OpenVPNService.humanReadableByteCount(paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources)
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
         lnLoading = root.findViewById(R.id.ln_loading_wrap)
-        rcvSkuDetail = root.findViewById(R.id.rcv_sku_details)
-        rcvSkuDetail!!.layoutManager = LinearLayoutManager(context)
+        rcvSkuDetails = root.findViewById(R.id.rcv_sku_details)
+        rcvSkuDetails!!.layoutManager = LinearLayoutManager(context)
         skuDetailsAdapter = SkuDetailsAdapter(context)
         skuDetailsAdapter!!.setOnItemClickListener(this)
-        rcvSkuDetail!!.adapter = skuDetailsAdapter
+        rcvSkuDetails!!.adapter = skuDetailsAdapter
         return root
     }
 
-    companion object {
-        const val TAG = "BuyDataFragment"
+    private fun bindViewModel() {
+        val paidServerActivity = activity as PaidServerActivity
+        paidServerActivity.userViewModel?.userInfo?.observe(paidServerActivity, { userInfo ->
+            run {
+                if (!isDetached) {
+                    txtDataSize?.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                }
+            }
+        })
     }
 
     override fun onClick(v: View?) {
@@ -98,7 +117,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 lnLoading?.visibility = View.GONE
-                rcvSkuDetail?.visibility = View.VISIBLE
+                rcvSkuDetails?.visibility = View.VISIBLE
                 Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
                     return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
                 })
