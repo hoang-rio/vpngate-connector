@@ -38,7 +38,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var dataUtil = App.getInstance().dataUtil
     private var paidServerUtil = App.getInstance().paidServerUtil
     private var billingClient: BillingClient? = null
-    private var lnLoading: View? = null
+    private var lnLoadingWrap: View? = null
     private var rcvSkuDetails: RecyclerView? = null
     private var skuDetailsAdapter: SkuDetailsAdapter? = null
     private var txtDataSize: TextView? = null
@@ -102,7 +102,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         txtDataSize?.text = OpenVPNService.humanReadableByteCount(paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources)
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
-        lnLoading = root.findViewById(R.id.ln_loading_wrap)
+        lnLoadingWrap = root.findViewById(R.id.ln_loading_wrap)
         rcvSkuDetails = root.findViewById(R.id.rcv_sku_details)
         rcvSkuDetails!!.layoutManager = LinearLayoutManager(context)
         skuDetailsAdapter = SkuDetailsAdapter(context)
@@ -197,7 +197,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                lnLoading?.visibility = View.GONE
+                lnLoadingWrap?.visibility = View.GONE
                 rcvSkuDetails?.visibility = View.VISIBLE
                 Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
                     return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)

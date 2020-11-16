@@ -248,4 +248,6 @@
     <string name="duplicate_purchase_create_request">Giao dịch mua đã hoàn thành. Vui lòng kiểm tra lịch sử mua</string>
     <string name="invalid_product_id">Gói đã chọn không hợp lệ. Vui lòng thử lại hoặc liên hệ admin để nhận trợ giúp.</string>
     <string name="processing_text">Đang xử lý…</string>
+    <!-- Purchase history -->
+    <string name="title_purchase_history">Lịch sử mua</string>
 </resources>

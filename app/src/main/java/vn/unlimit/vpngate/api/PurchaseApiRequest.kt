@@ -33,4 +33,8 @@ class PurchaseApiRequest : BaseApiRequest() {
             }
         })
     }
+
+    fun listPurchase(take: Int, skip: Int, requestListener: RequestListener) {
+
+    }
 }

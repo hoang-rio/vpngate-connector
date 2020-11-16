@@ -9,8 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="vn.unlimit.vpngate.fragment.paidserver.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_paid_server_home" >
-    </fragment>
+        tools:layout="@layout/fragment_paid_server_home" />
 
     <fragment
         android:id="@+id/navigation_server_list"
@@ -28,6 +27,11 @@
         android:id="@+id/navigation_buy_data"
         android:name="vn.unlimit.vpngate.fragment.paidserver.BuyDataFragment"
         android:label="@string/title_buy_data"
-        tools:layout="@layout/fragment_buy_data"
-        />
+        tools:layout="@layout/fragment_buy_data" />
+
+    <fragment
+        android:id="@+id/navigation_purchase_history"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.PurchaseHistoryFragment"
+        android:label="@string/title_purchase_history"
+        tools:layout="@layout/fragment_purchase_history" />
 </navigation>

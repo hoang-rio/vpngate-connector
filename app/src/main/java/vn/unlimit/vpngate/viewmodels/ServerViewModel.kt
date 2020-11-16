@@ -19,7 +19,6 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
     private var isOutOfData: Boolean = false
 
     companion object {
-        const val ITEM_PER_PAGE = 30
         const val TAG = "ServerViewModel"
     }
 

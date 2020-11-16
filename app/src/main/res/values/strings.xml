@@ -277,4 +277,6 @@
     <string name="duplicate_purchase_create_request">This purchase is completed. Please check purchase history</string>
     <string name="invalid_product_id">Invalid product. Please try again or contact app admin for help.</string>
     <string name="processing_text">Processing…</string>
+    <!-- Purchase history -->
+    <string name="title_purchase_history">Purchase history</string>
 </resources>

@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
+import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import org.json.JSONObject
@@ -10,6 +11,7 @@ import vn.unlimit.vpngate.request.RequestListener
 class PurchaseViewModel(application: Application): BaseViewModel(application) {
     var errorCode: Int? = null
     var purchaseApiRequest: PurchaseApiRequest = PurchaseApiRequest()
+    var listPurchase: MutableLiveData<ArrayList<Any>> = MutableLiveData(ArrayList())
 
     fun createPurchase(purchase: Purchase, skuDetails: SkuDetails) {
         isLoading.value = true
@@ -26,6 +28,22 @@ class PurchaseViewModel(application: Application): BaseViewModel(application) {
             override fun onError(error: String?) {
                 baseErrorHandle(error)
                 errorCode = 1
+                isLoading.value = false
+            }
+        })
+    }
+
+    fun listPurchase(fromStart: Boolean? = false) {
+        isLoading.value = true
+        val take = ITEM_PER_PAGE
+        val skip = if (fromStart!!) 0 else listPurchase.value!!.size
+        purchaseApiRequest.listPurchase(take, skip, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                isLoading.value = false
+            }
+
+            override fun onError(error: String?) {
+                baseErrorHandle(error)
                 isLoading.value = false
             }
         })

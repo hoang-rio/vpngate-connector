@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -110,12 +109,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
 
     override fun onClick(view: View?) {
         when (view) {
-            lnBuyData -> {
-                findNavController().navigate(R.id.navigation_buy_data)
-            }
-            lnPurchaseHistory -> {
-                Toast.makeText(context, "Purchase history is developing feature", Toast.LENGTH_SHORT).show()
-            }
+            lnBuyData -> findNavController().navigate(R.id.navigation_buy_data)
+            lnPurchaseHistory -> findNavController().navigate(R.id.navigation_purchase_history)
         }
     }
 }
