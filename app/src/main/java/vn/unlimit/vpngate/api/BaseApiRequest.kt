@@ -18,9 +18,11 @@ open class BaseApiRequest {
     companion object {
         val jsonHeaders = HashMap<String, String>().put("Content-Type", "application/json")
         const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
+        const val PARAMS_USER_FLAT_FORM = "Android"
     }
 
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+    val isPro = !App.getInstance().dataUtil.hasAds()
     private val sessionHeaderName = paidServerUtil.getSessionHeaderName()
 
     private val apiEndPoint: String = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
@@ -63,12 +65,12 @@ open class BaseApiRequest {
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
-    fun errorHandle(anError: ANError?, requestListener: RequestListener, activity: Activity? = null) {
+    fun baseErrorHandle(anError: ANError?, requestListener: RequestListener? = null, activity: Activity? = null) {
         if (anError?.errorCode == 401) {
             // Session expires
             paidServerUtil.setIsLoggedIn(false)
             paidServerUtil.removeSetting(PaidServerUtil.USER_INFO_KEY)
-            requestListener.onError(ERROR_SESSION_EXPIRES)
+            requestListener?.onError(ERROR_SESSION_EXPIRES)
             // Redirect to login screen
             if (activity != null && !activity.isFinishing) {
                 val intentLogin = Intent(activity, LoginActivity::class.java)
@@ -76,7 +78,7 @@ open class BaseApiRequest {
                 activity.finish()
             }
         } else {
-            requestListener.onError(anError?.errorBody)
+            requestListener?.onError(anError?.errorBody)
         }
     }
 }

@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,10 +22,12 @@ import com.google.gson.reflect.TypeToken
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SkuDetailsAdapter
 import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.*
 import kotlin.collections.ArrayList
@@ -45,6 +49,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var isAttached = false
     private var loadingDialog: LoadingDialog? = null
     private var paidServerActivity: PaidServerActivity? = null
+    private var purchaseViewModel: PurchaseViewModel? = null
     private val purchasesUpdatedListener =
             PurchasesUpdatedListener { billingResult, purchases ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
@@ -70,7 +75,6 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 .enablePendingPurchases()
                 .build()
         initBilling()
-        bindViewModel()
     }
 
     override fun onResume() {
@@ -107,17 +111,31 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindViewModel()
+    }
+
     private fun bindViewModel() {
         paidServerActivity = activity as PaidServerActivity
         userViewModel = paidServerActivity!!.userViewModel
-        userViewModel?.userInfo?.observe(this, { userInfo ->
+        userViewModel?.userInfo?.observe(viewLifecycleOwner, { userInfo ->
             run {
                 if (isAttached) {
                     txtDataSize?.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
                 }
             }
         })
-        userViewModel?.isLoading?.observe(this, {isLoading ->
+        purchaseViewModel = ViewModelProvider(this).get(PurchaseViewModel::class.java)
+        purchaseViewModel?.isLoggedIn?.observe(viewLifecycleOwner, {isLoggedIn ->
+            if (!isLoggedIn) {
+                // Go to login screen if user login status is changed
+                val intentLogin = Intent(paidServerActivity, LoginActivity::class.java)
+                startActivity(intentLogin)
+                paidServerActivity!!.finish()
+            }
+        })
+        purchaseViewModel?.isLoading?.observe(viewLifecycleOwner, {isLoading ->
             if (!isClickedBuyData) {
                 return@observe
             }
@@ -127,6 +145,8 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 if (userViewModel?.errorCode == null) {
                     // Create purchase complete
                     Log.i(TAG, "Purchase product %s complete".format(buyingSkuDetails?.sku))
+                    // Force fetch user to update data size
+                    userViewModel?.fetchUser(forceFetch = true)
                     Toast.makeText(context, getString(R.string.purchase_successful, buyingSkuDetails?.title), Toast.LENGTH_LONG).show()
                 } else {
                     var errorMsg = R.string.invalid_purchase_request
@@ -203,17 +223,18 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     }
 
     private fun handlePurchase(purchase: Purchase) {
-        loadingDialog = if (loadingDialog == null) LoadingDialog.newInstance(getString(R.string.processing_text)) else loadingDialog
-        loadingDialog?.show(paidServerActivity!!.supportFragmentManager, LoadingDialog::class.java.name)
+        if (isAttached) {
+            loadingDialog = if (loadingDialog == null) LoadingDialog.newInstance(getString(R.string.processing_text)) else loadingDialog
+            loadingDialog?.show(paidServerActivity!!.supportFragmentManager, LoadingDialog::class.java.name)
+        }
         val consumeParams =
                 ConsumeParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
                         .build()
-
         billingClient?.consumeAsync(consumeParams) { billingResult, outToken ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
-                userViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+                purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
             }
         }
     }

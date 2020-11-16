@@ -20,14 +20,12 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
-import vn.unlimit.vpngate.viewmodels.ServerViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
-    var serverViewModel: ServerViewModel? = null
     private var doubleBackToExitPressedOnce = false
     private var isPaused = false
     var navController: NavController? = null
@@ -73,7 +71,6 @@ class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigatio
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        serverViewModel = ViewModelProvider(this).get(ServerViewModel::class.java)
         userViewModel!!.isLoggedIn.observe(this, { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed

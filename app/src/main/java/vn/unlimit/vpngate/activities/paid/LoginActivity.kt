@@ -10,8 +10,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
@@ -32,7 +32,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.getInstance().paidServerUtil
     private var loadingDialog: LoadingDialog? = null
-    private var isFirstTimeHidePass = true;
+    private var isFirstTimeHidePass = true
+    private var isClickedLogin = false
 
     companion object {
         private const val TAG = "LoginActivity"
@@ -60,21 +61,38 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoggingIn ->
+        userViewModel!!.isLoading.observe(this, { isLoggingIn ->
+            if (!isClickedLogin) {
+                return@observe
+            }
             if (isLoggingIn!!) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
-            } else if (loadingDialog!!.isVisible) {
-                loadingDialog!!.dismiss()
+            } else {
+                isClickedLogin = false
+                loadingDialog?.dismiss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
+                    val errorMsg: String
                     if (userViewModel!!.errorList.value!!.get("code") == 101) {
-                        Toast.makeText(this, getString(R.string.please_activate_account_first), Toast.LENGTH_SHORT).show()
+                        errorMsg = getString(R.string.please_activate_account_first)
                     } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
-                        Toast.makeText(this, getString(R.string.account_is_banned, userViewModel!!.errorList.value!!.get("banedReason")), Toast.LENGTH_SHORT).show()
+                        if (userViewModel!!.errorList.value!!.has("bannedReason")) {
+                            errorMsg = getString(R.string.account_is_banned, userViewModel!!.errorList.value!!.get("bannedReason"))
+                        } else {
+                            errorMsg = getString(R.string.account_is_banned_no_reason)
+                        }
                     } else {
-                        Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
+                        errorMsg = getString(R.string.login_failed)
                     }
+                    Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                    val params = Bundle()
+                    params.putString("username", txtUsername!!.text.toString())
+                    params.putString("errorMsg", errorMsg)
+                    FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Failed", params)
                 } else {
                     paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
+                    val params = Bundle()
+                    params.putString("username", txtUsername!!.text.toString())
+                    FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Success", params)
                     // Go to paid home screen
                     val paidIntent = Intent(this, PaidServerActivity::class.java)
                     paidIntent.putExtra(BaseProvider.FROM_LOGIN, true)
@@ -100,6 +118,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(this, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
                     return
                 }
+                isClickedLogin = true
                 userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
             ivHidePassword -> {

@@ -2,22 +2,18 @@ package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
-import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.api.ServerApiRequest
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.request.RequestListener
 import java.lang.reflect.Type
 
-class ServerViewModel(application: Application) : AndroidViewModel(application) {
-    val paidServerUtil = App.getInstance().paidServerUtil
-    var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+class ServerViewModel(application: Application) : BaseViewModel(application) {
     var serverList: MutableLiveData<ArrayList<PaidServer>> = MutableLiveData(paidServerUtil.getServersCache())
     private val serverApiRequest = ServerApiRequest()
     private var isOutOfData: Boolean = false
@@ -54,6 +50,7 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
                 }
 
                 override fun onError(error: String?) {
+                    baseErrorHandle(error)
                     isLoading.value = false
                     Log.e(TAG, "Load paid server error with message: %s".format(error))
                 }

@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.activities.paid.ServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
@@ -48,7 +50,16 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     }
 
     private fun bindViewModel() {
-        serverViewModel?.isLoading?.observe(this, { isLoading ->
+        serverViewModel = ViewModelProvider(this).get(ServerViewModel::class.java)
+        serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner, { isLoggedIn ->
+            if (!isLoggedIn!!) {
+                // Go to login screen if user login status is changed
+                val intentLogin = Intent(activity, LoginActivity::class.java)
+                startActivity(intentLogin)
+                activity?.finish()
+            }
+        })
+        serverViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
             if (serverViewModel?.serverList?.value.isNullOrEmpty()) {
                 lnLoadingWrap?.visibility = View.VISIBLE
                 swipeRefreshLayout!!.visibility = View.GONE
@@ -58,21 +69,20 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
             lnLoadingWrap?.visibility = View.GONE
             swipeRefreshLayout?.isRefreshing = isLoading
         })
-        serverViewModel?.serverList?.observe(this, { listServer ->
+        serverViewModel?.serverList?.observe(viewLifecycleOwner, { listServer ->
             paidServerAdapter?.initialize(listServer)
         })
+        serverViewModel?.loadServer(activity as PaidServerActivity, true)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
-        this.serverViewModel = (activity as PaidServerActivity).serverViewModel
-        bindViewModel()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        serverViewModel?.loadServer(activity as PaidServerActivity, true)
+        bindViewModel()
     }
 
     override fun onRefresh() {

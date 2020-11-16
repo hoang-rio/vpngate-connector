@@ -20,7 +20,7 @@ class ServerApiRequest: BaseApiRequest() {
                 requestListener.onSuccess(response)
             }
 
-            override fun onError(anError: ANError?) = errorHandle(anError, requestListener, activity)
+            override fun onError(anError: ANError?) = baseErrorHandle(anError, requestListener, activity)
         })
     }
 }

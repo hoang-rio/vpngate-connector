@@ -4,33 +4,26 @@ import android.app.Activity
 import android.app.Application
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
-import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
 
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+class UserViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "UserViewModel"
         const val USER_CACHE_TIME = 10 * 60 * 1000 // 10 Minute
     }
 
-    private val paidServerDataUtil = App.getInstance().paidServerUtil
     private val userApiRequest = UserApiRequest()
-    var userInfo: MutableLiveData<JSONObject?> = MutableLiveData(paidServerDataUtil.getUserInfo())
-    var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerDataUtil.isLoggedIn())
-    var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    var userInfo: MutableLiveData<JSONObject?> = MutableLiveData(paidServerUtil.getUserInfo())
+
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
     var isUserActivated: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -46,15 +39,16 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e(TAG, "Login success with response %s".format(result!!.toString()))
                 val userInfoRes = (result as JSONObject).getJSONObject("user")
                 userInfo.value = userInfoRes
-                paidServerDataUtil.setUserInfo(userInfoRes)
+                paidServerUtil.setUserInfo(userInfoRes)
                 isLoggedIn.value = true
-                paidServerDataUtil.setIsLoggedIn(true)
+                paidServerUtil.setIsLoggedIn(true)
                 isLoading.value = false
             }
 
             override fun onError(error: String) {
                 Log.e(TAG, "Login failure with error %s".format(error))
                 try {
+                    isLoggedIn.value = false
                     errorList.value = JSONObject(error)
                     isLoading.value = false
                 } catch (e: Exception) {
@@ -65,7 +59,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null, forceFetch: Boolean = false) {
-        val lastFetchTime = paidServerDataUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
+        val lastFetchTime = paidServerUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
         var date = Calendar.getInstance().time
         var nowInMs = date.time
         if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME > nowInMs || updateLoading && isLoading.value!!) {
@@ -80,20 +74,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 Log.d(TAG, "fetch user success with response %s".format(result!!.toString()))
                 val userInfoRes = (result as JSONObject)
                 userInfo.value = userInfoRes
-                paidServerDataUtil.setUserInfo(userInfoRes)
+                paidServerUtil.setUserInfo(userInfoRes)
                 if (updateLoading) {
                     isLoading.value = false
                 }
                 date = Calendar.getInstance().time
                 nowInMs = date.time
-                paidServerDataUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
+                paidServerUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
             }
 
             override fun onError(error: String?) {
-                if (error!! == BaseApiRequest.ERROR_SESSION_EXPIRES) {
-                    isLoggedIn.value = false
-                    paidServerDataUtil.setIsLoggedIn(false)
-                }
+                baseErrorHandle(error)
                 Log.e(TAG, "fetch user error with error %s".format(error))
                 if (updateLoading) {
                     isLoading.value = false
@@ -188,7 +179,6 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-
     fun addDevice() {
         FirebaseMessaging.getInstance().token
                 .addOnCompleteListener(object : OnCompleteListener<String?> {
@@ -204,7 +194,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                         // Log and toast
                         Log.d(TAG, "After login addDevice with fcmId: %s".format(token))
                         if (token != null) {
-                            val sessionId = paidServerDataUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY, "")
+                            val sessionId = paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY, "")
                             if (sessionId != null) {
                                 userApiRequest.addDevice(token, sessionId)
                             }
@@ -212,29 +202,4 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 })
     }
-
-    fun createPurchase(purchase: Purchase, skuDetails: SkuDetails) {
-        isLoading.value = true
-        errorCode = null
-        userApiRequest.createPurchase(purchase, skuDetails, object: RequestListener {
-            override fun onSuccess(result: Any?) {
-                val resultJSon = result as JSONObject
-                if (resultJSon.getBoolean("result")) {
-                    // Purchase success => update user data info
-                    fetchUser(forceFetch = true)
-                } else {
-                    errorCode = resultJSon.getInt("errorCode")
-                }
-                isLoading.value = false
-            }
-
-            override fun onError(error: String?) {
-                errorCode = 1
-                isLoading.value = false
-            }
-
-        })
-    }
-
-
 }

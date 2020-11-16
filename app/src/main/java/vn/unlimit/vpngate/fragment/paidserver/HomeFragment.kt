@@ -27,7 +27,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var txtDataSize: TextView? = null
     private var lnBuyData: LinearLayout? = null
     private var lnPurchaseHistory: LinearLayout? = null
-    private var isObsveredRefresh = false
+    private var isObservedRefresh = false
     private var isAttached = false
 
     companion object {
@@ -52,8 +52,12 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lnBuyData?.setOnClickListener(this)
         lnPurchaseHistory = root.findViewById(R.id.ln_purchase_history)
         lnPurchaseHistory?.setOnClickListener(this)
-        bindViewModel()
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindViewModel()
     }
 
     override fun onAttach(context: Context) {
@@ -69,7 +73,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private fun bindViewModel() {
         paidServerActivity = (activity as PaidServerActivity)
         this.userViewModel = paidServerActivity?.userViewModel
-        userViewModel?.userInfo?.observe(paidServerActivity!!, { userInfo ->
+        userViewModel?.userInfo?.observe(viewLifecycleOwner, { userInfo ->
             run {
                 if (isAttached) {
                     txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
@@ -86,11 +90,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             } else {
                 swipeRefreshLayout?.isRefreshing = false
             }
-            if (!isObsveredRefresh) {
+            if (!isObservedRefresh) {
                 userViewModel?.isLoading?.observe(paidServerActivity!!, {
                     swipeRefreshLayout?.isRefreshing = it
                 })
-                isObsveredRefresh = true
+                isObservedRefresh = true
             }
         } catch (th: Throwable) {
             Log.e(TAG, "OnRefresh error", th)
@@ -107,7 +111,6 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onClick(view: View?) {
         when (view) {
             lnBuyData -> {
-//                Toast.makeText(context, "Buy data is developing feature", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.navigation_buy_data)
             }
             lnPurchaseHistory -> {
