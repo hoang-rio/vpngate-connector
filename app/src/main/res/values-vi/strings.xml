@@ -240,7 +240,11 @@
     <string name="action_purchase_history">Lịch sử thanh toán</string>
     <string name="calculating_data_size">Đang tính toán…</string>
     <!-- Buy data -->
-    <string name="btn_buy_data">Mua với %s</string>
+    <string name="btn_buy_data">Mua với %s (%s%s/GB)</string>
+    <string name="purchase_successful">Mua gói [%s] thành công</string>
     <string name="get_sku_list_error">Lấy danh sách gói thất bại. Vui lòng thử lại</string>
-    <string name="price_per_gb">Chỉ với %s %s 1Gb</string>
+    <string name="invalid_purchase_request">Giao dịch mua không hợp lệ. Vui lòng thử lại</string>
+    <string name="duplicate_purchase_create_request">Giao dịch mua đã hoàn thành. Vui lòng kiểm tra lịch sử mua</string>
+    <string name="invalid_product_id">Gói đã chọn không hợp lệ. Vui lòng thử lại hoặc liên hệ admin để nhận trợ giúp.</string>
+    <string name="processing_text">Đang xử lý…</string>
 </resources>

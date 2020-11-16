@@ -2,10 +2,12 @@ package vn.unlimit.vpngate.api
 
 import android.app.Activity
 import android.util.Log
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.SkuDetails
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import org.json.JSONObject
-import vn.unlimit.vpngate.BuildConfig
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
@@ -21,7 +23,11 @@ class UserApiRequest : BaseApiRequest() {
         const val USER_DEVICE_ADD = "/user/device/add"
         const val USER_PASSWORD_RESET = "/user/password-reset"
         const val USER_PASSWORD_FORGOT = "/user/password/forgot"
+        const val PARAMS_USER_FLAT_FORM = "Android"
+        const val USER_CREATE_PURCHASE_URL = "/purchase/create"
     }
+
+    private val isPro = !App.getInstance().dataUtil.hasAds()
 
     fun login(username: String, password: String, requestListener: RequestListener) {
         val loginData = HashMap<String, String>()
@@ -68,7 +74,6 @@ class UserApiRequest : BaseApiRequest() {
     }
 
     fun register(username: String, fullName: String, email: String, password: String, repassword: String, birthDay: String, timeZone: String, captchaAnswer: Int, captchaSecret: String, requestListener: RequestListener) {
-        val isPro = BuildConfig.FLAVOR == "pro"
         val user = HashMap<String, String>()
         user["username"] = username
         user["fullname"] = fullName
@@ -77,7 +82,7 @@ class UserApiRequest : BaseApiRequest() {
         user["timezone"] = timeZone
         user["password"] = password
         user["repassword"] = repassword
-        user["userPlatform"] = "Android"
+        user["userPlatform"] = PARAMS_USER_FLAT_FORM
         user["language"] = Locale.getDefault().language
         val captcha = HashMap<String, String>()
         captcha["answer"] = captchaAnswer.toString()
@@ -168,7 +173,7 @@ class UserApiRequest : BaseApiRequest() {
         val data = HashMap<String, Any>()
         data["fcmPushId"] = fcmPushId
         data["sessionId"] = sessionId
-        data["platform"] = "Android"
+        data["platform"] = PARAMS_USER_FLAT_FORM
         val notificationSetting = HashMap<String, Boolean>()
         notificationSetting["ticket"] = true
         notificationSetting["data"] = true
@@ -181,6 +186,28 @@ class UserApiRequest : BaseApiRequest() {
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Add device error with message %s".format(anError!!.errorBody))
             }
+        })
+    }
+
+    fun createPurchase(purchase: Purchase, skuDetails: SkuDetails, requestListener: RequestListener) {
+        val purchaseInfo = HashMap<String, Any>()
+        purchaseInfo["packageId"] = purchase.sku
+        purchaseInfo["purchaseId"] = purchase.orderId
+        purchaseInfo["platform"] = PARAMS_USER_FLAT_FORM
+        purchaseInfo["paymentMethod"] = PARAMS_USER_FLAT_FORM + "_IAP"
+        purchaseInfo["currency"] = skuDetails.priceCurrencyCode
+        purchaseInfo["currencyPrice"] = skuDetails.price.replace(Regex("[^0-9]"), "").toDouble()
+        post("$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}", purchaseInfo, object: JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.i(TAG, "Create purchase success with message %s".format(response))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                requestListener.onSuccess(anError.errorBody)
+            }
+
         })
     }
 }

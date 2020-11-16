@@ -49,7 +49,6 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private val txtTitle: TextView = itemView.findViewById(R.id.txt_title)
         private val txtDescription: TextView = itemView.findViewById(R.id.txt_description)
         private val btnBuy: Button = itemView.findViewById(R.id.btn_buy)
-        private val txtPricePerGb: TextView = itemView.findViewById(R.id.txt_price_per_gb)
         override fun onClick(v: View?) {
             try {
                 if (onItemClickListener != null) {
@@ -66,9 +65,8 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 val skuDetails: SkuDetails = _list.get(position)
                 txtTitle.text = skuDetails.title
                 txtDescription.text = skuDetails.description
-                btnBuy.text = mContext!!.getString(R.string.btn_buy_data, skuDetails.price)
                 val priceToGb = skuDetails.priceAmountMicros / 1000000 / skuDetails.sku.replace(Regex("[^0-9]"), "").toInt()
-                txtPricePerGb.text = mContext.getString(R.string.price_per_gb, priceToGb.toString(), skuDetails.priceCurrencyCode)
+                btnBuy.text = mContext!!.getString(R.string.btn_buy_data, skuDetails.price, priceToGb.toString(), skuDetails.priceCurrencyCode)
             } catch (th: Throwable) {
                 th.printStackTrace()
             }

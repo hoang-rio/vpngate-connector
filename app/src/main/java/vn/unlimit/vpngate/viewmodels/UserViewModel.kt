@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.annotation.NonNull
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
@@ -66,7 +68,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         val lastFetchTime = paidServerDataUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
         var date = Calendar.getInstance().time
         var nowInMs = date.time
-        if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME > nowInMs || isLoading.value!!) {
+        if (!forceFetch && lastFetchTime!! + USER_CACHE_TIME > nowInMs || updateLoading && isLoading.value!!) {
             // Skip fetch user user in cache
             return
         }
@@ -186,6 +188,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+
     fun addDevice() {
         FirebaseMessaging.getInstance().token
                 .addOnCompleteListener(object : OnCompleteListener<String?> {
@@ -209,5 +212,29 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 })
     }
+
+    fun createPurchase(purchase: Purchase, skuDetails: SkuDetails) {
+        isLoading.value = true
+        errorCode = null
+        userApiRequest.createPurchase(purchase, skuDetails, object: RequestListener {
+            override fun onSuccess(result: Any?) {
+                val resultJSon = result as JSONObject
+                if (resultJSon.getBoolean("result")) {
+                    // Purchase success => update user data info
+                    fetchUser(forceFetch = true)
+                } else {
+                    errorCode = resultJSon.getInt("errorCode")
+                }
+                isLoading.value = false
+            }
+
+            override fun onError(error: String?) {
+                errorCode = 1
+                isLoading.value = false
+            }
+
+        })
+    }
+
 
 }

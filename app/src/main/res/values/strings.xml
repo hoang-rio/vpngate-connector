@@ -189,18 +189,8 @@
     <string name="cfg_paid_server_api_base_url" translatable="false">vpn_paid_staging_api</string>
     <string name="cfg_paid_server_session_header_key" translatable="false">vpn_header_session_name</string>
     <!-- Paid server consumer product -->
-    <string-array name="free_paid_skus">
-        <item>vn.unlimit.vpngate.2gb</item>
-        <item>vn.unlimit.vpngate.5gb</item>
-        <item>vn.unlimit.vpngate.10gb</item>
-        <item>vn.unlimit.vpngate.15gb</item>
-    </string-array>
-    <string-array name="pro_paid_skus">
-        <item>vn.unlimit.vpngatepro.2gb</item>
-        <item>vn.unlimit.vpngatepro.5gb</item>
-        <item>vn.unlimit.vpngatepro.10gb</item>
-        <item>vn.unlimit.vpngatepro.15gb</item>
-    </string-array>
+    <string name="cfg_paid_server_sku" translatable="false">vpn_paid_skus</string>
+    <string name="cfg_paid_server_sku_pro_ver" translatable="false">vpn_paid_skus_pro_ver</string>
     <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
     <string name="title_activity_account_activate">User activate</string>
@@ -279,7 +269,11 @@
     <string name="calculating_data_size">Calculating…</string>
     <string name="status_dot" translatable="false">•</string>
     <!-- Buy data -->
-    <string name="btn_buy_data">Buy with %s</string>
+    <string name="btn_buy_data">Buy with %s (%s%s/GB)</string>
     <string name="get_sku_list_error">Get list package error. Please try again</string>
-    <string name="price_per_gb">Only %s%s per 1Gb</string>
+    <string name="purchase_successful">Purchase package [%s] success</string>
+    <string name="invalid_purchase_request">Invalid purchase request detected. Please try again!</string>
+    <string name="duplicate_purchase_create_request">This purchase is completed. Please check purchase history</string>
+    <string name="invalid_product_id">Invalid product. Please try again or contact app admin for help.</string>
+    <string name="processing_text">Processing…</string>
 </resources>

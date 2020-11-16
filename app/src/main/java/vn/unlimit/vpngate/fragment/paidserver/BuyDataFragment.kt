@@ -1,6 +1,8 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,20 +14,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.*
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SkuDetailsAdapter
+import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BuyDataFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var btnBack: ImageView? = null
     private var listSkus: Array<String>? = null
@@ -36,9 +38,25 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var rcvSkuDetails: RecyclerView? = null
     private var skuDetailsAdapter: SkuDetailsAdapter? = null
     private var txtDataSize: TextView? = null
+    private var isBillingDisconnected = false
+    private var userViewModel: UserViewModel? = null
+    private var buyingSkuDetails: SkuDetails? = null
+    private var isClickedBuyData = false
+    private var isAttached = false
+    private var loadingDialog: LoadingDialog? = null
+    private var paidServerActivity: PaidServerActivity? = null
     private val purchasesUpdatedListener =
             PurchasesUpdatedListener { billingResult, purchases ->
-                // To be implemented in a later section.
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                    for (purchase in purchases) {
+                        handlePurchase(purchase)
+                    }
+                } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                    Log.i(TAG, "User cancel purchase")
+                } else {
+                    // Handle any other error codes.
+                    Log.e(TAG, "Error when process purchase with error code %s. Msg: %s".format(billingResult.responseCode, billingResult.debugMessage))
+                }
             }
 
     companion object {
@@ -53,6 +71,23 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 .build()
         initBilling()
         bindViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isBillingDisconnected) {
+            initBilling()
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        isAttached = true
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        isAttached = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -73,11 +108,35 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     }
 
     private fun bindViewModel() {
-        val paidServerActivity = activity as PaidServerActivity
-        paidServerActivity.userViewModel?.userInfo?.observe(paidServerActivity, { userInfo ->
+        paidServerActivity = activity as PaidServerActivity
+        userViewModel = paidServerActivity!!.userViewModel
+        userViewModel?.userInfo?.observe(this, { userInfo ->
             run {
-                if (!isDetached) {
+                if (isAttached) {
                     txtDataSize?.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                }
+            }
+        })
+        userViewModel?.isLoading?.observe(this, {isLoading ->
+            if (!isClickedBuyData) {
+                return@observe
+            }
+            if (!isLoading) {
+                isClickedBuyData = false
+                loadingDialog!!.dismiss()
+                if (userViewModel?.errorCode == null) {
+                    // Create purchase complete
+                    Log.i(TAG, "Purchase product %s complete".format(buyingSkuDetails?.sku))
+                    Toast.makeText(context, getString(R.string.purchase_successful, buyingSkuDetails?.title), Toast.LENGTH_LONG).show()
+                } else {
+                    var errorMsg = R.string.invalid_purchase_request
+                    if (userViewModel?.errorCode == 112) {
+                        errorMsg = R.string.invalid_product_id
+                    } else if(userViewModel?.errorCode == 111) {
+                        errorMsg = R.string.duplicate_purchase_create_request
+                    }
+                    Log.e(TAG, "Purchase product %s error with errorCode: %s".format(buyingSkuDetails?.sku, userViewModel?.errorCode))
+                    Toast.makeText(context, getString(errorMsg), Toast.LENGTH_LONG).show()
                 }
             }
         })
@@ -90,21 +149,23 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     }
 
     private fun initBilling() {
-        if (dataUtil.hasAds()) {
-            listSkus = resources.getStringArray(R.array.free_paid_skus)
+        val listSkuStr: String = if (dataUtil.hasAds()) {
+            FirebaseRemoteConfig.getInstance().getString(getString(R.string.cfg_paid_server_sku))
         } else {
-            listSkus = resources.getStringArray(R.array.pro_paid_skus)
+            FirebaseRemoteConfig.getInstance().getString(getString(R.string.cfg_paid_server_sku_pro_ver))
         }
+        val gson = GsonBuilder().create()
+        listSkus = gson.fromJson(listSkuStr, object: TypeToken<Array<String>>(){}.type)
         billingClient?.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     querySkuDetails()
                 }
+                isBillingDisconnected = false
             }
 
             override fun onBillingServiceDisconnected() {
-                // Try to restart the connection on the next request to
-                // Google Play by calling the startConnection() method.
+                isBillingDisconnected = true
             }
         })
     }
@@ -130,7 +191,31 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     }
 
     override fun onItemClick(o: Any?, position: Int) {
-        val skuDetails = o as SkuDetails
-        Toast.makeText(context, "Click buy item %s at %d".format(skuDetails.sku, position), Toast.LENGTH_SHORT).show()
+        buyingSkuDetails = o as SkuDetails
+        val flowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(buyingSkuDetails!!)
+                .build()
+        isClickedBuyData = true
+        val responseCode = billingClient?.launchBillingFlow(activity as PaidServerActivity, flowParams)?.responseCode
+        if (responseCode == BillingClient.BillingResponseCode.OK) {
+            Log.i(TAG, "Launch purchase flow success")
+        }
     }
+
+    private fun handlePurchase(purchase: Purchase) {
+        loadingDialog = if (loadingDialog == null) LoadingDialog.newInstance(getString(R.string.processing_text)) else loadingDialog
+        loadingDialog?.show(paidServerActivity!!.supportFragmentManager, LoadingDialog::class.java.name)
+        val consumeParams =
+                ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken)
+                        .build()
+
+        billingClient?.consumeAsync(consumeParams) { billingResult, outToken ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
+                userViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+            }
+        }
+    }
+
 }
