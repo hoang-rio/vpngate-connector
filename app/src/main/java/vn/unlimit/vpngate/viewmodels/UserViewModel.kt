@@ -2,11 +2,13 @@ package vn.unlimit.vpngate.viewmodels
 
 import android.app.Activity
 import android.app.Application
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 import vn.unlimit.vpngate.api.UserApiRequest
@@ -84,6 +86,10 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             }
 
             override fun onError(error: String?) {
+                val params = Bundle()
+                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("errorInfo", error)
+                FirebaseAnalytics.getInstance(getApplication()).logEvent("Paid_Server_Fetch_User_Error", params)
                 baseErrorHandle(error)
                 Log.e(TAG, "fetch user error with error %s".format(error))
                 if (updateLoading) {

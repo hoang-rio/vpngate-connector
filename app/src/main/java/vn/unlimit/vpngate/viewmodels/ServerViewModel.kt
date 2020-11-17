@@ -1,8 +1,10 @@
 package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
@@ -51,6 +53,10 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                 override fun onError(error: String?) {
                     baseErrorHandle(error)
                     isLoading.value = false
+                    val params = Bundle()
+                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    params.putString("errorInfo", error)
+                    FirebaseAnalytics.getInstance(getApplication()).logEvent("Paid_Server_List_Server_Error", params)
                     Log.e(TAG, "Load paid server error with message: %s".format(error))
                 }
             }, activity)

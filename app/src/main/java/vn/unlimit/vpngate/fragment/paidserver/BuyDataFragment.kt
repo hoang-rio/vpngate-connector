@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.*
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -57,9 +58,16 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                         handlePurchase(purchase)
                     }
                 } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                    val params = Bundle()
+                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_User_Cancel_Purchase", params) }
                     Log.i(TAG, "User cancel purchase")
                 } else {
                     // Handle any other error codes.
+                    val params = Bundle()
+                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    params.putString("errorCode", billingResult.responseCode.toString())
+                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Purchase_Error", params) }
                     Log.e(TAG, "Error when process purchase with error code %s. Msg: %s".format(billingResult.responseCode, billingResult.debugMessage))
                 }
             }
@@ -155,6 +163,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                     } else if(userViewModel?.errorCode == 111) {
                         errorMsg = R.string.duplicate_purchase_create_request
                     }
+                    val params = Bundle()
+                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    params.putString("packageId", buyingSkuDetails?.sku)
+                    params.putString("errorCode", userViewModel?.errorCode?.toString())
+                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Create_Purchase_Error", params) }
                     Log.e(TAG, "Purchase product %s error with errorCode: %s".format(buyingSkuDetails?.sku, userViewModel?.errorCode))
                     Toast.makeText(context, getString(errorMsg), Toast.LENGTH_LONG).show()
                 }
@@ -205,6 +218,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 skuDetailsAdapter!!.initialize(listSkuDetails)
             } else {
                 Toast.makeText(context, getString(R.string.get_sku_list_error), Toast.LENGTH_LONG).show()
+                FirebaseAnalytics.getInstance(requireContext()).logEvent("Paid_Server_List_Package_Error", null)
                 findNavController().popBackStack()
             }
         }
