@@ -9,5 +9,8 @@
 
     <!-- Main Activity components -->
     <dimen name="navigation_header_height">100dp</dimen>
-
+    <dimen name="history_col_index">50dp</dimen>
+    <dimen name="history_col_data_size">80dp</dimen>
+    <dimen name="history_col_data_size_receive">80dp</dimen>
+    <dimen name="history_col_price">90dp</dimen>
 </resources>

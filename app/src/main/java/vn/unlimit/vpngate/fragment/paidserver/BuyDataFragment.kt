@@ -245,7 +245,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 ConsumeParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
                         .build()
-        billingClient?.consumeAsync(consumeParams) { billingResult, outToken ->
+        billingClient?.consumeAsync(consumeParams) { billingResult, _ ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
                 purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)

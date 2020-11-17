@@ -12,7 +12,7 @@ import kotlin.collections.HashMap
 
 class UserApiRequest : BaseApiRequest() {
     companion object {
-        const val TAG = "UserApiRequest"
+        private const val TAG = "UserApiRequest"
         const val USER_LOGIN_URL = "/user/login"
         const val GET_USER_URL = "/user/get"
         const val GET_CAPTCHA_URL = "/user/captcha"

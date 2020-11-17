@@ -9,7 +9,7 @@ import vn.unlimit.vpngate.request.RequestListener
 
 class ServerApiRequest: BaseApiRequest() {
     companion object{
-        const val TAG = "ServerApiRequest"
+        private const val TAG = "ServerApiRequest"
         const val LIST_SERVER_URL = "/server/list"
     }
 

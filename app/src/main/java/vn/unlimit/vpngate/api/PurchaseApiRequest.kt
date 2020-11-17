@@ -11,6 +11,8 @@ import vn.unlimit.vpngate.request.RequestListener
 class PurchaseApiRequest : BaseApiRequest() {
     companion object {
         const val USER_CREATE_PURCHASE_URL = "/purchase/create"
+        const val USER_PURCHASE_HISTORY_URL = "/purchase/list"
+        private const val TAG = "PurchaseApiRequest"
     }
 
     fun createPurchase(purchase: Purchase, skuDetails: SkuDetails, requestListener: RequestListener) {
@@ -23,18 +25,28 @@ class PurchaseApiRequest : BaseApiRequest() {
         purchaseInfo["currencyPrice"] = skuDetails.price.replace(Regex("[^0-9]"), "").toDouble()
         post("$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}", purchaseInfo, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
-                Log.i(UserApiRequest.TAG, "Create purchase success with message %s".format(response))
+                Log.i(TAG, "Create purchase success with message %s".format(response))
                 requestListener.onSuccess(response)
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(UserApiRequest.TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })
     }
 
     fun listPurchase(take: Int, skip: Int, requestListener: RequestListener) {
+        get("$USER_PURCHASE_HISTORY_URL?take=$take&skip=$skip", object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.i(TAG, "List purchase success with message %s".format(response))
+                requestListener.onSuccess(response)
+            }
 
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "List purchase error with error %s".format(anError!!.errorBody))
+                baseErrorHandle(anError, requestListener)
+            }
+        })
     }
 }

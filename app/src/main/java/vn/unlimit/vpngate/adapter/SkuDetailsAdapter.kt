@@ -11,7 +11,7 @@ import com.android.billingclient.api.SkuDetails
 import vn.unlimit.vpngate.R
 
 class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    val mContext = context
+    private val mContext = context
     private var onItemClickListener: OnItemClickListener? = null
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var _list: ArrayList<SkuDetails> = ArrayList()

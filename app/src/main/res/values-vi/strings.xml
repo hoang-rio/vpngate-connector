@@ -250,4 +250,9 @@
     <string name="processing_text">Đang xử lý…</string>
     <!-- Purchase history -->
     <string name="title_purchase_history">Lịch sử mua</string>
+    <string name="history_plat_form">Nền tảng</string>
+    <string name="history_data_size">Dung lượng gói</string>
+    <string name="history_data_size_receive">Dung lượng nhận</string>
+    <string name="history_price">Giá</string>
+    <string name="history_date_time">Thời gian</string>
 </resources>

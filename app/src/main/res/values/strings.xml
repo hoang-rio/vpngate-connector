@@ -279,4 +279,10 @@
     <string name="processing_text">Processing…</string>
     <!-- Purchase history -->
     <string name="title_purchase_history">Purchase history</string>
+    <string name="history_index" translatable="false">#</string>
+    <string name="history_plat_form">Platform</string>
+    <string name="history_data_size">Package data size</string>
+    <string name="history_data_size_receive">Receive data size</string>
+    <string name="history_price">Price</string>
+    <string name="history_date_time">Date time</string>
 </resources>
