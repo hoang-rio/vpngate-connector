@@ -8,6 +8,7 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,12 +42,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private var loadingDialog: LoadingDialog? = null
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
-    private val userNameRegex = "^[a-z0-9]{5,30}$"
     private var isPressedSignup = false
 
     companion object {
         private const val TAG = "SignUpActivity"
         const val passWordRegex = "^[-\\w.$@*!]{5,30}$"
+        private val USER_NAME_REGEX = "^[a-z0-9]{5,30}$"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,8 +95,41 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     }
 
     private fun buildErrorList(): String {
-        Log.d(TAG, userViewModel!!.errorList.value.toString())
-        return userViewModel!!.errorList.value.toString()
+        var errorMessage = ""
+        val errorList = userViewModel!!.errorList.value
+        Log.d(TAG, errorList.toString())
+        if (errorList!!.has("username")) {
+            when (errorList.getInt("username")) {
+                100 -> errorMessage = errorMessage + getString(R.string.validate_field_exist_in_system, getString(R.string.prompt_user)) + "\n"
+                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_user)) + "\n"
+                108 -> errorMessage = errorMessage + getString(R.string.invalid_username) + "\n"
+            }
+        }
+        if (errorList.has("email")) {
+            when (errorList.getInt("email")) {
+                100 -> errorMessage = errorMessage + getString(R.string.validate_field_exist_in_system, getString(R.string.prompt_email)) + "\n"
+                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_email)) + "\n"
+                108 -> errorMessage = errorMessage + getString(R.string.email_is_invalid) + "\n"
+            }
+        }
+        if (errorList.has("password")) {
+            when (errorList.get("password")) {
+                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_password)) + "\n"
+                108 -> errorMessage = errorMessage + getString(R.string.password_is_invalid) + "\n"
+            }
+        }
+        if (errorList.has("birthday")) {
+            if (errorList.get("birthday") == 109) {
+                errorMessage += getString(R.string.birthday_is_invalid)
+            }
+        }
+        if (errorList.has("repassword")) {
+            when (errorList.get("repassword")) {
+                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_retype_password)) + "\n"
+                109 -> errorMessage = errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
+            }
+        }
+        return errorMessage
     }
 
     private fun loadCaptcha(isReload: Boolean = false) {
@@ -174,7 +208,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
             checkEmptyField(txtRetypePassword, R.string.prompt_retype_password)
             checkEmptyField(txtCaptchaAnswer, R.string.prompt_captcha_answer)
             // Check username regex
-            var matcher = Pattern.compile(userNameRegex).matcher(txtUserName!!.text)
+            var matcher = Pattern.compile(USER_NAME_REGEX).matcher(txtUserName!!.text)
             if (!matcher.matches()) {
                 throw Exception(getString(R.string.username_is_invalid))
             }
@@ -206,7 +240,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                     startActivity(intentLogin)
                     finish()
                 } else if (!userViewModel!!.isLoading.value!!) {
-                    Toast.makeText(this, getString(R.string.register_failed, buildErrorList()), Toast.LENGTH_LONG).show()
+                    val alertDialog: AlertDialog = AlertDialog.Builder(this)
+                            .setPositiveButton(android.R.string.ok) { dialogInterface, _ -> dialogInterface?.dismiss() }.create()
+                    alertDialog.setTitle(getString(R.string.register_failed_title))
+                    alertDialog.setMessage(buildErrorList())
+                    alertDialog.show()
                 }
             })
             isPressedSignup = true

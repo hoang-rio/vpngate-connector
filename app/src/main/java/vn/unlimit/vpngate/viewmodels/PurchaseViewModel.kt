@@ -56,7 +56,7 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
                 )
                 purchaseList.addAll(resListPurchase)
                 this@PurchaseViewModel.purchaseList.value = purchaseList
-                isOutOfData = purchaseList.size >= result.getInt("countPurchase")
+                isOutOfData = resultObj.getString("listPurchase").length < take
                 isLoading.value = false
             }
 

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">VPN Gate Connector</string>
     <string name="home" translatable="false">Home</string>
-    <string name="paid_server">Paid Server</string>
+    <string name="paid_server">Paid Server (Beta)</string>
     <string name="navigation_drawer_open">Open drawer</string>
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
@@ -228,6 +228,7 @@
     <string name="prompt_timezone">Timezone. Example: Asia/Ho_Chi_Minh</string>
     <string name="prompt_retype_password">Retype password</string>
     <string name="validate_field_cannot_empty">%s can not be empty</string>
+    <string name="validate_field_exist_in_system">%s is exist. Please choose another</string>
     <string name="hint_captcha_label">Answer bellow math question</string>
     <string name="prompt_captcha_answer">Captcha answer</string>
     <string name="error_get_captcha">Error when get captcha from server. Please try again</string>
@@ -235,11 +236,12 @@
     <string name="hint_captcha_tap_to_reload">Tap to captcha image to change another</string>
     <string name="invalid_timezone">Invalid timezone. Please type keyword and select one from popup list.</string>
     <string name="register_success">Register success. Please check email to activate your account</string>
-    <string name="register_failed">Register failed. Please check error list:\n%s</string>
+    <string name="register_failed_title">Register failed. Please check error list</string>
     <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
     <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
     <string name="email_is_invalid">Email is invalid, please check.</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
+    <string name="birthday_is_invalid">Birthday is invalid</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Account activate failed: %s</string>
     <string name="account_activate_failed_already_activate">Account already activated</string>
@@ -277,6 +279,7 @@
     <string name="duplicate_purchase_create_request">This purchase is completed. Please check purchase history</string>
     <string name="invalid_product_id">Invalid product. Please try again or contact app admin for help.</string>
     <string name="processing_text">Processing…</string>
+    <string name="sku_item_click_error">Got error when click buy data. We reloading list package.</string>
     <!-- Purchase history -->
     <string name="title_purchase_history">Purchase history</string>
     <string name="history_index" translatable="false">#</string>

@@ -208,6 +208,8 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         skuList.addAll(listSkus!!)
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+        lnLoadingWrap?.visibility = View.VISIBLE
+        rcvSkuDetails?.visibility = View.GONE
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 lnLoadingWrap?.visibility = View.GONE
@@ -225,14 +227,20 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     }
 
     override fun onItemClick(o: Any?, position: Int) {
-        buyingSkuDetails = o as SkuDetails
-        val flowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(buyingSkuDetails!!)
-                .build()
-        isClickedBuyData = true
-        val responseCode = billingClient?.launchBillingFlow(activity as PaidServerActivity, flowParams)?.responseCode
-        if (responseCode == BillingClient.BillingResponseCode.OK) {
-            Log.i(TAG, "Launch purchase flow success")
+        if (o != null) {
+            buyingSkuDetails = o as SkuDetails
+            val flowParams = BillingFlowParams.newBuilder()
+                    .setSkuDetails(buyingSkuDetails!!)
+                    .build()
+            isClickedBuyData = true
+            val responseCode = billingClient?.launchBillingFlow(activity as PaidServerActivity, flowParams)?.responseCode
+            if (responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.i(TAG, "Launch purchase flow success")
+            }
+        } else {
+            isClickedBuyData = false
+            Toast.makeText(requireContext(), getString(R.string.sku_item_click_error), Toast.LENGTH_SHORT).show()
+            querySkuDetails()
         }
     }
 
@@ -245,10 +253,10 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 ConsumeParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
                         .build()
-        billingClient?.consumeAsync(consumeParams) { billingResult, _ ->
+        billingClient!!.consumeAsync(consumeParams) { billingResult, _ ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
-                purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+                purchaseViewModel!!.createPurchase(purchase, buyingSkuDetails!!)
             }
         }
     }
