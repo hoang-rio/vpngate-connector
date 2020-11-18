@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="vn.unlimit.vpngate.activities.paid.ResetPassActivity">
+
+    <LinearLayout
+        android:id="@+id/ln_checking_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="@string/checking_reset_pass_token" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ln_invalid_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/invalid_reset_pass_token"
+            android:textColor="@color/colorRed"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_back_to_free_error"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/selector_primary_button"
+            android:gravity="center"
+            android:text="@string/action_back_to_free"
+            android:textSize="18sp"
+            android:theme="@style/AppTheme.Button" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/ln_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="220dp"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
+
+            <EditText
+                android:id="@+id/txt_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_new_password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:ignore="UnusedAttribute" />
+
+            <EditText
+                android:id="@+id/txt_re_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:autofillHints="@string/prompt_re_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_re_new_password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:ignore="UnusedAttribute" />
+
+            <Button
+                android:id="@+id/btn_reset_pass"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_reset_pass"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
+
+            <Button
+                android:id="@+id/btn_back_to_free"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_back_to_free"
+                android:textAllCaps="false"
+                android:theme="@style/AppTheme.Button" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -95,7 +95,7 @@ public class VPNGateConnection implements Parcelable {
             if (App.getInstance().getDataUtil().getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true) && properties.length >= index + 2) {
                 vpnGateConnection.tcpPort = Integer.parseInt(properties[++index]);
                 vpnGateConnection.udpPort = Integer.parseInt(properties[++index]);
-                if (properties.length >= index + 1) {
+                if (properties.length > index + 1) {
                     vpnGateConnection.isL2TPSupport = Integer.parseInt(properties[++index]);
                 }
             } else {

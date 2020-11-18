@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -17,8 +18,22 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="link.vpngate-connector.com"
+                    android:scheme="https" />
+                <data
+                    android:host="vpngate.page.link"
+                    android:scheme="https" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,13 +41,51 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.DetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.L2TPConnectActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- Start paid activites -->
+        <activity
+            android:name=".activities.paid.LoginActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.SignUpActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_singup"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.PaidServerActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_paid_server"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.ActivateActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_account_activate"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.ForgotPassActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_forgot_pass"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:name=".activities.paid.ResetPassActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_reset_pass"
+            android:theme="@style/AppTheme.PaidServer" />
+        <activity
+            android:configChanges="orientation|screenSize"
+            android:name=".activities.paid.ServerActivity"
+            android:theme="@style/AppTheme.PaidServer"/>
+        <!-- End paid activites -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -45,6 +98,27 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+        <service
+            android:name=".services.PaidServerFirebaseMessageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!--
+ Set custom default icon. This is used when no icon is set for incoming notification messages.
+            See README(https://goo.gl/l4GJaQ) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/splash_logo" />
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPaidServer" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3085232976681422~6517719190" />

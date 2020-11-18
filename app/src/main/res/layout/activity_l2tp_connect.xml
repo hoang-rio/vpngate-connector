@@ -102,6 +102,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txt_vpn_share_secret"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="27dp"
@@ -114,6 +115,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txt_vpn_user"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="27dp"
@@ -126,6 +128,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/txt_vpn_pw"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="27dp"

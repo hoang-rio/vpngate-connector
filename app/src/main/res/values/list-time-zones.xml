@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="list_time_zone_display">
+        <item>GMT: Africa/Abidjan</item>
+        <item>GMT: Africa/Accra</item>
+        <item>EAT: Africa/Addis_Ababa</item>
+        <item>CET: Africa/Algiers</item>
+        <item>EAT: Africa/Asmara</item>
+        <item>EAT: Africa/Asmera</item>
+        <item>GMT: Africa/Bamako</item>
+        <item>WAT: Africa/Bangui</item>
+        <item>GMT: Africa/Banjul</item>
+        <item>GMT: Africa/Bissau</item>
+        <item>CAT: Africa/Blantyre</item>
+        <item>WAT: Africa/Brazzaville</item>
+        <item>CAT: Africa/Bujumbura</item>
+        <item>EET: Africa/Cairo</item>
+        <item>+01: Africa/Casablanca</item>
+        <item>CEST: Africa/Ceuta</item>
+        <item>GMT: Africa/Conakry</item>
+        <item>GMT: Africa/Dakar</item>
+        <item>EAT: Africa/Dar_es_Salaam</item>
+        <item>EAT: Africa/Djibouti</item>
+        <item>WAT: Africa/Douala</item>
+        <item>+01: Africa/El_Aaiun</item>
+        <item>GMT: Africa/Freetown</item>
+        <item>CAT: Africa/Gaborone</item>
+        <item>CAT: Africa/Harare</item>
+        <item>SAST: Africa/Johannesburg</item>
+        <item>EAT: Africa/Juba</item>
+        <item>EAT: Africa/Kampala</item>
+        <item>CAT: Africa/Khartoum</item>
+        <item>CAT: Africa/Kigali</item>
+        <item>WAT: Africa/Kinshasa</item>
+        <item>WAT: Africa/Lagos</item>
+        <item>WAT: Africa/Libreville</item>
+        <item>GMT: Africa/Lome</item>
+        <item>WAT: Africa/Luanda</item>
+        <item>CAT: Africa/Lubumbashi</item>
+        <item>CAT: Africa/Lusaka</item>
+        <item>WAT: Africa/Malabo</item>
+        <item>CAT: Africa/Maputo</item>
+        <item>SAST: Africa/Maseru</item>
+        <item>SAST: Africa/Mbabane</item>
+        <item>EAT: Africa/Mogadishu</item>
+        <item>GMT: Africa/Monrovia</item>
+        <item>EAT: Africa/Nairobi</item>
+        <item>WAT: Africa/Ndjamena</item>
+        <item>WAT: Africa/Niamey</item>
+        <item>GMT: Africa/Nouakchott</item>
+        <item>GMT: Africa/Ouagadougou</item>
+        <item>WAT: Africa/Porto-Novo</item>
+        <item>GMT: Africa/Sao_Tome</item>
+        <item>GMT: Africa/Timbuktu</item>
+        <item>EET: Africa/Tripoli</item>
+        <item>CET: Africa/Tunis</item>
+        <item>CAT: Africa/Windhoek</item>
+        <item>HDT: America/Adak</item>
+        <item>AKDT: America/Anchorage</item>
+        <item>AST: America/Anguilla</item>
+        <item>AST: America/Antigua</item>
+        <item>-03: America/Araguaina</item>
+        <item>-03: America/Argentina/Buenos_Aires</item>
+        <item>-03: America/Argentina/Catamarca</item>
+        <item>-03: America/Argentina/ComodRivadavia</item>
+        <item>-03: America/Argentina/Cordoba</item>
+        <item>-03: America/Argentina/Jujuy</item>
+        <item>-03: America/Argentina/La_Rioja</item>
+        <item>-03: America/Argentina/Mendoza</item>
+        <item>-03: America/Argentina/Rio_Gallegos</item>
+        <item>-03: America/Argentina/Salta</item>
+        <item>-03: America/Argentina/San_Juan</item>
+        <item>-03: America/Argentina/San_Luis</item>
+        <item>-03: America/Argentina/Tucuman</item>
+        <item>-03: America/Argentina/Ushuaia</item>
+        <item>AST: America/Aruba</item>
+        <item>-04: America/Asuncion</item>
+        <item>EST: America/Atikokan</item>
+        <item>HDT: America/Atka</item>
+        <item>-03: America/Bahia</item>
+        <item>CDT: America/Bahia_Banderas</item>
+        <item>AST: America/Barbados</item>
+        <item>-03: America/Belem</item>
+        <item>CST: America/Belize</item>
+        <item>AST: America/Blanc-Sablon</item>
+        <item>-04: America/Boa_Vista</item>
+        <item>-05: America/Bogota</item>
+        <item>MDT: America/Boise</item>
+        <item>-03: America/Buenos_Aires</item>
+        <item>MDT: America/Cambridge_Bay</item>
+        <item>-04: America/Campo_Grande</item>
+        <item>EST: America/Cancun</item>
+        <item>-04: America/Caracas</item>
+        <item>-03: America/Catamarca</item>
+        <item>-03: America/Cayenne</item>
+        <item>EST: America/Cayman</item>
+        <item>CDT: America/Chicago</item>
+        <item>MDT: America/Chihuahua</item>
+        <item>EST: America/Coral_Harbour</item>
+        <item>-03: America/Cordoba</item>
+        <item>CST: America/Costa_Rica</item>
+        <item>MST: America/Creston</item>
+        <item>-04: America/Cuiaba</item>
+        <item>AST: America/Curacao</item>
+        <item>GMT: America/Danmarkshavn</item>
+        <item>PDT: America/Dawson</item>
+        <item>MST: America/Dawson_Creek</item>
+        <item>MDT: America/Denver</item>
+        <item>EDT: America/Detroit</item>
+        <item>AST: America/Dominica</item>
+        <item>MDT: America/Edmonton</item>
+        <item>-05: America/Eirunepe</item>
+        <item>CST: America/El_Salvador</item>
+        <item>PDT: America/Ensenada</item>
+        <item>MST: America/Fort_Nelson</item>
+        <item>EDT: America/Fort_Wayne</item>
+        <item>-03: America/Fortaleza</item>
+        <item>ADT: America/Glace_Bay</item>
+        <item>-02: America/Godthab</item>
+        <item>ADT: America/Goose_Bay</item>
+        <item>EDT: America/Grand_Turk</item>
+        <item>AST: America/Grenada</item>
+        <item>AST: America/Guadeloupe</item>
+        <item>CST: America/Guatemala</item>
+        <item>-05: America/Guayaquil</item>
+        <item>-04: America/Guyana</item>
+        <item>ADT: America/Halifax</item>
+        <item>CDT: America/Havana</item>
+        <item>MST: America/Hermosillo</item>
+        <item>EDT: America/Indiana/Indianapolis</item>
+        <item>CDT: America/Indiana/Knox</item>
+        <item>EDT: America/Indiana/Marengo</item>
+        <item>EDT: America/Indiana/Petersburg</item>
+        <item>CDT: America/Indiana/Tell_City</item>
+        <item>EDT: America/Indiana/Vevay</item>
+        <item>EDT: America/Indiana/Vincennes</item>
+        <item>EDT: America/Indiana/Winamac</item>
+        <item>EDT: America/Indianapolis</item>
+        <item>MDT: America/Inuvik</item>
+        <item>EDT: America/Iqaluit</item>
+        <item>EST: America/Jamaica</item>
+        <item>-03: America/Jujuy</item>
+        <item>AKDT: America/Juneau</item>
+        <item>EDT: America/Kentucky/Louisville</item>
+        <item>EDT: America/Kentucky/Monticello</item>
+        <item>CDT: America/Knox_IN</item>
+        <item>AST: America/Kralendijk</item>
+        <item>-04: America/La_Paz</item>
+        <item>-05: America/Lima</item>
+        <item>PDT: America/Los_Angeles</item>
+        <item>EDT: America/Louisville</item>
+        <item>AST: America/Lower_Princes</item>
+        <item>-03: America/Maceio</item>
+        <item>CST: America/Managua</item>
+        <item>-04: America/Manaus</item>
+        <item>AST: America/Marigot</item>
+        <item>AST: America/Martinique</item>
+        <item>CDT: America/Matamoros</item>
+        <item>MDT: America/Mazatlan</item>
+        <item>-03: America/Mendoza</item>
+        <item>CDT: America/Menominee</item>
+        <item>CDT: America/Merida</item>
+        <item>AKDT: America/Metlakatla</item>
+        <item>CDT: America/Mexico_City</item>
+        <item>-02: America/Miquelon</item>
+        <item>ADT: America/Moncton</item>
+        <item>CDT: America/Monterrey</item>
+        <item>-03: America/Montevideo</item>
+        <item>EDT: America/Montreal</item>
+        <item>AST: America/Montserrat</item>
+        <item>EDT: America/Nassau</item>
+        <item>EDT: America/New_York</item>
+        <item>EDT: America/Nipigon</item>
+        <item>AKDT: America/Nome</item>
+        <item>-02: America/Noronha</item>
+        <item>CDT: America/North_Dakota/Beulah</item>
+        <item>CDT: America/North_Dakota/Center</item>
+        <item>CDT: America/North_Dakota/New_Salem</item>
+        <item>MDT: America/Ojinaga</item>
+        <item>EST: America/Panama</item>
+        <item>EDT: America/Pangnirtung</item>
+        <item>-03: America/Paramaribo</item>
+        <item>MST: America/Phoenix</item>
+        <item>EDT: America/Port-au-Prince</item>
+        <item>AST: America/Port_of_Spain</item>
+        <item>-05: America/Porto_Acre</item>
+        <item>-04: America/Porto_Velho</item>
+        <item>AST: America/Puerto_Rico</item>
+        <item>-03: America/Punta_Arenas</item>
+        <item>CDT: America/Rainy_River</item>
+        <item>CDT: America/Rankin_Inlet</item>
+        <item>-03: America/Recife</item>
+        <item>CST: America/Regina</item>
+        <item>CDT: America/Resolute</item>
+        <item>-05: America/Rio_Branco</item>
+        <item>-03: America/Rosario</item>
+        <item>PDT: America/Santa_Isabel</item>
+        <item>-03: America/Santarem</item>
+        <item>-04: America/Santiago</item>
+        <item>AST: America/Santo_Domingo</item>
+        <item>-03: America/Sao_Paulo</item>
+        <item>+00: America/Scoresbysund</item>
+        <item>MDT: America/Shiprock</item>
+        <item>AKDT: America/Sitka</item>
+        <item>AST: America/St_Barthelemy</item>
+        <item>NDT: America/St_Johns</item>
+        <item>AST: America/St_Kitts</item>
+        <item>AST: America/St_Lucia</item>
+        <item>AST: America/St_Thomas</item>
+        <item>AST: America/St_Vincent</item>
+        <item>CST: America/Swift_Current</item>
+        <item>CST: America/Tegucigalpa</item>
+        <item>ADT: America/Thule</item>
+        <item>EDT: America/Thunder_Bay</item>
+        <item>PDT: America/Tijuana</item>
+        <item>EDT: America/Toronto</item>
+        <item>AST: America/Tortola</item>
+        <item>PDT: America/Vancouver</item>
+        <item>AST: America/Virgin</item>
+        <item>PDT: America/Whitehorse</item>
+        <item>CDT: America/Winnipeg</item>
+        <item>AKDT: America/Yakutat</item>
+        <item>MDT: America/Yellowknife</item>
+        <item>+08: Antarctica/Casey</item>
+        <item>+07: Antarctica/Davis</item>
+        <item>+10: Antarctica/DumontDUrville</item>
+        <item>+11: Antarctica/Macquarie</item>
+        <item>+05: Antarctica/Mawson</item>
+        <item>NZST: Antarctica/McMurdo</item>
+        <item>-03: Antarctica/Palmer</item>
+        <item>-03: Antarctica/Rothera</item>
+        <item>NZST: Antarctica/South_Pole</item>
+        <item>+03: Antarctica/Syowa</item>
+        <item>+02: Antarctica/Troll</item>
+        <item>+06: Antarctica/Vostok</item>
+        <item>CEST: Arctic/Longyearbyen</item>
+        <item>+03: Asia/Aden</item>
+        <item>+06: Asia/Almaty</item>
+        <item>EEST: Asia/Amman</item>
+        <item>+12: Asia/Anadyr</item>
+        <item>+05: Asia/Aqtau</item>
+        <item>+05: Asia/Aqtobe</item>
+        <item>+05: Asia/Ashgabat</item>
+        <item>+05: Asia/Ashkhabad</item>
+        <item>+05: Asia/Atyrau</item>
+        <item>+03: Asia/Baghdad</item>
+        <item>+03: Asia/Bahrain</item>
+        <item>+04: Asia/Baku</item>
+        <item>+07: Asia/Bangkok</item>
+        <item>+07: Asia/Barnaul</item>
+        <item>EEST: Asia/Beirut</item>
+        <item>+06: Asia/Bishkek</item>
+        <item>+08: Asia/Brunei</item>
+        <item>IST: Asia/Calcutta</item>
+        <item>+09: Asia/Chita</item>
+        <item>+08: Asia/Choibalsan</item>
+        <item>CST: Asia/Chongqing</item>
+        <item>CST: Asia/Chungking</item>
+        <item>+0530: Asia/Colombo</item>
+        <item>+06: Asia/Dacca</item>
+        <item>EEST: Asia/Damascus</item>
+        <item>+06: Asia/Dhaka</item>
+        <item>+09: Asia/Dili</item>
+        <item>+04: Asia/Dubai</item>
+        <item>+05: Asia/Dushanbe</item>
+        <item>EEST: Asia/Famagusta</item>
+        <item>EEST: Asia/Gaza</item>
+        <item>CST: Asia/Harbin</item>
+        <item>EEST: Asia/Hebron</item>
+        <item>+07: Asia/Ho_Chi_Minh</item>
+        <item>HKT: Asia/Hong_Kong</item>
+        <item>+07: Asia/Hovd</item>
+        <item>+08: Asia/Irkutsk</item>
+        <item>+03: Asia/Istanbul</item>
+        <item>WIB: Asia/Jakarta</item>
+        <item>WIT: Asia/Jayapura</item>
+        <item>IDT: Asia/Jerusalem</item>
+        <item>+0430: Asia/Kabul</item>
+        <item>+12: Asia/Kamchatka</item>
+        <item>PKT: Asia/Karachi</item>
+        <item>+06: Asia/Kashgar</item>
+        <item>+0545: Asia/Kathmandu</item>
+        <item>+0545: Asia/Katmandu</item>
+        <item>+09: Asia/Khandyga</item>
+        <item>IST: Asia/Kolkata</item>
+        <item>+07: Asia/Krasnoyarsk</item>
+        <item>+08: Asia/Kuala_Lumpur</item>
+        <item>+08: Asia/Kuching</item>
+        <item>+03: Asia/Kuwait</item>
+        <item>CST: Asia/Macao</item>
+        <item>CST: Asia/Macau</item>
+        <item>+11: Asia/Magadan</item>
+        <item>WITA: Asia/Makassar</item>
+        <item>PST: Asia/Manila</item>
+        <item>+04: Asia/Muscat</item>
+        <item>EEST: Asia/Nicosia</item>
+        <item>+07: Asia/Novokuznetsk</item>
+        <item>+07: Asia/Novosibirsk</item>
+        <item>+06: Asia/Omsk</item>
+        <item>+05: Asia/Oral</item>
+        <item>+07: Asia/Phnom_Penh</item>
+        <item>WIB: Asia/Pontianak</item>
+        <item>KST: Asia/Pyongyang</item>
+        <item>+03: Asia/Qatar</item>
+        <item>+06: Asia/Qostanay</item>
+        <item>+05: Asia/Qyzylorda</item>
+        <item>+0630: Asia/Rangoon</item>
+        <item>+03: Asia/Riyadh</item>
+        <item>+07: Asia/Saigon</item>
+        <item>+11: Asia/Sakhalin</item>
+        <item>+05: Asia/Samarkand</item>
+        <item>KST: Asia/Seoul</item>
+        <item>CST: Asia/Shanghai</item>
+        <item>+08: Asia/Singapore</item>
+        <item>+11: Asia/Srednekolymsk</item>
+        <item>CST: Asia/Taipei</item>
+        <item>+05: Asia/Tashkent</item>
+        <item>+04: Asia/Tbilisi</item>
+        <item>+0430: Asia/Tehran</item>
+        <item>IDT: Asia/Tel_Aviv</item>
+        <item>+06: Asia/Thimbu</item>
+        <item>+06: Asia/Thimphu</item>
+        <item>JST: Asia/Tokyo</item>
+        <item>+07: Asia/Tomsk</item>
+        <item>WITA: Asia/Ujung_Pandang</item>
+        <item>+08: Asia/Ulaanbaatar</item>
+        <item>+08: Asia/Ulan_Bator</item>
+        <item>+06: Asia/Urumqi</item>
+        <item>+10: Asia/Ust-Nera</item>
+        <item>+07: Asia/Vientiane</item>
+        <item>+10: Asia/Vladivostok</item>
+        <item>+09: Asia/Yakutsk</item>
+        <item>+0630: Asia/Yangon</item>
+        <item>+05: Asia/Yekaterinburg</item>
+        <item>+04: Asia/Yerevan</item>
+        <item>+00: Atlantic/Azores</item>
+        <item>ADT: Atlantic/Bermuda</item>
+        <item>WEST: Atlantic/Canary</item>
+        <item>-01: Atlantic/Cape_Verde</item>
+        <item>WEST: Atlantic/Faeroe</item>
+        <item>WEST: Atlantic/Faroe</item>
+        <item>CEST: Atlantic/Jan_Mayen</item>
+        <item>WEST: Atlantic/Madeira</item>
+        <item>GMT: Atlantic/Reykjavik</item>
+        <item>-02: Atlantic/South_Georgia</item>
+        <item>GMT: Atlantic/St_Helena</item>
+        <item>-03: Atlantic/Stanley</item>
+        <item>AEST: Australia/ACT</item>
+        <item>ACST: Australia/Adelaide</item>
+        <item>AEST: Australia/Brisbane</item>
+        <item>ACST: Australia/Broken_Hill</item>
+        <item>AEST: Australia/Canberra</item>
+        <item>AEST: Australia/Currie</item>
+        <item>ACST: Australia/Darwin</item>
+        <item>+0845: Australia/Eucla</item>
+        <item>AEST: Australia/Hobart</item>
+        <item>+1030: Australia/LHI</item>
+        <item>AEST: Australia/Lindeman</item>
+        <item>+1030: Australia/Lord_Howe</item>
+        <item>AEST: Australia/Melbourne</item>
+        <item>AEST: Australia/NSW</item>
+        <item>ACST: Australia/North</item>
+        <item>AWST: Australia/Perth</item>
+        <item>AEST: Australia/Queensland</item>
+        <item>ACST: Australia/South</item>
+        <item>AEST: Australia/Sydney</item>
+        <item>AEST: Australia/Tasmania</item>
+        <item>AEST: Australia/Victoria</item>
+        <item>AWST: Australia/West</item>
+        <item>ACST: Australia/Yancowinna</item>
+        <item>-05: Brazil/Acre</item>
+        <item>-02: Brazil/DeNoronha</item>
+        <item>-03: Brazil/East</item>
+        <item>-04: Brazil/West</item>
+        <item>CEST: CET</item>
+        <item>CDT: CST6CDT</item>
+        <item>ADT: Canada/Atlantic</item>
+        <item>CDT: Canada/Central</item>
+        <item>EDT: Canada/Eastern</item>
+        <item>MDT: Canada/Mountain</item>
+        <item>NDT: Canada/Newfoundland</item>
+        <item>PDT: Canada/Pacific</item>
+        <item>CST: Canada/Saskatchewan</item>
+        <item>PDT: Canada/Yukon</item>
+        <item>-04: Chile/Continental</item>
+        <item>-06: Chile/EasterIsland</item>
+        <item>CDT: Cuba</item>
+        <item>EEST: EET</item>
+        <item>EST: EST</item>
+        <item>EDT: EST5EDT</item>
+        <item>EET: Egypt</item>
+        <item>IST: Eire</item>
+        <item>GMT: Etc/GMT</item>
+        <item>GMT: Etc/GMT+0</item>
+        <item>-01: Etc/GMT+1</item>
+        <item>-10: Etc/GMT+10</item>
+        <item>-11: Etc/GMT+11</item>
+        <item>-12: Etc/GMT+12</item>
+        <item>-02: Etc/GMT+2</item>
+        <item>-03: Etc/GMT+3</item>
+        <item>-04: Etc/GMT+4</item>
+        <item>-05: Etc/GMT+5</item>
+        <item>-06: Etc/GMT+6</item>
+        <item>-07: Etc/GMT+7</item>
+        <item>-08: Etc/GMT+8</item>
+        <item>-09: Etc/GMT+9</item>
+        <item>GMT: Etc/GMT-0</item>
+        <item>+01: Etc/GMT-1</item>
+        <item>+10: Etc/GMT-10</item>
+        <item>+11: Etc/GMT-11</item>
+        <item>+12: Etc/GMT-12</item>
+        <item>+13: Etc/GMT-13</item>
+        <item>+14: Etc/GMT-14</item>
+        <item>+02: Etc/GMT-2</item>
+        <item>+03: Etc/GMT-3</item>
+        <item>+04: Etc/GMT-4</item>
+        <item>+05: Etc/GMT-5</item>
+        <item>+06: Etc/GMT-6</item>
+        <item>+07: Etc/GMT-7</item>
+        <item>+08: Etc/GMT-8</item>
+        <item>+09: Etc/GMT-9</item>
+        <item>GMT: Etc/GMT0</item>
+        <item>GMT: Etc/Greenwich</item>
+        <item>UTC: Etc/UCT</item>
+        <item>UTC: Etc/UTC</item>
+        <item>UTC: Etc/Universal</item>
+        <item>UTC: Etc/Zulu</item>
+        <item>CEST: Europe/Amsterdam</item>
+        <item>CEST: Europe/Andorra</item>
+        <item>+04: Europe/Astrakhan</item>
+        <item>EEST: Europe/Athens</item>
+        <item>BST: Europe/Belfast</item>
+        <item>CEST: Europe/Belgrade</item>
+        <item>CEST: Europe/Berlin</item>
+        <item>CEST: Europe/Bratislava</item>
+        <item>CEST: Europe/Brussels</item>
+        <item>EEST: Europe/Bucharest</item>
+        <item>CEST: Europe/Budapest</item>
+        <item>CEST: Europe/Busingen</item>
+        <item>EEST: Europe/Chisinau</item>
+        <item>CEST: Europe/Copenhagen</item>
+        <item>IST: Europe/Dublin</item>
+        <item>CEST: Europe/Gibraltar</item>
+        <item>BST: Europe/Guernsey</item>
+        <item>EEST: Europe/Helsinki</item>
+        <item>BST: Europe/Isle_of_Man</item>
+        <item>+03: Europe/Istanbul</item>
+        <item>BST: Europe/Jersey</item>
+        <item>EET: Europe/Kaliningrad</item>
+        <item>EEST: Europe/Kiev</item>
+        <item>+03: Europe/Kirov</item>
+        <item>WEST: Europe/Lisbon</item>
+        <item>CEST: Europe/Ljubljana</item>
+        <item>BST: Europe/London</item>
+        <item>CEST: Europe/Luxembourg</item>
+        <item>CEST: Europe/Madrid</item>
+        <item>CEST: Europe/Malta</item>
+        <item>EEST: Europe/Mariehamn</item>
+        <item>+03: Europe/Minsk</item>
+        <item>CEST: Europe/Monaco</item>
+        <item>MSK: Europe/Moscow</item>
+        <item>EEST: Europe/Nicosia</item>
+        <item>CEST: Europe/Oslo</item>
+        <item>CEST: Europe/Paris</item>
+        <item>CEST: Europe/Podgorica</item>
+        <item>CEST: Europe/Prague</item>
+        <item>EEST: Europe/Riga</item>
+        <item>CEST: Europe/Rome</item>
+        <item>+04: Europe/Samara</item>
+        <item>CEST: Europe/San_Marino</item>
+        <item>CEST: Europe/Sarajevo</item>
+        <item>+04: Europe/Saratov</item>
+        <item>MSK: Europe/Simferopol</item>
+        <item>CEST: Europe/Skopje</item>
+        <item>EEST: Europe/Sofia</item>
+        <item>CEST: Europe/Stockholm</item>
+        <item>EEST: Europe/Tallinn</item>
+        <item>CEST: Europe/Tirane</item>
+        <item>EEST: Europe/Tiraspol</item>
+        <item>+04: Europe/Ulyanovsk</item>
+        <item>EEST: Europe/Uzhgorod</item>
+        <item>CEST: Europe/Vaduz</item>
+        <item>CEST: Europe/Vatican</item>
+        <item>CEST: Europe/Vienna</item>
+        <item>EEST: Europe/Vilnius</item>
+        <item>+04: Europe/Volgograd</item>
+        <item>CEST: Europe/Warsaw</item>
+        <item>CEST: Europe/Zagreb</item>
+        <item>EEST: Europe/Zaporozhye</item>
+        <item>CEST: Europe/Zurich</item>
+        <item>BST: GB</item>
+        <item>BST: GB-Eire</item>
+        <item>GMT: GMT</item>
+        <item>GMT: GMT+0</item>
+        <item>GMT: GMT-0</item>
+        <item>GMT: GMT0</item>
+        <item>GMT: Greenwich</item>
+        <item>HST: HST</item>
+        <item>HKT: Hongkong</item>
+        <item>GMT: Iceland</item>
+        <item>EAT: Indian/Antananarivo</item>
+        <item>+06: Indian/Chagos</item>
+        <item>+07: Indian/Christmas</item>
+        <item>+0630: Indian/Cocos</item>
+        <item>EAT: Indian/Comoro</item>
+        <item>+05: Indian/Kerguelen</item>
+        <item>+04: Indian/Mahe</item>
+        <item>+05: Indian/Maldives</item>
+        <item>+04: Indian/Mauritius</item>
+        <item>EAT: Indian/Mayotte</item>
+        <item>+04: Indian/Reunion</item>
+        <item>+0430: Iran</item>
+        <item>IDT: Israel</item>
+        <item>EST: Jamaica</item>
+        <item>JST: Japan</item>
+        <item>+12: Kwajalein</item>
+        <item>EET: Libya</item>
+        <item>MEST: MET</item>
+        <item>MST: MST</item>
+        <item>MDT: MST7MDT</item>
+        <item>PDT: Mexico/BajaNorte</item>
+        <item>MDT: Mexico/BajaSur</item>
+        <item>CDT: Mexico/General</item>
+        <item>NZST: NZ</item>
+        <item>+1245: NZ-CHAT</item>
+        <item>MDT: Navajo</item>
+        <item>CST: PRC</item>
+        <item>PDT: PST8PDT</item>
+        <item>+13: Pacific/Apia</item>
+        <item>NZST: Pacific/Auckland</item>
+        <item>+11: Pacific/Bougainville</item>
+        <item>+1245: Pacific/Chatham</item>
+        <item>+10: Pacific/Chuuk</item>
+        <item>-06: Pacific/Easter</item>
+        <item>+11: Pacific/Efate</item>
+        <item>+13: Pacific/Enderbury</item>
+        <item>+13: Pacific/Fakaofo</item>
+        <item>+12: Pacific/Fiji</item>
+        <item>+12: Pacific/Funafuti</item>
+        <item>-06: Pacific/Galapagos</item>
+        <item>-09: Pacific/Gambier</item>
+        <item>+11: Pacific/Guadalcanal</item>
+        <item>ChST: Pacific/Guam</item>
+        <item>HST: Pacific/Honolulu</item>
+        <item>HST: Pacific/Johnston</item>
+        <item>+14: Pacific/Kiritimati</item>
+        <item>+11: Pacific/Kosrae</item>
+        <item>+12: Pacific/Kwajalein</item>
+        <item>+12: Pacific/Majuro</item>
+        <item>-0930: Pacific/Marquesas</item>
+        <item>SST: Pacific/Midway</item>
+        <item>+12: Pacific/Nauru</item>
+        <item>-11: Pacific/Niue</item>
+        <item>+11: Pacific/Norfolk</item>
+        <item>+11: Pacific/Noumea</item>
+        <item>SST: Pacific/Pago_Pago</item>
+        <item>+09: Pacific/Palau</item>
+        <item>-08: Pacific/Pitcairn</item>
+        <item>+11: Pacific/Pohnpei</item>
+        <item>+11: Pacific/Ponape</item>
+        <item>+10: Pacific/Port_Moresby</item>
+        <item>-10: Pacific/Rarotonga</item>
+        <item>ChST: Pacific/Saipan</item>
+        <item>SST: Pacific/Samoa</item>
+        <item>-10: Pacific/Tahiti</item>
+        <item>+12: Pacific/Tarawa</item>
+        <item>+13: Pacific/Tongatapu</item>
+        <item>+10: Pacific/Truk</item>
+        <item>+12: Pacific/Wake</item>
+        <item>+12: Pacific/Wallis</item>
+        <item>+10: Pacific/Yap</item>
+        <item>CEST: Poland</item>
+        <item>WEST: Portugal</item>
+        <item>CST: ROC</item>
+        <item>KST: ROK</item>
+        <item>+08: Singapore</item>
+        <item>+03: Turkey</item>
+        <item>UTC: UCT</item>
+        <item>AKDT: US/Alaska</item>
+        <item>HDT: US/Aleutian</item>
+        <item>MST: US/Arizona</item>
+        <item>CDT: US/Central</item>
+        <item>EDT: US/East-Indiana</item>
+        <item>EDT: US/Eastern</item>
+        <item>HST: US/Hawaii</item>
+        <item>CDT: US/Indiana-Starke</item>
+        <item>EDT: US/Michigan</item>
+        <item>MDT: US/Mountain</item>
+        <item>PDT: US/Pacific</item>
+        <item>PDT: US/Pacific-New</item>
+        <item>SST: US/Samoa</item>
+        <item>UTC: UTC</item>
+        <item>UTC: Universal</item>
+        <item>MSK: W-SU</item>
+        <item>WEST: WET</item>
+        <item>UTC: Zulu</item>
+    </string-array>
+    <string-array name="list_time_zone_value">
+        <item>Africa/Abidjan</item>
+        <item>Africa/Accra</item>
+        <item>Africa/Addis_Ababa</item>
+        <item>Africa/Algiers</item>
+        <item>Africa/Asmara</item>
+        <item>Africa/Asmera</item>
+        <item>Africa/Bamako</item>
+        <item>Africa/Bangui</item>
+        <item>Africa/Banjul</item>
+        <item>Africa/Bissau</item>
+        <item>Africa/Blantyre</item>
+        <item>Africa/Brazzaville</item>
+        <item>Africa/Bujumbura</item>
+        <item>Africa/Cairo</item>
+        <item>Africa/Casablanca</item>
+        <item>Africa/Ceuta</item>
+        <item>Africa/Conakry</item>
+        <item>Africa/Dakar</item>
+        <item>Africa/Dar_es_Salaam</item>
+        <item>Africa/Djibouti</item>
+        <item>Africa/Douala</item>
+        <item>Africa/El_Aaiun</item>
+        <item>Africa/Freetown</item>
+        <item>Africa/Gaborone</item>
+        <item>Africa/Harare</item>
+        <item>Africa/Johannesburg</item>
+        <item>Africa/Juba</item>
+        <item>Africa/Kampala</item>
+        <item>Africa/Khartoum</item>
+        <item>Africa/Kigali</item>
+        <item>Africa/Kinshasa</item>
+        <item>Africa/Lagos</item>
+        <item>Africa/Libreville</item>
+        <item>Africa/Lome</item>
+        <item>Africa/Luanda</item>
+        <item>Africa/Lubumbashi</item>
+        <item>Africa/Lusaka</item>
+        <item>Africa/Malabo</item>
+        <item>Africa/Maputo</item>
+        <item>Africa/Maseru</item>
+        <item>Africa/Mbabane</item>
+        <item>Africa/Mogadishu</item>
+        <item>Africa/Monrovia</item>
+        <item>Africa/Nairobi</item>
+        <item>Africa/Ndjamena</item>
+        <item>Africa/Niamey</item>
+        <item>Africa/Nouakchott</item>
+        <item>Africa/Ouagadougou</item>
+        <item>Africa/Porto-Novo</item>
+        <item>Africa/Sao_Tome</item>
+        <item>Africa/Timbuktu</item>
+        <item>Africa/Tripoli</item>
+        <item>Africa/Tunis</item>
+        <item>Africa/Windhoek</item>
+        <item>America/Adak</item>
+        <item>America/Anchorage</item>
+        <item>America/Anguilla</item>
+        <item>America/Antigua</item>
+        <item>America/Araguaina</item>
+        <item>America/Argentina/Buenos_Aires</item>
+        <item>America/Argentina/Catamarca</item>
+        <item>America/Argentina/ComodRivadavia</item>
+        <item>America/Argentina/Cordoba</item>
+        <item>America/Argentina/Jujuy</item>
+        <item>America/Argentina/La_Rioja</item>
+        <item>America/Argentina/Mendoza</item>
+        <item>America/Argentina/Rio_Gallegos</item>
+        <item>America/Argentina/Salta</item>
+        <item>America/Argentina/San_Juan</item>
+        <item>America/Argentina/San_Luis</item>
+        <item>America/Argentina/Tucuman</item>
+        <item>America/Argentina/Ushuaia</item>
+        <item>America/Aruba</item>
+        <item>America/Asuncion</item>
+        <item>America/Atikokan</item>
+        <item>America/Atka</item>
+        <item>America/Bahia</item>
+        <item>America/Bahia_Banderas</item>
+        <item>America/Barbados</item>
+        <item>America/Belem</item>
+        <item>America/Belize</item>
+        <item>America/Blanc-Sablon</item>
+        <item>America/Boa_Vista</item>
+        <item>America/Bogota</item>
+        <item>America/Boise</item>
+        <item>America/Buenos_Aires</item>
+        <item>America/Cambridge_Bay</item>
+        <item>America/Campo_Grande</item>
+        <item>America/Cancun</item>
+        <item>America/Caracas</item>
+        <item>America/Catamarca</item>
+        <item>America/Cayenne</item>
+        <item>America/Cayman</item>
+        <item>America/Chicago</item>
+        <item>America/Chihuahua</item>
+        <item>America/Coral_Harbour</item>
+        <item>America/Cordoba</item>
+        <item>America/Costa_Rica</item>
+        <item>America/Creston</item>
+        <item>America/Cuiaba</item>
+        <item>America/Curacao</item>
+        <item>America/Danmarkshavn</item>
+        <item>America/Dawson</item>
+        <item>America/Dawson_Creek</item>
+        <item>America/Denver</item>
+        <item>America/Detroit</item>
+        <item>America/Dominica</item>
+        <item>America/Edmonton</item>
+        <item>America/Eirunepe</item>
+        <item>America/El_Salvador</item>
+        <item>America/Ensenada</item>
+        <item>America/Fort_Nelson</item>
+        <item>America/Fort_Wayne</item>
+        <item>America/Fortaleza</item>
+        <item>America/Glace_Bay</item>
+        <item>America/Godthab</item>
+        <item>America/Goose_Bay</item>
+        <item>America/Grand_Turk</item>
+        <item>America/Grenada</item>
+        <item>America/Guadeloupe</item>
+        <item>America/Guatemala</item>
+        <item>America/Guayaquil</item>
+        <item>America/Guyana</item>
+        <item>America/Halifax</item>
+        <item>America/Havana</item>
+        <item>America/Hermosillo</item>
+        <item>America/Indiana/Indianapolis</item>
+        <item>America/Indiana/Knox</item>
+        <item>America/Indiana/Marengo</item>
+        <item>America/Indiana/Petersburg</item>
+        <item>America/Indiana/Tell_City</item>
+        <item>America/Indiana/Vevay</item>
+        <item>America/Indiana/Vincennes</item>
+        <item>America/Indiana/Winamac</item>
+        <item>America/Indianapolis</item>
+        <item>America/Inuvik</item>
+        <item>America/Iqaluit</item>
+        <item>America/Jamaica</item>
+        <item>America/Jujuy</item>
+        <item>America/Juneau</item>
+        <item>America/Kentucky/Louisville</item>
+        <item>America/Kentucky/Monticello</item>
+        <item>America/Knox_IN</item>
+        <item>America/Kralendijk</item>
+        <item>America/La_Paz</item>
+        <item>America/Lima</item>
+        <item>America/Los_Angeles</item>
+        <item>America/Louisville</item>
+        <item>America/Lower_Princes</item>
+        <item>America/Maceio</item>
+        <item>America/Managua</item>
+        <item>America/Manaus</item>
+        <item>America/Marigot</item>
+        <item>America/Martinique</item>
+        <item>America/Matamoros</item>
+        <item>America/Mazatlan</item>
+        <item>America/Mendoza</item>
+        <item>America/Menominee</item>
+        <item>America/Merida</item>
+        <item>America/Metlakatla</item>
+        <item>America/Mexico_City</item>
+        <item>America/Miquelon</item>
+        <item>America/Moncton</item>
+        <item>America/Monterrey</item>
+        <item>America/Montevideo</item>
+        <item>America/Montreal</item>
+        <item>America/Montserrat</item>
+        <item>America/Nassau</item>
+        <item>America/New_York</item>
+        <item>America/Nipigon</item>
+        <item>America/Nome</item>
+        <item>America/Noronha</item>
+        <item>America/North_Dakota/Beulah</item>
+        <item>America/North_Dakota/Center</item>
+        <item>America/North_Dakota/New_Salem</item>
+        <item>America/Ojinaga</item>
+        <item>America/Panama</item>
+        <item>America/Pangnirtung</item>
+        <item>America/Paramaribo</item>
+        <item>America/Phoenix</item>
+        <item>America/Port-au-Prince</item>
+        <item>America/Port_of_Spain</item>
+        <item>America/Porto_Acre</item>
+        <item>America/Porto_Velho</item>
+        <item>America/Puerto_Rico</item>
+        <item>America/Punta_Arenas</item>
+        <item>America/Rainy_River</item>
+        <item>America/Rankin_Inlet</item>
+        <item>America/Recife</item>
+        <item>America/Regina</item>
+        <item>America/Resolute</item>
+        <item>America/Rio_Branco</item>
+        <item>America/Rosario</item>
+        <item>America/Santa_Isabel</item>
+        <item>America/Santarem</item>
+        <item>America/Santiago</item>
+        <item>America/Santo_Domingo</item>
+        <item>America/Sao_Paulo</item>
+        <item>America/Scoresbysund</item>
+        <item>America/Shiprock</item>
+        <item>America/Sitka</item>
+        <item>America/St_Barthelemy</item>
+        <item>America/St_Johns</item>
+        <item>America/St_Kitts</item>
+        <item>America/St_Lucia</item>
+        <item>America/St_Thomas</item>
+        <item>America/St_Vincent</item>
+        <item>America/Swift_Current</item>
+        <item>America/Tegucigalpa</item>
+        <item>America/Thule</item>
+        <item>America/Thunder_Bay</item>
+        <item>America/Tijuana</item>
+        <item>America/Toronto</item>
+        <item>America/Tortola</item>
+        <item>America/Vancouver</item>
+        <item>America/Virgin</item>
+        <item>America/Whitehorse</item>
+        <item>America/Winnipeg</item>
+        <item>America/Yakutat</item>
+        <item>America/Yellowknife</item>
+        <item>Antarctica/Casey</item>
+        <item>Antarctica/Davis</item>
+        <item>Antarctica/DumontDUrville</item>
+        <item>Antarctica/Macquarie</item>
+        <item>Antarctica/Mawson</item>
+        <item>Antarctica/McMurdo</item>
+        <item>Antarctica/Palmer</item>
+        <item>Antarctica/Rothera</item>
+        <item>Antarctica/South_Pole</item>
+        <item>Antarctica/Syowa</item>
+        <item>Antarctica/Troll</item>
+        <item>Antarctica/Vostok</item>
+        <item>Arctic/Longyearbyen</item>
+        <item>Asia/Aden</item>
+        <item>Asia/Almaty</item>
+        <item>Asia/Amman</item>
+        <item>Asia/Anadyr</item>
+        <item>Asia/Aqtau</item>
+        <item>Asia/Aqtobe</item>
+        <item>Asia/Ashgabat</item>
+        <item>Asia/Ashkhabad</item>
+        <item>Asia/Atyrau</item>
+        <item>Asia/Baghdad</item>
+        <item>Asia/Bahrain</item>
+        <item>Asia/Baku</item>
+        <item>Asia/Bangkok</item>
+        <item>Asia/Barnaul</item>
+        <item>Asia/Beirut</item>
+        <item>Asia/Bishkek</item>
+        <item>Asia/Brunei</item>
+        <item>Asia/Calcutta</item>
+        <item>Asia/Chita</item>
+        <item>Asia/Choibalsan</item>
+        <item>Asia/Chongqing</item>
+        <item>Asia/Chungking</item>
+        <item>Asia/Colombo</item>
+        <item>Asia/Dacca</item>
+        <item>Asia/Damascus</item>
+        <item>Asia/Dhaka</item>
+        <item>Asia/Dili</item>
+        <item>Asia/Dubai</item>
+        <item>Asia/Dushanbe</item>
+        <item>Asia/Famagusta</item>
+        <item>Asia/Gaza</item>
+        <item>Asia/Harbin</item>
+        <item>Asia/Hebron</item>
+        <item>Asia/Ho_Chi_Minh</item>
+        <item>Asia/Hong_Kong</item>
+        <item>Asia/Hovd</item>
+        <item>Asia/Irkutsk</item>
+        <item>Asia/Istanbul</item>
+        <item>Asia/Jakarta</item>
+        <item>Asia/Jayapura</item>
+        <item>Asia/Jerusalem</item>
+        <item>Asia/Kabul</item>
+        <item>Asia/Kamchatka</item>
+        <item>Asia/Karachi</item>
+        <item>Asia/Kashgar</item>
+        <item>Asia/Kathmandu</item>
+        <item>Asia/Katmandu</item>
+        <item>Asia/Khandyga</item>
+        <item>Asia/Kolkata</item>
+        <item>Asia/Krasnoyarsk</item>
+        <item>Asia/Kuala_Lumpur</item>
+        <item>Asia/Kuching</item>
+        <item>Asia/Kuwait</item>
+        <item>Asia/Macao</item>
+        <item>Asia/Macau</item>
+        <item>Asia/Magadan</item>
+        <item>Asia/Makassar</item>
+        <item>Asia/Manila</item>
+        <item>Asia/Muscat</item>
+        <item>Asia/Nicosia</item>
+        <item>Asia/Novokuznetsk</item>
+        <item>Asia/Novosibirsk</item>
+        <item>Asia/Omsk</item>
+        <item>Asia/Oral</item>
+        <item>Asia/Phnom_Penh</item>
+        <item>Asia/Pontianak</item>
+        <item>Asia/Pyongyang</item>
+        <item>Asia/Qatar</item>
+        <item>Asia/Qostanay</item>
+        <item>Asia/Qyzylorda</item>
+        <item>Asia/Rangoon</item>
+        <item>Asia/Riyadh</item>
+        <item>Asia/Saigon</item>
+        <item>Asia/Sakhalin</item>
+        <item>Asia/Samarkand</item>
+        <item>Asia/Seoul</item>
+        <item>Asia/Shanghai</item>
+        <item>Asia/Singapore</item>
+        <item>Asia/Srednekolymsk</item>
+        <item>Asia/Taipei</item>
+        <item>Asia/Tashkent</item>
+        <item>Asia/Tbilisi</item>
+        <item>Asia/Tehran</item>
+        <item>Asia/Tel_Aviv</item>
+        <item>Asia/Thimbu</item>
+        <item>Asia/Thimphu</item>
+        <item>Asia/Tokyo</item>
+        <item>Asia/Tomsk</item>
+        <item>Asia/Ujung_Pandang</item>
+        <item>Asia/Ulaanbaatar</item>
+        <item>Asia/Ulan_Bator</item>
+        <item>Asia/Urumqi</item>
+        <item>Asia/Ust-Nera</item>
+        <item>Asia/Vientiane</item>
+        <item>Asia/Vladivostok</item>
+        <item>Asia/Yakutsk</item>
+        <item>Asia/Yangon</item>
+        <item>Asia/Yekaterinburg</item>
+        <item>Asia/Yerevan</item>
+        <item>Atlantic/Azores</item>
+        <item>Atlantic/Bermuda</item>
+        <item>Atlantic/Canary</item>
+        <item>Atlantic/Cape_Verde</item>
+        <item>Atlantic/Faeroe</item>
+        <item>Atlantic/Faroe</item>
+        <item>Atlantic/Jan_Mayen</item>
+        <item>Atlantic/Madeira</item>
+        <item>Atlantic/Reykjavik</item>
+        <item>Atlantic/South_Georgia</item>
+        <item>Atlantic/St_Helena</item>
+        <item>Atlantic/Stanley</item>
+        <item>Australia/ACT</item>
+        <item>Australia/Adelaide</item>
+        <item>Australia/Brisbane</item>
+        <item>Australia/Broken_Hill</item>
+        <item>Australia/Canberra</item>
+        <item>Australia/Currie</item>
+        <item>Australia/Darwin</item>
+        <item>Australia/Eucla</item>
+        <item>Australia/Hobart</item>
+        <item>Australia/LHI</item>
+        <item>Australia/Lindeman</item>
+        <item>Australia/Lord_Howe</item>
+        <item>Australia/Melbourne</item>
+        <item>Australia/NSW</item>
+        <item>Australia/North</item>
+        <item>Australia/Perth</item>
+        <item>Australia/Queensland</item>
+        <item>Australia/South</item>
+        <item>Australia/Sydney</item>
+        <item>Australia/Tasmania</item>
+        <item>Australia/Victoria</item>
+        <item>Australia/West</item>
+        <item>Australia/Yancowinna</item>
+        <item>Brazil/Acre</item>
+        <item>Brazil/DeNoronha</item>
+        <item>Brazil/East</item>
+        <item>Brazil/West</item>
+        <item>CET</item>
+        <item>CST6CDT</item>
+        <item>Canada/Atlantic</item>
+        <item>Canada/Central</item>
+        <item>Canada/Eastern</item>
+        <item>Canada/Mountain</item>
+        <item>Canada/Newfoundland</item>
+        <item>Canada/Pacific</item>
+        <item>Canada/Saskatchewan</item>
+        <item>Canada/Yukon</item>
+        <item>Chile/Continental</item>
+        <item>Chile/EasterIsland</item>
+        <item>Cuba</item>
+        <item>EET</item>
+        <item>EST</item>
+        <item>EST5EDT</item>
+        <item>Egypt</item>
+        <item>Eire</item>
+        <item>Etc/GMT</item>
+        <item>Etc/GMT+0</item>
+        <item>Etc/GMT+1</item>
+        <item>Etc/GMT+10</item>
+        <item>Etc/GMT+11</item>
+        <item>Etc/GMT+12</item>
+        <item>Etc/GMT+2</item>
+        <item>Etc/GMT+3</item>
+        <item>Etc/GMT+4</item>
+        <item>Etc/GMT+5</item>
+        <item>Etc/GMT+6</item>
+        <item>Etc/GMT+7</item>
+        <item>Etc/GMT+8</item>
+        <item>Etc/GMT+9</item>
+        <item>Etc/GMT-0</item>
+        <item>Etc/GMT-1</item>
+        <item>Etc/GMT-10</item>
+        <item>Etc/GMT-11</item>
+        <item>Etc/GMT-12</item>
+        <item>Etc/GMT-13</item>
+        <item>Etc/GMT-14</item>
+        <item>Etc/GMT-2</item>
+        <item>Etc/GMT-3</item>
+        <item>Etc/GMT-4</item>
+        <item>Etc/GMT-5</item>
+        <item>Etc/GMT-6</item>
+        <item>Etc/GMT-7</item>
+        <item>Etc/GMT-8</item>
+        <item>Etc/GMT-9</item>
+        <item>Etc/GMT0</item>
+        <item>Etc/Greenwich</item>
+        <item>Etc/UCT</item>
+        <item>Etc/UTC</item>
+        <item>Etc/Universal</item>
+        <item>Etc/Zulu</item>
+        <item>Europe/Amsterdam</item>
+        <item>Europe/Andorra</item>
+        <item>Europe/Astrakhan</item>
+        <item>Europe/Athens</item>
+        <item>Europe/Belfast</item>
+        <item>Europe/Belgrade</item>
+        <item>Europe/Berlin</item>
+        <item>Europe/Bratislava</item>
+        <item>Europe/Brussels</item>
+        <item>Europe/Bucharest</item>
+        <item>Europe/Budapest</item>
+        <item>Europe/Busingen</item>
+        <item>Europe/Chisinau</item>
+        <item>Europe/Copenhagen</item>
+        <item>Europe/Dublin</item>
+        <item>Europe/Gibraltar</item>
+        <item>Europe/Guernsey</item>
+        <item>Europe/Helsinki</item>
+        <item>Europe/Isle_of_Man</item>
+        <item>Europe/Istanbul</item>
+        <item>Europe/Jersey</item>
+        <item>Europe/Kaliningrad</item>
+        <item>Europe/Kiev</item>
+        <item>Europe/Kirov</item>
+        <item>Europe/Lisbon</item>
+        <item>Europe/Ljubljana</item>
+        <item>Europe/London</item>
+        <item>Europe/Luxembourg</item>
+        <item>Europe/Madrid</item>
+        <item>Europe/Malta</item>
+        <item>Europe/Mariehamn</item>
+        <item>Europe/Minsk</item>
+        <item>Europe/Monaco</item>
+        <item>Europe/Moscow</item>
+        <item>Europe/Nicosia</item>
+        <item>Europe/Oslo</item>
+        <item>Europe/Paris</item>
+        <item>Europe/Podgorica</item>
+        <item>Europe/Prague</item>
+        <item>Europe/Riga</item>
+        <item>Europe/Rome</item>
+        <item>Europe/Samara</item>
+        <item>Europe/San_Marino</item>
+        <item>Europe/Sarajevo</item>
+        <item>Europe/Saratov</item>
+        <item>Europe/Simferopol</item>
+        <item>Europe/Skopje</item>
+        <item>Europe/Sofia</item>
+        <item>Europe/Stockholm</item>
+        <item>Europe/Tallinn</item>
+        <item>Europe/Tirane</item>
+        <item>Europe/Tiraspol</item>
+        <item>Europe/Ulyanovsk</item>
+        <item>Europe/Uzhgorod</item>
+        <item>Europe/Vaduz</item>
+        <item>Europe/Vatican</item>
+        <item>Europe/Vienna</item>
+        <item>Europe/Vilnius</item>
+        <item>Europe/Volgograd</item>
+        <item>Europe/Warsaw</item>
+        <item>Europe/Zagreb</item>
+        <item>Europe/Zaporozhye</item>
+        <item>Europe/Zurich</item>
+        <item>GB</item>
+        <item>GB-Eire</item>
+        <item>GMT</item>
+        <item>GMT+0</item>
+        <item>GMT-0</item>
+        <item>GMT0</item>
+        <item>Greenwich</item>
+        <item>HST</item>
+        <item>Hongkong</item>
+        <item>Iceland</item>
+        <item>Indian/Antananarivo</item>
+        <item>Indian/Chagos</item>
+        <item>Indian/Christmas</item>
+        <item>Indian/Cocos</item>
+        <item>Indian/Comoro</item>
+        <item>Indian/Kerguelen</item>
+        <item>Indian/Mahe</item>
+        <item>Indian/Maldives</item>
+        <item>Indian/Mauritius</item>
+        <item>Indian/Mayotte</item>
+        <item>Indian/Reunion</item>
+        <item>Iran</item>
+        <item>Israel</item>
+        <item>Jamaica</item>
+        <item>Japan</item>
+        <item>Kwajalein</item>
+        <item>Libya</item>
+        <item>MET</item>
+        <item>MST</item>
+        <item>MST7MDT</item>
+        <item>Mexico/BajaNorte</item>
+        <item>Mexico/BajaSur</item>
+        <item>Mexico/General</item>
+        <item>NZ</item>
+        <item>NZ-CHAT</item>
+        <item>Navajo</item>
+        <item>PRC</item>
+        <item>PST8PDT</item>
+        <item>Pacific/Apia</item>
+        <item>Pacific/Auckland</item>
+        <item>Pacific/Bougainville</item>
+        <item>Pacific/Chatham</item>
+        <item>Pacific/Chuuk</item>
+        <item>Pacific/Easter</item>
+        <item>Pacific/Efate</item>
+        <item>Pacific/Enderbury</item>
+        <item>Pacific/Fakaofo</item>
+        <item>Pacific/Fiji</item>
+        <item>Pacific/Funafuti</item>
+        <item>Pacific/Galapagos</item>
+        <item>Pacific/Gambier</item>
+        <item>Pacific/Guadalcanal</item>
+        <item>Pacific/Guam</item>
+        <item>Pacific/Honolulu</item>
+        <item>Pacific/Johnston</item>
+        <item>Pacific/Kiritimati</item>
+        <item>Pacific/Kosrae</item>
+        <item>Pacific/Kwajalein</item>
+        <item>Pacific/Majuro</item>
+        <item>Pacific/Marquesas</item>
+        <item>Pacific/Midway</item>
+        <item>Pacific/Nauru</item>
+        <item>Pacific/Niue</item>
+        <item>Pacific/Norfolk</item>
+        <item>Pacific/Noumea</item>
+        <item>Pacific/Pago_Pago</item>
+        <item>Pacific/Palau</item>
+        <item>Pacific/Pitcairn</item>
+        <item>Pacific/Pohnpei</item>
+        <item>Pacific/Ponape</item>
+        <item>Pacific/Port_Moresby</item>
+        <item>Pacific/Rarotonga</item>
+        <item>Pacific/Saipan</item>
+        <item>Pacific/Samoa</item>
+        <item>Pacific/Tahiti</item>
+        <item>Pacific/Tarawa</item>
+        <item>Pacific/Tongatapu</item>
+        <item>Pacific/Truk</item>
+        <item>Pacific/Wake</item>
+        <item>Pacific/Wallis</item>
+        <item>Pacific/Yap</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>ROC</item>
+        <item>ROK</item>
+        <item>Singapore</item>
+        <item>Turkey</item>
+        <item>UCT</item>
+        <item>US/Alaska</item>
+        <item>US/Aleutian</item>
+        <item>US/Arizona</item>
+        <item>US/Central</item>
+        <item>US/East-Indiana</item>
+        <item>US/Eastern</item>
+        <item>US/Hawaii</item>
+        <item>US/Indiana-Starke</item>
+        <item>US/Michigan</item>
+        <item>US/Mountain</item>
+        <item>US/Pacific</item>
+        <item>US/Pacific-New</item>
+        <item>US/Samoa</item>
+        <item>UTC</item>
+        <item>Universal</item>
+        <item>W-SU</item>
+        <item>WET</item>
+        <item>Zulu</item>
+    </string-array>
+</resources>

@@ -24,12 +24,12 @@ import vn.unlimit.vpngate.utils.DataUtil;
 
 public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_NORMAL = 100000;
-    private Context mContext;
+    private final Context mContext;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private OnScrollListener onScrollListener;
-    private VPNGateConnectionList _list;
-    private LayoutInflater layoutInflater;
+    private final VPNGateConnectionList _list;
+    private final LayoutInflater layoutInflater;
     private int lastPosition = 0;
 
     public VPNGateListAdapter(Context context) {

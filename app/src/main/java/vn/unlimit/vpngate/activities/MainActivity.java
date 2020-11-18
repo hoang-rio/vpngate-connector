@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -33,9 +34,11 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
 
 import java.util.Objects;
@@ -43,6 +46,8 @@ import java.util.Objects;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
+import vn.unlimit.vpngate.activities.paid.LoginActivity;
+import vn.unlimit.vpngate.activities.paid.PaidServerActivity;
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog;
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog;
 import vn.unlimit.vpngate.fragment.AboutFragment;
@@ -56,6 +61,7 @@ import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.request.RequestListener;
 import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.PaidServerUtil;
 
 public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     //    // Used to load the 'native-lib' library on application startup.
@@ -63,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 //        System.loadLibrary("native-lib");
 //    }
 
-    private static String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
-    private static String SORT_TYPE_KEY = "SORT_TYPE_KEY";
+    private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
+    private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     View lnLoading;
@@ -87,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private boolean disallowLoadHome = false;
     private AdView adView;
     private boolean isInFront = false;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private PaidServerUtil paidServerUtil;
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (Objects.requireNonNull(intent.getAction())) {
@@ -156,6 +163,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         navigationView.setNavigationItemSelectedListener(this);
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
+        paidServerUtil = App.getInstance().getPaidServerUtil();
+        // Set startup screen to free server when open MainActivity
+        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
@@ -171,11 +181,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     private void checkStatusMenu() {
-        if (dataUtil.getLastVPNConnection() != null) {
-            navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
-        } else {
-            navigationView.getMenu().findItem(R.id.nav_status).setVisible(false);
-        }
+        navigationView.getMenu().findItem(R.id.nav_status).setVisible(dataUtil.getLastVPNConnection() != null);
     }
 
     private void initAdMob() {
@@ -191,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 }
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(int errorCode) {
+                    public void onAdFailedToLoad(LoadAdError error) {
                         adView.setVisibility(View.GONE);
                         hideAdContainer();
                     }
@@ -242,6 +248,25 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 } else {
                     updateData(vpnGateConnectionList);
                 }
+                if (FirebaseRemoteConfig.getInstance().getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil.getBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, false)) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                        // Allow invite => Redirect to paid screen
+                        dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
+                        Intent intentPaidServer = new Intent(this, LoginActivity.class);
+                        startActivity(intentPaidServer);
+                        finish();
+                    });
+                    alertDialogBuilder.setNegativeButton(android.R.string.no, ((dialogInterface, i) -> {
+                        dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
+                        dialogInterface.dismiss();
+                    }));
+                    alertDialogBuilder.setCancelable(false);
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.setTitle(R.string.invite_paid_server_title);
+                    alertDialog.setMessage(getString(R.string.invite_paid_server_message));
+                    alertDialog.show();
+                }
             } else {
                 lnNoNetwork.setVisibility(View.VISIBLE);
                 lnError.setVisibility(View.GONE);
@@ -291,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         unregisterReceiver(broadcastReceiver);
     }
 
+    @SuppressWarnings("deprecation")
     private void getDataServer() {
         isLoading = true;
         lnLoading.setVisibility(View.VISIBLE);
@@ -507,6 +533,16 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 replaceFragment("home");
                 disallowLoadHome = false;
                 break;
+            case R.id.nav_paid_server:
+                if (paidServerUtil.isLoggedIn()) {
+                    Intent intentPaidServer = new Intent(this, PaidServerActivity.class);
+                    startActivity(intentPaidServer);
+                    finish();
+                } else {
+                    Intent intentLogin = new Intent(this, LoginActivity.class);
+                    startActivity(intentLogin);
+                }
+                break;
             case R.id.nav_status:
                 if (dataUtil.getLastVPNConnection() == null) {
                     Toast.makeText(getApplicationContext(), getString(R.string.connect_one_warning), Toast.LENGTH_LONG).show();
@@ -646,7 +682,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             }
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+            new Handler(getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
         } else {
             if (vpnGateConnectionList == null) {
                 getDataServer();
@@ -686,6 +722,4 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             mMenu.findItem(R.id.action_filter).setIcon(vpnGateConnectionList != null && vpnGateConnectionList.getFilter() != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
         }
     }
-
-//    private native String stringFromJNI();
 }

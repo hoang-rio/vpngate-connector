@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">VPN Gate Connector</string>
     <string name="home" translatable="false">Home</string>
+    <string name="paid_server">Paid Server (Beta)</string>
     <string name="navigation_drawer_open">Open drawer</string>
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
@@ -28,6 +29,11 @@
     <string name="score_short">Score</string>
     <string name="ping">Ping</string>
     <string name="session">Session</string>
+    <string name="max_session">Max Session</string>
+    <string name="domain">Domain</string>
+    <string name="good">Good</string>
+    <string name="medium">Normal</string>
+    <string name="full">Full</string>
     <string name="uptime">Uptime</string>
     <string name="owner">Owner</string>
     <string name="tcp_port" translatable="false">TCP</string>
@@ -179,5 +185,110 @@
     <string name="l2tp_connect_hint">To connect to server \"%s\" via L2TP/IPSec VPN. Please follow several step bellow</string>
     <string name="l2tp_connect_add">1. Add new VPN Connection in VPN Setting like this</string>
     <string name="l2tp_tap_to_connect">2. Tap to created VPN Connection to connect</string>
+    <!-- PaidServer -->
+    <!--- TODO: use "vpn_paid_server_api" for production -->
+    <string name="cfg_paid_server_api_base_url" translatable="false">vpn_paid_staging_api</string>
+    <string name="cfg_paid_server_session_header_key" translatable="false">vpn_header_session_name</string>
+    <string name="cfg_invite_paid_server" translatable="false">invite_paid_server</string>
+    <string name="invite_paid_server_title">We recently release Paid Server feature.</string>
+    <string name="invite_paid_server_message">.Do you want to try it now?</string>
     <!-- Paid server consumer product -->
+    <string name="cfg_paid_server_sku" translatable="false">vpn_paid_skus</string>
+    <string name="cfg_paid_server_sku_pro_ver" translatable="false">vpn_paid_skus_pro_ver</string>
+    <string name="title_activity_paid_server">Paid Server</string>
+    <string name="title_activity_account_activate">User activate</string>
+    <string name="title_home">Home</string>
+    <string name="title_servers">Servers</string>
+    <string name="title_free_server">Free Server</string>
+    <string name="title_buy_data">Buy data</string>
+    <string name="vpn_paid_shared_secret" translatable="false">vpngate</string>
+    <string name="vpn_pw_hint">[Your password]</string>
+    <!-- Login screen -->
+    <string name="title_activity_login">Login to Paid Server</string>
+    <string name="title_activity_singup">Sign up new Paid Server account</string>
+    <string name="prompt_user">Username</string>
+    <string name="prompt_full_name">Full name</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="action_forgot_pass">Forgot password?</string>
+    <string name="action_back_to_free">Back to free server</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">Login failed. Incorrect username or password</string>
+    <string name="please_activate_account_first">Can not login. Please open email and activate your account first.</string>
+    <string name="login_loading_text">Logging in…</string>
+    <string name="action_hide_password">Hide</string>
+    <string name="action_show_password">Show</string>
+    <string name="default_loading_text">Loading…</string>
+    <string name="username_and_password_is_required">Username and password is required</string>
+    <string name="account_is_banned_no_reason">You account is banned.</string>
+    <string name="account_is_banned">You account is banned with reason: %s</string>
+    <!-- Sign up screen -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_birthday">Birthday</string>
+    <string name="timezone_field">Timezone</string>
+    <string name="prompt_timezone">Timezone. Example: Asia/Ho_Chi_Minh</string>
+    <string name="prompt_retype_password">Retype password</string>
+    <string name="validate_field_cannot_empty">%s can not be empty</string>
+    <string name="validate_field_exist_in_system">%s is exist. Please choose another</string>
+    <string name="hint_captcha_label">Answer bellow math question</string>
+    <string name="prompt_captcha_answer">Captcha answer</string>
+    <string name="error_get_captcha">Error when get captcha from server. Please try again</string>
+    <string name="reloading_captcha">Reloading captcha…</string>
+    <string name="hint_captcha_tap_to_reload">Tap to captcha image to change another</string>
+    <string name="invalid_timezone">Invalid timezone. Please type keyword and select one from popup list.</string>
+    <string name="register_success">Register success. Please check email to activate your account</string>
+    <string name="register_failed_title">Register failed. Please check error list</string>
+    <string name="username_is_invalid">Username is invalid. Username must be 5 – 30 normal character and digit</string>
+    <string name="password_is_invalid">Password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
+    <string name="email_is_invalid">Email is invalid, please check.</string>
+    <string name="re_type_password_does_not_match">Re type password does not match</string>
+    <string name="birthday_is_invalid">Birthday is invalid</string>
+    <!-- Activate screen -->
+    <string name="account_activate_failed">Account activate failed: %s</string>
+    <string name="account_activate_failed_already_activate">Account already activated</string>
+    <string name="account_activate_failed_invalid_request">Invalid account activate request</string>
+    <string name="account_activating">Account is now activating…</string>
+    <string name="account_activate_successful">Account activate successful</string>
+    <!-- Forgot pass screen -->
+    <string name="title_activity_forgot_pass">Forgot password</string>
+    <string name="action_reset_pass">Reset password</string>
+    <string name="request_forgot_pass_success">Forgot password request success. Please check email to continue.</string>
+    <string name="request_forgot_pass_failure">Forgot password failure. Please try again.</string>
+    <!-- Reset pass screen -->
+    <string name="title_activity_reset_pass">Reset password</string>
+    <string name="prompt_new_password">New password</string>
+    <string name="prompt_re_new_password">Retype new password</string>
+    <string name="action_reset_password">Reset password</string>
+    <string name="reset_pass_token_can_not_empty">Reset password token can not empty. Exited reset pass screen.</string>
+    <string name="checking_reset_pass_token">Check reset pass token\nPlease wait in few second</string>
+    <string name="invalid_reset_pass_token">Invalid reset password token. Use button bellow to return.</string>
+    <string name="password_updated_you_can_login_now">Password updated. You can login now!</string>
+    <string name="this_password_is_used_before_please_choose_another">This password is used before. Please choose another password!</string>
+    <string name="change_password_failed_with_unknow_error">Reset password failed by unknow error. Please retry!</string>
+    <!-- Home screen -->
+    <string name="home_paid_welcome">Hello %s</string>
+    <string name="remaining_data_size">Remaining data</string>
+    <string name="action_buy_data">Buy data</string>
+    <string name="action_purchase_history">Purchase history</string>
+    <string name="calculating_data_size">Calculating…</string>
+    <string name="status_dot" translatable="false">•</string>
+    <!-- Buy data -->
+    <string name="btn_buy_data">Buy with %s (%s%s/GB)</string>
+    <string name="get_sku_list_error">Get list package error. Please try again</string>
+    <string name="purchase_successful">Purchase package [%s] success</string>
+    <string name="invalid_purchase_request">Invalid purchase request detected. Please try again!</string>
+    <string name="duplicate_purchase_create_request">This purchase is completed. Please check purchase history</string>
+    <string name="invalid_product_id">Invalid product. Please try again or contact app admin for help.</string>
+    <string name="processing_text">Processing…</string>
+    <string name="sku_item_click_error">Got error when click buy data. We reloading list package.</string>
+    <!-- Purchase history -->
+    <string name="title_purchase_history">Purchase history</string>
+    <string name="history_index" translatable="false">#</string>
+    <string name="history_plat_form">Platform</string>
+    <string name="history_data_size">Package data size</string>
+    <string name="history_data_size_receive">Receive data size</string>
+    <string name="history_price">Price</string>
+    <string name="history_date_time">Date time</string>
 </resources>

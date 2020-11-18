@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.Objects;
+
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.utils.DataUtil;
 
@@ -74,7 +76,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         try {
             // request a window without the title
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            Objects.requireNonNull(dialog.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
         }catch (Exception e){
             e.printStackTrace();
         }
