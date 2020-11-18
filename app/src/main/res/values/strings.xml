@@ -185,13 +185,16 @@
     <string name="l2tp_connect_hint">To connect to server \"%s\" via L2TP/IPSec VPN. Please follow several step bellow</string>
     <string name="l2tp_connect_add">1. Add new VPN Connection in VPN Setting like this</string>
     <string name="l2tp_tap_to_connect">2. Tap to created VPN Connection to connect</string>
+    <!-- PaidServer -->
     <!--- TODO: use "vpn_paid_server_api" for production -->
     <string name="cfg_paid_server_api_base_url" translatable="false">vpn_paid_staging_api</string>
     <string name="cfg_paid_server_session_header_key" translatable="false">vpn_header_session_name</string>
+    <string name="cfg_invite_paid_server" translatable="false">invite_paid_server</string>
+    <string name="invite_paid_server_title">We recently release Paid Server feature.</string>
+    <string name="invite_paid_server_message">.Do you want to try it now?</string>
     <!-- Paid server consumer product -->
     <string name="cfg_paid_server_sku" translatable="false">vpn_paid_skus</string>
     <string name="cfg_paid_server_sku_pro_ver" translatable="false">vpn_paid_skus_pro_ver</string>
-    <!-- PaidServer -->
     <string name="title_activity_paid_server">Paid Server</string>
     <string name="title_activity_account_activate">User activate</string>
     <string name="title_home">Home</string>

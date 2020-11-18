@@ -48,6 +48,7 @@ public class DataUtil {
     public static final String SETTING_DEFAULT_PROTOCOL = "SETTING_DEFAULT_PROTOCOL";
     public static final String SETTING_STARTUP_SCREEN = "SETTING_STARTUP_SCREEN";
     public static final String SETTING_NOTIFY_SPEED = "SETTING_NOTIFY_SPEED";
+    public static final String INVITED_USE_PAID_SERVER = "INVITED_USE_PAID_SERVER";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
     private Context mContext;

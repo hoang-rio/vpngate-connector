@@ -47,7 +47,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     companion object {
         private const val TAG = "SignUpActivity"
         const val passWordRegex = "^[-\\w.$@*!]{5,30}$"
-        private val USER_NAME_REGEX = "^[a-z0-9]{5,30}$"
+        private const val USER_NAME_REGEX = "^[a-z0-9]{5,30}$"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +68,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         timeZonesDisplay = resources.getStringArray(R.array.list_time_zone_display)
         timeZonesValue = resources.getStringArray(R.array.list_time_zone_value)
         // Create the adapter and set it to the AutoCompleteTextView
-        ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, timeZonesDisplay!!).also { adapter ->
+        ArrayAdapter(this, android.R.layout.simple_list_item_1, timeZonesDisplay!!).also { adapter ->
             txtTimeZone!!.setAdapter(adapter)
         }
         txtTimeZone!!.onFocusChangeListener = this

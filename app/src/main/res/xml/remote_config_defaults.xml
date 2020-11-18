@@ -42,10 +42,18 @@
     </entry>
     <entry>
         <key>vpn_paid_skus</key>
-        <value>["vn.unlimit.vpngate.2gb","vn.unlimit.vpngate.5gb","vn.unlimit.vpngate.10gb","vn.unlimit.vpngate.15gb"]</value>
+        <value>
+            ["vn.unlimit.vpngate.2gb","vn.unlimit.vpngate.5gb","vn.unlimit.vpngate.10gb","vn.unlimit.vpngate.15gb"]
+        </value>
     </entry>
     <entry>
         <key>vpn_paid_skus_pro_ver</key>
-        <value>["vn.unlimit.vpngatepro.2gb","vn.unlimit.vpngatepro.5gb","vn.unlimit.vpngatepro.10gb","vn.unlimit.vpngatepro.15gb"]</value>
+        <value>
+            ["vn.unlimit.vpngatepro.2gb","vn.unlimit.vpngatepro.5gb","vn.unlimit.vpngatepro.10gb","vn.unlimit.vpngatepro.15gb"]
+        </value>
+    </entry>
+    <entry>
+        <key>invite_paid_server</key>
+        <value>true</value>
     </entry>
 </defaultsMap>

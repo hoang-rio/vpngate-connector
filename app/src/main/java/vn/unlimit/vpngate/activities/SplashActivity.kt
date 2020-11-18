@@ -23,10 +23,10 @@ import java.util.regex.Pattern
 
 class SplashActivity : AppCompatActivity() {
     companion object {
-        const val TAG = "SplashActivity"
-        const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
-        const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
-        const val REQUEST_UPDATE_CODE = 100
+        private const val TAG = "SplashActivity"
+        private const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
+        private const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
+        private const val REQUEST_UPDATE_CODE = 100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,16 +68,15 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun startStartUpActivity(delay: Long = 300) {
-        val actIntent: Intent
         val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
-        if (paidServerUtil.getStartUpScreen() == PaidServerUtil.StartUpScreen.PAID_SERVER) {
+        val actIntent: Intent = if (paidServerUtil.getStartUpScreen() == PaidServerUtil.StartUpScreen.PAID_SERVER) {
             if (paidServerUtil.isLoggedIn()) {
-                actIntent = Intent(this, PaidServerActivity::class.java)
+                Intent(this, PaidServerActivity::class.java)
             } else {
-                actIntent = Intent(this, LoginActivity::class.java)
+                Intent(this, LoginActivity::class.java)
             }
         } else {
-            actIntent = Intent(this, MainActivity::class.java)
+            Intent(this, MainActivity::class.java)
         }
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(actIntent)
@@ -117,14 +116,6 @@ class SplashActivity : AppCompatActivity() {
                         Log.d(TAG, "No dynamic link found")
                         checkAppUpdateAndStartActivity()
                     }
-
-
-                    // Handle the deep link. For example, open the linked
-                    // content, or apply promotional credit to the user's
-                    // account.
-                    // ...
-
-                    // ...
                 }
                 .addOnFailureListener {
                     Log.e(TAG, "getDynamicLink:onFailure", it)

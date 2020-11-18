@@ -165,6 +165,8 @@
     <string name="l2tp_connect_add">1. Thêm mới kết nối VPN tương tự bên dưới</string>
     <string name="l2tp_tap_to_connect">2. Bấm vào kết nối VPN vừa tạo để kết nối</string>
     <!-- PaidServer -->
+    <string name="invite_paid_server_title">Chúng tôi vừa ra mắt tính năng máy chủ trả phí.</string>
+    <string name="invite_paid_server_message">Bạn có muốn dùng thử ngay không?</string>
     <string name="title_activity_paid_server">Paid Server</string>
     <string name="title_activity_account_activate">Kích hoạt tài khoản</string>
     <string name="title_home">Home</string>

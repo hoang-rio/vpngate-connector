@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -37,6 +38,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
 
 import java.util.Objects;
@@ -245,6 +247,25 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     getDataServer();
                 } else {
                     updateData(vpnGateConnectionList);
+                }
+                if (FirebaseRemoteConfig.getInstance().getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil.getBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, false)) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                        // Allow invite => Redirect to paid screen
+                        dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
+                        Intent intentPaidServer = new Intent(this, LoginActivity.class);
+                        startActivity(intentPaidServer);
+                        finish();
+                    });
+                    alertDialogBuilder.setNegativeButton(android.R.string.no, ((dialogInterface, i) -> {
+                        dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
+                        dialogInterface.dismiss();
+                    }));
+                    alertDialogBuilder.setCancelable(false);
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.setTitle(R.string.invite_paid_server_title);
+                    alertDialog.setMessage(getString(R.string.invite_paid_server_message));
+                    alertDialog.show();
                 }
             } else {
                 lnNoNetwork.setVisibility(View.VISIBLE);
@@ -701,6 +722,4 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             mMenu.findItem(R.id.action_filter).setIcon(vpnGateConnectionList != null && vpnGateConnectionList.getFilter() != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
         }
     }
-
-//    private native String stringFromJNI();
 }
