@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.paid.SignUpActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txt_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_user"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_user"
+                android:inputType="text"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_full_name"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_full_name"
+                android:inputType="textCapWords"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_email"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_birthday"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_birthday"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txt_timezone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_timezone"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_timezone"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_password"
+                android:imeActionLabel="@string/action_sign_in"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_email"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_retype_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_retype_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_retype_password"
+                android:imeActionLabel="@string/action_sign_in"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <LinearLayout
+                android:id="@+id/ln_captcha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="@string/hint_captcha_label"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="17sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/iv_captcha"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="3"
+                        android:contentDescription="@string/hint_captcha_label" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="="
+                        android:textAlignment="center"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textFontWeight="700"
+                        android:textSize="25sp"
+                        tools:ignore="HardcodedText,UnusedAttribute" />
+
+                    <EditText
+                        android:id="@+id/txt_captcha_answer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="6"
+                        android:autofillHints="@string/prompt_captcha_answer"
+                        android:backgroundTint="@color/colorPaidServer"
+                        android:hint="@string/prompt_captcha_answer"
+                        android:imeActionLabel="@string/action_sign_in"
+                        android:inputType="numberSigned"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textSize="20sp"
+                        tools:targetApi="lollipop" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="@string/hint_captcha_tap_to_reload"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_sign_up"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/selector_apply_button"
+                android:minWidth="120dp"
+                android:text="@string/action_sign_up"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_password"
+                app:layout_constraintVertical_bias="0.2" />
+
+            <Button
+                android:id="@+id/btn_login"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:background="@drawable/selector_paid_button"
+                android:text="@string/action_sign_in"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button"
+                app:layout_constraintVertical_bias="0.2" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,13 +31,16 @@
 -keep public class vn.unlimit.vpngate.activities.DetailActivity {
     public static final *;
 }
+-keep public class vn.unlimit.vpngate.activities.paid.ServerActivity {
+    public static final *;
+}
 # VPNGate Connection List enum
 -keepclassmembers enum vn.unlimit.vpngate.models.* {*;}
+# PaidServer Model
+-keep class vn.unlimit.vpngate.models.PaidServer {*;}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
-#-keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
--printmapping mapping.txt
