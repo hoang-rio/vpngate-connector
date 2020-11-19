@@ -38,6 +38,7 @@
 -keepclassmembers enum vn.unlimit.vpngate.models.* {*;}
 # PaidServer Model
 -keep class vn.unlimit.vpngate.models.PaidServer {*;}
+-keep class vn.unlimit.vpngate.models.PurchaseHistory {*;}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics
