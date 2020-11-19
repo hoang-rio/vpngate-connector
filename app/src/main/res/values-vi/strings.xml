@@ -237,7 +237,7 @@
     <string name="invalid_reset_pass_token">Mã đặt lại mật khẩu không đúng. Dùng nút phía đưới quay lại.</string>
     <string name="password_updated_you_can_login_now">Mật khẩu đã được cập nhật. Bạn có thể đăng nhập rồi!</string>
     <string name="this_password_is_used_before_please_choose_another">Mật khẩu này đã từng sủ dụng. Vui lòng chọn mật khẩu khác nhé!</string>
-    <string name="change_password_failed_with_unknow_error">Đặt lại mật khẩu thất bại do lỗi không xác định. Vui lòng thử lại!</string>
+    <string name="change_password_failed_with_unknown_error">Đặt lại mật khẩu thất bại do lỗi không xác định. Vui lòng thử lại!</string>
     <!-- Home screen -->
     <string name="home_paid_welcome">Xin chào %s</string>
     <string name="remaining_data_size">Dung lượng còn lại</string>
@@ -254,10 +254,11 @@
     <string name="processing_text">Đang xử lý…</string>
     <string name="sku_item_click_error">Gặp lỗi khi bấm mua dung lượng. Đang tải lại danh sách gói.</string>
     <!-- Purchase history -->
-    <string name="title_purchase_history">Lịch sử mua</string>
+    <string name="title_purchase_history">Lịch sử thanh toán</string>
     <string name="history_plat_form">Nền tảng</string>
     <string name="history_data_size">Dung lượng gói</string>
     <string name="history_data_size_receive">Dung lượng nhận</string>
     <string name="history_price">Giá</string>
     <string name="history_date_time">Thời gian</string>
+    <string name="history_have_not_purchase">Bạn chưa thực hiện giao dịch mua nào.</string>
 </resources>

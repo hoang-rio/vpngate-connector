@@ -66,7 +66,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 } else {
                     // Reset pass failure
-                    var toastMessage = getString(R.string.change_password_failed_with_unknow_error)
+                    var toastMessage = getString(R.string.change_password_failed_with_unknown_error)
                     if (userViewModel!!.errorList.value!!.has("password")) {
                         // Password like old password
                         toastMessage = getString(R.string.this_password_is_used_before_please_choose_another)

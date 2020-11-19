@@ -14,7 +14,6 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
     private val _list = ArrayList<PurchaseHistory>()
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     var onScrollListener: OnScrollListener? = null
-    private var lastPosition = 0
 
     fun initialize(list: ArrayList<PurchaseHistory>?) {
         try {
@@ -34,14 +33,13 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         if (onScrollListener != null) {
-            if (position > lastPosition || position == 0) {
+            if (position == _list.size - 1) {
                 onScrollListener!!.onScrollDown()
-            } else if (position < lastPosition) {
+            } else if (position == 0) {
                 onScrollListener!!.onScrollUp()
             }
         }
         (viewHolder as VHTypePurchaseHistory).bindViewHolder(position)
-        lastPosition = position
     }
 
     override fun getItemCount(): Int {
