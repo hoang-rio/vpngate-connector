@@ -211,17 +211,19 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         lnLoadingWrap?.visibility = View.VISIBLE
         rcvSkuDetails?.visibility = View.GONE
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
-            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                lnLoadingWrap?.visibility = View.GONE
-                rcvSkuDetails?.visibility = View.VISIBLE
-                Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
-                    return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
-                })
-                skuDetailsAdapter!!.initialize(listSkuDetails)
-            } else {
-                Toast.makeText(context, getString(R.string.get_sku_list_error), Toast.LENGTH_LONG).show()
-                FirebaseAnalytics.getInstance(requireContext()).logEvent("Paid_Server_List_Package_Error", null)
-                findNavController().popBackStack()
+            if (isAttached) {
+                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                    lnLoadingWrap?.visibility = View.GONE
+                    rcvSkuDetails?.visibility = View.VISIBLE
+                    Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
+                        return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
+                    })
+                    skuDetailsAdapter!!.initialize(listSkuDetails)
+                } else {
+                    Toast.makeText(context, getString(R.string.get_sku_list_error), Toast.LENGTH_LONG).show()
+                    FirebaseAnalytics.getInstance(requireContext()).logEvent("Paid_Server_List_Package_Error", null)
+                    findNavController().popBackStack()
+                }
             }
         }
     }
