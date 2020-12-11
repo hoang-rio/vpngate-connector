@@ -21,7 +21,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
     private var _list: ArrayList<PaidServer> = ArrayList()
     private var lastPosition = 0
     var mContext: Context? = context
-    fun initialize(paidServerList: ArrayList<PaidServer>?) {
+    fun initialize(paidServerList: HashSet<PaidServer>?) {
         try {
             _list.clear()
             if (paidServerList != null) {
@@ -71,15 +71,15 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
         private var txtHostname: TextView = itemView.findViewById(R.id.txt_hostname)
         private var txtSession: TextView = itemView.findViewById(R.id.txt_session)
-        private var txtOwner: TextView
-        private var lnTCP: View
-        private var txtTCP: TextView
-        private var lnUDP: View
-        private var txtUDP: TextView
-        private var lnL2TP: View
-        private var txtStatusColor: TextView
-        private var txtStatusText: TextView
-        private var txtDomain: TextView
+        private var txtOwner: TextView = itemView.findViewById(R.id.txt_owner)
+        private var lnTCP: View = itemView.findViewById(R.id.ln_tcp)
+        private var txtTCP: TextView = itemView.findViewById(R.id.txt_tcp_port)
+        private var lnUDP: View = itemView.findViewById(R.id.ln_udp)
+        private var txtUDP: TextView = itemView.findViewById(R.id.txt_udp_port)
+        private var lnL2TP: View = itemView.findViewById(R.id.ln_l2tp)
+        private var txtStatusColor: TextView = itemView.findViewById(R.id.txt_status_color)
+        private var txtStatusText: TextView = itemView.findViewById(R.id.txt_status_text)
+        private var txtDomain: TextView = itemView.findViewById(R.id.txt_domain)
         private var txtMaxSession: TextView = itemView.findViewById(R.id.txt_max_session)
         @Suppress("DEPRECATION")
         fun bindViewHolder(position: Int) {
@@ -123,6 +123,9 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 } else {
                     lnL2TP.visibility = GONE
                 }
+                if (paidServer.isCommunity) {
+                    txtOwner.text = mContext!!.getText(R.string.community_server)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -159,15 +162,6 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         }
 
         init {
-            txtOwner = itemView.findViewById(R.id.txt_owner)
-            lnTCP = itemView.findViewById(R.id.ln_tcp)
-            txtTCP = itemView.findViewById(R.id.txt_tcp_port)
-            lnUDP = itemView.findViewById(R.id.ln_udp)
-            txtUDP = itemView.findViewById(R.id.txt_udp_port)
-            lnL2TP = itemView.findViewById(R.id.ln_l2tp)
-            txtStatusColor = itemView.findViewById(R.id.txt_status_color)
-            txtStatusText = itemView.findViewById(R.id.txt_status_text)
-            txtDomain = itemView.findViewById(R.id.txt_domain)
             itemView.setOnLongClickListener(this)
             itemView.setOnClickListener(this)
         }
