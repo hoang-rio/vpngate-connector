@@ -297,7 +297,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                                 }
                             }
-                            OpenVPNService.setNotificationActivityClass(this.getClass());
+                            boolean isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0;
+                            OpenVPNService.setNotificationActivityClass(isStartUpDetail ? DetailActivity.class : MainActivity.class);
                         }
                         isConnecting = false;
                         isAuthFailed = false;

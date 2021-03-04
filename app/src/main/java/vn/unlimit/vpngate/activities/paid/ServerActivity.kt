@@ -31,6 +31,7 @@ import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.L2TPConnectActivity
+import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
@@ -510,7 +511,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         if (isCurrent()) {
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
-                            OpenVPNService.setNotificationActivityClass(this::class.java)
+                            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+                            OpenVPNService.setNotificationActivityClass(if (isStartUpDetail) this::class.java else MainActivity::class.java)
                         }
                         isConnecting = false
                         isAuthFailed = false
