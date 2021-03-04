@@ -510,11 +510,11 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         if (isCurrent()) {
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
+                            OpenVPNService.setNotificationActivityClass(this::class.java)
                         }
                         isConnecting = false
                         isAuthFailed = false
                         txtCheckIp?.visibility = View.VISIBLE
-                        OpenVPNService.setNotificationActivityClass(this::class.java)
                     }
                     ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT -> dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {

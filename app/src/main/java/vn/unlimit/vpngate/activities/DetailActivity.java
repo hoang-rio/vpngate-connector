@@ -113,7 +113,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private View btnInstallOpenVpn;
     private View btnSaveConfigFile;
     private TextView txtNetStats;
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
@@ -297,6 +297,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                                 }
                             }
+                            OpenVPNService.setNotificationActivityClass(this.getClass());
                         }
                         isConnecting = false;
                         isAuthFailed = false;
