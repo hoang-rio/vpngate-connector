@@ -658,6 +658,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             assert i != null;
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
+            this.finishAffinity();
         } catch (Exception e) {
             e.printStackTrace();
             this.startHome();

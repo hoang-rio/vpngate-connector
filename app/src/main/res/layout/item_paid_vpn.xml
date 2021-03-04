@@ -185,7 +185,7 @@
                     android:id="@+id/txt_owner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="App's Author" />
+                    android:text="@string/app_author_server" />
             </LinearLayout>
 
             <LinearLayout
@@ -263,7 +263,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
-                android:layout_marginTop="-5dp"
+                android:layout_marginTop="-2dp"
                 android:id="@+id/txt_status_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

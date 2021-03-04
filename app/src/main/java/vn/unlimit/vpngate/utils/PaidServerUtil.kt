@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -29,6 +30,7 @@ class PaidServerUtil(context: Context) {
         const val SAVED_VPN_PW = "SAVED_VPN_PW"
         private const val LAST_CONNECT_SERVER = "LAST_CONNECT_SERVER"
         private const val SERVER_CACHE_KEY = "SERVER_CACHE_KEY"
+        private const val TAG = "PaidServerUtil"
     }
 
     val gson = Gson()
@@ -179,7 +181,7 @@ class PaidServerUtil(context: Context) {
     /**
      * Set Servers cache
      */
-    fun setServersCache(servers: List<PaidServer>) {
+    fun setServersCache(servers: HashSet<PaidServer>) {
         val outFile = File(mContext.filesDir, SERVER_CACHE_KEY)
         val out = FileOutputStream(outFile)
         val type: Type = object : TypeToken<List<PaidServer?>?>() {}.type
@@ -191,20 +193,20 @@ class PaidServerUtil(context: Context) {
     /**
      * Get servers cache
      */
-    fun getServersCache(): ArrayList<PaidServer> {
+    fun getServersCache(): HashSet<PaidServer> {
         try {
             val inFile = File(mContext.filesDir, SERVER_CACHE_KEY)
             return if (!inFile.isFile) {
-                ArrayList()
+                HashSet()
             } else {
                 val fileInputStream = FileInputStream(inFile)
                 val reader = JsonReader(InputStreamReader(fileInputStream))
-                val type: Type = object : TypeToken<List<PaidServer?>?>() {}.type
+                val type: Type = object : TypeToken<HashSet<PaidServer?>?>() {}.type
                 return gson.fromJson(reader, type)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Get server cache error", e)
         }
-        return ArrayList()
+        return HashSet()
     }
 }

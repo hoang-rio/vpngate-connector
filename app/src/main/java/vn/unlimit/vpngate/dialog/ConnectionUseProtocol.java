@@ -86,7 +86,7 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
 
     @Override
     public void onClick(View view) {
-        clickResult.onResult(!view.equals(btnUseTCP));
+        clickResult.onResult(!btnUseTCP.equals(view));
         this.dismiss();
     }
 }

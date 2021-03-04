@@ -20,6 +20,4 @@ This project use another open source project as library detail bellow.
 * [**OpenVPN for Android**](https://github.com/schwabe/ics-openvpn) under GPLv2 LICENSE (https://github.com/schwabe/ics-openvpn/blob/master/doc/LICENSE.txt)
 * [**glide**](https://github.com/bumptech/glide) under Apache License, Version 2.0 (https://github.com/bumptech/glide/blob/master/LICENSE)
 
-## [Donate Via Paypal](https://paypal.me/hoangrio)
-
 Made with ♥ and a lot of coffee by [hoangrio](https://github.com/hoang-rio)

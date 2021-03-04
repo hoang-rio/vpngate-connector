@@ -62,7 +62,7 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, Observer<Boolean> { isLoading ->
+        userViewModel!!.isLoading.observe(this, { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
@@ -127,6 +127,10 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             btnResetPass -> {
                 if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
                     Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (txtCaptchaAnswer!!.text.isBlank()) {
+                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_captcha_answer)), Toast.LENGTH_SHORT).show()
                     return
                 }
                 isResetPasClicked = true

@@ -10,6 +10,8 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,33 +42,28 @@ public class PrivacyPolicyFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstance) {
+    public void onViewCreated(@NotNull View view, Bundle savedInstance) {
         //Load content to webview
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
             }
         });
-        webView.loadData(readTextFromResource(R.raw.privacy_policy), "text/html", "utf-8");
+        webView.loadData(readTextFromResource(), "text/html", "utf-8");
     }
 
-    private String readTextFromResource(int resourceID)
-    {
-        InputStream raw = getResources().openRawResource(resourceID);
+    private String readTextFromResource() {
+        InputStream raw = getResources().openRawResource(R.raw.privacy_policy);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         int i;
-        try
-        {
+        try {
             i = raw.read();
-            while (i != -1)
-            {
+            while (i != -1) {
                 stream.write(i);
                 i = raw.read();
             }
             raw.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return stream.toString();
