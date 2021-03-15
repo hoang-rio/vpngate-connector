@@ -22,7 +22,7 @@ class PurchaseApiRequest : BaseApiRequest() {
         purchaseInfo["platform"] = PARAMS_USER_FLAT_FORM
         purchaseInfo["paymentMethod"] = PARAMS_USER_FLAT_FORM + "_IAP"
         purchaseInfo["currency"] = skuDetails.priceCurrencyCode
-        purchaseInfo["currencyPrice"] = skuDetails.price.replace(Regex("[^0-9]"), "").toDouble()
+        purchaseInfo["currencyPrice"] = (skuDetails.priceAmountMicros / 1000000).toDouble()
         post("$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}", purchaseInfo, object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
                 Log.i(TAG, "Create purchase success with message %s".format(response))
