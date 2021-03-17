@@ -76,7 +76,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     private VpnProfile vpnProfile;
     private Context mContext;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {

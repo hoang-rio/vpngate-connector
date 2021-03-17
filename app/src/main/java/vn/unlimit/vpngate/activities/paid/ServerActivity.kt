@@ -31,7 +31,6 @@ import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.L2TPConnectActivity
-import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
@@ -39,6 +38,7 @@ import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.*
 
+@Suppress("DEPRECATION")
 class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
     @Keep companion object {
         const val TAG = "ServerActivity"
@@ -227,10 +227,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     @SuppressLint("UseCompatLoadingForDrawables")
     @Suppress("DEPRECATION")
     private fun bindData() {
-        if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
-            mPaidServer = paidServerUtil.getLastConnectServer()
+        mPaidServer = if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
+            paidServerUtil.getLastConnectServer()
         } else {
-            mPaidServer = intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
+            intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
         }
         try {
             GlideApp.with(this)
@@ -244,15 +244,19 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             txtDomain?.text = mPaidServer!!.serverDomain
             txtSession?.text = mPaidServer!!.sessionCount.toString()
             txtMaxSession?.text = mPaidServer!!.maxSession.toString()
-            if (mPaidServer!!.serverStatus === "Full") {
-                txtStatusColor?.setTextColor(resources.getColor(R.color.colorRed))
-                txtStatusText?.text = getText(R.string.full)
-            } else if (mPaidServer!!.serverStatus === "Medium") {
-                txtStatusColor?.setTextColor(resources.getColor(R.color.colorAccent))
-                txtStatusText?.text = getText(R.string.medium)
-            } else {
-                txtStatusColor?.setTextColor(resources.getColor(R.color.colorGoodStatus))
-                txtStatusText?.text = getText(R.string.good)
+            when {
+                mPaidServer!!.serverStatus === "Full" -> {
+                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorRed))
+                    txtStatusText?.text = getText(R.string.full)
+                }
+                mPaidServer!!.serverStatus === "Medium" -> {
+                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorAccent))
+                    txtStatusText?.text = getText(R.string.medium)
+                }
+                else -> {
+                    txtStatusColor?.setTextColor(resources.getColor(R.color.colorGoodStatus))
+                    txtStatusText?.text = getText(R.string.good)
+                }
             }
             if (mPaidServer!!.tcpPort > 0) {
                 lnTCP?.visibility = View.VISIBLE
@@ -284,7 +288,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 txtNetStats?.visibility = View.GONE
             }
             if (checkStatus()) {
-                txtCheckIp?.setVisibility(View.VISIBLE)
+                txtCheckIp?.visibility = View.VISIBLE
             }
         } catch (th: Throwable) {
             Log.e(TAG, "Bind data error", th)
@@ -458,7 +462,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
             btnSaveConfigFile -> {
                 if (mPaidServer!!.tcpPort > 0 && mPaidServer!!.udpPort > 0) {
-                    val connectionUseProtocol: ConnectionUseProtocol = ConnectionUseProtocol.newInstance(mPaidServer, { useUdp: Boolean -> this.handleImport(useUdp) })
+                    val connectionUseProtocol: ConnectionUseProtocol = ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean -> this.handleImport(useUdp) }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing && !isDestroyed) {
                         connectionUseProtocol.show(supportFragmentManager, ConnectionUseProtocol::class.java.name)
                     } else if (!isFinishing) {
@@ -511,8 +515,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         if (isCurrent()) {
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
-                            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
-                            OpenVPNService.setNotificationActivityClass(if (isStartUpDetail) this::class.java else MainActivity::class.java)
+                            OpenVPNService.setNotificationActivityClass(this::class.java)
                         }
                         isConnecting = false
                         isAuthFailed = false
@@ -543,7 +546,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         txtCheckIp?.visibility = View.GONE
                         isConnecting = false
                     }
-                    else -> txtCheckIp?.setVisibility(View.GONE)
+                    else -> txtCheckIp?.visibility = View.GONE
                 }
             } catch (th: Throwable) {
                 Log.e(TAG, "UpdateState error", th)
