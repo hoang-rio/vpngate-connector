@@ -181,7 +181,7 @@ class PaidServerUtil(context: Context) {
     /**
      * Set Servers cache
      */
-    fun setServersCache(servers: HashSet<PaidServer>) {
+    fun setServersCache(servers: LinkedHashSet<PaidServer>) {
         val outFile = File(mContext.filesDir, SERVER_CACHE_KEY)
         val out = FileOutputStream(outFile)
         val type: Type = object : TypeToken<List<PaidServer?>?>() {}.type
@@ -193,20 +193,20 @@ class PaidServerUtil(context: Context) {
     /**
      * Get servers cache
      */
-    fun getServersCache(): HashSet<PaidServer> {
+    fun getServersCache(): LinkedHashSet<PaidServer> {
         try {
             val inFile = File(mContext.filesDir, SERVER_CACHE_KEY)
             return if (!inFile.isFile) {
-                HashSet()
+                LinkedHashSet()
             } else {
                 val fileInputStream = FileInputStream(inFile)
                 val reader = JsonReader(InputStreamReader(fileInputStream))
-                val type: Type = object : TypeToken<HashSet<PaidServer?>?>() {}.type
+                val type: Type = object : TypeToken<LinkedHashSet<PaidServer?>?>() {}.type
                 return gson.fromJson(reader, type)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Get server cache error", e)
         }
-        return HashSet()
+        return LinkedHashSet()
     }
 }
