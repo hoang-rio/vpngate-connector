@@ -49,7 +49,7 @@
         android:layout_height="match_parent"
         android:visibility="visible">
 
-        <include layout="@layout/layout_loading_center" />
+        <include layout="@layout/layout_loading_paid" />
     </RelativeLayout>
 
     <RelativeLayout

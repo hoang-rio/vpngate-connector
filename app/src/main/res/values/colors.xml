@@ -20,4 +20,5 @@
     <color name="colorPaidServerTransparent">#994EDA99</color>
     <color name="colorPaidServerDisabled">#234737</color>
     <color name="colorBuyButton">#4CAF50</color>
+    <color name="colorProgressPaid">#2196F3</color>
 </resources>

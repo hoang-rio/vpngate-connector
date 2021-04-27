@@ -17,6 +17,10 @@
         <item name="colorControlNormal">@color/colorWhite</item>
     </style>
 
+    <style name="AppTheme.PaidServer.ProgressBar" parent="AppTheme.PaidServer">
+        <item name="colorAccent">@color/colorProgressPaid</item>
+    </style>
+
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
