@@ -7,144 +7,171 @@
     tools:context=".fragment.paidserver.HomeFragment">
 
     <View
+        android:layout_width="match_parent"
         android:layout_height="200dp"
         android:background="@drawable/paid_home_bg"
-        android:layout_width="match_parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
-        android:text="@string/home_paid_welcome"
         android:id="@+id/text_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:gravity="start"
+        android:text="@string/home_paid_welcome"
         android:textAlignment="textStart"
         android:textColor="@color/colorWhite"
-        android:textSize="20sp"
-        android:layout_marginLeft="10dp" />
+        android:textSize="20sp" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/ln_swipe_refresh"
         android:layout_width="match_parent"
-        android:foregroundTint="@color/colorPaidServer"
+        android:layout_height="match_parent"
         android:layout_below="@id/text_home"
         android:background="@android:color/transparent"
-        android:layout_height="match_parent"
+        android:foregroundTint="@color/colorPaidServer"
         tools:ignore="UnusedAttribute">
+
         <ScrollView
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent">
+
             <LinearLayout
-                android:orientation="vertical"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="20dp">
+
                 <LinearLayout
-                    android:background="@drawable/border_data"
                     android:layout_width="match_parent"
-                    android:orientation="vertical"
                     android:layout_height="152dp"
+                    android:background="@drawable/border_data"
+                    android:orientation="vertical"
                     tools:ignore="UnusedAttribute">
+
                     <LinearLayout
-                        android:padding="10dp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
                         <TextView
-                            android:textColor="@color/colorTextPrimary"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:textAlignment="textStart"
+                            android:layout_weight="1"
                             android:gravity="start"
-                            android:text="@string/remaining_data_size"/>
+                            android:text="@string/remaining_data_size"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/colorTextPrimary" />
+
                         <TextView
                             android:id="@+id/txt_data_size"
                             style="@style/label"
                             android:layout_width="0dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textAlignment="textEnd"
                             android:gravity="end"
                             android:text="@string/calculating_data_size"
-                            android:layout_height="wrap_content"/>
+                            android:textAlignment="textEnd" />
                     </LinearLayout>
+
                     <View
+                        style="@style/AppTheme.Setting.Line"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        style="@style/AppTheme.Setting.Line"/>
+                        android:layout_height="1dp" />
+
                     <LinearLayout
-                        android:padding="15dp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:baselineAligned="false">
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
+
                         <LinearLayout
                             android:id="@+id/ln_buy_data"
-                            android:clickable="true"
-                            android:orientation="vertical"
-                            android:background="@drawable/border_buy_data"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_gravity="center"
-                            android:layout_marginRight="15dp"
-                            android:layout_marginEnd="15dp"
-                            android:padding="10dp"
                             android:layout_height="match_parent"
-                            android:focusable="true">
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/border_buy_data"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
                             <ImageView
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_cart_add_white"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:contentDescription="@string/action_buy_data" />
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/action_buy_data"
+                                android:src="@drawable/ic_cart_add_white" />
+
                             <TextView
-                                android:textColor="@color/colorWhite"
-                                android:gravity="center"
-                                android:textStyle="bold"
-                                android:text="@string/action_buy_data"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"/>
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/action_buy_data"
+                                android:textColor="@color/colorWhite"
+                                android:textStyle="bold" />
                         </LinearLayout>
+
                         <LinearLayout
                             android:id="@+id/ln_purchase_history"
-                            android:clickable="true"
-                            android:orientation="vertical"
-                            android:padding="10dp"
-                            android:background="@drawable/border_purchase_history"
                             android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="15dp"
-                            android:layout_marginStart="15dp"
-                            android:layout_gravity="center"
                             android:layout_height="match_parent"
-                            android:focusable="true">
+                            android:layout_gravity="center"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/border_purchase_history"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
                             <ImageView
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_purchase_history_white"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:contentDescription="@string/action_purchase_history" />
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/action_purchase_history"
+                                android:src="@drawable/ic_purchase_history_white" />
+
                             <TextView
-                                android:gravity="center"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorWhite"
-                                android:text="@string/action_purchase_history"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"/>
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/action_purchase_history"
+                                android:textColor="@color/colorWhite"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
+
                 <LinearLayout
-                    android:layout_marginTop="5dp"
-                    android:background="@color/colorWhite"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorWhite" />
+
+                <include layout="@layout/layout_paid_chart" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorWhite" />
+
+                <include layout="@layout/layout_connected_list" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -275,6 +275,8 @@
     <string name="status_dot" translatable="false">•</string>
     <string name="app_author_server">App Author</string>
     <string name="community_server">Community</string>
+    <string name="usage_chart">Usage chart</string>
+    <string name="connected_list">Connected list</string>
     <!-- Buy data -->
     <string name="btn_buy_data">Buy with %s (%s%s/GB)</string>
     <string name="get_sku_list_error">Get list package error. Please try again</string>

@@ -246,6 +246,8 @@
     <string name="calculating_data_size">Đang tính toán…</string>
     <string name="app_author_server">Tác giả ứng dụng</string>
     <string name="community_server">Cộng đồng</string>
+    <string name="usage_chart">Biểu đồ sử dụng</string>
+    <string name="connected_list">Danh sách kết nối</string>
     <!-- Buy data -->
     <string name="btn_buy_data">Mua với %s (%s%s/GB)</string>
     <string name="purchase_successful">Mua gói [%s] thành công</string>
