@@ -19,7 +19,7 @@ import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 
 class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnScrollListener {
     private var ivBack: ImageView? = null
-    private var lnLoadingWrap: View? = null
+    private var lnLoading: View? = null
     private var lnNoPurchase: View? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var rcvPurchaseHistory: RecyclerView? = null
@@ -36,7 +36,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
         super.onViewCreated(view, savedInstanceState)
         ivBack = view.findViewById(R.id.btn_back)
         ivBack?.setOnClickListener(this)
-        lnLoadingWrap = view.findViewById(R.id.ln_loading_wrap)
+        lnLoading = view.findViewById(R.id.ln_loading)
         lnNoPurchase = view.findViewById(R.id.ln_no_purchase)
         rcvPurchaseHistory = view.findViewById(R.id.rcv_purchase_history)
         rcvPurchaseHistory?.layoutManager = LinearLayoutManager(requireContext())
@@ -56,7 +56,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
                 return@observe
             }
             if (!isLoading) {
-                lnLoadingWrap?.visibility = View.GONE
+                lnLoading?.visibility = View.GONE
                 isInitListingPurchase = false
             } else {
                 swipeRefreshLayout?.isRefreshing = false
