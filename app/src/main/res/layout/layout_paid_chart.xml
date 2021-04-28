@@ -10,8 +10,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:gravity="center"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -39,10 +39,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp" />
 
-    <include layout="@layout/layout_loading_paid" />
+    <include
+        android:id="@+id/ln_loading_chart"
+        layout="@layout/layout_loading_paid" />
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
+        android:id="@+id/line_chart"
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

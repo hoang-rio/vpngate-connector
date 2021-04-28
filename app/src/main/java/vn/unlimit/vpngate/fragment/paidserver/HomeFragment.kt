@@ -8,14 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.viewmodels.UserViewModel
+
 
 class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private val paidServerUtil = App.getInstance().paidServerUtil
@@ -28,6 +36,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnPurchaseHistory: LinearLayout? = null
     private var isObservedRefresh = false
     private var isAttached = false
+    private var lnLoadingChart: View? = null
+    private var lnLoadingConnected: View? = null
+    private var lineChart: LineChart? = null
 
     companion object {
         const val TAG = "HomeFragment"
@@ -51,12 +62,16 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lnBuyData?.setOnClickListener(this)
         lnPurchaseHistory = root.findViewById(R.id.ln_purchase_history)
         lnPurchaseHistory?.setOnClickListener(this)
+        lnLoadingChart = root.findViewById(R.id.ln_loading_chart)
+        lnLoadingConnected = root.findViewById(R.id.ln_loading_connected)
+        lineChart = root.findViewById(R.id.line_chart)
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
+        drawChart()
     }
 
     override fun onAttach(context: Context) {
@@ -80,6 +95,33 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 }
             }
         })
+    }
+
+    private fun drawChart() {
+        val entries: ArrayList<Entry> = ArrayList()
+        val labels: ArrayList<String> = ArrayList()
+        for (i in 1..10) {
+            entries.add(Entry(i.toFloat(), i.toFloat()))
+            labels.add("Label at $i")
+        }
+        val dataSet = LineDataSet(entries, "Transfered MB") // add entries to dataset
+        dataSet.setDrawFilled(true)
+        dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
+        dataSet.setDrawValues(false)
+        dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
+        dataSet.fillAlpha = 255
+        dataSet.setDrawCircles(false)
+        val lineData = LineData(dataSet)
+        lineChart?.data = lineData
+        val description = Description()
+        description.text = "Transfer Data Chart"
+        description.textColor = ContextCompat.getColor(requireContext(), R.color.colorWhite)
+        lineChart?.description = description
+        lineChart?.axisRight?.isEnabled = false
+        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(labels)
+        lineChart?.invalidate()
+        lnLoadingChart?.visibility = View.GONE
     }
 
     override fun onRefresh() {
