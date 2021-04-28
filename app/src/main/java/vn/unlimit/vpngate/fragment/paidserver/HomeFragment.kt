@@ -99,10 +99,12 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
 
     private fun drawChart() {
         val entries: ArrayList<Entry> = ArrayList()
-        val labels: ArrayList<String> = ArrayList()
+        val xLabels: ArrayList<String> = ArrayList()
+        val yLabels: ArrayList<String> = ArrayList()
         for (i in 1..10) {
             entries.add(Entry(i.toFloat(), i.toFloat()))
-            labels.add("Label at $i")
+            xLabels.add("Label at $i")
+            yLabels.add("$i MB")
         }
         val dataSet = LineDataSet(entries, "Transfered MB") // add entries to dataset
         dataSet.setDrawFilled(true)
@@ -119,7 +121,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         description.textColor = ContextCompat.getColor(requireContext(), R.color.colorWhite)
         lineChart?.description = description
         lineChart?.axisRight?.isEnabled = false
-        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(labels)
+        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(xLabels)
+        lineChart?.axisLeft?.valueFormatter = IndexAxisValueFormatter(yLabels)
         lineChart?.invalidate()
         lnLoadingChart?.visibility = View.GONE
     }
