@@ -109,15 +109,16 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         val dataSet = LineDataSet(entries, "Transferred MB") // add entries to dataset
         dataSet.setDrawFilled(true)
         dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-        dataSet.setDrawValues(false)
+        dataSet.lineWidth = 2.5F
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorLink)
-        dataSet.fillAlpha = 255
+        dataSet.fillAlpha = 150
         dataSet.setDrawCircles(false)
         val lineData = LineData(dataSet)
         lineChart?.data = lineData
         val description = Description()
         description.text = "Transfer Data Chart"
+        description.textSize = 15F
         description.textColor = ContextCompat.getColor(requireContext(), R.color.colorWhite)
         lineChart?.description = description
         lineChart?.axisRight?.isEnabled = false
