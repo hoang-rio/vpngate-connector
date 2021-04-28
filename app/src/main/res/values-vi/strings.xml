@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VPN Gate Connector</string>
-    <string name="paid_server">Máy chủ trả phí (Beta)</string>
+    <string name="paid_server">Máy chủ trả phí</string>
     <string name="navigation_drawer_open">Mở menu</string>
     <string name="navigation_drawer_close">Đóng menu</string>
     <string name="search">Tìm kiếm</string>

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">VPN Gate Connector</string>
     <string name="home" translatable="false">Home</string>
-    <string name="paid_server">Paid Server (Beta)</string>
+    <string name="paid_server">Paid Server</string>
     <string name="navigation_drawer_open">Open drawer</string>
     <string name="navigation_drawer_close">Close drawer</string>
     <string name="search">Search</string>
