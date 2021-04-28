@@ -106,12 +106,12 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             xLabels.add("Label at $i")
             yLabels.add("$i MB")
         }
-        val dataSet = LineDataSet(entries, "Transfered MB") // add entries to dataset
+        val dataSet = LineDataSet(entries, "Transferred MB") // add entries to dataset
         dataSet.setDrawFilled(true)
         dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
         dataSet.setDrawValues(false)
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
-        dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorLink)
         dataSet.fillAlpha = 255
         dataSet.setDrawCircles(false)
         val lineData = LineData(dataSet)

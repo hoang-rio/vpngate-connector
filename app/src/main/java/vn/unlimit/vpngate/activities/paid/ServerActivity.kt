@@ -37,6 +37,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.*
+import java.util.regex.Pattern
 
 @Suppress("DEPRECATION")
 class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
@@ -516,6 +517,15 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
                             OpenVPNService.setNotificationActivityClass(this::class.java)
+                            val ipLog = txtStatus!!.text.toString()
+                            val regex = "(\\d{1,3}\\.?){4}";
+                            val pattern = Pattern.compile(regex)
+                            val matcher = pattern.matcher(ipLog)
+                            if (matcher.find()) {
+                                Log.d(TAG, "Found IP ${matcher.group()} in VPN Server: ${mPaidServer?._id}")
+                            } else {
+                                Log.d(TAG, "Not found IP")
+                            }
                         }
                         isConnecting = false
                         isAuthFailed = false
