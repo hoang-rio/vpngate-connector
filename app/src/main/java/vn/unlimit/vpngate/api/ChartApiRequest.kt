@@ -21,7 +21,7 @@ open class ChartApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "Get hourly chart error with message %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })
@@ -34,7 +34,7 @@ open class ChartApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "Get daily chart error with message %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })
@@ -47,7 +47,7 @@ open class ChartApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "Get monthly chart error with message %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })

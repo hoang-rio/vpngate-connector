@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ln_connected_list"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
+    android:layout_height="400dp"
     android:background="@drawable/border_data"
     android:orientation="vertical"
     tools:ignore="UnusedAttribute">
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="start"
-            android:text="@string/connected_list"
+            android:text="@string/session_list"
             android:textAlignment="textStart"
             android:textColor="@color/colorTextPrimary" />
     </LinearLayout>
@@ -30,11 +30,25 @@
         android:layout_height="1dp" />
 
     <include
-        android:id="@+id/ln_loading_connected"
+        android:id="@+id/ln_loading_session"
         layout="@layout/layout_loading_paid" />
 
+    <LinearLayout
+        android:id="@+id/ln_session_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connection_error"
+            android:textColor="@color/colorRed" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv_connected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/rcv_session"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

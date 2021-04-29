@@ -30,7 +30,7 @@ class PurchaseApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Create purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "Create purchase error with message %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })
@@ -44,7 +44,7 @@ class PurchaseApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "List purchase error with error %s".format(anError!!.errorBody))
+                Log.e(TAG, "List purchase error with message %s".format(anError!!.errorBody))
                 baseErrorHandle(anError, requestListener)
             }
         })

@@ -103,7 +103,7 @@
                             android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
                             android:layout_weight="1"
-                            android:background="@drawable/border_buy_data"
+                            android:background="@drawable/btn_green"
                             android:clickable="true"
                             android:focusable="true"
                             android:orientation="vertical"
@@ -133,7 +133,7 @@
                             android:layout_marginStart="15dp"
                             android:layout_marginLeft="15dp"
                             android:layout_weight="1"
-                            android:background="@drawable/border_purchase_history"
+                            android:background="@drawable/btn_blue"
                             android:clickable="true"
                             android:focusable="true"
                             android:orientation="vertical"
@@ -163,7 +163,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@color/colorWhite" />
 
-                <include layout="@layout/layout_paid_chart" />
+                <include layout="@layout/layout_data_chart" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -171,7 +171,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@color/colorWhite" />
 
-                <include layout="@layout/layout_connected_list" />
+                <include layout="@layout/layout_session_list" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

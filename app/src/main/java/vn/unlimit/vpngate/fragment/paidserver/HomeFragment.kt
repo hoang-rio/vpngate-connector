@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -26,8 +28,11 @@ import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.adapter.OnItemClickListener
+import vn.unlimit.vpngate.adapter.SessionAdapter
 import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.viewmodels.ChartViewModel
+import vn.unlimit.vpngate.viewmodels.SessionViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 
@@ -44,10 +49,14 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var isAttached = false
     private var chartViewModel: ChartViewModel? = null
     private var lnLoadingChart: View? = null
-    private var lnLoadingConnected: View? = null
+    private var lnLoadingSession: View? = null
     private var lineChart: LineChart? = null
     private var spinnerChartType: AppCompatSpinner? = null
     private var lnChartError: LinearLayout? = null
+    private var sessionViewModel: SessionViewModel? = null
+    private var lnSessionError: LinearLayout? = null
+    private var rcvSession: RecyclerView? = null
+    private var sessionAdapter: SessionAdapter? = null
 
     companion object {
         const val TAG = "HomeFragment"
@@ -72,7 +81,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lnPurchaseHistory = root.findViewById(R.id.ln_purchase_history)
         lnPurchaseHistory?.setOnClickListener(this)
         lnLoadingChart = root.findViewById(R.id.ln_loading_chart)
-        lnLoadingConnected = root.findViewById(R.id.ln_loading_connected)
+        lnLoadingSession = root.findViewById(R.id.ln_loading_session)
         lineChart = root.findViewById(R.id.line_chart)
         spinnerChartType = root.findViewById(R.id.spin_chart_type)
         val chartTypes = resources.getStringArray(R.array.chart_type)
@@ -87,13 +96,20 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         }
         lnChartError = root.findViewById(R.id.ln_chart_error)
         lnChartError?.setOnClickListener { chartViewModel?.getChartData() }
+        lnSessionError = root.findViewById(R.id.ln_session_error)
+        lnSessionError?.setOnClickListener { sessionViewModel?.getListSession() }
+        rcvSession = root.findViewById(R.id.rcv_session)
+        rcvSession?.layoutManager = LinearLayoutManager(requireContext())
+        sessionAdapter = SessionAdapter(requireContext())
+        sessionAdapter?.onDetailClickListener = OnItemClickListener { o, position -> Log.d(TAG, "Click detail session %s at %s".format(o, position)) }
+        sessionAdapter?.onDeleteCLickListener = OnItemClickListener { o, position -> Log.d(TAG, "Click delete session %s at %s".format(o, position)) }
+        rcvSession?.adapter = sessionAdapter
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
-        chartViewModel?.getChartData()
     }
 
     override fun onAttach(context: Context) {
@@ -128,12 +144,18 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             chartViewModel?.getChartData()
         })
         chartViewModel?.isError?.observe(viewLifecycleOwner, { isError ->
-            if (isError) {
-                lnChartError?.visibility = View.VISIBLE
-            } else {
-                lnChartError?.visibility = View.GONE
+            lnChartError?.visibility = if (isError) View.VISIBLE else View.GONE
+        })
+        sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
+        sessionViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+            run {
+                lnLoadingSession?.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
         })
+        sessionViewModel?.isError?.observe(viewLifecycleOwner, { isError -> lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE })
+        sessionViewModel?.sessionList?.observe(viewLifecycleOwner, { sessionList -> sessionAdapter?.initialize(sessionList) })
+        chartViewModel?.getChartData()
+        sessionViewModel?.getListSession()
     }
 
     class ChartValueFormatter : ValueFormatter() {
@@ -172,6 +194,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             if (isAttached) {
                 userViewModel?.fetchUser(true, paidServerActivity, true)
                 chartViewModel?.getChartData()
+                sessionViewModel?.getListSession()
             } else {
                 swipeRefreshLayout?.isRefreshing = false
             }

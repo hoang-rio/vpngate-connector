@@ -247,13 +247,21 @@
     <string name="app_author_server">Tác giả ứng dụng</string>
     <string name="community_server">Cộng đồng</string>
     <string name="usage_chart">Biểu đồ sử dụng</string>
-    <string name="connected_list">Danh sách kết nối</string>
+    <string name="session_list">Danh sách phiên</string>
     <string name="chart_transferred">Dung lượng (MB)</string>
     <array name="chart_type">
         <item>Hàng giờ</item>
         <item>Hàng ngày</item>
         <item>Hàng tháng</item>
     </array>
+    <string name="server_name">Tên máy chủ:</string>
+    <string name="client_ip">Client IP:</string>
+    <string name="transferred_data">Dung lượng đã dùng:</string>
+    <string name="session_id">Session ID:</string>
+    <string name="view_detail">Chi tiết</string>
+    <string name="delete">Xoá</string>
+    <string name="created">Đã tạo:</string>
+    <string name="updated">Đã cập nhật:</string>
     <!-- Buy data -->
     <string name="btn_buy_data">Mua với %s (%s%s/GB)</string>
     <string name="purchase_successful">Mua gói [%s] thành công</string>
