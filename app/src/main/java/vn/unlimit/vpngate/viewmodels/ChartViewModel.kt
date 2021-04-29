@@ -18,7 +18,6 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     private val chartApiRequest: ChartApiRequest = ChartApiRequest()
     var chartData: MutableLiveData<ArrayList<Entry>> = MutableLiveData(ArrayList())
     var xLabels: ArrayList<String> = ArrayList()
-    var yLabels: ArrayList<String> = ArrayList()
 
 
     fun getChartData() {
@@ -44,12 +43,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                 val data = (result as JSONArray)
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                yLabels.clear()
                 for (i in 1 until data.length()) {
                     val item = data.getJSONArray(i)
                     resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
                     xLabels.add((i - 1).toString())
-                    yLabels.add(item.getDouble(1).toString() + " MB")
                 }
                 chartData.value = resChartData
                 isLoading.value = false
@@ -72,12 +69,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                 val data = (result as JSONArray)
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                yLabels.clear()
                 for (i in 1 until data.length()) {
                     val item = data.getJSONArray(i)
                     resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
                     xLabels.add(item.getString(0))
-                    yLabels.add(item.getDouble(1).toString() + " MB")
                 }
                 chartData.value = resChartData
                 isLoading.value = false
@@ -100,12 +95,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                 val data = (result as JSONArray)
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                yLabels.clear()
                 for (i in 1 until data.length()) {
                     val item = data.getJSONArray(i)
                     resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
                     xLabels.add(item.getString(0))
-                    yLabels.add(item.getDouble(1).toString() + " MB")
                 }
                 chartData.value = resChartData
                 isLoading.value = false
