@@ -18,19 +18,22 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="start"
+            android:layout_weight="3"
             android:text="@string/usage_chart"
             android:textAlignment="textStart"
             android:textColor="@color/colorTextPrimary" />
 
-        <Spinner
-            android:id="@+id/txt_data_size"
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spin_chart_type"
+            android:layout_gravity="end"
+            android:layout_weight="1"
             style="@style/label"
+            android:background="@color/colorProgressPaid"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="end"
+            android:popupBackground="@color/colorLink"
             android:textAlignment="textEnd" />
     </LinearLayout>
 

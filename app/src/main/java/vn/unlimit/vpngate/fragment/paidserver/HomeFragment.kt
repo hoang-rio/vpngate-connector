@@ -8,20 +8,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.utils.SpinnerInit
+import vn.unlimit.vpngate.viewmodels.ChartViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 
@@ -36,9 +42,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnPurchaseHistory: LinearLayout? = null
     private var isObservedRefresh = false
     private var isAttached = false
+    private var chartViewModel: ChartViewModel? = null
     private var lnLoadingChart: View? = null
     private var lnLoadingConnected: View? = null
     private var lineChart: LineChart? = null
+    private var spinnerChartType: AppCompatSpinner? = null
 
     companion object {
         const val TAG = "HomeFragment"
@@ -65,13 +73,24 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lnLoadingChart = root.findViewById(R.id.ln_loading_chart)
         lnLoadingConnected = root.findViewById(R.id.ln_loading_connected)
         lineChart = root.findViewById(R.id.line_chart)
+        spinnerChartType = root.findViewById(R.id.spin_chart_type)
+        val chartTypes = resources.getStringArray(R.array.chart_type)
+        val spinnerInit = SpinnerInit(requireContext(), spinnerChartType)
+        spinnerInit.setStringArray(chartTypes, chartTypes[0])
+        spinnerInit.setOnItemSelectedIndexListener { name, index ->
+            when (index) {
+                0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
+                1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
+                2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
+            }
+        }
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
-        drawChart()
+        chartViewModel?.getChartData()
     }
 
     override fun onAttach(context: Context) {
@@ -95,35 +114,45 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 }
             }
         })
+        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        chartViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading -> if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE })
+        chartViewModel?.chartData?.observe(viewLifecycleOwner, { chartData ->
+            if (chartData.size > 0) {
+                this.drawChart(chartData)
+            }
+        })
+        chartViewModel?.chartType?.observe(viewLifecycleOwner, {
+            chartViewModel?.getChartData()
+        })
     }
 
-    private fun drawChart() {
-        val entries: ArrayList<Entry> = ArrayList()
-        val xLabels: ArrayList<String> = ArrayList()
-        val yLabels: ArrayList<String> = ArrayList()
-        for (i in 1..10) {
-            entries.add(Entry(i.toFloat(), i.toFloat()))
-            xLabels.add("Label at $i")
-            yLabels.add("$i MB")
+    class ChartValueFormatter : ValueFormatter() {
+        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+            return "%.1f MB".format(value)
         }
-        val dataSet = LineDataSet(entries, "Transferred MB") // add entries to dataset
+
+        override fun getFormattedValue(value: Float): String {
+            return if (value > 0) "%.1f MB".format(value) else ""
+        }
+    }
+
+    private fun drawChart(entries: ArrayList<Entry>) {
+        val dataSet = LineDataSet(entries, getString(R.string.chart_transferred)) // add entries to dataset
         dataSet.setDrawFilled(true)
-        dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
         dataSet.lineWidth = 2.5F
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorLink)
         dataSet.fillAlpha = 150
+        dataSet.valueFormatter = ChartValueFormatter()
         dataSet.setDrawCircles(false)
         val lineData = LineData(dataSet)
         lineChart?.data = lineData
-        val description = Description()
-        description.text = "Transfer Data Chart"
-        description.textSize = 15F
-        description.textColor = ContextCompat.getColor(requireContext(), R.color.colorWhite)
-        lineChart?.description = description
+        lineChart?.description!!.isEnabled = false
+        lineChart?.xAxis?.position = XAxis.XAxisPosition.BOTTOM
+        lineChart?.axisLeft?.axisMinimum = 0F
         lineChart?.axisRight?.isEnabled = false
-        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(xLabels)
-        lineChart?.axisLeft?.valueFormatter = IndexAxisValueFormatter(yLabels)
+        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
+        lineChart?.axisLeft?.valueFormatter = ChartValueFormatter()
         lineChart?.invalidate()
         lnLoadingChart?.visibility = View.GONE
     }
@@ -132,6 +161,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         try {
             if (isAttached) {
                 userViewModel?.fetchUser(true, paidServerActivity, true)
+                chartViewModel?.getChartData()
             } else {
                 swipeRefreshLayout?.isRefreshing = false
             }

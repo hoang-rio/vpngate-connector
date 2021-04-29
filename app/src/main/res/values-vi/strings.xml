@@ -248,6 +248,12 @@
     <string name="community_server">Cộng đồng</string>
     <string name="usage_chart">Biểu đồ sử dụng</string>
     <string name="connected_list">Danh sách kết nối</string>
+    <string name="chart_transferred">Dung lượng (MB)</string>
+    <array name="chart_type">
+        <item>Hàng giờ</item>
+        <item>Hàng ngày</item>
+        <item>Hàng tháng</item>
+    </array>
     <!-- Buy data -->
     <string name="btn_buy_data">Mua với %s (%s%s/GB)</string>
     <string name="purchase_successful">Mua gói [%s] thành công</string>
