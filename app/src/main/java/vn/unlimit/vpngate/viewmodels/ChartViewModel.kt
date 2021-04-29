@@ -48,7 +48,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                 for (i in 1 until data.length()) {
                     val item = data.getJSONArray(i)
                     resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
-                    xLabels.add(if ((i - 1) > 9) (i - 1).toString() else "0${i - 1}")
+                    xLabels.add((i - 1).toString())
                     yLabels.add(item.getDouble(1).toString() + " MB")
                 }
                 chartData.value = resChartData
