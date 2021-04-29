@@ -15,12 +15,18 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     }
 
     var chartType: MutableLiveData<ChartType> = MutableLiveData(ChartType.HOURLY)
+    var isError: MutableLiveData<Boolean> = MutableLiveData(false)
     private val chartApiRequest: ChartApiRequest = ChartApiRequest()
     var chartData: MutableLiveData<ArrayList<Entry>> = MutableLiveData(ArrayList())
     var xLabels: ArrayList<String> = ArrayList()
 
 
     fun getChartData() {
+        if (isLoading.value!!) {
+            return
+        }
+        isLoading.value = true
+        isError.value = false
         when (chartType.value) {
             ChartType.HOURLY -> this.getHourlyChart()
             ChartType.DAILY -> this.getDailyChart()
@@ -29,13 +35,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     }
 
     private fun getHourlyChart() {
-        if (isLoading.value!!) {
-            return
-        }
-        isLoading.value = true
         chartApiRequest.getHourlyChart(object : RequestListener {
             override fun onError(error: String?) {
                 baseErrorHandle(error)
+                isError.value = true
                 isLoading.value = false
             }
 
@@ -55,13 +58,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     }
 
     private fun getDailyChart() {
-        if (isLoading.value!!) {
-            return
-        }
-        isLoading.value = true
         chartApiRequest.getDailyChart(object : RequestListener {
             override fun onError(error: String?) {
                 baseErrorHandle(error)
+                isError.value = true
                 isLoading.value = false
             }
 
@@ -81,13 +81,10 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     }
 
     private fun getMonthlyChart() {
-        if (isLoading.value!!) {
-            return
-        }
-        isLoading.value = true
         chartApiRequest.getMontlyChart(object : RequestListener {
             override fun onError(error: String?) {
                 baseErrorHandle(error)
+                isError.value = true
                 isLoading.value = false
             }
 

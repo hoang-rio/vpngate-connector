@@ -47,6 +47,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnLoadingConnected: View? = null
     private var lineChart: LineChart? = null
     private var spinnerChartType: AppCompatSpinner? = null
+    private var lnChartError: LinearLayout? = null
 
     companion object {
         const val TAG = "HomeFragment"
@@ -84,6 +85,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
             }
         }
+        lnChartError = root.findViewById(R.id.ln_chart_error)
+        lnChartError?.setOnClickListener { chartViewModel?.getChartData() }
         return root
     }
 
@@ -123,6 +126,13 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         })
         chartViewModel?.chartType?.observe(viewLifecycleOwner, {
             chartViewModel?.getChartData()
+        })
+        chartViewModel?.isError?.observe(viewLifecycleOwner, { isError ->
+            if (isError) {
+                lnChartError?.visibility = View.VISIBLE
+            } else {
+                lnChartError?.visibility = View.GONE
+            }
         })
     }
 

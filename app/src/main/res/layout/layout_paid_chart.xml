@@ -46,6 +46,20 @@
         android:id="@+id/ln_loading_chart"
         layout="@layout/layout_loading_paid" />
 
+    <LinearLayout
+        android:id="@+id/ln_chart_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connection_error"
+            android:textColor="@color/colorRed" />
+    </LinearLayout>
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_chart"
         android:layout_margin="5dp"
