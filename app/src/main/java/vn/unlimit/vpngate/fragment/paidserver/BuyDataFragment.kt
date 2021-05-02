@@ -39,7 +39,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var dataUtil = App.getInstance().dataUtil
     private var paidServerUtil = App.getInstance().paidServerUtil
     private var billingClient: BillingClient? = null
-    private var lnLoadingWrap: View? = null
+    private var lnLoading: View? = null
     private var rcvSkuDetails: RecyclerView? = null
     private var skuDetailsAdapter: SkuDetailsAdapter? = null
     private var txtDataSize: TextView? = null
@@ -110,7 +110,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         txtDataSize?.text = OpenVPNService.humanReadableByteCount(paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources)
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
-        lnLoadingWrap = root.findViewById(R.id.ln_loading_wrap)
+        lnLoading = root.findViewById(R.id.ln_loading)
         rcvSkuDetails = root.findViewById(R.id.rcv_sku_details)
         rcvSkuDetails!!.layoutManager = LinearLayoutManager(context)
         skuDetailsAdapter = SkuDetailsAdapter(context)
@@ -208,12 +208,12 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         skuList.addAll(listSkus!!)
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
-        lnLoadingWrap?.visibility = View.VISIBLE
+        lnLoading?.visibility = View.VISIBLE
         rcvSkuDetails?.visibility = View.GONE
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
             if (isAttached) {
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    lnLoadingWrap?.visibility = View.GONE
+                    lnLoading?.visibility = View.GONE
                     rcvSkuDetails?.visibility = View.VISIBLE
                     Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
                         return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)

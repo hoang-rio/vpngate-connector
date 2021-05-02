@@ -6,9 +6,19 @@
     tools:context=".activities.SplashActivity">
 
     <ProgressBar
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:id="@+id/progress_bar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_above="@id/txt_loading_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp" />
+
+    <TextView
+        android:id="@+id/txt_loading_text"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/default_loading_text" />
 </RelativeLayout>

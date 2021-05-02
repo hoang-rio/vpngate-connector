@@ -43,14 +43,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/ln_loading_wrap"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
-
-        <include layout="@layout/layout_loading_center" />
-    </RelativeLayout>
+    <include layout="@layout/layout_loading_paid" />
 
     <RelativeLayout
         android:id="@+id/ln_no_purchase"

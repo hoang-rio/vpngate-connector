@@ -5,7 +5,8 @@ import android.os.Parcelable
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.utils.DataUtil
 
-class PaidServer: Parcelable {
+class PaidServer(inParcel: Parcel) : Parcelable {
+    var _id: String = ""
     var l2tpSupport: Int = 1
     var serverCountryCode: String = ""
     var isCommunity: Boolean = false
@@ -20,8 +21,9 @@ class PaidServer: Parcelable {
     var sessionCount = 0
     var ovpnContent = ""
     var serverStatus = ""
-    companion object CREATOR: Parcelable.Creator<PaidServer?> {
-        override fun createFromParcel(inParcel: Parcel): PaidServer? {
+
+    companion object CREATOR : Parcelable.Creator<PaidServer?> {
+        override fun createFromParcel(inParcel: Parcel): PaidServer {
             return PaidServer(inParcel)
         }
 
@@ -29,10 +31,12 @@ class PaidServer: Parcelable {
             return arrayOfNulls(size)
         }
     }
-    constructor(inParcel: Parcel) {
+
+    init {
+        _id = inParcel.readString()!!
         l2tpSupport = inParcel.readInt()
         serverCountryCode = inParcel.readString()!!
-        isCommunity = inParcel.readByte().equals(1)
+        isCommunity = inParcel.readByte() == 1.toByte()
         public = inParcel.readInt()
         serverName = inParcel.readString()!!
         serverLocation = inParcel.readString()!!
@@ -50,6 +54,7 @@ class PaidServer: Parcelable {
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
+        out.writeString(_id)
         out.writeInt(l2tpSupport)
         out.writeString(serverCountryCode)
         out.writeByte(if (isCommunity) 1 else 0)
@@ -66,7 +71,7 @@ class PaidServer: Parcelable {
         out.writeString(serverStatus)
     }
 
-    fun getOpenVpnConfigDataUdp(): String? {
+    fun getOpenVpnConfigDataUdp(): String {
         var openVpnConfigDataTmp: String = ovpnContent
         if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTmp = openVpnConfigDataTmp.replace(serverDomain, serverIp)
@@ -74,7 +79,7 @@ class PaidServer: Parcelable {
         return openVpnConfigDataTmp
     }
 
-    fun getOpenVpnConfigData(): String? {
+    fun getOpenVpnConfigData(): String {
         var openVpnConfigDataTcp: String = ovpnContent
         if (udpPort > 0) {
             // Current config is config for tcp need for udp
@@ -89,7 +94,7 @@ class PaidServer: Parcelable {
         return openVpnConfigDataTcp
     }
 
-    fun getName(useUdp: Boolean): String? {
+    fun getName(useUdp: Boolean): String {
         var address: String = serverIp
         if (App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             address = serverDomain

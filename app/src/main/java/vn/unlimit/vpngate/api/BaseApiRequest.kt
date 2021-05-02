@@ -65,6 +65,15 @@ open class BaseApiRequest {
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
+    fun delete(url: String, requestListener: JSONObjectRequestListener) {
+        val networkRequest = AndroidNetworking.delete("$apiEndPoint$url")
+                .addHeaders(jsonHeaders)
+        if (paidServerUtil.isLoggedIn()) {
+            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+        }
+        networkRequest.build().getAsJSONObject(requestListener)
+    }
+
     fun baseErrorHandle(anError: ANError?, requestListener: RequestListener? = null, activity: Activity? = null) {
         if (anError?.errorCode == 401) {
             // Session expires
