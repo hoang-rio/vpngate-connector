@@ -30,6 +30,7 @@ class PaidServerUtil(context: Context) {
         const val SAVED_VPN_PW = "SAVED_VPN_PW"
         private const val LAST_CONNECT_SERVER = "LAST_CONNECT_SERVER"
         private const val SERVER_CACHE_KEY = "SERVER_CACHE_KEY"
+        private const val CURRENT_SESSION_KEY = "CURRENT_SESSION_KEY"
         private const val TAG = "PaidServerUtil"
     }
 
@@ -127,7 +128,7 @@ class PaidServerUtil(context: Context) {
      * @param key Setting key
      * @param defVal Default value if get null from storage
      */
-    fun getLongSetting(key: String, defVal: Long = 0): Long? = sharedPreferencesSetting.getLong(key, defVal)
+    fun getLongSetting(key: String, defVal: Long = 0): Long = sharedPreferencesSetting.getLong(key, defVal)
 
     /**
      * Set Long setting to storage
@@ -139,6 +140,7 @@ class PaidServerUtil(context: Context) {
         editor.putLong(key, value)
         editor.apply()
     }
+
     /**
      * Remove setting key
      * @param key Setting key want to remove
@@ -208,5 +210,19 @@ class PaidServerUtil(context: Context) {
             Log.e(TAG, "Get server cache error", e)
         }
         return LinkedHashSet()
+    }
+
+    fun setCurrentSession(serverId: String, privateIp: String) {
+        setStringSetting(CURRENT_SESSION_KEY, "%s:%s".format(serverId, privateIp))
+    }
+
+    fun clearCurrentSession() {
+        val editor = sharedPreferencesSetting.edit()
+        editor.remove(CURRENT_SESSION_KEY)
+        editor.apply()
+    }
+
+    fun isCurrentSession(serverId: String, privateIp: String): Boolean {
+        return "%s:%s".format(serverId, privateIp).equals(getStringSetting(CURRENT_SESSION_KEY))
     }
 }

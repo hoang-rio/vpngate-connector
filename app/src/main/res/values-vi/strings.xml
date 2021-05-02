@@ -259,9 +259,19 @@
     <string name="transferred_data">Dung lượng đã dùng:</string>
     <string name="session_id">Session ID:</string>
     <string name="view_detail">Chi tiết</string>
-    <string name="delete">Xoá</string>
+    <string name="disconnect_session">Ngắt kết nối</string>
     <string name="created">Đã tạo:</string>
     <string name="updated">Đã cập nhật:</string>
+    <string name="you_have_not_any_connected_session">Bạn không có phiên kết nối nào.</string>
+    <string name="client_public_ip">IP người dùng:</string>
+    <string name="alert_disconnect_confirm">Bạn chắc chắc muốn ngắt kết nối phiên (%s) và cấm IP (%s) kết nối lại máy chủ (%s) trong vòng 30 phút?</string>
+    <string name="sure_btn">Chắc chắn</string>
+    <string name="cancel_btn">Huỷ bỏ</string>
+    <string name="disconnecting_session">Đang ngắt kết nối phiên</string>
+    <string name="disconnect_success">Đã ngắt kết nối (%s)</string>
+    <string name="disconnect_failed">Ngắt kết nối (%s) thất bại</string>
+    <string name="current_session">[Phiên hiện tại]</string>
+    <string name="disconnect_in_notification_or_detail_server">Ngắt kết nối trên thông báo hoặc chi tiết máy chủ.</string>
     <!-- Buy data -->
     <string name="btn_buy_data">Mua với %s (%s%s/GB)</string>
     <string name="purchase_successful">Mua gói [%s] thành công</string>

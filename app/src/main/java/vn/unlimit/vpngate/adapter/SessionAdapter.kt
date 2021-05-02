@@ -4,10 +4,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.blinkt.openvpn.core.OpenVPNService
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.ConnectedSession
 import java.text.DateFormat.getDateTimeInstance
@@ -18,8 +18,7 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
     private val mContext = context
     private val listSession = ArrayList<ConnectedSession>()
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-    var onDetailClickListener: OnItemClickListener? = null
-    var onDeleteCLickListener: OnItemClickListener? = null
+    var onDisconnectListener: OnItemClickListener? = null
     fun initialize(list: LinkedHashSet<ConnectedSession>) {
         listSession.clear()
         listSession.addAll(list)
@@ -47,27 +46,38 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
     inner class VHTypeSession(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val txtSessionId: TextView = itemView.findViewById(R.id.txt_session_id)
         private val txtServerName: TextView = itemView.findViewById(R.id.txt_server_name)
+        private val txtClientPublicIp: TextView = itemView.findViewById(R.id.txt_client_public_ip)
         private val txtTransferredByte: TextView = itemView.findViewById(R.id.txt_transferbytes)
+        private val lnCreated: View = itemView.findViewById(R.id.ln_created)
+        private val lnCurrentSession: View = itemView.findViewById(R.id.ln_current_session)
         private val txtCreated: TextView = itemView.findViewById(R.id.txt_created)
         private val txtUpdate: TextView = itemView.findViewById(R.id.txt_updated)
-        private val lnDetail: LinearLayout = itemView.findViewById(R.id.ln_btn_detail)
-        private val lnDelete: LinearLayout = itemView.findViewById(R.id.ln_btn_delete)
+        private val lnDisconnect: View = itemView.findViewById(R.id.ln_btn_disconnect)
 
         override fun onClick(v: View?) {
-            when (v) {
-                lnDetail -> onDetailClickListener?.onItemClick(listSession[adapterPosition], adapterPosition)
-                lnDelete -> onDeleteCLickListener?.onItemClick(listSession[adapterPosition], adapterPosition)
-            }
+            onDisconnectListener?.onItemClick(listSession[adapterPosition], adapterPosition)
         }
 
         fun bindViewHolder(session: ConnectedSession) {
             txtSessionId.text = session.sessionId
             txtServerName.text = session.serverId?.serverName
+            txtClientPublicIp.text = session.clientInfo?.ip
             txtTransferredByte.text = OpenVPNService.humanReadableByteCount(session.transferBytes, false, mContext.resources)
             txtCreated.text = getDateStr(session._created!!)
-            txtUpdate.text = getDateStr(session._updated!!)
-            lnDetail.setOnClickListener(this)
-            lnDelete.setOnClickListener(this)
+            if (session._updated != null) {
+                txtUpdate.text = getDateStr(session._updated!!)
+                lnCreated.visibility = View.VISIBLE
+            } else {
+                lnCreated.visibility = View.GONE
+            }
+            lnDisconnect.setOnClickListener(this)
+            if (App.getInstance().paidServerUtil.isCurrentSession(session.serverId!!._id, session.clientIp)) {
+                lnCurrentSession.visibility = View.VISIBLE
+                lnDisconnect.visibility = View.GONE
+            } else {
+                lnDisconnect.visibility = View.VISIBLE
+                lnCurrentSession.visibility = View.GONE
+            }
         }
     }
 }

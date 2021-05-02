@@ -16,6 +16,7 @@ open class ConnectedSession {
 
     var _id: String = ""
     var username: String = ""
+    var clientInfo: ClientInfo? = null
     var sessionId: String = ""
     var serverId: Server? = null
     var clientIp: String = ""

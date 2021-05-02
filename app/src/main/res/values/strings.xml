@@ -288,9 +288,19 @@
     <string name="transferred_data">Transferred data:</string>
     <string name="session_id">Session ID:</string>
     <string name="view_detail">View detail</string>
-    <string name="delete">Delete</string>
+    <string name="disconnect_session">Disconnect</string>
     <string name="created">Created:</string>
     <string name="updated">Updated:</string>
+    <string name="you_have_not_any_connected_session">You have not any connected session.</string>
+    <string name="client_public_ip">Client Public IP:</string>
+    <string name="alert_disconnect_confirm">Are you sure want to disconnect session (%s) and ban IP (%s) reconnect server (%s) in 30 minutes?</string>
+    <string name="sure_btn">Sure</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="disconnecting_session">Disconnecting session</string>
+    <string name="disconnect_success">Disconnected (%s)</string>
+    <string name="disconnect_failed">Disconnect (%s) failed</string>
+    <string name="current_session">[Current session]</string>
+    <string name="disconnect_in_notification_or_detail_server">Disconnect in notification or detail server.</string>
     <!-- Buy data -->
     <string name="btn_buy_data">Buy with %s (%s%s/GB)</string>
     <string name="get_sku_list_error">Get list package error. Please try again</string>

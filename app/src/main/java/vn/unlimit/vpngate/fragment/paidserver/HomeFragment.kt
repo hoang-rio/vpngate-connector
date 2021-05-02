@@ -6,8 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -30,6 +31,9 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SessionAdapter
+import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.models.ConnectedSession
+import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.viewmodels.ChartViewModel
 import vn.unlimit.vpngate.viewmodels.SessionViewModel
@@ -43,8 +47,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var userViewModel: UserViewModel? = null
     private var paidServerActivity: PaidServerActivity? = null
     private var txtDataSize: TextView? = null
-    private var lnBuyData: LinearLayout? = null
-    private var lnPurchaseHistory: LinearLayout? = null
+    private var lnBuyData: View? = null
+    private var lnPurchaseHistory: View? = null
     private var isObservedRefresh = false
     private var isAttached = false
     private var chartViewModel: ChartViewModel? = null
@@ -52,10 +56,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var lnLoadingSession: View? = null
     private var lineChart: LineChart? = null
     private var spinnerChartType: AppCompatSpinner? = null
-    private var lnChartError: LinearLayout? = null
+    private var lnChartError: View? = null
     private var sessionViewModel: SessionViewModel? = null
-    private var lnSessionError: LinearLayout? = null
+    private var lnSessionError: View? = null
     private var rcvSession: RecyclerView? = null
+    private var lnSessionEmtpy: View? = null
     private var sessionAdapter: SessionAdapter? = null
 
     companion object {
@@ -87,7 +92,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         val chartTypes = resources.getStringArray(R.array.chart_type)
         val spinnerInit = SpinnerInit(requireContext(), spinnerChartType)
         spinnerInit.setStringArray(chartTypes, chartTypes[0])
-        spinnerInit.setOnItemSelectedIndexListener { name, index ->
+        spinnerInit.setOnItemSelectedIndexListener { _, index ->
             when (index) {
                 0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
                 1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
@@ -101,9 +106,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         rcvSession = root.findViewById(R.id.rcv_session)
         rcvSession?.layoutManager = LinearLayoutManager(requireContext())
         sessionAdapter = SessionAdapter(requireContext())
-        sessionAdapter?.onDetailClickListener = OnItemClickListener { o, position -> Log.d(TAG, "Click detail session %s at %s".format(o, position)) }
-        sessionAdapter?.onDeleteCLickListener = OnItemClickListener { o, position -> Log.d(TAG, "Click delete session %s at %s".format(o, position)) }
+        sessionAdapter?.onDisconnectListener = OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
         rcvSession?.adapter = sessionAdapter
+        lnSessionEmtpy = root.findViewById(R.id.ln_session_empty)
         return root
     }
 
@@ -153,9 +158,40 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             }
         })
         sessionViewModel?.isError?.observe(viewLifecycleOwner, { isError -> lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE })
-        sessionViewModel?.sessionList?.observe(viewLifecycleOwner, { sessionList -> sessionAdapter?.initialize(sessionList) })
+        sessionViewModel?.sessionList?.observe(viewLifecycleOwner, { sessionList ->
+            sessionAdapter?.initialize(sessionList)
+            lnSessionEmtpy?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
+        })
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()
+    }
+
+    private fun disConnectSession(connectedSession: ConnectedSession) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle(R.string.disconnect_session)
+        alertDialogBuilder.setMessage(getString(R.string.alert_disconnect_confirm, connectedSession.sessionId, connectedSession.clientInfo?.ip, connectedSession.serverId?.serverName))
+        alertDialogBuilder.setPositiveButton(R.string.sure_btn) { dialog, _ ->
+            dialog.dismiss()
+            val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
+            loadingDialog.show(parentFragmentManager, TAG)
+            sessionViewModel?.deleteSession(connectedSession._id, object : RequestListener {
+                override fun onSuccess(result: Any?) {
+                    // Disconnect success -> reload list
+                    loadingDialog.dismiss()
+                    Toast.makeText(requireContext(), getString(R.string.disconnect_success, connectedSession.sessionId), Toast.LENGTH_LONG).show()
+                    sessionViewModel?.getListSession()
+                }
+
+                override fun onError(error: String?) {
+                    loadingDialog.dismiss()
+                    Toast.makeText(requireContext(), getString(R.string.disconnect_failed, connectedSession.sessionId), Toast.LENGTH_LONG).show()
+                }
+            })
+        }
+        alertDialogBuilder.setNegativeButton(R.string.cancel_btn) { dialog, _ ->
+            dialog.dismiss()
+        }
+        alertDialogBuilder.show()
     }
 
     class ChartValueFormatter : ValueFormatter() {

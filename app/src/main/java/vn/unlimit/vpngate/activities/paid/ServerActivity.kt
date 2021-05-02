@@ -311,9 +311,9 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun loadVpnProfile(useUDP: Boolean): Boolean {
         val data: ByteArray = if (useUDP) {
-            mPaidServer!!.getOpenVpnConfigDataUdp()!!.toByteArray()
+            mPaidServer!!.getOpenVpnConfigDataUdp().toByteArray()
         } else {
-            mPaidServer!!.getOpenVpnConfigData()!!.toByteArray()
+            mPaidServer!!.getOpenVpnConfigData().toByteArray()
         }
         dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
         val cp = ConfigParser()
@@ -478,9 +478,9 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun handleImport(useUdp: Boolean) {
         val data: String = if (useUdp) {
-            mPaidServer!!.getOpenVpnConfigDataUdp()!!
+            mPaidServer!!.getOpenVpnConfigDataUdp()
         } else {
-            mPaidServer!!.getOpenVpnConfigData()!!
+            mPaidServer!!.getOpenVpnConfigData()
         }
         try {
             while (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -518,13 +518,11 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             txtNetStats!!.visibility = View.VISIBLE
                             OpenVPNService.setNotificationActivityClass(this::class.java)
                             val ipLog = txtStatus!!.text.toString()
-                            val regex = "(\\d{1,3}\\.?){4}";
+                            val regex = "(\\d{1,3}\\.?){4}"
                             val pattern = Pattern.compile(regex)
                             val matcher = pattern.matcher(ipLog)
                             if (matcher.find()) {
-                                Log.d(TAG, "Found IP ${matcher.group()} in VPN Server: ${mPaidServer?._id}")
-                            } else {
-                                Log.d(TAG, "Not found IP")
+                                paidServerUtil.setCurrentSession(mPaidServer!!._id, matcher.group())
                             }
                         }
                         isConnecting = false
@@ -540,6 +538,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         }
                         txtStatus!!.setText(R.string.disconnected)
                         txtNetStats!!.visibility = View.GONE
+                        paidServerUtil.clearCurrentSession()
                     }
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
                         isAuthFailed = true
@@ -555,6 +554,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         txtStatus!!.text = resources.getString(R.string.vpn_auth_failure)
                         txtCheckIp?.visibility = View.GONE
                         isConnecting = false
+                        paidServerUtil.clearCurrentSession()
                     }
                     else -> txtCheckIp?.visibility = View.GONE
                 }

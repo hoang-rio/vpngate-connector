@@ -72,6 +72,30 @@
                 style="@style/label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/client_public_ip" />
+
+            <TextView
+                android:id="@+id/txt_client_public_ip"
+                style="@style/AppTheme.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="117.10.20.1"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                style="@style/label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/created" />
 
             <TextView
@@ -87,6 +111,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ln_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -137,54 +162,49 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ln_button"
+        android:id="@+id/ln_current_session"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="5dp">
 
-        <LinearLayout
-            android:id="@+id/ln_btn_detail"
-            android:layout_width="100dp"
+        <TextView
+            android:id="@+id/txt_current_session"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/btn_green"
-            android:clickable="true"
-            android:focusable="true"
             android:gravity="center"
-            android:padding="8dp"
-            android:textAlignment="center">
+            android:text="@string/current_session"
+            android:textColor="@color/colorPaidServer"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/view_detail"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ln_btn_delete"
-            android:layout_width="100dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/btn_red"
-            android:clickable="true"
-            android:focusable="true"
             android:gravity="center"
-            android:padding="8dp"
-            android:textAlignment="center">
+            android:text="@string/disconnect_in_notification_or_detail_server"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/delete"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold" />
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ln_btn_disconnect"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:background="@drawable/btn_red"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textAlignment="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnect_session"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View

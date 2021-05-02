@@ -66,7 +66,7 @@ open class BaseApiRequest {
     }
 
     fun delete(url: String, requestListener: JSONObjectRequestListener) {
-        val networkRequest = AndroidNetworking.delete(url)
+        val networkRequest = AndroidNetworking.delete("$apiEndPoint$url")
                 .addHeaders(jsonHeaders)
         if (paidServerUtil.isLoggedIn()) {
             networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
