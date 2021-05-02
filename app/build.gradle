@@ -37,16 +37,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 69
-            versionName "1.6.9-dev"
+            versionCode 70
+            versionName "1.7.0-dev"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 64
-            versionName "1.6.4-dev"
+            versionCode 65
+            versionName "1.6.5-dev"
         }
     }
 
@@ -101,7 +101,7 @@ dependencies {
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.play:core:1.10.0'
-    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'com.google.guava:guava:30.1.1-android'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
