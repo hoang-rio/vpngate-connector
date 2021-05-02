@@ -39,6 +39,8 @@
 # PaidServer Model
 -keep class vn.unlimit.vpngate.models.PaidServer {*;}
 -keep class vn.unlimit.vpngate.models.PurchaseHistory {*;}
+-keep class vn.unlimit.vpngate.models.ConnectedSession {*;}
+-keep class vn.unlimit.vpngate.models.ConnectedSession$* {*;}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics
