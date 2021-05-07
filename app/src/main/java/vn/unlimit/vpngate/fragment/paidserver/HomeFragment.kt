@@ -25,6 +25,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.firebase.analytics.FirebaseAnalytics
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -98,6 +99,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
                 2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
             }
+            val params = Bundle()
+            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("chart_type", chartViewModel?.chartType?.value.toString())
+            FirebaseAnalytics.getInstance(requireContext())
+                .logEvent("user_change_chart_type", params)
         }
         lnChartError = root.findViewById(R.id.ln_chart_error)
         lnChartError?.setOnClickListener { chartViewModel?.getChartData() }
@@ -174,17 +180,33 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             dialog.dismiss()
             val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
             loadingDialog.show(parentFragmentManager, TAG)
+            val params = Bundle()
+            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("server_name", connectedSession.serverId?.serverName)
+            params.putString("session_id", connectedSession.sessionId)
             sessionViewModel?.deleteSession(connectedSession._id, object : RequestListener {
                 override fun onSuccess(result: Any?) {
                     // Disconnect success -> reload list
                     loadingDialog.dismiss()
-                    Toast.makeText(requireContext(), getString(R.string.disconnect_success, connectedSession.sessionId), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.disconnect_success, connectedSession.sessionId),
+                        Toast.LENGTH_LONG
+                    ).show()
                     sessionViewModel?.getListSession()
+                    FirebaseAnalytics.getInstance(requireContext())
+                        .logEvent("user_disconnect_session_success", params)
                 }
 
                 override fun onError(error: String?) {
                     loadingDialog.dismiss()
-                    Toast.makeText(requireContext(), getString(R.string.disconnect_failed, connectedSession.sessionId), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.disconnect_failed, connectedSession.sessionId),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    FirebaseAnalytics.getInstance(requireContext())
+                        .logEvent("user_disconnect_session_failure", params)
                 }
             })
         }
