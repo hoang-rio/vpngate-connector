@@ -46,13 +46,14 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         BottomSheetDialog dialog =
-                new BottomSheetDialog(getActivity());
+                new BottomSheetDialog(requireActivity());
 
         dialog.setOnShowListener(dialog1 -> {
             try {
                 BottomSheetDialog d = (BottomSheetDialog) dialog1;
 
                 FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                assert bottomSheet != null;
                 BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,7 +75,7 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
                 btnUseTCP.setText("TCP " + mVpnGateConnection.getTcpPort());
                 btnUseUDP.setText("UDP " + mVpnGateConnection.getUdpPort());
             } else if (paidServer != null) {
-                btnUseTCP.setBackground(getContext().getResources().getDrawable(R.drawable.selector_paid_button));
+                btnUseTCP.setBackground(requireContext().getResources().getDrawable(R.drawable.selector_paid_button));
                 btnUseTCP.setText("TCP " + paidServer.getTcpPort());
                 btnUseUDP.setText("UDP " + paidServer.getUdpPort());
             }
@@ -86,7 +87,9 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
 
     @Override
     public void onClick(View view) {
-        clickResult.onResult(!btnUseTCP.equals(view));
+        if (clickResult != null) {
+            clickResult.onResult(!btnUseTCP.equals(view));
+        }
         this.dismiss();
     }
 }
