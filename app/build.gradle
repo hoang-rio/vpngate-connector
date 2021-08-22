@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 // Add the Firebase Crashlytics plugin.
-apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-kapt'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -82,11 +81,11 @@ android {
 ext.glideVersion = '4.12.0'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.3.0-rc01'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.browser:browser:1.3.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
@@ -102,7 +101,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.play:core:1.10.0'
     implementation 'com.google.guava:guava:30.1.1-android'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
@@ -120,8 +119,8 @@ dependencies {
         exclude group: 'com.android.support'
     }
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //noinspection GradleDynamicVersion
     implementation "androidx.core:core-ktx:+"
     def billing_version = "3.0.3"
@@ -131,5 +130,10 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.3.1'
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
+//    implementation 'com.google.android.gms:play-services-ads:20.2.0'
+    implementation ('com.google.ads.mediation:applovin:10.3.2.0') {
+        exclude group: "com.google.android.gms"
+    }
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
