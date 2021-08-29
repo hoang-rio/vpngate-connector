@@ -37,7 +37,7 @@ android {
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
             versionCode 73
-            versionName "1.7.3-dev"
+            versionName "1.7.3"
         }
 
         pro {
