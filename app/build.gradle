@@ -36,8 +36,8 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 72
-            versionName "1.7.2"
+            versionCode 73
+            versionName "1.7.3-dev"
         }
 
         pro {
@@ -132,6 +132,9 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.2.0'
     implementation ('com.google.ads.mediation:applovin:10.3.2.0') {
+        exclude group: "com.google.android.gms"
+    }
+    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
         exclude group: "com.google.android.gms"
     }
 }
