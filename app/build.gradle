@@ -134,6 +134,9 @@ dependencies {
     implementation ('com.google.ads.mediation:applovin:10.3.2.0') {
         exclude group: "com.google.android.gms"
     }
+    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
+        exclude group: "com.google.android.gms"
+    }
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
