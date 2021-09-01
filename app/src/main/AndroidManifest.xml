@@ -11,6 +11,7 @@
         tools:ignore="ScopedStorage" />
 
     <application
+        android:hardwareAccelerated="true"
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,7 +24,8 @@
         <activity
             android:name=".activities.SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar.SplashScreen">
+            android:theme="@style/AppTheme.NoActionBar.SplashScreen"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -44,47 +46,58 @@
             </intent-filter>
         </activity>
         <activity
+            android:hardwareAccelerated="true"
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:hardwareAccelerated="true"
             android:name=".activities.DetailActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:hardwareAccelerated="true"
             android:name=".activities.L2TPConnectActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" /> <!-- Start paid activites -->
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- Start paid activites -->
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.SignUpActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_singup"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.PaidServerActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_paid_server"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.ActivateActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_account_activate"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.ForgotPassActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_forgot_pass"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:name=".activities.paid.ResetPassActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_reset_pass"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
+            android:hardwareAccelerated="false"
             android:configChanges="orientation|screenSize"
             android:name=".activities.paid.ServerActivity"
             android:theme="@style/AppTheme.PaidServer"/>

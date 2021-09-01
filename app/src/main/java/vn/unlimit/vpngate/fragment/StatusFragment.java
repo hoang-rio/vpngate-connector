@@ -22,16 +22,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Objects;
 
 import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
@@ -45,9 +47,9 @@ import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.utils.PropertiesService;
 import de.blinkt.openvpn.utils.TotalTraffic;
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.DetailActivity;
+import vn.unlimit.vpngate.activities.MainActivity;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.utils.DataUtil;
 
@@ -166,28 +168,26 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     private void loadAdMob() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            mInterstitialAd = new InterstitialAd(mContext);
-            if (BuildConfig.DEBUG) {
-                //Test
-                mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-            } else {
-                //Real
-                mInterstitialAd.setAdUnitId(getResources().getString(R.string.admob_full_screen_status));
-            }
-            mInterstitialAd.setAdListener(new AdListener() {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            InterstitialAd.load(mContext, getResources().getString(R.string.admob_full_screen_status), adRequest, new InterstitialAdLoadCallback() {
                 @Override
-                public void onAdLoaded() {
+                public void onAdLoaded(@NonNull @NotNull InterstitialAd interstitialAd) {
+                    mInterstitialAd = interstitialAd;
                     isFullScreenAdsLoaded = true;
                 }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull @NotNull LoadAdError loadAdError) {
+                    mInterstitialAd = null;
+                }
             });
-            mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
     }
 
     private void showAds() {
         if (dataUtil.hasAds() && isFullScreenAdsLoaded) {
-            if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
+            if (mInterstitialAd != null) {
+                mInterstitialAd.show(requireActivity());
             }
         }
     }
@@ -314,7 +314,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
             Intent intent = new Intent(getContext(), OpenVPNService.class);
             OpenVPNService.mDisplaySpeed = dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true);
             intent.setAction(OpenVPNService.START_SERVICE);
-            Objects.requireNonNull(getActivity()).bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            requireActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -325,7 +325,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         super.onPause();
         try {
             TotalTraffic.saveTotal(mContext);
-            Objects.requireNonNull(getActivity()).unbindService(mConnection);
+            requireActivity().unbindService(mConnection);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -387,7 +387,7 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
 
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
-        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+        requireActivity().runOnUiThread(() -> {
             try {
                 txtStatus.setText(VpnStatus.getLastCleanLogMessage(mContext));
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
@@ -396,6 +396,9 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
                         btnOnOff.setActivated(true);
                         isConnecting = false;
                         isAuthFailed = false;
+                        boolean isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0;
+                        OpenVPNService.setNotificationActivityClass(isStartUpDetail ? DetailActivity.class : MainActivity.class);
+                        dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false);
                         break;
                     case LEVEL_WAITING_FOR_USER_INPUT:
                         dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);

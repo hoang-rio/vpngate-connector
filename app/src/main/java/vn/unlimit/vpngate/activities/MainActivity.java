@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,16 +36,16 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.paid.LoginActivity;
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 //        System.loadLibrary("native-lib");
 //    }
 
+    private static final String TAG = "MainActivity";
     private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
     private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     VPNGateConnectionList vpnGateConnectionList;
@@ -187,19 +189,15 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void initAdMob() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this);
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.LARGE_BANNER);
-                if (BuildConfig.DEBUG) {
-                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                } else {
-                    adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
-                }
+                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(LoadAdError error) {
+                    public void onAdFailedToLoad(@NotNull LoadAdError error) {
                         adView.setVisibility(View.GONE);
                         hideAdContainer();
+                        Log.e(TAG, error.toString());
                     }
                 });
                 ((RelativeLayout) findViewById(R.id.ad_container_home)).addView(adView);

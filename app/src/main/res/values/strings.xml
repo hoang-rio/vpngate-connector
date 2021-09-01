@@ -171,6 +171,7 @@
     <string name="admob_banner_bellow_detail" translatable="false">ca-app-pub-3085232976681422/9538848174</string>
     <string name="admob_full_screen_detail" translatable="false">ca-app-pub-3085232976681422/4760681369</string>
     <string name="admob_banner_bottom_l2tp" translatable="false">ca-app-pub-3085232976681422/1423139298</string>
+    <string name="admob_open_app" translatable="false">ca-app-pub-3085232976681422/7891399166</string>
     <!--Firebase remote config -->
     <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>

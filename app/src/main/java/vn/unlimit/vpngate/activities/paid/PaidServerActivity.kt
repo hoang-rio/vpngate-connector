@@ -22,7 +22,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class PaidServerActivity : AppCompatActivity() {
 
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
@@ -41,12 +41,24 @@ class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigatio
         val paidServerUtil = (application as App).paidServerUtil
         paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        navView.setOnItemSelectedListener {
+            if (it.itemId == R.id.navigation_free_server) {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+                return@setOnItemSelectedListener false
+            }
+            return@setOnItemSelectedListener true
+        }
 
         navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home, R.id.navigation_server_list, R.id.navigation_free_server))
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home, R.id.navigation_server_list, R.id.navigation_free_server
+            )
+        )
         setupActionBarWithNavController(navController!!, appBarConfiguration)
         navView.setupWithNavController(navController!!)
         navController!!.addOnDestinationChangedListener { _, destination, _ ->
@@ -59,7 +71,7 @@ class PaidServerActivity : AppCompatActivity(), BottomNavigationView.OnNavigatio
         supportActionBar!!.hide()
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+    fun onNavigationItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.navigation_free_server) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

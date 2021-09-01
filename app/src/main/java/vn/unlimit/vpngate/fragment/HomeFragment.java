@@ -19,13 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.jetbrains.annotations.NotNull;
+
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.activities.MainActivity;
@@ -46,7 +50,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
  */
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, RequestListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener, OnScrollListener {
-    private final String TAG = "HOME";
+    private final String TAG = "HOME_FREE";
     private SwipeRefreshLayout lnSwipeRefresh;
     private Context mContext;
     private RecyclerView recyclerViewVPN;
@@ -78,16 +82,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onResume();
         if (dataUtil.hasAds()) {
 
-            if (interstitialAd == null) {
-                interstitialAd = new InterstitialAd(mContext);
-                if (BuildConfig.DEBUG) {
-                    interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                } else {
-                    interstitialAd.setAdUnitId(getString(R.string.admob_full_screen_detail));
-                }
-            }
-            if (isShowedAd) {
-                interstitialAd.loadAd(new AdRequest.Builder().build());
+            if (interstitialAd == null || isShowedAd) {
+                AdRequest adRequest = new AdRequest.Builder().build();
+                InterstitialAd.load(mContext, getString(R.string.admob_full_screen_detail), adRequest, new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull @NotNull InterstitialAd interstitialAd) {
+                        HomeFragment.this.interstitialAd = interstitialAd;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull @NotNull LoadAdError loadAdError) {
+                        HomeFragment.this.interstitialAd = null;
+                        Log.e(TAG, loadAdError.toString());
+                    }
+                });
                 isShowedAd = false;
             }
 
@@ -110,14 +118,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private boolean checkAndShowAd(final VPNGateConnection vpnGateConnection) {
         if (dataUtil.hasAds()) {
-            if (interstitialAd != null && interstitialAd.isLoaded()) {
-                interstitialAd.setAdListener(new AdListener() {
+            if (interstitialAd != null) {
+                interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                     @Override
-                    public void onAdClosed() {
+                    public void onAdDismissedFullScreenContent() {
+                        startDetailAct(vpnGateConnection);
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(@NotNull AdError adError) {
+                        // Called when fullscreen content failed to show.
                         startDetailAct(vpnGateConnection);
                     }
                 });
-                interstitialAd.show();
+                interstitialAd.show(mActivity);
                 isShowedAd = true;
                 return true;
             }
