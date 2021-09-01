@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 // Add the Firebase Crashlytics plugin.
 apply plugin: 'kotlin-kapt'
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
 }
 android {
@@ -36,8 +35,8 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 73
-            versionName "1.7.3"
+            versionCode 74
+            versionName "1.7.4-dev"
         }
 
         pro {
@@ -89,9 +88,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
-    implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    implementation platform('com.google.firebase:firebase-bom:28.4.0')
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-ads'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-core'
@@ -130,13 +128,18 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.3.1'
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-//    implementation 'com.google.android.gms:play-services-ads:20.2.0'
+    implementation 'com.google.android.gms:play-services-ads:20.3.0'
     implementation ('com.google.ads.mediation:applovin:10.3.2.0') {
         exclude group: "com.google.android.gms"
     }
-    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
-        exclude group: "com.google.android.gms"
-    }
+    // Comment these line to stop FAN mediation
+//    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
+//        exclude group: "com.google.android.gms"
+//    }
+    def lifecycle_version = "2.0.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'

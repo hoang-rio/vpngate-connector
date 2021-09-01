@@ -3,6 +3,7 @@ package vn.unlimit.vpngate;
 import android.app.Application;
 import android.util.Log;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
@@ -12,6 +13,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import de.blinkt.openvpn.core.OpenVPNService;
 import vn.unlimit.vpngate.activities.DetailActivity;
 import vn.unlimit.vpngate.activities.MainActivity;
+import vn.unlimit.vpngate.utils.AppOpenManager;
 import vn.unlimit.vpngate.utils.DataUtil;
 import vn.unlimit.vpngate.utils.PaidServerUtil;
 
@@ -22,6 +24,9 @@ public class App extends Application {
     private DataUtil dataUtil;
     private PaidServerUtil paidServerUtil;
     private static final String TAG = "VpnGateApp";
+
+    public static AppOpenManager appOpenManager;
+
 
     public static String getResourceString(int resId) {
         return instance.getString(resId);
@@ -52,6 +57,12 @@ public class App extends Application {
         }
         instance = this;
         dataUtil = new DataUtil(this);
+        if (dataUtil.hasAds()) {
+            MobileAds.initialize(this);
+            if (dataUtil.isAcceptedPrivacyPolicy() && dataUtil.getBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, false)) {
+                appOpenManager = new AppOpenManager(this);
+            }
+        }
         // Make notification open DetailActivity
         OpenVPNService.setNotificationActivityClass(dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? DetailActivity.class : MainActivity.class);
         paidServerUtil = new PaidServerUtil(this);

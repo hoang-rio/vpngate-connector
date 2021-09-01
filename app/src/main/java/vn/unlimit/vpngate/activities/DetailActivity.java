@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -34,11 +35,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -57,7 +61,6 @@ import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.utils.TotalTraffic;
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol;
@@ -211,17 +214,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 MobileAds.initialize(this);
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.BANNER);
-                if (BuildConfig.DEBUG) {
-                    //Test
-                    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                } else {
-                    //Real
-                    adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
-                }
+                adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
                 adView.setAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(LoadAdError error) {
                         hideAdContainer();
+                        Log.e(TAG, error.toString());
                     }
                 });
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -232,11 +230,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adView.loadAd(new AdRequest.Builder().build());
                 //Banner bellow
                 adViewBellow = new AdView(getApplicationContext());
-                if (BuildConfig.DEBUG) {
-                    adViewBellow.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                } else {
-                    adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
-                }
+                adViewBellow.setAdUnitId(getString(R.string.admob_banner_bellow_detail));
                 adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
                 adViewBellow.setAdListener(new AdListener() {
                     @Override
@@ -299,6 +293,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             }
                             boolean isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0;
                             OpenVPNService.setNotificationActivityClass(isStartUpDetail ? DetailActivity.class : MainActivity.class);
+                            dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false);
                         }
                         isConnecting = false;
                         isAuthFailed = false;
@@ -623,20 +618,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void initInterstitialAd() {
         if (dataUtil.hasAds()) {
             try {
-                mInterstitialAd = new InterstitialAd(getApplicationContext());
-                if (BuildConfig.DEBUG) {
-                    mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-                } else {
-                    mInterstitialAd.setAdUnitId(getString(R.string.admob_full_screen));
-                }
-                mInterstitialAd.setAdListener(new AdListener() {
+                AdRequest adRequest = new AdRequest.Builder().build();
+                InterstitialAd.load(getApplicationContext(), getString(R.string.admob_full_screen), adRequest, new InterstitialAdLoadCallback() {
                     @Override
-                    public void onAdLoaded() {
+                    public void onAdLoaded(@NonNull @NotNull InterstitialAd interstitialAd) {
                         isFullScreenAdLoaded = true;
                     }
-
                 });
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -647,8 +635,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             if (dataUtil.hasAds() && dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false) && isFullScreenAdLoaded) {
                 isShowAds = true;
-                if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(this);
                 }
             }
         } catch (Exception e) {

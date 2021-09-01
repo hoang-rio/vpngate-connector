@@ -40,8 +40,10 @@ import java.io.*
 import java.util.regex.Pattern
 
 @Suppress("DEPRECATION")
-class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
-    @Keep companion object {
+class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener,
+    VpnStatus.ByteCountListener {
+    @Keep
+    companion object {
         const val TAG = "ServerActivity"
         private var mVPNService: IOpenVPNServiceInternal? = null
         const val TYPE_FROM_NOTIFY = 1001
@@ -79,8 +81,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var btnInstallOpenVpn: Button? = null
     private var btnSaveConfigFile: Button? = null
     private val mConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName,
-                                        service: IBinder) {
+        override fun onServiceConnected(
+            className: ComponentName,
+            service: IBinder
+        ) {
             mVPNService = IOpenVPNServiceInternal.Stub.asInterface(service)
         }
 
@@ -139,7 +143,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, OpenVPNService::class.java)
-                OpenVPNService.mDisplaySpeed = dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+                OpenVPNService.mDisplaySpeed =
+                    dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
                 intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
             }, 300)
@@ -235,10 +240,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
         try {
             GlideApp.with(this)
-                    .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
-                    .placeholder(R.color.colorOverlay)
-                    .error(R.color.colorOverlay)
-                    .into(ivFlag!!)
+                .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
+                .placeholder(R.color.colorOverlay)
+                .error(R.color.colorOverlay)
+                .into(ivFlag!!)
             txtCountry?.text = mPaidServer!!.serverLocation
             txtIp?.text = mPaidServer!!.serverIp
             txtHostname?.text = mPaidServer!!.serverName
@@ -315,7 +320,6 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         } else {
             mPaidServer!!.getOpenVpnConfigData().toByteArray()
         }
-        dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
         val cp = ConfigParser()
         val isr = InputStreamReader(ByteArrayInputStream(data))
         try {
@@ -324,8 +328,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             vpnProfile?.mName = mPaidServer!!.getName(useUDP)
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile?.mOverrideDNS = true
-                vpnProfile?.mDNS1 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key))
-                vpnProfile?.mDNS2 = FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_alternative_cfg_key))
+                vpnProfile?.mDNS1 = FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
+                vpnProfile?.mDNS2 = FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
             } else if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
                 vpnProfile?.mOverrideDNS = true
                 vpnProfile?.mDNS1 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8")
@@ -364,8 +370,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private fun startVpn() {
         val intent = VpnService.prepare(this)
         if (intent != null) {
-            VpnStatus.updateStateString("USER_VPN_PERMISSION", "", R.string.state_user_vpn_permission,
-                    ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT)
+            VpnStatus.updateStateString(
+                "USER_VPN_PERMISSION", "", R.string.state_user_vpn_permission,
+                ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT
+            )
             // Start the query
             try {
                 startActivityForResult(intent, DetailActivity.START_VPN_PROFILE)
@@ -388,10 +396,12 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 params.putString("domain", mPaidServer!!.serverDomain)
                 params.putString("ip", mPaidServer!!.serverIp)
                 params.putString("country", mPaidServer!!.serverLocation)
-                FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Disconnect_VPN", params)
+                FirebaseAnalytics.getInstance(applicationContext)
+                    .logEvent("Paid_Disconnect_VPN", params)
                 stopVpn()
                 if (Build.VERSION.SDK_INT >= 16) {
-                    btnConnect!!.background = resources.getDrawable(R.drawable.selector_primary_button)
+                    btnConnect!!.background =
+                        resources.getDrawable(R.drawable.selector_primary_button)
                 }
                 btnConnect!!.setText(R.string.connect_to_this_server)
                 txtStatus!!.setText(R.string.disconnecting)
@@ -405,13 +415,26 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         protocol = "UDP"
                         handleConnection(true)
                     }
-                    Toast.makeText(this, getString(R.string.connecting_use_protocol, protocol), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.connecting_use_protocol, protocol),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    val connectionUseProtocol = ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean -> handleConnection(useUdp) }
+                    val connectionUseProtocol =
+                        ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean ->
+                            handleConnection(useUdp)
+                        }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing && !isDestroyed) {
-                        connectionUseProtocol.show(supportFragmentManager, ConnectionUseProtocol::class.java.name)
+                        connectionUseProtocol.show(
+                            supportFragmentManager,
+                            ConnectionUseProtocol::class.java.name
+                        )
                     } else if (!isFinishing) {
-                        connectionUseProtocol.show(supportFragmentManager, ConnectionUseProtocol::class.java.name)
+                        connectionUseProtocol.show(
+                            supportFragmentManager,
+                            ConnectionUseProtocol::class.java.name
+                        )
                     }
                 }
             } else {
@@ -450,24 +473,47 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 params.putString("domain", mPaidServer?.serverDomain)
                 params.putString("ip", mPaidServer?.serverIp)
                 params.putString("country", mPaidServer?.serverLocation)
-                FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Click_Check_IP", params)
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url")))
+                FirebaseAnalytics.getInstance(applicationContext)
+                    .logEvent("Paid_Click_Check_IP", params)
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url"))
+                )
                 startActivity(browserIntent)
             }
             btnInstallOpenVpn -> {
                 try {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.openvpn.openvpn")))
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=net.openvpn.openvpn")
+                        )
+                    )
                 } catch (ex: ActivityNotFoundException) {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")))
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")
+                        )
+                    )
                 }
             }
             btnSaveConfigFile -> {
                 if (mPaidServer!!.tcpPort > 0 && mPaidServer!!.udpPort > 0) {
-                    val connectionUseProtocol: ConnectionUseProtocol = ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean -> this.handleImport(useUdp) }
+                    val connectionUseProtocol: ConnectionUseProtocol =
+                        ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean ->
+                            this.handleImport(useUdp)
+                        }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing && !isDestroyed) {
-                        connectionUseProtocol.show(supportFragmentManager, ConnectionUseProtocol::class.java.name)
+                        connectionUseProtocol.show(
+                            supportFragmentManager,
+                            ConnectionUseProtocol::class.java.name
+                        )
                     } else if (!isFinishing) {
-                        connectionUseProtocol.show(supportFragmentManager, ConnectionUseProtocol::class.java.name)
+                        connectionUseProtocol.show(
+                            supportFragmentManager,
+                            ConnectionUseProtocol::class.java.name
+                        )
                     }
                 } else {
                     handleImport(false)
@@ -483,14 +529,29 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             mPaidServer!!.getOpenVpnConfigData()
         }
         try {
-            while (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+            while (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    100
+                )
             }
             val fileName: String = mPaidServer!!.getName(useUdp) + ".ovpn"
-            val writeFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
+            val writeFile = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                fileName
+            )
             val fileOutputStream = FileOutputStream(writeFile)
             fileOutputStream.write(data.toByteArray())
-            Toast.makeText(applicationContext, getString(R.string.saved_ovpn_file_in, "Download/$fileName"), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.saved_ovpn_file_in, "Download/$fileName"),
+                Toast.LENGTH_LONG
+            ).show()
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed({
                 val packageManager = packageManager
@@ -506,7 +567,13 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    override fun updateState(state: String?, logmessage: String?, localizedResId: Int, level: ConnectionStatus?, Intent: Intent?) {
+    override fun updateState(
+        state: String?,
+        logmessage: String?,
+        localizedResId: Int,
+        level: ConnectionStatus?,
+        Intent: Intent?
+    ) {
         runOnUiThread {
             try {
                 txtStatus!!.text = VpnStatus.getLastCleanLogMessage(this)
@@ -516,6 +583,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         if (isCurrent()) {
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
+                            dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true);
                             OpenVPNService.setNotificationActivityClass(this::class.java)
                             val ipLog = txtStatus!!.text.toString()
                             val regex = "(\\d{1,3}\\.?){4}"
@@ -529,12 +597,16 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         isAuthFailed = false
                         txtCheckIp?.visibility = View.VISIBLE
                     }
-                    ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT -> dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)
+                    ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT -> dataUtil.setBooleanSetting(
+                        DataUtil.USER_ALLOWED_VPN,
+                        false
+                    )
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
                         txtCheckIp?.visibility = View.GONE
                         btnConnect!!.setText(R.string.connect_to_this_server)
                         if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect!!.background = resources.getDrawable(R.drawable.selector_paid_button)
+                            btnConnect!!.background =
+                                resources.getDrawable(R.drawable.selector_paid_button)
                         }
                         txtStatus!!.setText(R.string.disconnected)
                         txtNetStats!!.visibility = View.GONE
@@ -547,9 +619,11 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         params.putString("ip", mPaidServer?.serverIp)
                         params.putString("domain", mPaidServer?.serverDomain)
                         params.putString("country", mPaidServer?.serverLocation)
-                        FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Connect_Error", params)
+                        FirebaseAnalytics.getInstance(applicationContext)
+                            .logEvent("Paid_Connect_Error", params)
                         if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect!!.background = resources.getDrawable(R.drawable.selector_paid_button)
+                            btnConnect!!.background =
+                                resources.getDrawable(R.drawable.selector_paid_button)
                         }
                         txtStatus!!.text = resources.getString(R.string.vpn_auth_failure)
                         txtCheckIp?.visibility = View.GONE
@@ -571,7 +645,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun isCurrent(): Boolean {
         val lastServer = paidServerUtil.getLastConnectServer() ?: return false
-        return lastServer.serverDomain == mPaidServer?.serverDomain
+        if (!dataUtil.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+            return false
+        }
+        return lastServer.serverIp == mPaidServer?.serverIp
     }
 
 
@@ -580,11 +657,21 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return
         }
         runOnUiThread {
-            val netstat = String.format(getString(de.blinkt.openvpn.R.string.statusline_bytecount),
-                    OpenVPNService.humanReadableByteCount(`in`, false, resources),
-                    OpenVPNService.humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, true, resources),
-                    OpenVPNService.humanReadableByteCount(out, false, resources),
-                    OpenVPNService.humanReadableByteCount(diffOut / OpenVPNManagement.mBytecountInterval, true, resources))
+            val netstat = String.format(
+                getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+                OpenVPNService.humanReadableByteCount(`in`, false, resources),
+                OpenVPNService.humanReadableByteCount(
+                    diffIn / OpenVPNManagement.mBytecountInterval,
+                    true,
+                    resources
+                ),
+                OpenVPNService.humanReadableByteCount(out, false, resources),
+                OpenVPNService.humanReadableByteCount(
+                    diffOut / OpenVPNManagement.mBytecountInterval,
+                    true,
+                    resources
+                )
+            )
             txtNetStats!!.text = netstat
         }
     }
