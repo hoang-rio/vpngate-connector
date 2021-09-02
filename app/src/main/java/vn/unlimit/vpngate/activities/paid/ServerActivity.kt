@@ -580,10 +580,12 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
                 when (level) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
+                        if (isConnecting) {
+                            dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
+                        }
                         if (isCurrent()) {
                             btnConnect!!.text = getString(R.string.disconnect)
                             txtNetStats!!.visibility = View.VISIBLE
-                            dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true);
                             OpenVPNService.setNotificationActivityClass(this::class.java)
                             val ipLog = txtStatus!!.text.toString()
                             val regex = "(\\d{1,3}\\.?){4}"
