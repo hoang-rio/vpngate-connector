@@ -42,13 +42,7 @@ class PaidServerActivity : AppCompatActivity() {
         paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnItemSelectedListener {
-            if (it.itemId == R.id.navigation_free_server) {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-                return@setOnItemSelectedListener false
-            }
-            return@setOnItemSelectedListener true
+            return@setOnItemSelectedListener onNavigationItemSelected(it)
         }
 
         navController = findNavController(R.id.nav_host_fragment)

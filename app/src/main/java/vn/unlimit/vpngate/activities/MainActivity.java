@@ -449,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
 
-        if (itemId == R.id.action_filter) {
+        if (itemId == R.id.action_filter && vpnGateConnectionList != null) {
             FilterBottomSheetDialog filterBottomSheetDialog = FilterBottomSheetDialog.newInstance(vpnGateConnectionList.getFilter());
             filterBottomSheetDialog.setOnButtonClickListener(filter -> {
                 mMenu.findItem(R.id.action_filter).setIcon(filter == null ? R.drawable.ic_filter_white : R.drawable.ic_filter_active_white);
