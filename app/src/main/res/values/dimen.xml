@@ -6,9 +6,10 @@
 
     <!-- Padding -->
     <dimen name="padding_medium">8dp</dimen>
+    <dimen name="drawer_header_padding_top">35dp</dimen>
 
     <!-- Main Activity components -->
-    <dimen name="navigation_header_height">100dp</dimen>
+    <dimen name="navigation_header_height">120dp</dimen>
     <dimen name="history_col_index">50dp</dimen>
     <dimen name="history_col_data_size">80dp</dimen>
     <dimen name="history_col_data_size_receive">80dp</dimen>
