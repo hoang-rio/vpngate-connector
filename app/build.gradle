@@ -35,16 +35,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 76
-            versionName "1.7.6"
+            versionCode 77
+            versionName "1.7.7-dev"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 69
-            versionName "1.6.9"
+            versionCode 70
+            versionName "1.7.0-dev"
         }
     }
 
@@ -128,10 +128,8 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.3.1'
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation ('com.google.ads.mediation:applovin:10.3.2.0') {
-        exclude group: "com.google.android.gms"
-    }
+//    implementation 'com.google.android.gms:play-services-ads:20.3.0'
+    implementation 'com.google.ads.mediation:applovin:10.3.2.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
