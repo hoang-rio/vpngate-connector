@@ -630,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     default:
                         break;
                 }
-                if (fragment != null) {
+                if (fragment != null && !fragment.isAdded()) {
                     frameContent.setVisibility(View.VISIBLE);
                     setTitleActionbar(title);
                     getSupportFragmentManager().beginTransaction()
