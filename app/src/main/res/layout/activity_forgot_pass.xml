@@ -86,6 +86,7 @@
                     android:selectAllOnFocus="true"
                     android:textAlignment="center"
                     android:textSize="20sp"
+                    android:maxLength="3"
                     tools:targetApi="lollipop" />
             </LinearLayout>
 
