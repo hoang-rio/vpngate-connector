@@ -260,7 +260,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                     captchaSecret!!
             )
         } catch (th: Throwable) {
-            Toast.makeText(this, th.message, Toast.LENGTH_SHORT).show()
+            if (th.message != null) {
+                Toast.makeText(this, th.message, Toast.LENGTH_SHORT).show()
+            }
             Log.e(TAG, "Validate sign up form error", th)
         }
     }
