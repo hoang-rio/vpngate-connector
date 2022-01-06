@@ -76,15 +76,6 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         const val TAG = "BuyDataFragment"
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        billingClient = BillingClient.newBuilder(requireActivity())
-                .setListener(purchasesUpdatedListener)
-                .enablePendingPurchases()
-                .build()
-        initBilling()
-    }
-
     override fun onResume() {
         super.onResume()
         if (isBillingDisconnected) {
@@ -121,6 +112,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        billingClient = BillingClient.newBuilder(requireActivity())
+            .setListener(purchasesUpdatedListener)
+            .enablePendingPurchases()
+            .build()
+        initBilling()
         bindViewModel()
     }
 
@@ -258,7 +254,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         billingClient!!.consumeAsync(consumeParams) { billingResult, _ ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
-                purchaseViewModel!!.createPurchase(purchase, buyingSkuDetails!!)
+                purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
             }
         }
     }
