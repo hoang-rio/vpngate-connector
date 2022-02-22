@@ -181,6 +181,7 @@
     <string name="btn_accept">Accept</string>
     <string name="btn_decide">Decide and exit</string>
     <string name="must_accept_privacy_policy">You need accept privacy policy to use our app</string>
+    <string name="no_webview_installed_you_must_install_system_webview_from_playstore_to_continue">No WebView installed. You must install System WebView from Play Store to continue.</string>
     <!-- L2TPConnect -->
     <string name="l2tp_connect_title">Connect to \"%1$s\" via L2TP/IPSec</string>
     <string name="l2tp_connect_hint">To connect to server \"%1$s\" via L2TP/IPSec VPN. Please follow several step bellow</string>

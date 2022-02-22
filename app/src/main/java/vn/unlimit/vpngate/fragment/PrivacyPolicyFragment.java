@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,26 +31,36 @@ public class PrivacyPolicyFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mainActivity = (MainActivity) getActivity();
-        View rootView = inflater.inflate(R.layout.fragment_privacy_policy, container, false);
-        btnAccept = rootView.findViewById(R.id.btn_accept);
-        btnAccept.setOnClickListener(this);
-        btnDecide = rootView.findViewById(R.id.btn_decide);
-        btnDecide.setOnClickListener(this);
-        webView = rootView.findViewById(R.id.web_view);
-        progressBar = rootView.findViewById(R.id.progress_bar);
-        return rootView;
+        try {
+            mainActivity = (MainActivity) getActivity();
+            View rootView = inflater.inflate(R.layout.fragment_privacy_policy, container, false);
+            btnAccept = rootView.findViewById(R.id.btn_accept);
+            btnAccept.setOnClickListener(this);
+            btnDecide = rootView.findViewById(R.id.btn_decide);
+            btnDecide.setOnClickListener(this);
+            webView = rootView.findViewById(R.id.web_view);
+            progressBar = rootView.findViewById(R.id.progress_bar);
+            return rootView;
+        } catch (Exception ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("webview")) {
+                Toast.makeText(mainActivity, R.string.no_webview_installed_you_must_install_system_webview_from_playstore_to_continue, Toast.LENGTH_LONG).show();
+                mainActivity.finish();
+            }
+            return null;
+        }
     }
 
     @Override
     public void onViewCreated(@NotNull View view, Bundle savedInstance) {
-        //Load content to webview
-        webView.setWebViewClient(new WebViewClient() {
-            public void onPageFinished(WebView view, String url) {
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-        webView.loadData(readTextFromResource(), "text/html", "utf-8");
+        if (webView != null) {
+            //Load content to webview
+            webView.setWebViewClient(new WebViewClient() {
+                public void onPageFinished(WebView view, String url) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+            webView.loadData(readTextFromResource(), "text/html", "utf-8");
+        }
     }
 
     private String readTextFromResource() {
