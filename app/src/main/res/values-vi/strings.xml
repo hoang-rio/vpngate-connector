@@ -159,6 +159,7 @@
     <string name="btn_accept">Đồng ý</string>
     <string name="btn_decide">Từ chối và thoát</string>
     <string name="must_accept_privacy_policy">Bạn cần đồng ý chính sách quyền riêng tư để sử dụng app</string>
+    <string name="no_webview_installed_you_must_install_system_webview_from_playstore_to_continue">Không có WebView nào được cài đặt. Bạn cần cài đặt WebView từ CH Play để tiếp tục.</string>
     <!-- L2TPConnect -->
     <string name="l2tp_connect_title">Kết nối đến \"%1$s\" bằng L2TP/IPSec</string>
     <string name="l2tp_connect_hint">Để kết nối đến máy chủ \"%1$s\" bằng L2TP/IPSec VPN. Vui lòng làm theo các hướng dẫn bên dưới</string>
