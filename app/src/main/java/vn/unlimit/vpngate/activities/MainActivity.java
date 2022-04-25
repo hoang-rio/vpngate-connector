@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private static final String TAG = "MainActivity";
     private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
     private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
+    public static final String TARGET_FRAGMENT = "TARGET_FRAGMENT";
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     View lnLoading;
@@ -231,6 +232,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 1 && dataUtil.getLastVPNConnection() != null) {
             replaceFragment("status");
             navigationView.getMenu().findItem(R.id.nav_status).setChecked(true);
+            return;
+        }
+        String targetFragment = this.getIntent().getStringExtra(TARGET_FRAGMENT);
+        if (targetFragment != null) {
+            replaceFragment(targetFragment);
             return;
         }
         this.loadData();
@@ -626,6 +632,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         fragment = new AboutFragment();
                         tag = AboutFragment.class.getName();
                         title = getResources().getString(R.string.about);
+                        navigationView.setCheckedItem(R.id.nav_about);
                         break;
                     default:
                         break;

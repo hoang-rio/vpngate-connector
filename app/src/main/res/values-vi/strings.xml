@@ -173,6 +173,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Máy chủ</string>
     <string name="title_free_server">Server miễn phí</string>
+    <string name="title_personal">Cá nhân</string>
     <string name="title_buy_data">Mua dung lượng</string>
     <string name="vpn_pw_hint">[Mật khẩu của bạn]</string>
     <!-- Login screen -->
@@ -290,4 +291,8 @@
     <string name="history_price">Giá</string>
     <string name="history_date_time">Thời gian</string>
     <string name="history_have_not_purchase">Bạn chưa thực hiện giao dịch mua nào.</string>
+    <!-- Personal -->
+    <string name="personal_notification_setting">Cài đặt thông báo</string>
+    <string name="personal_profile">Hồ sơ</string>
+    <string name="personal_change_password">Đổi mật khẩu</string>
 </resources>

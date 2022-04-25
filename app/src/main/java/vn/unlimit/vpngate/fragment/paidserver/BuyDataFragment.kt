@@ -123,23 +123,27 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private fun bindViewModel() {
         paidServerActivity = activity as PaidServerActivity
         userViewModel = paidServerActivity!!.userViewModel
-        userViewModel?.userInfo?.observe(viewLifecycleOwner, { userInfo ->
+        userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
                 if (isAttached) {
-                    txtDataSize?.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                    txtDataSize?.text = OpenVPNService.humanReadableByteCount(
+                        userInfo!!.getLong("dataSize"),
+                        false,
+                        resources
+                    )
                 }
             }
-        })
+        }
         purchaseViewModel = ViewModelProvider(this).get(PurchaseViewModel::class.java)
-        purchaseViewModel?.isLoggedIn?.observe(viewLifecycleOwner, {isLoggedIn ->
+        purchaseViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(paidServerActivity, LoginActivity::class.java)
                 startActivity(intentLogin)
                 paidServerActivity!!.finish()
             }
-        })
-        purchaseViewModel?.isLoading?.observe(viewLifecycleOwner, {isLoading ->
+        }
+        purchaseViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (!isClickedBuyData) {
                 return@observe
             }
@@ -151,24 +155,40 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                     Log.i(TAG, "Purchase product %s complete".format(buyingSkuDetails?.sku))
                     // Force fetch user to update data size
                     userViewModel?.fetchUser(forceFetch = true)
-                    Toast.makeText(context, getString(R.string.purchase_successful, buyingSkuDetails?.title), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.purchase_successful, buyingSkuDetails?.title),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     var errorMsg = R.string.invalid_purchase_request
                     if (userViewModel?.errorCode == 112) {
                         errorMsg = R.string.invalid_product_id
-                    } else if(userViewModel?.errorCode == 111) {
+                    } else if (userViewModel?.errorCode == 111) {
                         errorMsg = R.string.duplicate_purchase_create_request
                     }
                     val params = Bundle()
-                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    params.putString(
+                        "username",
+                        paidServerUtil.getUserInfo()?.getString("username")
+                    )
                     params.putString("packageId", buyingSkuDetails?.sku)
                     params.putString("errorCode", userViewModel?.errorCode?.toString())
-                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Create_Purchase_Error", params) }
-                    Log.e(TAG, "Purchase product %s error with errorCode: %s".format(buyingSkuDetails?.sku, userViewModel?.errorCode))
+                    context?.let {
+                        FirebaseAnalytics.getInstance(it)
+                            .logEvent("Paid_Server_Create_Purchase_Error", params)
+                    }
+                    Log.e(
+                        TAG,
+                        "Purchase product %s error with errorCode: %s".format(
+                            buyingSkuDetails?.sku,
+                            userViewModel?.errorCode
+                        )
+                    )
                     Toast.makeText(context, getString(errorMsg), Toast.LENGTH_LONG).show()
                 }
             }
-        })
+        }
     }
 
     override fun onClick(v: View?) {

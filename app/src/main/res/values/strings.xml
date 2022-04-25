@@ -201,6 +201,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Servers</string>
     <string name="title_free_server">Free Server</string>
+    <string name="title_personal">Personal</string>
     <string name="title_buy_data">Buy data</string>
     <string name="vpn_paid_shared_secret" translatable="false">vpngate</string>
     <string name="vpn_pw_hint">[Your password]</string>
@@ -321,4 +322,8 @@
     <string name="history_price">Price</string>
     <string name="history_date_time">Date time</string>
     <string name="history_have_not_purchase">You have not purchase anything.</string>
+    <!-- Personal -->
+    <string name="personal_notification_setting">Notification setting</string>
+    <string name="personal_profile">Profile</string>
+    <string name="personal_change_password">Change password</string>
 </resources>

@@ -65,7 +65,7 @@ class PaidServerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
     }
 
-    fun onNavigationItemSelected(item: MenuItem): Boolean {
+    private fun onNavigationItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.navigation_free_server) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -77,14 +77,14 @@ class PaidServerActivity : AppCompatActivity() {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoggedIn.observe(this, { isLoggedIn ->
+        userViewModel!!.isLoggedIn.observe(this) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(this@PaidServerActivity, LoginActivity::class.java)
                 startActivity(intentLogin)
                 finish()
             }
-        })
+        }
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
             userViewModel!!.fetchUser(true, this, true)

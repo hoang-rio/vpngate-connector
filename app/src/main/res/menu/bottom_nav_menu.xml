@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_free_server_black"
         android:title="@string/title_free_server" />
 
+    <item
+        android:id="@+id/navigation_personal"
+        android:icon="@drawable/ic_personal_black"
+        android:title="@string/title_personal" />
+
 </menu>
