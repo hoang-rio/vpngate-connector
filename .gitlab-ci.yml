@@ -1,4 +1,4 @@
-image: hoangnd4rikkei/android-sdk
+image: hoangnd4rikkei/android-sdk:jdk11
 
 stages:
   - build
