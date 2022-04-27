@@ -38,6 +38,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.layoutInflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void initialize(VPNGateConnectionList vpnGateConnectionList) {
         try {
             _list.clear();
@@ -169,9 +170,6 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         private int getRealPosition(int position) {
-//            if (mDataUtil.hasAds() && position > adsPerItem - 1) {
-//                return position - (int) Math.round((double) position / adsPerItem);
-//            }
             return position;
         }
 

@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
     private var _list: ArrayList<PaidServer> = ArrayList()
     private var lastPosition = 0
     var mContext: Context? = context
+    @SuppressLint("NotifyDataSetChanged")
     fun initialize(paidServerList: HashSet<PaidServer>?) {
         try {
             _list.clear()
@@ -49,7 +51,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return VHTypeVPN(layoutInflater.inflate(R.layout.item_paid_vpn, parent, false))
     }
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         if (onScrollListener != null) {
             if (position > lastPosition || position == 0) {
                 onScrollListener!!.onScrollDown()

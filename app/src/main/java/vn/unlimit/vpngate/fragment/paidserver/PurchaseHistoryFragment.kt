@@ -51,7 +51,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
 
     private fun bindViewModel() {
         purchaseViewModal = ViewModelProvider(this).get(PurchaseViewModel::class.java)
-        purchaseViewModal?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        purchaseViewModal?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (!isInitListingPurchase) {
                 return@observe
             }
@@ -61,8 +61,8 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
             } else {
                 swipeRefreshLayout?.isRefreshing = false
             }
-        })
-        purchaseViewModal?.purchaseList?.observe(viewLifecycleOwner, { purchaseList ->
+        }
+        purchaseViewModal?.purchaseList?.observe(viewLifecycleOwner) { purchaseList ->
             progressLoadMore?.visibility = View.GONE
             if (purchaseList.size > 0) {
                 lnNoPurchase?.visibility = View.GONE
@@ -72,7 +72,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
                 swipeRefreshLayout?.visibility = View.GONE
                 lnNoPurchase?.visibility = View.VISIBLE
             }
-        })
+        }
         isInitListingPurchase = true
         purchaseViewModal?.listPurchase(true)
     }

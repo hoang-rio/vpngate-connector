@@ -136,38 +136,47 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private fun bindViewModel() {
         paidServerActivity = (activity as PaidServerActivity)
         this.userViewModel = paidServerActivity?.userViewModel
-        userViewModel?.userInfo?.observe(viewLifecycleOwner, { userInfo ->
+        userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
                 if (isAttached) {
-                    txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
-                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                    txtWelcome!!.text =
+                        getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                        userInfo!!.getLong("dataSize"),
+                        false,
+                        resources
+                    )
                 }
             }
-        })
+        }
         chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
-        chartViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading -> if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE })
-        chartViewModel?.chartData?.observe(viewLifecycleOwner, { chartData ->
+        chartViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE
+        }
+        chartViewModel?.chartData?.observe(viewLifecycleOwner) { chartData ->
             if (chartData.size > 0) {
                 this.drawChart(chartData)
             }
-        })
-        chartViewModel?.chartType?.observe(viewLifecycleOwner, {
+        }
+        chartViewModel?.chartType?.observe(viewLifecycleOwner) {
             chartViewModel?.getChartData()
-        })
-        chartViewModel?.isError?.observe(viewLifecycleOwner, { isError ->
+        }
+        chartViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
             lnChartError?.visibility = if (isError) View.VISIBLE else View.GONE
-        })
+        }
         sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
-        sessionViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        sessionViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             run {
                 lnLoadingSession?.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
-        })
-        sessionViewModel?.isError?.observe(viewLifecycleOwner, { isError -> lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE })
-        sessionViewModel?.sessionList?.observe(viewLifecycleOwner, { sessionList ->
+        }
+        sessionViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
+            lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE
+        }
+        sessionViewModel?.sessionList?.observe(viewLifecycleOwner) { sessionList ->
             sessionAdapter?.initialize(sessionList)
             lnSessionEmtpy?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
-        })
+        }
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()
     }
@@ -257,9 +266,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 swipeRefreshLayout?.isRefreshing = false
             }
             if (!isObservedRefresh) {
-                userViewModel?.isLoading?.observe(paidServerActivity!!, {
+                userViewModel?.isLoading?.observe(paidServerActivity!!) {
                     swipeRefreshLayout?.isRefreshing = it
-                })
+                }
                 isObservedRefresh = true
             }
         } catch (th: Throwable) {

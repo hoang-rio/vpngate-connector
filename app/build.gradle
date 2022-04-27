@@ -35,16 +35,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 80
-            versionName "1.8.0-dev"
+            versionCode 81
+            versionName "1.8.1-dev"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 73
-            versionName "1.7.3-dev"
+            versionCode 74
+            versionName "1.7.4-dev"
         }
     }
 
@@ -82,7 +82,7 @@ dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.browser:browser:1.4.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.5.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {

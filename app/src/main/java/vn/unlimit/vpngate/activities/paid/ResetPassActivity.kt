@@ -17,17 +17,17 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.regex.Pattern
 
 class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
-    var txtNewPassword: EditText? = null
-    var txtRenewPassword: EditText? = null
-    var btnResetPass: Button? = null
-    var btnBackToFree: Button? = null
-    var btnBackToFreeError: Button? = null
-    var resetPassToken: String? = null
-    var userViewModel: UserViewModel? = null
-    var loadingDialog: LoadingDialog? = null
-    var lnCheckingToken: View? = null
-    var lnInvalidToken: View? = null
-    var lnForm: View? = null
+    private var txtNewPassword: EditText? = null
+    private var txtRenewPassword: EditText? = null
+    private var btnResetPass: Button? = null
+    private var btnBackToFree: Button? = null
+    private var btnBackToFreeError: Button? = null
+    private var resetPassToken: String? = null
+    private var userViewModel: UserViewModel? = null
+    private var loadingDialog: LoadingDialog? = null
+    private var lnCheckingToken: View? = null
+    private var lnInvalidToken: View? = null
+    private var lnForm: View? = null
     private var isCheckingToken = false
     private var isPressedResetPass = false
     override fun onCreate(savedInstanceState: Bundle?) {

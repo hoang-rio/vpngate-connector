@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, { isLoggingIn ->
+        userViewModel!!.isLoading.observe(this) { isLoggingIn ->
             if (!isClickedLogin) {
                 return@observe
             }
@@ -76,7 +76,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         errorMsg = getString(R.string.please_activate_account_first)
                     } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
                         if (userViewModel!!.errorList.value!!.has("bannedReason")) {
-                            errorMsg = getString(R.string.account_is_banned, userViewModel!!.errorList.value!!.get("bannedReason"))
+                            errorMsg = getString(
+                                R.string.account_is_banned,
+                                userViewModel!!.errorList.value!!.get("bannedReason")
+                            )
                         } else {
                             errorMsg = getString(R.string.account_is_banned_no_reason)
                         }
@@ -89,10 +92,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     params.putString("errorMsg", errorMsg)
                     FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Failed", params)
                 } else {
-                    paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
+                    paidServerUtil.setStringSetting(
+                        PaidServerUtil.SAVED_VPN_PW,
+                        txtPassword!!.text.toString()
+                    )
                     val params = Bundle()
                     params.putString("username", txtUsername!!.text.toString())
-                    FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Success", params)
+                    FirebaseAnalytics.getInstance(this)
+                        .logEvent("Paid_Server_Login_Success", params)
                     // Go to paid home screen
                     val paidIntent = Intent(this, PaidServerActivity::class.java)
                     paidIntent.putExtra(BaseProvider.FROM_LOGIN, true)
@@ -100,7 +107,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 }
             }
-        })
+        }
     }
 
     override fun onResume() {

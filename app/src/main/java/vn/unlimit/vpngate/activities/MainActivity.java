@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.activities;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -497,6 +498,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         replaceFragment("home");
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         if (!dataUtil.isAcceptedPrivacyPolicy()) {

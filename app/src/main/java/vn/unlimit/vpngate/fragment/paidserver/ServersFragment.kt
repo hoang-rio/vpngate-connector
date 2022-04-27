@@ -51,15 +51,15 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
 
     private fun bindViewModel() {
         serverViewModel = ViewModelProvider(this).get(ServerViewModel::class.java)
-        serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner, { isLoggedIn ->
+        serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(activity, LoginActivity::class.java)
                 startActivity(intentLogin)
                 activity?.finish()
             }
-        })
-        serverViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        }
+        serverViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (serverViewModel?.serverList?.value.isNullOrEmpty()) {
                 lnLoadingWrap?.visibility = View.VISIBLE
                 swipeRefreshLayout!!.visibility = View.GONE
@@ -68,10 +68,10 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
             swipeRefreshLayout!!.visibility = View.VISIBLE
             lnLoadingWrap?.visibility = View.GONE
             swipeRefreshLayout?.isRefreshing = isLoading
-        })
-        serverViewModel?.serverList?.observe(viewLifecycleOwner, { listServer ->
+        }
+        serverViewModel?.serverList?.observe(viewLifecycleOwner) { listServer ->
             paidServerAdapter?.initialize(listServer)
-        })
+        }
         serverViewModel?.loadServer(activity as PaidServerActivity, true)
     }
 

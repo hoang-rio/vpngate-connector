@@ -16,7 +16,7 @@ class PersonalFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        var rootView = inflater.inflate(R.layout.fragment_personal, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_personal, container, false)
         rootView.findViewById<View>(R.id.ln_notification_setting)?.setOnClickListener(this);
         rootView.findViewById<View>(R.id.ln_profile)?.setOnClickListener(this)
         rootView.findViewById<View>(R.id.ln_change_password)?.setOnClickListener(this)
@@ -27,7 +27,9 @@ class PersonalFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.ln_about -> {
-                var intent = Intent(requireContext(), MainActivity::class.java)
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 intent.putExtra(MainActivity.TARGET_FRAGMENT, "about");
                 startActivity(intent);
             }

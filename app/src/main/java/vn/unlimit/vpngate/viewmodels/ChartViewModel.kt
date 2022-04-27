@@ -31,6 +31,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
             ChartType.HOURLY -> this.getHourlyChart()
             ChartType.DAILY -> this.getDailyChart()
             ChartType.MONTHLY -> this.getMonthlyChart()
+            else -> {}
         }
     }
 

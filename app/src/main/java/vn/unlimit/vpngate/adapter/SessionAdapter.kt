@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
     private val listSession = ArrayList<ConnectedSession>()
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     var onDisconnectListener: OnItemClickListener? = null
+    @SuppressLint("NotifyDataSetChanged")
     fun initialize(list: LinkedHashSet<ConnectedSession>) {
         listSession.clear()
         listSession.addAll(list)

@@ -42,8 +42,6 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -217,7 +215,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
                 adView.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(LoadAdError error) {
+                    public void onAdFailedToLoad(@NonNull LoadAdError error) {
                         hideAdContainer();
                         Log.e(TAG, error.toString());
                     }
@@ -234,7 +232,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE);
                 adViewBellow.setAdListener(new AdListener() {
                     @Override
-                    public void onAdFailedToLoad(LoadAdError error) {
+                    public void onAdFailedToLoad(@NonNull LoadAdError error) {
                         adViewBellow.setVisibility(View.GONE);
                     }
                 });
@@ -306,9 +304,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         if (!isConnecting && !isAuthFailed) {
                             linkCheckIp.setVisibility(View.GONE);
                             btnConnect.setText(R.string.connect_to_this_server);
-                            if (Build.VERSION.SDK_INT >= 16) {
-                                btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                            }
+                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                             txtStatus.setText(R.string.disconnected);
                             txtNetStats.setVisibility(View.GONE);
                         }
@@ -321,9 +317,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                        }
+                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                         txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                         linkCheckIp.setVisibility(View.GONE);
                         isConnecting = false;
@@ -383,9 +377,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
                 if (isCurrent() && checkStatus()) {
                     btnConnect.setText(getResources().getString(R.string.disconnect));
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
-                    }
+                    btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
                     txtStatus.setText(VpnStatus.getLastCleanLogMessage(this));
                     txtNetStats.setVisibility(View.VISIBLE);
                 } else {
@@ -498,16 +490,15 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             prepareVpn(useUdp);
         }
-        if (Build.VERSION.SDK_INT >= 16) {
-            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
-            txtStatus.setText(getString(R.string.connecting));
-        }
+        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
+        txtStatus.setText(getString(R.string.connecting));
         isConnecting = true;
         btnConnect.setText(R.string.cancel);
         dataUtil.setLastVPNConnection(mVpnGateConnection);
         sendConnectVPN();
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onClick(View view) {
         try {
@@ -525,9 +516,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Disconnect_VPN", params);
                         stopVpn();
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                        }
+                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                         btnConnect.setText(R.string.connect_to_this_server);
                         txtStatus.setText(R.string.disconnecting);
                     } else if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
@@ -560,9 +549,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     params.putString("country", mVpnGateConnection.getCountryLong());
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Cancel_VPN", params);
                     stopVpn();
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
-                    }
+                    btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                     btnConnect.setText(R.string.connect_to_this_server);
                     txtStatus.setText(getString(R.string.canceled));
                     isConnecting = false;
@@ -621,8 +608,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 AdRequest adRequest = new AdRequest.Builder().build();
                 InterstitialAd.load(getApplicationContext(), getString(R.string.admob_full_screen), adRequest, new InterstitialAdLoadCallback() {
                     @Override
-                    public void onAdLoaded(@NonNull @NotNull InterstitialAd interstitialAd) {
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                         isFullScreenAdLoaded = true;
+                        mInterstitialAd = interstitialAd;
+                    }
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError var1) {
+                        isFullScreenAdLoaded = false;
+                        mInterstitialAd = null;
                     }
                 });
             } catch (Exception e) {

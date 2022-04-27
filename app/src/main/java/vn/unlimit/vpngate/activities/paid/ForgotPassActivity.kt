@@ -62,13 +62,13 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, { isLoading ->
+        userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
-        })
+        }
         userViewModel!!.isForgotPassSuccess.observe(this, Observer {
             if (userViewModel!!.isLoading.value!! || !isResetPasClicked) {
                 return@Observer
