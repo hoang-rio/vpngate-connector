@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.api
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
@@ -104,6 +105,11 @@ open class BaseApiRequest {
                 val intentLogin = Intent(activity, LoginActivity::class.java)
                 activity.startActivity(intentLogin)
                 activity.finish()
+                Toast.makeText(
+                    activity,
+                    activity.getText(R.string.session_expires),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } else {
             requestListener?.onError(anError?.errorBody)

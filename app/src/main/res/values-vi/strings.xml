@@ -197,6 +197,7 @@
     <string name="username_and_password_is_required">Tài khoản và mật khẩu là bắt buộc nhập</string>
     <string name="account_is_banned_no_reason">Tài khoản của bạn đã bị khoá.</string>
     <string name="account_is_banned">Tài khoản của bạn đã bị khoá với lý do: %1$s</string>
+    <string name="session_expires">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Ngày sinh</string>
@@ -298,4 +299,7 @@
     <!-- Notification setting -->
     <string name="receive_notification">Nhận thông báo push trên thiết bị này</string>
     <string name="notification_setting_hint">Chúng tôi sẽ gửi thông báo khi tài khoản của bạn sắp hết dung lượng hoặc có thay đổi về thông tin tài khoản</string>
+    <!-- Change pass -->
+    <string name="password_changed">Mật khẩu đã thay đổi. Vui lòng đăng nhập lại!</string>
+    <string name="incorrect_current_password">Mật khẩu hiện tại không đúng.</string>
 </resources>

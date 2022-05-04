@@ -2,11 +2,16 @@ package vn.unlimit.vpngate.viewmodels
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.google.common.base.Strings
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.json.JSONObject
+import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
@@ -26,7 +31,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
     var isUserActivated: MutableLiveData<Boolean> = MutableLiveData(false)
     var isForgotPassSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
-    var isPasswordReseted: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isPasswordReset: MutableLiveData<Boolean> = MutableLiveData(false)
     var isValidResetPassToken: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorCode: Int? = null
 
@@ -52,6 +57,30 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 } catch (e: Exception) {
                     isLoading.value = false
                 }
+            }
+        })
+    }
+
+    fun localLogout(activity: Activity?) {
+        isLoggedIn.value = false
+        paidServerUtil.setIsLoggedIn(false)
+        paidServerUtil.removeSetting(PaidServerUtil.USER_INFO_KEY)
+        userInfo.value = null
+        if (activity != null && !activity.isFinishing) {
+            val intentLogin = Intent(activity, LoginActivity::class.java)
+            activity.startActivity(intentLogin)
+            activity.finish()
+        }
+    }
+
+    fun logout(activity: Activity?) {
+        userApiRequest.logout(object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                localLogout(activity)
+            }
+
+            override fun onError(error: String?) {
+                //Nothing todo here
             }
         })
     }
@@ -193,14 +222,14 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     fun resetPassword(resetPassToken: String, newPassword: String, renewPassword: String) {
         isLoading.value = true
-        isPasswordReseted.value = false
+        isPasswordReset.value = false
         userApiRequest.resetPassword(
             resetPassToken,
             newPassword,
             renewPassword,
             object : RequestListener {
                 override fun onSuccess(result: Any?) {
-                    isPasswordReseted.value = true
+                    isPasswordReset.value = true
                     isLoading.value = false
                 }
 
@@ -209,9 +238,31 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     if (errorResponse.has("errorList")) {
                         errorList.value = errorResponse.get("errorList") as JSONObject
                     }
-                    isPasswordReseted.value = false
+                    isPasswordReset.value = false
                     isLoading.value = false
                 }
             })
+    }
+
+    fun changePass(password: String, newPassword: String, activity: Activity) {
+        isLoading.value = true
+        userApiRequest.changePass(password, newPassword, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                localLogout(activity)
+                Toast.makeText(
+                    activity,
+                    activity.getText(R.string.password_changed),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            override fun onError(error: String?) {
+                Toast.makeText(
+                    activity,
+                    activity.getText(R.string.incorrect_current_password),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
     }
 }

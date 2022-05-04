@@ -226,6 +226,7 @@
     <string name="username_and_password_is_required">Username and password is required</string>
     <string name="account_is_banned_no_reason">You account is banned.</string>
     <string name="account_is_banned">You account is banned with reason: %1$s</string>
+    <string name="session_expires">Login session expires. Please login again!</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Birthday</string>
@@ -329,4 +330,7 @@
     <!-- Notification setting -->
     <string name="receive_notification">Receive push notification on this device</string>
     <string name="notification_setting_hint">We will send notification when your account is out of remaining data or user info changed</string>
+    <!-- Change pass -->
+    <string name="password_changed">Password changed. Please login again!</string>
+    <string name="incorrect_current_password">Incorrect current password</string>
 </resources>

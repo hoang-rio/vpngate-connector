@@ -14,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.common.base.Strings
 import kotlinx.android.synthetic.main.activity_paid_server.*
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -91,7 +92,11 @@ class PaidServerActivity : AppCompatActivity() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
             userViewModel!!.fetchUser(true, this, true)
-        } else {
+        }
+        if (isFromLogin || deviceViewModel?.deviceInfo?.value == null || Strings.isNullOrEmpty(
+                deviceViewModel?.deviceInfo?.value?._id
+            )
+        ) {
             deviceViewModel!!.addDevice()
         }
     }

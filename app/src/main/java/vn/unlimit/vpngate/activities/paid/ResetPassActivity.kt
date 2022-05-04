@@ -59,7 +59,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                     return@Observer
                 }
                 isPressedResetPass = false
-                if (userViewModel!!.isPasswordReseted.value!!) {
+                if (userViewModel!!.isPasswordReset.value!!) {
                     //Reset pass success => Redirect to login
                     Toast.makeText(
                         this,

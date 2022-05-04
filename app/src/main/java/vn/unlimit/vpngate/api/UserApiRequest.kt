@@ -8,17 +8,20 @@ import org.json.JSONObject
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
+import kotlin.collections.HashMap
 
 class UserApiRequest : BaseApiRequest() {
     companion object {
         private const val TAG = "UserApiRequest"
         const val USER_LOGIN_URL = "/user/login"
+        const val USER_LOGOUT_URL = "/user/logout"
         const val GET_USER_URL = "/user/get"
         const val GET_CAPTCHA_URL = "/user/captcha"
         const val USER_REGISTER_URL = "/user/register"
         const val USER_PASSWORD_RESET = "/user/password-reset"
         const val USER_PASSWORD_FORGOT = "/user/password/forgot"
         const val ACTIVATE_USER = "/user/%s/activate/%s"
+        const val USER_CHANGE_PASS = "/user/password/change"
     }
 
     fun login(username: String, password: String, requestListener: RequestListener) {
@@ -36,7 +39,6 @@ class UserApiRequest : BaseApiRequest() {
                         PaidServerUtil.USER_INFO_KEY,
                         response.get("user").toString()
                     )
-                    paidServerUtil.setIsLoggedIn(true)
                     requestListener.onSuccess(response)
                 } catch (ex: Exception) {
                     Log.e(TAG, "Process login error", ex)
@@ -44,6 +46,20 @@ class UserApiRequest : BaseApiRequest() {
             }
 
             override fun onError(anError: ANError?) = requestListener.onError(anError!!.errorBody)
+        })
+    }
+
+    fun logout(requestListener: RequestListener?) {
+        get(USER_LOGOUT_URL, object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Logout success with response %s".format(response))
+                requestListener?.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Logout error with message %s".format(anError!!.errorBody))
+                requestListener?.onError(anError.errorBody.toString())
+            }
         })
     }
 
@@ -197,6 +213,23 @@ class UserApiRequest : BaseApiRequest() {
 
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Invalid reset pass request %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
+
+    fun changePass(password: String, newPassword: String, requestListener: RequestListener) {
+        val data = HashMap<String, Any>()
+        data["password"] = password
+        data["newpassword"] = newPassword
+        post(USER_CHANGE_PASS, data, object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Change pass success with response %s".format(response))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Change pass error with message %s".format(anError!!.errorBody))
                 requestListener.onError(anError.errorBody)
             }
         })

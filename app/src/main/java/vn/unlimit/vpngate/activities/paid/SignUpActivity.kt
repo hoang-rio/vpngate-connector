@@ -96,13 +96,13 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, { isLoading ->
+        userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
-        })
+        }
     }
 
     private fun buildErrorList(): String {
