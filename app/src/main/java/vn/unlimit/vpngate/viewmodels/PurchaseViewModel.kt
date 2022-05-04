@@ -51,8 +51,8 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
                     purchaseList = this@PurchaseViewModel.purchaseList.value!!
                 }
                 val resListPurchase: ArrayList<PurchaseHistory> = paidServerUtil.gson.fromJson(
-                        resultObj.getString("listPurchase"),
-                        object : TypeToken<ArrayList<PurchaseHistory>>() {}.type
+                    resultObj.getString("listPurchase"),
+                    object : TypeToken<ArrayList<PurchaseHistory>>() {}.type
                 )
                 purchaseList.addAll(resListPurchase)
                 this@PurchaseViewModel.purchaseList.value = purchaseList

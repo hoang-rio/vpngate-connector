@@ -7,10 +7,11 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.BaseApiRequest
 import vn.unlimit.vpngate.utils.PaidServerUtil
 
-open class BaseViewModel(application: Application): AndroidViewModel(application) {
+open class BaseViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         const val ITEM_PER_PAGE = 30
     }
+
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerUtil.isLoggedIn())
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)

@@ -295,4 +295,7 @@
     <string name="personal_notification_setting">Cài đặt thông báo</string>
     <string name="personal_profile">Hồ sơ</string>
     <string name="personal_change_password">Đổi mật khẩu</string>
+    <!-- Notification setting -->
+    <string name="receive_notification">Nhận thông báo push trên thiết bị này</string>
+    <string name="notification_setting_hint">Chúng tôi sẽ gửi thông báo khi tài khoản của bạn sắp hết dung lượng hoặc có thay đổi về thông tin tài khoản</string>
 </resources>

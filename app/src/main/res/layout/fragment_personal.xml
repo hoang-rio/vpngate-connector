@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/title_servers"
+            android:id="@+id/title_personal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -29,6 +29,8 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:padding="7dp"
         android:id="@+id/ln_notification_setting"
@@ -48,11 +50,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:src="@drawable/ic_notification_white" />
+                android:src="@drawable/ic_notification_white"
+                android:contentDescription="@string/personal_notification_setting" />
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
@@ -68,11 +71,14 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/line_notification_setting"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lineColor" />
 
     <LinearLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:padding="7dp"
         android:id="@+id/ln_profile"
@@ -90,6 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+                android:contentDescription="@string/personal_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -117,6 +124,8 @@
         android:background="@color/lineColor" />
 
     <LinearLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:padding="7dp"
         android:id="@+id/ln_change_password"
@@ -137,6 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
+                android:contentDescription="@string/personal_change_password"
                 android:src="@drawable/ic_key_white" />
         </LinearLayout>
 
@@ -161,6 +171,8 @@
         android:background="@color/lineColor" />
 
     <LinearLayout
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:padding="7dp"
         android:id="@+id/ln_about"
@@ -190,6 +202,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="@string/about"
+            android:contentDescription="@string/about"
             android:textSize="18sp" />
 
         <ImageView

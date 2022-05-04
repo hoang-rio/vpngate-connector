@@ -30,12 +30,21 @@ class SessionApiRequest : BaseApiRequest() {
     fun deleteSession(sessionId: String, requestListener: RequestListener) {
         delete(DEL_SESSION_URL.format(sessionId), object : JSONObjectRequestListener {
             override fun onResponse(response: JSONObject?) {
-                Log.d(TAG, "Delete session %s success with response %s".format(sessionId, response.toString()))
+                Log.d(
+                    TAG,
+                    "Delete session %s success with response %s".format(
+                        sessionId,
+                        response.toString()
+                    )
+                )
                 requestListener.onSuccess(response)
             }
 
             override fun onError(anError: ANError?) {
-                Log.e(TAG, "Delete session %s error with message %s".format(sessionId, anError!!.errorBody))
+                Log.e(
+                    TAG,
+                    "Delete session %s error with message %s".format(sessionId, anError!!.errorBody)
+                )
                 requestListener.onError(anError.errorBody)
             }
         })

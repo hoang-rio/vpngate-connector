@@ -22,7 +22,8 @@ import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 
-class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnScrollListener {
+class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
+    OnScrollListener {
 
     private var recyclerView: RecyclerView? = null
     private var mContext: Context? = null
@@ -32,9 +33,9 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     private var lnLoadingWrap: View? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_server_list, container, false)
         recyclerView = root.findViewById(R.id.rcv_list_server)

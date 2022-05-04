@@ -1,5 +1,7 @@
 package vn.unlimit.vpngate.activities;
 
+import static de.blinkt.openvpn.core.OpenVPNService.humanReadableByteCount;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -66,8 +68,6 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
-
-import static de.blinkt.openvpn.core.OpenVPNService.humanReadableByteCount;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -612,6 +612,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         isFullScreenAdLoaded = true;
                         mInterstitialAd = interstitialAd;
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError var1) {
                         isFullScreenAdLoaded = false;

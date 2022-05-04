@@ -76,13 +76,21 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             isResetPasClicked = false
             if (it) {
                 // For got password success => show toast + back to login
-                Toast.makeText(this, getString(R.string.request_forgot_pass_success), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.request_forgot_pass_success),
+                    Toast.LENGTH_LONG
+                ).show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     backToLogin()
                 }, 1000)
             } else {
                 // Show toast try again
-                Toast.makeText(this, getString(R.string.request_forgot_pass_failure), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.request_forgot_pass_failure),
+                    Toast.LENGTH_LONG
+                ).show()
                 loadCaptcha(false)
             }
         })
@@ -106,7 +114,11 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onError(error: String?) {
-                Toast.makeText(this@ForgotPassActivity, getString(R.string.error_get_captcha), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@ForgotPassActivity,
+                    getString(R.string.error_get_captcha),
+                    Toast.LENGTH_SHORT
+                ).show()
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -126,15 +138,27 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             btnLogin -> backToLogin()
             btnResetPass -> {
                 if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
-                    Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT)
+                        .show()
                     return
                 }
                 if (txtCaptchaAnswer!!.text.isBlank()) {
-                    Toast.makeText(this, getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_captcha_answer)), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(
+                            R.string.validate_field_cannot_empty,
+                            getString(R.string.prompt_captcha_answer)
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return
                 }
                 isResetPasClicked = true
-                userViewModel!!.forgotPassword(txtEmail!!.text.toString(), captchaSecret.toString(), txtCaptchaAnswer!!.text.toString().toInt())
+                userViewModel!!.forgotPassword(
+                    txtEmail!!.text.toString(),
+                    captchaSecret.toString(),
+                    txtCaptchaAnswer!!.text.toString().toInt()
+                )
             }
         }
     }

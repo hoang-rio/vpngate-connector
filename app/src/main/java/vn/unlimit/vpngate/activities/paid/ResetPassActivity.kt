@@ -48,7 +48,8 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel!!.isLoading.observe(this, Observer {
             if (it) {
-                loadingDialog = if (loadingDialog != null) loadingDialog else LoadingDialog.newInstance()
+                loadingDialog =
+                    if (loadingDialog != null) loadingDialog else LoadingDialog.newInstance()
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.simpleName)
             } else {
                 if (loadingDialog != null) {
@@ -60,7 +61,11 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                 isPressedResetPass = false
                 if (userViewModel!!.isPasswordReseted.value!!) {
                     //Reset pass success => Redirect to login
-                    Toast.makeText(this, getString(R.string.password_updated_you_can_login_now), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.password_updated_you_can_login_now),
+                        Toast.LENGTH_LONG
+                    ).show()
                     val loginIntent = Intent(this, LoginActivity::class.java)
                     startActivity(loginIntent)
                     finish()
@@ -69,7 +74,8 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                     var toastMessage = getString(R.string.change_password_failed_with_unknown_error)
                     if (userViewModel!!.errorList.value!!.has("password")) {
                         // Password like old password
-                        toastMessage = getString(R.string.this_password_is_used_before_please_choose_another)
+                        toastMessage =
+                            getString(R.string.this_password_is_used_before_please_choose_another)
                     }
                     Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
                 }
@@ -97,7 +103,11 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
     override fun onResume() {
         resetPassToken = intent.getStringExtra(PaidServerProvider.RESET_PASS_TOKEN)
         if (resetPassToken == null) {
-            Toast.makeText(this, getString(R.string.reset_pass_token_can_not_empty), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                getString(R.string.reset_pass_token_can_not_empty),
+                Toast.LENGTH_LONG
+            ).show()
             onBackPressed()
         }
         isCheckingToken = true
@@ -111,10 +121,15 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
         val reRenewPassword = txtRenewPassword!!.text.toString()
         val matcher = Pattern.compile(SignUpActivity.passWordRegex).matcher(newPassword)
         if (!matcher.matches()) {
-            return Toast.makeText(this, getString(R.string.password_is_invalid), Toast.LENGTH_LONG).show()
+            return Toast.makeText(this, getString(R.string.password_is_invalid), Toast.LENGTH_LONG)
+                .show()
         }
         if (newPassword != reRenewPassword) {
-            return Toast.makeText(this, getString(R.string.re_type_password_does_not_match), Toast.LENGTH_LONG).show()
+            return Toast.makeText(
+                this,
+                getString(R.string.re_type_password_does_not_match),
+                Toast.LENGTH_LONG
+            ).show()
         }
         userViewModel!!.resetPassword(resetPassToken!!, newPassword, reRenewPassword)
     }

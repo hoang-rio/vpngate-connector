@@ -17,6 +17,7 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var _list: ArrayList<SkuDetails> = ArrayList()
     private var lastPosition = 0
+
     @SuppressLint("NotifyDataSetChanged")
     fun initialize(skuList: List<SkuDetails>?) {
         try {
@@ -38,7 +39,10 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return VHTypeSkuDetails(layoutInflater.inflate(R.layout.item_sku_details, parent, false))
     }
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, @SuppressLint("RecyclerView") position: Int) {
+    override fun onBindViewHolder(
+        viewHolder: RecyclerView.ViewHolder,
+        @SuppressLint("RecyclerView") position: Int
+    ) {
         (viewHolder as VHTypeSkuDetails).bindViewHolder(position)
         lastPosition = position
     }
@@ -47,7 +51,8 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return _list.size
     }
 
-    inner class VHTypeSkuDetails(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class VHTypeSkuDetails(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
         private val txtTitle: TextView = itemView.findViewById(R.id.txt_title)
         private val txtDescription: TextView = itemView.findViewById(R.id.txt_description)
         private val btnBuy: Button = itemView.findViewById(R.id.btn_buy)
@@ -67,8 +72,16 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 val skuDetails: SkuDetails = _list[position]
                 txtTitle.text = skuDetails.title
                 txtDescription.text = skuDetails.description
-                val priceToGb = skuDetails.priceAmountMicros / 1000000 / skuDetails.sku.replace(Regex("[^0-9]"), "").toInt()
-                btnBuy.text = mContext!!.getString(R.string.btn_buy_data, skuDetails.price, priceToGb.toString(), skuDetails.priceCurrencyCode)
+                val priceToGb = skuDetails.priceAmountMicros / 1000000 / skuDetails.sku.replace(
+                    Regex("[^0-9]"),
+                    ""
+                ).toInt()
+                btnBuy.text = mContext!!.getString(
+                    R.string.btn_buy_data,
+                    skuDetails.price,
+                    priceToGb.toString(),
+                    skuDetails.priceCurrencyCode
+                )
             } catch (th: Throwable) {
                 th.printStackTrace()
             }

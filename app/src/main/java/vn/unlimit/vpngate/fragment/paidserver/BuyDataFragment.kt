@@ -31,7 +31,6 @@ import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.*
-import kotlin.collections.ArrayList
 
 class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var btnBack: ImageView? = null
@@ -52,25 +51,36 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var paidServerActivity: PaidServerActivity? = null
     private var purchaseViewModel: PurchaseViewModel? = null
     private val purchasesUpdatedListener =
-            PurchasesUpdatedListener { billingResult, purchases ->
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                    for (purchase in purchases) {
-                        handlePurchase(purchase)
-                    }
-                } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                    val params = Bundle()
-                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
-                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_User_Cancel_Purchase", params) }
-                    Log.i(TAG, "User cancel purchase")
-                } else {
-                    // Handle any other error codes.
-                    val params = Bundle()
-                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
-                    params.putString("errorCode", billingResult.responseCode.toString())
-                    context?.let { FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Purchase_Error", params) }
-                    Log.e(TAG, "Error when process purchase with error code %s. Msg: %s".format(billingResult.responseCode, billingResult.debugMessage))
+        PurchasesUpdatedListener { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                for (purchase in purchases) {
+                    handlePurchase(purchase)
                 }
+            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                val params = Bundle()
+                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                context?.let {
+                    FirebaseAnalytics.getInstance(it)
+                        .logEvent("Paid_Server_User_Cancel_Purchase", params)
+                }
+                Log.i(TAG, "User cancel purchase")
+            } else {
+                // Handle any other error codes.
+                val params = Bundle()
+                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("errorCode", billingResult.responseCode.toString())
+                context?.let {
+                    FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Purchase_Error", params)
+                }
+                Log.e(
+                    TAG,
+                    "Error when process purchase with error code %s. Msg: %s".format(
+                        billingResult.responseCode,
+                        billingResult.debugMessage
+                    )
+                )
             }
+        }
 
     companion object {
         const val TAG = "BuyDataFragment"
@@ -93,12 +103,16 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         isAttached = false
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_buy_data, container, false)
         txtDataSize = root.findViewById(R.id.txt_data_size)
-        txtDataSize?.text = OpenVPNService.humanReadableByteCount(paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources)
+        txtDataSize?.text = OpenVPNService.humanReadableByteCount(
+            paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources
+        )
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
         lnLoading = root.findViewById(R.id.ln_loading)
@@ -201,10 +215,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val listSkuStr: String = if (dataUtil.hasAds()) {
             FirebaseRemoteConfig.getInstance().getString(getString(R.string.cfg_paid_server_sku))
         } else {
-            FirebaseRemoteConfig.getInstance().getString(getString(R.string.cfg_paid_server_sku_pro_ver))
+            FirebaseRemoteConfig.getInstance()
+                .getString(getString(R.string.cfg_paid_server_sku_pro_ver))
         }
         val gson = GsonBuilder().create()
-        listSkus = gson.fromJson(listSkuStr, object: TypeToken<Array<String>>(){}.type)
+        listSkus = gson.fromJson(listSkuStr, object : TypeToken<Array<String>>() {}.type)
         billingClient?.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -231,13 +246,20 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                     lnLoading?.visibility = View.GONE
                     rcvSkuDetails?.visibility = View.VISIBLE
-                    Collections.sort(listSkuDetails!!, Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
-                        return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
-                    })
+                    Collections.sort(
+                        listSkuDetails!!,
+                        Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
+                            return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
+                        })
                     skuDetailsAdapter!!.initialize(listSkuDetails)
                 } else {
-                    Toast.makeText(context, getString(R.string.get_sku_list_error), Toast.LENGTH_LONG).show()
-                    FirebaseAnalytics.getInstance(requireContext()).logEvent("Paid_Server_List_Package_Error", null)
+                    Toast.makeText(
+                        context,
+                        getString(R.string.get_sku_list_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    FirebaseAnalytics.getInstance(requireContext())
+                        .logEvent("Paid_Server_List_Package_Error", null)
                     findNavController().popBackStack()
                 }
             }
@@ -248,32 +270,48 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         if (o != null) {
             buyingSkuDetails = o as SkuDetails
             val flowParams = BillingFlowParams.newBuilder()
-                    .setSkuDetails(buyingSkuDetails!!)
-                    .build()
+                .setSkuDetails(buyingSkuDetails!!)
+                .build()
             isClickedBuyData = true
-            val responseCode = billingClient?.launchBillingFlow(activity as PaidServerActivity, flowParams)?.responseCode
+            val responseCode = billingClient?.launchBillingFlow(
+                activity as PaidServerActivity,
+                flowParams
+            )?.responseCode
             if (responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Launch purchase flow success")
             }
         } else {
             isClickedBuyData = false
-            Toast.makeText(requireContext(), getString(R.string.sku_item_click_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.sku_item_click_error),
+                Toast.LENGTH_SHORT
+            ).show()
             querySkuDetails()
         }
     }
 
     private fun handlePurchase(purchase: Purchase) {
         if (isAttached) {
-            loadingDialog = if (loadingDialog == null) LoadingDialog.newInstance(getString(R.string.processing_text)) else loadingDialog
-            loadingDialog?.show(paidServerActivity!!.supportFragmentManager, LoadingDialog::class.java.name)
+            loadingDialog =
+                if (loadingDialog == null) LoadingDialog.newInstance(getString(R.string.processing_text)) else loadingDialog
+            loadingDialog?.show(
+                paidServerActivity!!.supportFragmentManager,
+                LoadingDialog::class.java.name
+            )
         }
         val consumeParams =
-                ConsumeParams.newBuilder()
-                        .setPurchaseToken(purchase.purchaseToken)
-                        .build()
+            ConsumeParams.newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
         billingClient!!.consumeAsync(consumeParams) { billingResult, _ ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                Log.i(TAG, "Purchase product %s success from Google Play. Continue with api process".format(purchase.sku))
+                Log.i(
+                    TAG,
+                    "Purchase product %s success from Google Play. Continue with api process".format(
+                        purchase.sku
+                    )
+                )
                 purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
             }
         }

@@ -4,12 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.NonNull
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
@@ -60,7 +56,11 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         })
     }
 
-    fun fetchUser(updateLoading: Boolean = false, activity: Activity? = null, forceFetch: Boolean = false) {
+    fun fetchUser(
+        updateLoading: Boolean = false,
+        activity: Activity? = null,
+        forceFetch: Boolean = false
+    ) {
         val lastFetchTime = paidServerUtil.getLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME)
         var date = Calendar.getInstance().time
         var nowInMs = date.time
@@ -89,7 +89,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 val params = Bundle()
                 params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
                 params.putString("errorInfo", error)
-                FirebaseAnalytics.getInstance(getApplication()).logEvent("Paid_Server_Fetch_User_Error", params)
+                FirebaseAnalytics.getInstance(getApplication())
+                    .logEvent("Paid_Server_Fetch_User_Error", params)
                 baseErrorHandle(error)
                 Log.e(TAG, "fetch user error with error %s".format(error))
                 if (updateLoading) {
@@ -99,23 +100,43 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         }, activity)
     }
 
-    fun register(username: String, fullName: String, email: String, password: String, repassword: String, birthDay: String, timeZone: String, captchaAnswer: Int, captchaSecret: String) {
+    fun register(
+        username: String,
+        fullName: String,
+        email: String,
+        password: String,
+        repassword: String,
+        birthDay: String,
+        timeZone: String,
+        captchaAnswer: Int,
+        captchaSecret: String
+    ) {
         isLoading.value = true
-        userApiRequest.register(username, fullName, email, password, repassword, birthDay, timeZone, captchaAnswer, captchaSecret, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                isLoading.value = true
-                isRegisterSuccess.value = true
-            }
-
-            override fun onError(error: String?) {
-                val errorResponse = JSONObject(error!!.toString())
-                if (errorResponse.has("errorList")) {
-                    errorList.value = errorResponse.get("errorList") as JSONObject
+        userApiRequest.register(
+            username,
+            fullName,
+            email,
+            password,
+            repassword,
+            birthDay,
+            timeZone,
+            captchaAnswer,
+            captchaSecret,
+            object : RequestListener {
+                override fun onSuccess(result: Any?) {
+                    isLoading.value = true
+                    isRegisterSuccess.value = true
                 }
-                isLoading.value = false
-                isRegisterSuccess.value = false
-            }
-        })
+
+                override fun onError(error: String?) {
+                    val errorResponse = JSONObject(error!!.toString())
+                    if (errorResponse.has("errorList")) {
+                        errorList.value = errorResponse.get("errorList") as JSONObject
+                    }
+                    isLoading.value = false
+                    isRegisterSuccess.value = false
+                }
+            })
     }
 
     fun activateUser(userId: String, activateCode: String) {
@@ -123,7 +144,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         isUserActivated.value = false
         userApiRequest.activateUser(userId, activateCode, object : RequestListener {
             override fun onSuccess(result: Any?) {
-                isUserActivated.value = !((result as JSONObject).has("result") && !result.getBoolean("result"))
+                isUserActivated.value =
+                    !((result as JSONObject).has("result") && !result.getBoolean("result"))
                 if (!isUserActivated.value!!) {
                     errorCode = result.getInt("errorCode")
                 }
@@ -140,17 +162,21 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     fun forgotPassword(usernameOrEmail: String, captchaSecret: String, captchaAnswer: Int) {
         isLoading.value = true
         isForgotPassSuccess.value = false
-        userApiRequest.forgotPassword(usernameOrEmail, captchaSecret, captchaAnswer, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                isLoading.value = false
-                isForgotPassSuccess.value = true
-            }
+        userApiRequest.forgotPassword(
+            usernameOrEmail,
+            captchaSecret,
+            captchaAnswer,
+            object : RequestListener {
+                override fun onSuccess(result: Any?) {
+                    isLoading.value = false
+                    isForgotPassSuccess.value = true
+                }
 
-            override fun onError(error: String?) {
-                isLoading.value = false
-                isForgotPassSuccess.value = false
-            }
-        })
+                override fun onError(error: String?) {
+                    isLoading.value = false
+                    isForgotPassSuccess.value = false
+                }
+            })
     }
 
     fun checkResetPassToken(resetPassToken: String) {
@@ -168,44 +194,24 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     fun resetPassword(resetPassToken: String, newPassword: String, renewPassword: String) {
         isLoading.value = true
         isPasswordReseted.value = false
-        userApiRequest.resetPassword(resetPassToken, newPassword, renewPassword, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                isPasswordReseted.value = true
-                isLoading.value = false
-            }
-
-            override fun onError(error: String?) {
-                val errorResponse = JSONObject(error!!.toString())
-                if (errorResponse.has("errorList")) {
-                    errorList.value = errorResponse.get("errorList") as JSONObject
+        userApiRequest.resetPassword(
+            resetPassToken,
+            newPassword,
+            renewPassword,
+            object : RequestListener {
+                override fun onSuccess(result: Any?) {
+                    isPasswordReseted.value = true
+                    isLoading.value = false
                 }
-                isPasswordReseted.value = false
-                isLoading.value = false
-            }
-        })
-    }
 
-    fun addDevice() {
-        FirebaseMessaging.getInstance().token
-                .addOnCompleteListener(object : OnCompleteListener<String?> {
-                    override fun onComplete(@NonNull task: Task<String?>) {
-                        if (!task.isSuccessful) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                            return
-                        }
-
-                        // Get new FCM registration token
-                        val token: String? = task.result
-
-                        // Log and toast
-                        Log.d(TAG, "After login addDevice with fcmId: %s".format(token))
-                        if (token != null) {
-                            val sessionId = paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY, "")
-                            if (sessionId != null) {
-                                userApiRequest.addDevice(token, sessionId)
-                            }
-                        }
+                override fun onError(error: String?) {
+                    val errorResponse = JSONObject(error!!.toString())
+                    if (errorResponse.has("errorList")) {
+                        errorList.value = errorResponse.get("errorList") as JSONObject
                     }
-                })
+                    isPasswordReseted.value = false
+                    isLoading.value = false
+                }
+            })
     }
 }

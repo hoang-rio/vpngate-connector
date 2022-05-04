@@ -30,6 +30,12 @@
         tools:layout="@layout/fragment_personal" />
 
     <fragment
+        android:id="@+id/navigation_notification_setting"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.NotificationSettingFragment"
+        android:label="@string/personal_notification_setting"
+        tools:layout="@layout/fragment_notification_setting"/>
+
+    <fragment
         android:id="@+id/navigation_buy_data"
         android:name="vn.unlimit.vpngate.fragment.paidserver.BuyDataFragment"
         android:label="@string/title_buy_data"

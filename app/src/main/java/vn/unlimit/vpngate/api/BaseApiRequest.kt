@@ -12,7 +12,6 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
-import java.util.*
 
 open class BaseApiRequest {
     companion object {
@@ -25,56 +24,76 @@ open class BaseApiRequest {
     val isPro = !App.getInstance().dataUtil.hasAds()
     private val sessionHeaderName = paidServerUtil.getSessionHeaderName()
 
-    private val apiEndPoint: String = FirebaseRemoteConfig.getInstance().getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
+    private val apiEndPoint: String = FirebaseRemoteConfig.getInstance()
+        .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
 
     fun get(url: String, requestListener: JSONObjectRequestListener) {
         val networkRequest = AndroidNetworking.get("$apiEndPoint$url")
         if (paidServerUtil.isLoggedIn()) {
-            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+            networkRequest.addHeaders(
+                sessionHeaderName,
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+            )
         }
         networkRequest
-                .build()
-                .getAsJSONObject(requestListener)
+            .build()
+            .getAsJSONObject(requestListener)
     }
 
     fun get(url: String, requestListener: JSONArrayRequestListener) {
         val networkRequest = AndroidNetworking.get("$apiEndPoint$url")
         if (paidServerUtil.isLoggedIn()) {
-            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+            networkRequest.addHeaders(
+                sessionHeaderName,
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+            )
         }
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
     fun post(url: String, data: Map<String, Any>, requestListener: JSONObjectRequestListener) {
         val networkRequest = AndroidNetworking.post("$apiEndPoint$url")
-                .addHeaders(jsonHeaders)
-                .addApplicationJsonBody(data)
+            .addHeaders(jsonHeaders)
+            .addApplicationJsonBody(data)
         if (paidServerUtil.isLoggedIn()) {
-            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+            networkRequest.addHeaders(
+                sessionHeaderName,
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+            )
         }
         networkRequest.build().getAsJSONObject(requestListener)
     }
 
     fun post(url: String, data: Map<String, Any>, requestListener: JSONArrayRequestListener) {
         val networkRequest = AndroidNetworking.post("$apiEndPoint$url")
-                .addHeaders(jsonHeaders)
-                .addApplicationJsonBody(data)
+            .addHeaders(jsonHeaders)
+            .addApplicationJsonBody(data)
         if (paidServerUtil.isLoggedIn()) {
-            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+            networkRequest.addHeaders(
+                sessionHeaderName,
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+            )
         }
         networkRequest.build().getAsJSONArray(requestListener)
     }
 
     fun delete(url: String, requestListener: JSONObjectRequestListener) {
         val networkRequest = AndroidNetworking.delete("$apiEndPoint$url")
-                .addHeaders(jsonHeaders)
+            .addHeaders(jsonHeaders)
         if (paidServerUtil.isLoggedIn()) {
-            networkRequest.addHeaders(sessionHeaderName, paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY))
+            networkRequest.addHeaders(
+                sessionHeaderName,
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+            )
         }
         networkRequest.build().getAsJSONObject(requestListener)
     }
 
-    fun baseErrorHandle(anError: ANError?, requestListener: RequestListener? = null, activity: Activity? = null) {
+    fun baseErrorHandle(
+        anError: ANError?,
+        requestListener: RequestListener? = null,
+        activity: Activity? = null
+    ) {
         if (anError?.errorCode == 401) {
             // Session expires
             paidServerUtil.setIsLoggedIn(false)

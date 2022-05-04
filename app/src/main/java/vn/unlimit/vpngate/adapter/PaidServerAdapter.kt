@@ -22,6 +22,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
     private var _list: ArrayList<PaidServer> = ArrayList()
     private var lastPosition = 0
     var mContext: Context? = context
+
     @SuppressLint("NotifyDataSetChanged")
     fun initialize(paidServerList: HashSet<PaidServer>?) {
         try {
@@ -51,7 +52,10 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return VHTypeVPN(layoutInflater.inflate(R.layout.item_paid_vpn, parent, false))
     }
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, @SuppressLint("RecyclerView") position: Int) {
+    override fun onBindViewHolder(
+        viewHolder: RecyclerView.ViewHolder,
+        @SuppressLint("RecyclerView") position: Int
+    ) {
         if (onScrollListener != null) {
             if (position > lastPosition || position == 0) {
                 onScrollListener!!.onScrollDown()
@@ -67,7 +71,8 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         return _list.size
     }
 
-    inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), OnClickListener, OnLongClickListener {
+    inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), OnClickListener,
+        OnLongClickListener {
         var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
         private var txtCountry: TextView = itemView.findViewById(R.id.txt_country)
         private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
@@ -83,15 +88,16 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private var txtStatusText: TextView = itemView.findViewById(R.id.txt_status_text)
         private var txtDomain: TextView = itemView.findViewById(R.id.txt_domain)
         private var txtMaxSession: TextView = itemView.findViewById(R.id.txt_max_session)
+
         @Suppress("DEPRECATION")
         fun bindViewHolder(position: Int) {
             try {
                 val paidServer: PaidServer = _list.get(getRealPosition(position))
                 GlideApp.with(mContext!!)
-                        .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
-                        .placeholder(R.color.colorOverlay)
-                        .error(R.color.colorOverlay)
-                        .into(imgFlag)
+                    .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
+                    .placeholder(R.color.colorOverlay)
+                    .error(R.color.colorOverlay)
+                    .into(imgFlag)
                 txtCountry.text = paidServer.serverLocation
                 txtIp.text = paidServer.serverIp
                 txtHostname.text = paidServer.serverName
@@ -101,7 +107,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 if (paidServer.serverStatus === "Full") {
                     txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorRed))
                     txtStatusText.text = mContext!!.getText(R.string.full)
-                } else if (paidServer.serverStatus === "Medium"){
+                } else if (paidServer.serverStatus === "Medium") {
                     txtStatusColor.setTextColor(mContext!!.resources.getColor(R.color.colorAccent))
                     txtStatusText.text = mContext!!.getText(R.string.medium)
                 } else {

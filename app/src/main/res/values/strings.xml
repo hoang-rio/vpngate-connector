@@ -326,4 +326,7 @@
     <string name="personal_notification_setting">Notification setting</string>
     <string name="personal_profile">Profile</string>
     <string name="personal_change_password">Change password</string>
+    <!-- Notification setting -->
+    <string name="receive_notification">Receive push notification on this device</string>
+    <string name="notification_setting_hint">We will send notification when your account is out of remaining data or user info changed</string>
 </resources>

@@ -71,21 +71,21 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 isClickedLogin = false
                 loadingDialog?.dismiss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
-                    val errorMsg: String
-                    if (userViewModel!!.errorList.value!!.get("code") == 101) {
-                        errorMsg = getString(R.string.please_activate_account_first)
-                    } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
-                        if (userViewModel!!.errorList.value!!.has("bannedReason")) {
-                            errorMsg = getString(
-                                R.string.account_is_banned,
-                                userViewModel!!.errorList.value!!.get("bannedReason")
-                            )
+                    val errorMsg: String =
+                        if (userViewModel!!.errorList.value!!.get("code") == 101) {
+                            getString(R.string.please_activate_account_first)
+                        } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
+                            if (userViewModel!!.errorList.value!!.has("bannedReason")) {
+                                getString(
+                                    R.string.account_is_banned,
+                                    userViewModel!!.errorList.value!!.get("bannedReason")
+                                )
+                            } else {
+                                getString(R.string.account_is_banned_no_reason)
+                            }
                         } else {
-                            errorMsg = getString(R.string.account_is_banned_no_reason)
+                            getString(R.string.login_failed)
                         }
-                    } else {
-                        errorMsg = getString(R.string.login_failed)
-                    }
                     Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
                     val params = Bundle()
                     params.putString("username", txtUsername!!.text.toString())
@@ -122,7 +122,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             btnBackToFree -> backToFree()
             btnLogin -> {
                 if (txtUsername!!.text.isEmpty() || txtPassword!!.text.isEmpty()) {
-                    Toast.makeText(this, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        R.string.username_and_password_is_required,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return
                 }
                 isClickedLogin = true

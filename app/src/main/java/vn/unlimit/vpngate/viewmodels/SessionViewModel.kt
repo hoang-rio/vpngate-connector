@@ -11,7 +11,8 @@ import vn.unlimit.vpngate.request.RequestListener
 import java.lang.reflect.Type
 
 open class SessionViewModel(application: Application) : BaseViewModel(application) {
-    var sessionList: MutableLiveData<LinkedHashSet<ConnectedSession>> = MutableLiveData(LinkedHashSet())
+    var sessionList: MutableLiveData<LinkedHashSet<ConnectedSession>> =
+        MutableLiveData(LinkedHashSet())
     var sessionApiRequest = SessionApiRequest()
     var isError = MutableLiveData(false)
 

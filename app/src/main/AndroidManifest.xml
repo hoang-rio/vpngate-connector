@@ -117,7 +117,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".services.PaidServerFirebaseMessageService"
+            android:name=".services.PaidServerFCMService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

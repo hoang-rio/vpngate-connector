@@ -20,12 +20,14 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import vn.unlimit.vpngate.viewmodels.DeviceViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class PaidServerActivity : AppCompatActivity() {
 
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
+    var deviceViewModel: DeviceViewModel? = null
     private var doubleBackToExitPressedOnce = false
     private var isPaused = false
     var navController: NavController? = null
@@ -77,6 +79,7 @@ class PaidServerActivity : AppCompatActivity() {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        deviceViewModel = ViewModelProvider(this).get(DeviceViewModel::class.java)
         userViewModel!!.isLoggedIn.observe(this) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
@@ -89,7 +92,7 @@ class PaidServerActivity : AppCompatActivity() {
         if (!isFromLogin) {
             userViewModel!!.fetchUser(true, this, true)
         } else {
-            userViewModel!!.addDevice()
+            deviceViewModel!!.addDevice()
         }
     }
 
@@ -107,14 +110,19 @@ class PaidServerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        val currentFragmentId = NavHostFragment.findNavController(nav_host_fragment).currentDestination?.id
+        val currentFragmentId =
+            NavHostFragment.findNavController(nav_host_fragment).currentDestination?.id
         if (currentFragmentId == R.id.navigation_home) {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed()
                 return
             }
             doubleBackToExitPressedOnce = true
-            Toast.makeText(this, resources.getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                resources.getString(R.string.press_back_again_to_exit),
+                Toast.LENGTH_SHORT
+            ).show()
             Handler(mainLooper).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         } else {
             super.onBackPressed()

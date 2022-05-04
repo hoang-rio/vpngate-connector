@@ -69,15 +69,18 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_paid_server_home, container, false)
         txtWelcome = root.findViewById(R.id.text_home)
         txtDataSize = root.findViewById(R.id.txt_data_size)
         if (paidServerUtil.getUserInfo() != null) {
-            txtWelcome!!.text = getString(R.string.home_paid_welcome, paidServerUtil.getUserInfo()!!.getString("fullname"))
+            txtWelcome!!.text = getString(
+                R.string.home_paid_welcome,
+                paidServerUtil.getUserInfo()!!.getString("fullname")
+            )
             txtDataSize!!.text = paidServerUtil.getUserInfo()!!.getInt("dataSize").toString()
         }
         swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
@@ -112,7 +115,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         rcvSession = root.findViewById(R.id.rcv_session)
         rcvSession?.layoutManager = LinearLayoutManager(requireContext())
         sessionAdapter = SessionAdapter(requireContext())
-        sessionAdapter?.onDisconnectListener = OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
+        sessionAdapter?.onDisconnectListener =
+            OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
         rcvSession?.adapter = sessionAdapter
         lnSessionEmtpy = root.findViewById(R.id.ln_session_empty)
         return root
@@ -184,7 +188,14 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private fun disConnectSession(connectedSession: ConnectedSession) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle(R.string.disconnect_session)
-        alertDialogBuilder.setMessage(getString(R.string.alert_disconnect_confirm, connectedSession.sessionId, connectedSession.clientInfo?.ip, connectedSession.serverId?.serverName))
+        alertDialogBuilder.setMessage(
+            getString(
+                R.string.alert_disconnect_confirm,
+                connectedSession.sessionId,
+                connectedSession.clientInfo?.ip,
+                connectedSession.serverId?.serverName
+            )
+        )
         alertDialogBuilder.setPositiveButton(R.string.sure_btn) { dialog, _ ->
             dialog.dismiss()
             val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
@@ -236,7 +247,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     }
 
     private fun drawChart(entries: ArrayList<Entry>) {
-        val dataSet = LineDataSet(entries, getString(R.string.chart_transferred)) // add entries to dataset
+        val dataSet =
+            LineDataSet(entries, getString(R.string.chart_transferred)) // add entries to dataset
         dataSet.setDrawFilled(true)
         dataSet.lineWidth = 2.5F
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)

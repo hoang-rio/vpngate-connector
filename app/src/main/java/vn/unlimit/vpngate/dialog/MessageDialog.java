@@ -65,7 +65,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
             } else {
                 dataUtil.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -77,7 +77,7 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
         try {
             // request a window without the title
             Objects.requireNonNull(dialog.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dialog;
