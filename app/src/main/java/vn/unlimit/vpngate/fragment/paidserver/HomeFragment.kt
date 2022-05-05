@@ -28,6 +28,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.analytics.FirebaseAnalytics
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
@@ -125,6 +126,13 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
+        if (BuildConfig.DEBUG) {
+            val btnLogout: View = view.findViewById(R.id.iv_logout)
+            btnLogout.visibility = View.VISIBLE
+            btnLogout.setOnClickListener {
+                userViewModel?.logout(activity)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {

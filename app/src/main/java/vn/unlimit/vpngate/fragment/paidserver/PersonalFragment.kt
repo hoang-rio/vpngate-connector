@@ -51,6 +51,7 @@ class PersonalFragment : Fragment(), View.OnClickListener {
             }
             R.id.ln_notification_setting -> findNavController().navigate(R.id.navigation_notification_setting)
             R.id.ln_change_password -> findNavController().navigate(R.id.navigation_change_pass)
+            R.id.ln_profile -> findNavController().navigate(R.id.navigation_profile)
         }
     }
 }

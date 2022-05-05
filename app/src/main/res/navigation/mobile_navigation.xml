@@ -52,4 +52,10 @@
         android:name="vn.unlimit.vpngate.fragment.paidserver.ChangePassFragment"
         android:label="@string/personal_change_password"
         tools:layout="@layout/fragment_change_pass" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="vn.unlimit.vpngate.fragment.paidserver.ProfileFragment"
+        android:label="@string/personal_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

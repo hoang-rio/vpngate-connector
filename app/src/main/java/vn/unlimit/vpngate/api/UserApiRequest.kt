@@ -58,7 +58,7 @@ class UserApiRequest : BaseApiRequest() {
 
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Logout error with message %s".format(anError!!.errorBody))
-                requestListener?.onError(anError.errorBody.toString())
+                requestListener?.onError("error");
             }
         })
     }

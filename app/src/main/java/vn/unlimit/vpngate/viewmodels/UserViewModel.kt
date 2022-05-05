@@ -81,6 +81,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
             override fun onError(error: String?) {
                 //Nothing todo here
+                localLogout(activity)
             }
         })
     }
