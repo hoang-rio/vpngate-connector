@@ -62,7 +62,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var sessionViewModel: SessionViewModel? = null
     private var lnSessionError: View? = null
     private var rcvSession: RecyclerView? = null
-    private var lnSessionEmtpy: View? = null
+    private var lnSessionEmpty: View? = null
     private var sessionAdapter: SessionAdapter? = null
 
     companion object {
@@ -82,7 +82,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 R.string.home_paid_welcome,
                 paidServerUtil.getUserInfo()!!.getString("fullname")
             )
-            txtDataSize!!.text = paidServerUtil.getUserInfo()!!.getInt("dataSize").toString()
+            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                false,
+                resources
+            )
         }
         swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
@@ -119,7 +123,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         sessionAdapter?.onDisconnectListener =
             OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
         rcvSession?.adapter = sessionAdapter
-        lnSessionEmtpy = root.findViewById(R.id.ln_session_empty)
+        lnSessionEmpty = root.findViewById(R.id.ln_session_empty)
         return root
     }
 
@@ -138,6 +142,21 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isAttached = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
+            txtWelcome!!.text = getString(
+                R.string.home_paid_welcome,
+                paidServerUtil.getUserInfo()!!.getString("fullname")
+            )
+            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                false,
+                resources
+            )
+        }
     }
 
     override fun onDetach() {
@@ -187,7 +206,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         }
         sessionViewModel?.sessionList?.observe(viewLifecycleOwner) { sessionList ->
             sessionAdapter?.initialize(sessionList)
-            lnSessionEmtpy?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
+            lnSessionEmpty?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
         }
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()

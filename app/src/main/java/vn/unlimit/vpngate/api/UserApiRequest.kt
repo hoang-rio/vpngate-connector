@@ -22,6 +22,7 @@ class UserApiRequest : BaseApiRequest() {
         const val USER_PASSWORD_FORGOT = "/user/password/forgot"
         const val ACTIVATE_USER = "/user/%s/activate/%s"
         const val USER_CHANGE_PASS = "/user/password/change"
+        const val USER_PROFILE = "/user/profile"
     }
 
     fun login(username: String, password: String, requestListener: RequestListener) {
@@ -58,7 +59,7 @@ class UserApiRequest : BaseApiRequest() {
 
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Logout error with message %s".format(anError!!.errorBody))
-                requestListener?.onError("error");
+                requestListener?.onError("error")
             }
         })
     }
@@ -230,6 +231,29 @@ class UserApiRequest : BaseApiRequest() {
 
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Change pass error with message %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
+
+    fun updateProfile(
+        fullName: String,
+        birthDay: String,
+        timeZone: String,
+        requestListener: RequestListener
+    ) {
+        val data = HashMap<String, Any>()
+        data["fullname"] = fullName
+        data["birthday"] = birthDay
+        data["timeZone"] = timeZone
+        post(USER_PROFILE, data, object : JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Update profile success with response %s".format(response))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Update profile error with message %s".format(anError!!.errorBody))
                 requestListener.onError(anError.errorBody)
             }
         })

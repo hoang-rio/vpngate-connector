@@ -44,4 +44,105 @@
         </LinearLayout>
     </RelativeLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txt_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_user"
+                android:backgroundTint="@color/lineColor"
+                android:enabled="false"
+                android:focusable="false"
+                android:hint="@string/prompt_user"
+                android:inputType="text"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/lineColor"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_email"
+                android:backgroundTint="@color/lineColor"
+                android:enabled="false"
+                android:focusable="false"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/lineColor"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_full_name"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_full_name"
+                android:inputType="textCapWords"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_birthday"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_birthday"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txt_timezone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_timezone"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_timezone"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btn_save"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_save"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

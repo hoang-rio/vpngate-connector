@@ -34,6 +34,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     var isPasswordReset: MutableLiveData<Boolean> = MutableLiveData(false)
     var isValidResetPassToken: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorCode: Int? = null
+    var isProfileUpdate = false
 
     fun login(username: String, password: String) {
         isLoading.value = true
@@ -113,6 +114,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 date = Calendar.getInstance().time
                 nowInMs = date.time
                 paidServerUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
+                isProfileUpdate = false
             }
 
             override fun onError(error: String?) {
@@ -264,6 +266,29 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     activity.getText(R.string.incorrect_current_password),
                     Toast.LENGTH_LONG
                 ).show()
+                isLoading.value = false
+            }
+        })
+    }
+
+    fun updateProfile(fullName: String, birthDay: String, timeZone: String, requestListener: RequestListener) {
+        isLoading.value = true
+        userApiRequest.updateProfile(fullName, birthDay, timeZone, object : RequestListener {
+            override fun onSuccess(result: Any?) {
+                val json = result as JSONObject
+                if (json.has("user")) {
+                    userInfo.value = json.getJSONObject("user")
+                    paidServerUtil.setUserInfo(json.getJSONObject("user"))
+                    isProfileUpdate = true
+                    requestListener.onSuccess(json.getJSONObject("user"))
+                } else {
+                    requestListener.onError("")
+                }
+                isLoading.value = false
+            }
+
+            override fun onError(error: String?) {
+                requestListener.onError("")
                 isLoading.value = false
             }
         })

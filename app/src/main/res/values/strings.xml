@@ -336,6 +336,7 @@
     <string name="action_save">Save</string>
     <string name="new_password_is_invalid">New password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
     <string name="new_password_must_not_same_as_current_password">New password must not same as current password.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Profile -->
+    <string name="update_profile_success">Update profile success!</string>
+    <string name="update_profile_error">Update profile error. Please try again!</string>
 </resources>
