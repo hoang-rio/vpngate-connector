@@ -302,4 +302,7 @@
     <!-- Change pass -->
     <string name="password_changed">Mật khẩu đã thay đổi. Vui lòng đăng nhập lại!</string>
     <string name="incorrect_current_password">Mật khẩu hiện tại không đúng.</string>
+    <string name="action_save">Lưu</string>
+    <string name="new_password_is_invalid">Mật khẩu mới không hợp lệ. Mật khẩu phải chứa 5 – 30 ký tự và số, cho phép các ký tự đặc biệt ($ ! * . -)</string>
+    <string name="new_password_must_not_same_as_current_password">Mật khẩu mới không được giống mật khẩu hiện tại.</string>
 </resources>

@@ -202,7 +202,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
         return super.onSupportNavigateUp()
     }
 
-    private fun checkDigit(number: Int): String? {
+    private fun checkDigit(number: Int): String {
         return if (number <= 9) "0$number" else number.toString()
     }
 

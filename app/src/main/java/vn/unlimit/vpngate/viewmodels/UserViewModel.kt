@@ -39,7 +39,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         isLoading.value = true
         userApiRequest.login(username, password, object : RequestListener {
             override fun onSuccess(result: Any?) {
-                Log.e(TAG, "Login success with response %s".format(result!!.toString()))
+                Log.d(TAG, "Login success with response %s".format(result!!.toString()))
                 val userInfoRes = (result as JSONObject).getJSONObject("user")
                 userInfo.value = userInfoRes
                 paidServerUtil.setUserInfo(userInfoRes)
@@ -254,6 +254,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     activity.getText(R.string.password_changed),
                     Toast.LENGTH_LONG
                 ).show()
+                isLoading.value = false
             }
 
             override fun onError(error: String?) {
@@ -262,6 +263,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     activity.getText(R.string.incorrect_current_password),
                     Toast.LENGTH_LONG
                 ).show()
+                isLoading.value = false
             }
         })
     }

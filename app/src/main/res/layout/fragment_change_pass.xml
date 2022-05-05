@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".fragment.paidserver.ChangePassFragment">
+
     <RelativeLayout
         android:id="@+id/nav_detail"
         android:layout_width="match_parent"
@@ -42,4 +43,70 @@
                 android:theme="@style/label" />
         </LinearLayout>
     </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/txt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_password"
+                android:imeActionLabel="@string/action_sign_in"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"/>
+            <EditText
+                android:id="@+id/txt_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_new_password"
+                android:imeActionLabel="@string/action_save"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"
+                android:layout_marginTop="10dp" />
+            <EditText
+                android:id="@+id/txt_re_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_re_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_re_new_password"
+                android:imeActionLabel="@string/action_save"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/btn_save"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_save"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
