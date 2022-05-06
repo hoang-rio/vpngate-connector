@@ -15,7 +15,11 @@ class PurchaseApiRequest : BaseApiRequest() {
         private const val TAG = "PurchaseApiRequest"
     }
 
-    fun createPurchase(purchase: Purchase, skuDetails: SkuDetails, requestListener: RequestListener) {
+    fun createPurchase(
+        purchase: Purchase,
+        skuDetails: SkuDetails,
+        requestListener: RequestListener
+    ) {
         val purchaseInfo = HashMap<String, Any>()
         purchaseInfo["packageId"] = purchase.sku
         purchaseInfo["purchaseId"] = purchase.orderId
@@ -23,17 +27,20 @@ class PurchaseApiRequest : BaseApiRequest() {
         purchaseInfo["paymentMethod"] = PARAMS_USER_FLAT_FORM + "_IAP"
         purchaseInfo["currency"] = skuDetails.priceCurrencyCode
         purchaseInfo["currencyPrice"] = skuDetails.priceAmountMicros.toDouble() / 1000000
-        post("$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}", purchaseInfo, object : JSONObjectRequestListener {
-            override fun onResponse(response: JSONObject?) {
-                Log.i(TAG, "Create purchase success with message %s".format(response))
-                requestListener.onSuccess(response)
-            }
+        post(
+            "$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}",
+            purchaseInfo,
+            object : JSONObjectRequestListener {
+                override fun onResponse(response: JSONObject?) {
+                    Log.i(TAG, "Create purchase success with message %s".format(response))
+                    requestListener.onSuccess(response)
+                }
 
-            override fun onError(anError: ANError?) {
-                Log.e(TAG, "Create purchase error with message %s".format(anError!!.errorBody))
-                baseErrorHandle(anError, requestListener)
-            }
-        })
+                override fun onError(anError: ANError?) {
+                    Log.e(TAG, "Create purchase error with message %s".format(anError!!.errorBody))
+                    baseErrorHandle(anError, requestListener)
+                }
+            })
     }
 
     fun listPurchase(take: Int, skip: Int, requestListener: RequestListener) {

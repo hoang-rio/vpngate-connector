@@ -41,9 +41,13 @@ class PaidServerUtil(context: Context) {
         PAID_SERVER
     }
 
-    private val sharedPreferencesSetting: SharedPreferences = context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
+    private val sharedPreferencesSetting: SharedPreferences =
+        context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
     var mContext: Context = context
-    private var userInfo: JSONObject? = if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else JSONObject(getStringSetting(USER_INFO_KEY)!!)
+    private var userInfo: JSONObject? =
+        if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else JSONObject(
+            getStringSetting(USER_INFO_KEY)!!
+        )
 
     /**
      * Check paid user is logged in or not
@@ -55,7 +59,8 @@ class PaidServerUtil(context: Context) {
     /**
      * Get session header name from remote config
      */
-    fun getSessionHeaderName(): String = FirebaseRemoteConfig.getInstance().getString(mContext.getString(R.string.cfg_paid_server_session_header_key))
+    fun getSessionHeaderName(): String = FirebaseRemoteConfig.getInstance()
+        .getString(mContext.getString(R.string.cfg_paid_server_session_header_key))
 
     /**
      * Set user logged in information after login or login
@@ -92,7 +97,8 @@ class PaidServerUtil(context: Context) {
      * @param key Setting key
      * @param defVal Default value if get null from storage
      */
-    fun getBooleanSetting(key: String, defVal: Boolean = false): Boolean = sharedPreferencesSetting.getBoolean(key, defVal)
+    fun getBooleanSetting(key: String, defVal: Boolean = false): Boolean =
+        sharedPreferencesSetting.getBoolean(key, defVal)
 
     /**
      * Set boolean setting to storage
@@ -110,7 +116,8 @@ class PaidServerUtil(context: Context) {
      * @param key Setting key
      * @param defVal Default value if get null from storage
      */
-    fun getStringSetting(key: String, defVal: String = ""): String? = sharedPreferencesSetting.getString(key, defVal)
+    fun getStringSetting(key: String, defVal: String = ""): String? =
+        sharedPreferencesSetting.getString(key, defVal)
 
     /**
      * Set string setting to storage
@@ -128,7 +135,8 @@ class PaidServerUtil(context: Context) {
      * @param key Setting key
      * @param defVal Default value if get null from storage
      */
-    fun getLongSetting(key: String, defVal: Long = 0): Long = sharedPreferencesSetting.getLong(key, defVal)
+    fun getLongSetting(key: String, defVal: Long = 0): Long =
+        sharedPreferencesSetting.getLong(key, defVal)
 
     /**
      * Set Long setting to storage
@@ -155,7 +163,12 @@ class PaidServerUtil(context: Context) {
      * Get startup screen
      */
     fun getStartUpScreen(): StartUpScreen {
-        return StartUpScreen.valueOf(getStringSetting(STARTUP_SCREEN_KEY, StartUpScreen.FREE_SERVER.toString()) as String)
+        return StartUpScreen.valueOf(
+            getStringSetting(
+                STARTUP_SCREEN_KEY,
+                StartUpScreen.FREE_SERVER.toString()
+            ) as String
+        )
     }
 
     /**

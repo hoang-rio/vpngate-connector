@@ -29,8 +29,10 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         val dialog = BottomSheetDialog(requireActivity())
         dialog.setOnShowListener { localDialog ->
             val d = localDialog as BottomSheetDialog
-            val bottomSheet = d.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)!!
-            BottomSheetBehavior.from<FrameLayout?>(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            val bottomSheet =
+                d.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)!!
+            BottomSheetBehavior.from<FrameLayout?>(bottomSheet).state =
+                BottomSheetBehavior.STATE_EXPANDED
         }
 
         //
@@ -48,7 +50,11 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     private var txtSession: EditText? = null
     private val applyButtonClickListener = View.OnClickListener {
         if (!checkBoxTCP!!.isChecked && !checkBoxUDP!!.isChecked && !checkBoxL2TP!!.isChecked) {
-            Toast.makeText(context, resources.getString(R.string.must_check_at_least_1_protocol), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                resources.getString(R.string.must_check_at_least_1_protocol),
+                Toast.LENGTH_SHORT
+            ).show()
             return@OnClickListener
         }
         mFilter.isShowTCP = checkBoxTCP!!.isChecked
@@ -94,7 +100,10 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         mFilter.speed?.let { txtSpeed!!.setText(it.toString()) }
         mFilter.sessionCount?.let { txtSession!!.setText(it.toString()) }
         if (mFilter.pingFilterOperator != null) {
-            spinnerInitPing.setStringArray(listOperator, listOperator[listOperatorEnum.indexOf(mFilter.pingFilterOperator)])
+            spinnerInitPing.setStringArray(
+                listOperator,
+                listOperator[listOperatorEnum.indexOf(mFilter.pingFilterOperator)]
+            )
         } else {
             spinnerInitPing.setStringArray(listOperator, listOperator[0])
         }
@@ -102,7 +111,10 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
             mFilter.pingFilterOperator = listOperatorEnum[index]
         }
         if (mFilter.speedFilterOperator != null) {
-            spinnerInitSpeed.setStringArray(listOperator, listOperator[listOperatorEnum.indexOf(mFilter.speedFilterOperator)])
+            spinnerInitSpeed.setStringArray(
+                listOperator,
+                listOperator[listOperatorEnum.indexOf(mFilter.speedFilterOperator)]
+            )
         } else {
             spinnerInitSpeed.setStringArray(listOperator, listOperator[0])
         }
@@ -110,7 +122,10 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
             mFilter.speedFilterOperator = listOperatorEnum[index]
         }
         if (mFilter.sessionCountFilterOperator != null) {
-            spinnerInitSession.setStringArray(listOperator, listOperator[listOperatorEnum.indexOf(mFilter.sessionCountFilterOperator)])
+            spinnerInitSession.setStringArray(
+                listOperator,
+                listOperator[listOperatorEnum.indexOf(mFilter.sessionCountFilterOperator)]
+            )
         } else {
             spinnerInitSession.setStringArray(listOperator, listOperator[0])
         }

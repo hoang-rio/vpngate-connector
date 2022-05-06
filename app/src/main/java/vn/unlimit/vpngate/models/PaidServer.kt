@@ -46,9 +46,10 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         udpPort = inParcel.readInt()
         maxSession = inParcel.readInt()
         sessionCount = inParcel.readInt()
-        ovpnContent =  inParcel.readString()!!
+        ovpnContent = inParcel.readString()!!
         serverStatus = inParcel.readString()!!
     }
+
     override fun describeContents(): Int {
         return 0
     }
@@ -84,8 +85,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         if (udpPort > 0) {
             // Current config is config for tcp need for udp
             openVpnConfigDataTcp = openVpnConfigDataTcp
-                    .replace("proto udp", "proto tcp")
-                    .replace("remote $serverDomain $tcpPort", "remote $serverDomain $udpPort")
+                .replace("proto udp", "proto tcp")
+                .replace("remote $serverDomain $tcpPort", "remote $serverDomain $udpPort")
         }
         if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTcp = openVpnConfigDataTcp.replace(serverDomain, serverIp)
@@ -99,11 +100,20 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         if (App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             address = serverDomain
         }
-        return if (App.getInstance().dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
+        return if (App.getInstance().dataUtil.getBooleanSetting(
+                DataUtil.INCLUDE_UDP_SERVER,
+                true
+            )
+        ) {
             if (tcpPort == 0 && udpPort == 0) {
                 // Current profile from non udp but open status page with include udp option
                 String.format("Paid-%s[%s]", serverLocation, address)
-            } else String.format("Paid-%s[%s][%s]", serverLocation, address, if (useUdp || tcpPort == 0) "UDP:$udpPort" else "TCP:$tcpPort")
+            } else String.format(
+                "Paid-%s[%s][%s]",
+                serverLocation,
+                address,
+                if (useUdp || tcpPort == 0) "UDP:$udpPort" else "TCP:$tcpPort"
+            )
         } else String.format("Paid-%s[%s]", serverLocation, address)
     }
 }

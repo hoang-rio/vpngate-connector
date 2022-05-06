@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     var onScrollListener: OnScrollListener? = null
 
+    @SuppressLint("NotifyDataSetChanged")
     fun initialize(list: ArrayList<PurchaseHistory>?) {
         try {
             _list.clear()
@@ -28,7 +30,13 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return VHTypePurchaseHistory(layoutInflater.inflate(R.layout.item_purchase_history, parent, false))
+        return VHTypePurchaseHistory(
+            layoutInflater.inflate(
+                R.layout.item_purchase_history,
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -52,6 +60,8 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
         private val txtDataSizeReceive: TextView = itemView.findViewById(R.id.txt_data_size_receive)
         private val txtPrice: TextView = itemView.findViewById(R.id.txt_price)
         private val txtDateTime: TextView = itemView.findViewById(R.id.txt_date_time)
+
+        @SuppressLint("SetTextI18n")
         fun bindViewHolder(position: Int) {
             val purchaseHistory = _list.get(position)
             txtIndex.text = (position + 1).toString()

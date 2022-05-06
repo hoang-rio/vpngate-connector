@@ -29,7 +29,11 @@ class LoadingDialog : DialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val rootView = layoutInflater.inflate(R.layout.layout_loading_dialog, container, false)
         txtLoadingText = rootView.findViewById(R.id.txt_loading_text)
         txtLoadingText!!.text = this.loadingText

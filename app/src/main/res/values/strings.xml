@@ -201,6 +201,7 @@
     <string name="title_home">Home</string>
     <string name="title_servers">Servers</string>
     <string name="title_free_server">Free Server</string>
+    <string name="title_personal">Personal</string>
     <string name="title_buy_data">Buy data</string>
     <string name="vpn_paid_shared_secret" translatable="false">vpngate</string>
     <string name="vpn_pw_hint">[Your password]</string>
@@ -225,6 +226,7 @@
     <string name="username_and_password_is_required">Username and password is required</string>
     <string name="account_is_banned_no_reason">You account is banned.</string>
     <string name="account_is_banned">You account is banned with reason: %1$s</string>
+    <string name="session_expires">Login session expires. Please login again!</string>
     <!-- Sign up screen -->
     <string name="prompt_email">Email</string>
     <string name="prompt_birthday">Birthday</string>
@@ -321,4 +323,20 @@
     <string name="history_price">Price</string>
     <string name="history_date_time">Date time</string>
     <string name="history_have_not_purchase">You have not purchase anything.</string>
+    <!-- Personal -->
+    <string name="personal_notification_setting">Notification setting</string>
+    <string name="personal_profile">Profile</string>
+    <string name="personal_change_password">Change password</string>
+    <!-- Notification setting -->
+    <string name="receive_notification">Receive push notification on this device</string>
+    <string name="notification_setting_hint">We will send notification when your account is out of remaining data or user info changed</string>
+    <!-- Change pass -->
+    <string name="password_changed">Password changed. Please login again!</string>
+    <string name="incorrect_current_password">Incorrect current password</string>
+    <string name="action_save">Save</string>
+    <string name="new_password_is_invalid">New password is invalid. Password must be 5 – 30 character, digit and accept special character ($ ! * . -)</string>
+    <string name="new_password_must_not_same_as_current_password">New password must not same as current password.</string>
+    <!-- Profile -->
+    <string name="update_profile_success">Update profile success!</string>
+    <string name="update_profile_error">Update profile error. Please try again!</string>
 </resources>

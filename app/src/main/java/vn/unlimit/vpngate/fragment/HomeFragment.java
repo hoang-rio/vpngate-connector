@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 AdRequest adRequest = new AdRequest.Builder().build();
                 InterstitialAd.load(mContext, getString(R.string.admob_full_screen_detail), adRequest, new InterstitialAdLoadCallback() {
                     @Override
-                    public void onAdLoaded(@NonNull @NotNull InterstitialAd interstitialAd) {
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                         HomeFragment.this.interstitialAd = interstitialAd;
                     }
 

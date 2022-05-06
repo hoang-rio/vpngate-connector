@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +13,14 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.ConnectedSession
 import java.text.DateFormat.getDateTimeInstance
 import java.util.*
-import kotlin.collections.ArrayList
 
 class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val mContext = context
     private val listSession = ArrayList<ConnectedSession>()
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     var onDisconnectListener: OnItemClickListener? = null
+
+    @SuppressLint("NotifyDataSetChanged")
     fun initialize(list: LinkedHashSet<ConnectedSession>) {
         listSession.clear()
         listSession.addAll(list)
@@ -40,10 +42,13 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
     private fun getDateStr(time: Long): String {
         val cal: Calendar = Calendar.getInstance()
         cal.timeInMillis = time
-        return getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.MEDIUM).format(cal.time)
+        return getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.MEDIUM).format(
+            cal.time
+        )
     }
 
-    inner class VHTypeSession(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class VHTypeSession(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
         private val txtSessionId: TextView = itemView.findViewById(R.id.txt_session_id)
         private val txtServerName: TextView = itemView.findViewById(R.id.txt_server_name)
         private val txtClientPublicIp: TextView = itemView.findViewById(R.id.txt_client_public_ip)
@@ -62,7 +67,11 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
             txtSessionId.text = session.sessionId
             txtServerName.text = session.serverId?.serverName
             txtClientPublicIp.text = session.clientInfo?.ip
-            txtTransferredByte.text = OpenVPNService.humanReadableByteCount(session.transferBytes, false, mContext.resources)
+            txtTransferredByte.text = OpenVPNService.humanReadableByteCount(
+                session.transferBytes,
+                false,
+                mContext.resources
+            )
             txtCreated.text = getDateStr(session._created!!)
             if (session._updated != null) {
                 txtUpdate.text = getDateStr(session._updated!!)
@@ -71,7 +80,11 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
                 lnCreated.visibility = View.GONE
             }
             lnDisconnect.setOnClickListener(this)
-            if (App.getInstance().paidServerUtil.isCurrentSession(session.serverId!!._id, session.clientIp)) {
+            if (App.getInstance().paidServerUtil.isCurrentSession(
+                    session.serverId!!._id,
+                    session.clientIp
+                )
+            ) {
                 lnCurrentSession.visibility = View.VISIBLE
                 lnDisconnect.visibility = View.GONE
             } else {

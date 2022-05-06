@@ -28,10 +28,10 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
     private Button btnSend;
     private TextView txtErrorName;
     private TextView txtErrorContent;
-    private int minContentLength = 50;
-    private int minNameLength = 10;
+    private final int minContentLength = 50;
+    private final int minNameLength = 10;
     private boolean isValidName = false;
-    private boolean isValideContent = false;
+    private boolean isValidContent = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,10 +79,10 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
             public void afterTextChanged(Editable editable) {
                 if (editable.length() < minContentLength) {
                     txtErrorContent.setText(String.format(getResources().getString(R.string.content_error_message), minContentLength));
-                    isValideContent = false;
+                    isValidContent = false;
                 } else {
                     txtErrorContent.setText("");
-                    isValideContent = true;
+                    isValidContent = true;
                 }
             }
         });
@@ -95,7 +95,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         if (view.equals(btnSend)) {
             try {
-                if (isValidName && isValideContent) {
+                if (isValidName && isValidContent) {
                     String subject = getResources().getString(R.string.help_request_from) + " " + edtName.getText();
                     String body = edtContent.getText().toString();
                     Intent mailIntent = new Intent(Intent.ACTION_SENDTO);

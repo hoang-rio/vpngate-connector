@@ -28,6 +28,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.analytics.FirebaseAnalytics
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
@@ -61,7 +62,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private var sessionViewModel: SessionViewModel? = null
     private var lnSessionError: View? = null
     private var rcvSession: RecyclerView? = null
-    private var lnSessionEmtpy: View? = null
+    private var lnSessionEmpty: View? = null
     private var sessionAdapter: SessionAdapter? = null
 
     companion object {
@@ -69,16 +70,23 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_paid_server_home, container, false)
         txtWelcome = root.findViewById(R.id.text_home)
         txtDataSize = root.findViewById(R.id.txt_data_size)
         if (paidServerUtil.getUserInfo() != null) {
-            txtWelcome!!.text = getString(R.string.home_paid_welcome, paidServerUtil.getUserInfo()!!.getString("fullname"))
-            txtDataSize!!.text = paidServerUtil.getUserInfo()!!.getInt("dataSize").toString()
+            txtWelcome!!.text = getString(
+                R.string.home_paid_welcome,
+                paidServerUtil.getUserInfo()!!.getString("fullname")
+            )
+            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                false,
+                resources
+            )
         }
         swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
@@ -112,20 +120,43 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         rcvSession = root.findViewById(R.id.rcv_session)
         rcvSession?.layoutManager = LinearLayoutManager(requireContext())
         sessionAdapter = SessionAdapter(requireContext())
-        sessionAdapter?.onDisconnectListener = OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
+        sessionAdapter?.onDisconnectListener =
+            OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
         rcvSession?.adapter = sessionAdapter
-        lnSessionEmtpy = root.findViewById(R.id.ln_session_empty)
+        lnSessionEmpty = root.findViewById(R.id.ln_session_empty)
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
+        if (BuildConfig.DEBUG) {
+            val btnLogout: View = view.findViewById(R.id.iv_logout)
+            btnLogout.visibility = View.VISIBLE
+            btnLogout.setOnClickListener {
+                userViewModel?.logout(activity)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isAttached = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
+            txtWelcome!!.text = getString(
+                R.string.home_paid_welcome,
+                paidServerUtil.getUserInfo()!!.getString("fullname")
+            )
+            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                false,
+                resources
+            )
+        }
     }
 
     override fun onDetach() {
@@ -136,38 +167,47 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private fun bindViewModel() {
         paidServerActivity = (activity as PaidServerActivity)
         this.userViewModel = paidServerActivity?.userViewModel
-        userViewModel?.userInfo?.observe(viewLifecycleOwner, { userInfo ->
+        userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
                 if (isAttached) {
-                    txtWelcome!!.text = getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
-                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(userInfo!!.getLong("dataSize"), false, resources)
+                    txtWelcome!!.text =
+                        getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                        userInfo!!.getLong("dataSize"),
+                        false,
+                        resources
+                    )
                 }
             }
-        })
+        }
         chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
-        chartViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading -> if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE })
-        chartViewModel?.chartData?.observe(viewLifecycleOwner, { chartData ->
+        chartViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE
+        }
+        chartViewModel?.chartData?.observe(viewLifecycleOwner) { chartData ->
             if (chartData.size > 0) {
                 this.drawChart(chartData)
             }
-        })
-        chartViewModel?.chartType?.observe(viewLifecycleOwner, {
+        }
+        chartViewModel?.chartType?.observe(viewLifecycleOwner) {
             chartViewModel?.getChartData()
-        })
-        chartViewModel?.isError?.observe(viewLifecycleOwner, { isError ->
+        }
+        chartViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
             lnChartError?.visibility = if (isError) View.VISIBLE else View.GONE
-        })
+        }
         sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
-        sessionViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        sessionViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             run {
                 lnLoadingSession?.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
-        })
-        sessionViewModel?.isError?.observe(viewLifecycleOwner, { isError -> lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE })
-        sessionViewModel?.sessionList?.observe(viewLifecycleOwner, { sessionList ->
+        }
+        sessionViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
+            lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE
+        }
+        sessionViewModel?.sessionList?.observe(viewLifecycleOwner) { sessionList ->
             sessionAdapter?.initialize(sessionList)
-            lnSessionEmtpy?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
-        })
+            lnSessionEmpty?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
+        }
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()
     }
@@ -175,7 +215,14 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     private fun disConnectSession(connectedSession: ConnectedSession) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle(R.string.disconnect_session)
-        alertDialogBuilder.setMessage(getString(R.string.alert_disconnect_confirm, connectedSession.sessionId, connectedSession.clientInfo?.ip, connectedSession.serverId?.serverName))
+        alertDialogBuilder.setMessage(
+            getString(
+                R.string.alert_disconnect_confirm,
+                connectedSession.sessionId,
+                connectedSession.clientInfo?.ip,
+                connectedSession.serverId?.serverName
+            )
+        )
         alertDialogBuilder.setPositiveButton(R.string.sure_btn) { dialog, _ ->
             dialog.dismiss()
             val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
@@ -227,7 +274,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     }
 
     private fun drawChart(entries: ArrayList<Entry>) {
-        val dataSet = LineDataSet(entries, getString(R.string.chart_transferred)) // add entries to dataset
+        val dataSet =
+            LineDataSet(entries, getString(R.string.chart_transferred)) // add entries to dataset
         dataSet.setDrawFilled(true)
         dataSet.lineWidth = 2.5F
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
@@ -257,9 +305,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 swipeRefreshLayout?.isRefreshing = false
             }
             if (!isObservedRefresh) {
-                userViewModel?.isLoading?.observe(paidServerActivity!!, {
+                userViewModel?.isLoading?.observe(paidServerActivity!!) {
                     swipeRefreshLayout?.isRefreshing = it
-                })
+                }
                 isObservedRefresh = true
             }
         } catch (th: Throwable) {

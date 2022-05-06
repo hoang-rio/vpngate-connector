@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.paidserver.ProfileFragment">
+
+    <RelativeLayout
+        android:id="@+id/nav_detail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPaidServer"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_back_white"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:id="@+id/ln_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txt_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/personal_profile"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:theme="@style/label" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txt_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_user"
+                android:backgroundTint="@color/lineColor"
+                android:enabled="false"
+                android:focusable="false"
+                android:hint="@string/prompt_user"
+                android:inputType="text"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/lineColor"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_email"
+                android:backgroundTint="@color/lineColor"
+                android:enabled="false"
+                android:focusable="false"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/lineColor"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_full_name"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_full_name"
+                android:inputType="textCapWords"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <EditText
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_birthday"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_birthday"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txt_timezone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:autofillHints="@string/prompt_timezone"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_timezone"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop" />
+
+            <Button
+                android:id="@+id/btn_save"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_save"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -220,10 +220,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Connect_VPN", params)
             prepareVpn(useUdp)
         }
-        if (Build.VERSION.SDK_INT >= 16) {
-            btnConnect!!.background = resources.getDrawable(R.drawable.selector_apply_button)
-            txtStatus!!.text = getString(R.string.connecting)
-        }
+        btnConnect!!.background = resources.getDrawable(R.drawable.selector_apply_button)
+        txtStatus!!.text = getString(R.string.connecting)
         isConnecting = true
         btnConnect!!.setText(R.string.cancel)
         paidServerUtil.setLastConnectServer(mPaidServer!!)
@@ -285,9 +283,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
             if (isCurrent() && checkStatus()) {
                 btnConnect?.text = resources.getString(R.string.disconnect)
-                if (Build.VERSION.SDK_INT >= 16) {
-                    btnConnect?.background = resources.getDrawable(R.drawable.selector_apply_button)
-                }
+                btnConnect?.background = resources.getDrawable(R.drawable.selector_apply_button)
                 txtStatus?.text = VpnStatus.getLastCleanLogMessage(this)
                 txtNetStats?.visibility = View.VISIBLE
             } else {
@@ -353,6 +349,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         return true
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         try {
@@ -399,10 +396,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 FirebaseAnalytics.getInstance(applicationContext)
                     .logEvent("Paid_Disconnect_VPN", params)
                 stopVpn()
-                if (Build.VERSION.SDK_INT >= 16) {
-                    btnConnect!!.background =
-                        resources.getDrawable(R.drawable.selector_primary_button)
-                }
+                btnConnect!!.background =
+                    resources.getDrawable(R.drawable.selector_primary_button)
                 btnConnect!!.setText(R.string.connect_to_this_server)
                 txtStatus!!.setText(R.string.disconnecting)
             } else if (mPaidServer!!.tcpPort > 0 && mPaidServer!!.udpPort > 0) {
@@ -448,9 +443,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("country", mPaidServer!!.serverLocation)
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Cancel_VPN", params)
             stopVpn()
-            if (Build.VERSION.SDK_INT >= 16) {
-                btnConnect!!.background = resources.getDrawable(R.drawable.selector_primary_button)
-            }
+            btnConnect!!.background = resources.getDrawable(R.drawable.selector_primary_button)
             btnConnect!!.setText(R.string.connect_to_this_server)
             txtStatus!!.text = getString(R.string.canceled)
             isConnecting = false
@@ -606,10 +599,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
                         txtCheckIp?.visibility = View.GONE
                         btnConnect!!.setText(R.string.connect_to_this_server)
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect!!.background =
-                                resources.getDrawable(R.drawable.selector_paid_button)
-                        }
+                        btnConnect!!.background =
+                            resources.getDrawable(R.drawable.selector_paid_button)
                         txtStatus!!.setText(R.string.disconnected)
                         txtNetStats!!.visibility = View.GONE
                         paidServerUtil.clearCurrentSession()
@@ -623,10 +614,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         params.putString("country", mPaidServer?.serverLocation)
                         FirebaseAnalytics.getInstance(applicationContext)
                             .logEvent("Paid_Connect_Error", params)
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            btnConnect!!.background =
-                                resources.getDrawable(R.drawable.selector_paid_button)
-                        }
+                        btnConnect!!.background =
+                            resources.getDrawable(R.drawable.selector_paid_button)
                         txtStatus!!.text = resources.getString(R.string.vpn_auth_failure)
                         txtCheckIp?.visibility = View.GONE
                         isConnecting = false

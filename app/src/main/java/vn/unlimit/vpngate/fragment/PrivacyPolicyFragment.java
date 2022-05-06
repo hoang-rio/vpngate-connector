@@ -82,10 +82,10 @@ public class PrivacyPolicyFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if(view.equals(btnDecide)) {
+        if (view.equals(btnDecide)) {
             //Exit app when user decide
             mainActivity.finish();
-        } else if(view.equals(btnAccept)) {
+        } else if (view.equals(btnAccept)) {
             //Start home fragment
             App.getInstance().getDataUtil().setAcceptedPrivacyPolicy(true);
             mainActivity.restartApp();

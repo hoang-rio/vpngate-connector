@@ -22,7 +22,8 @@ import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.viewmodels.ServerViewModel
 
-class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener, OnScrollListener {
+class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
+    OnScrollListener {
 
     private var recyclerView: RecyclerView? = null
     private var mContext: Context? = null
@@ -32,9 +33,9 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     private var lnLoadingWrap: View? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_server_list, container, false)
         recyclerView = root.findViewById(R.id.rcv_list_server)
@@ -51,15 +52,15 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
 
     private fun bindViewModel() {
         serverViewModel = ViewModelProvider(this).get(ServerViewModel::class.java)
-        serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner, { isLoggedIn ->
+        serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed
                 val intentLogin = Intent(activity, LoginActivity::class.java)
                 startActivity(intentLogin)
                 activity?.finish()
             }
-        })
-        serverViewModel?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        }
+        serverViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (serverViewModel?.serverList?.value.isNullOrEmpty()) {
                 lnLoadingWrap?.visibility = View.VISIBLE
                 swipeRefreshLayout!!.visibility = View.GONE
@@ -68,10 +69,10 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
             swipeRefreshLayout!!.visibility = View.VISIBLE
             lnLoadingWrap?.visibility = View.GONE
             swipeRefreshLayout?.isRefreshing = isLoading
-        })
-        serverViewModel?.serverList?.observe(viewLifecycleOwner, { listServer ->
+        }
+        serverViewModel?.serverList?.observe(viewLifecycleOwner) { listServer ->
             paidServerAdapter?.initialize(listServer)
-        })
+        }
         serverViewModel?.loadServer(activity as PaidServerActivity, true)
     }
 

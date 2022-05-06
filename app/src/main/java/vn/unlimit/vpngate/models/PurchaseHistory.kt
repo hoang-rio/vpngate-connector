@@ -19,7 +19,11 @@ class PurchaseHistory {
     }
 
     fun getCreated(): String {
-        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.SHORT, Locale.getDefault())
+        val dateFormat = DateFormat.getDateTimeInstance(
+            DateFormat.DEFAULT,
+            DateFormat.SHORT,
+            Locale.getDefault()
+        )
         return dateFormat.format(Date(_created))
     }
 }

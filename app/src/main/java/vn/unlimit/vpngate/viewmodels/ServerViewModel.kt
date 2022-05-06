@@ -16,7 +16,8 @@ import vn.unlimit.vpngate.request.RequestListener
 import java.lang.reflect.Type
 
 class ServerViewModel(application: Application) : BaseViewModel(application) {
-    var serverList: MutableLiveData<LinkedHashSet<PaidServer>> = MutableLiveData(paidServerUtil.getServersCache())
+    var serverList: MutableLiveData<LinkedHashSet<PaidServer>> =
+        MutableLiveData(paidServerUtil.getServersCache())
     private val serverApiRequest = ServerApiRequest()
     private var isOutOfData: Boolean = false
 
@@ -39,7 +40,8 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                 override fun onSuccess(result: Any?) {
                     val type: Type = object : TypeToken<LinkedHashSet<PaidServer?>?>() {}.type
                     val listServerArray = (result as JSONObject).get("listServer") as JSONArray
-                    val listServer: LinkedHashSet<PaidServer> = Gson().fromJson(listServerArray.toString(), type)
+                    val listServer: LinkedHashSet<PaidServer> =
+                        Gson().fromJson(listServerArray.toString(), type)
                     if (loadFromStart) {
                         serverList.value = listServer
                     } else {
@@ -57,9 +59,13 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                     baseErrorHandle(error)
                     isLoading.value = false
                     val params = Bundle()
-                    params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                    params.putString(
+                        "username",
+                        paidServerUtil.getUserInfo()?.getString("username")
+                    )
                     params.putString("errorInfo", error)
-                    FirebaseAnalytics.getInstance(getApplication()).logEvent("Paid_Server_List_Server_Error", params)
+                    FirebaseAnalytics.getInstance(getApplication())
+                        .logEvent("Paid_Server_List_Server_Error", params)
                     Log.e(TAG, "Load paid server error with message: %s".format(error))
                 }
             }, activity)

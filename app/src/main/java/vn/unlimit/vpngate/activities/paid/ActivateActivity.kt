@@ -64,7 +64,8 @@ class ActivateActivity : AppCompatActivity() {
                 if (userViewModel!!.errorCode == 104) {
                     errorDetailResId = R.string.account_activate_failed_already_activate
                 }
-                findViewById<TextView>(R.id.txt_error).text = getString(R.string.account_activate_failed, getText(errorDetailResId))
+                findViewById<TextView>(R.id.txt_error).text =
+                    getString(R.string.account_activate_failed, getText(errorDetailResId))
             }
         })
         Handler(Looper.getMainLooper()).postDelayed({

@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.util.Log;
 
@@ -25,6 +26,7 @@ public class App extends Application {
     private PaidServerUtil paidServerUtil;
     private static final String TAG = "VpnGateApp";
 
+    @SuppressLint("StaticFieldLeak")
     public static AppOpenManager appOpenManager;
 
 

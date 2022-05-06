@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -22,6 +23,7 @@ import vn.unlimit.vpngate.utils.AppOpenManager
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.regex.Pattern
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "SplashActivity"
@@ -82,6 +84,7 @@ class SplashActivity : AppCompatActivity() {
         }, delay)
     }
 
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

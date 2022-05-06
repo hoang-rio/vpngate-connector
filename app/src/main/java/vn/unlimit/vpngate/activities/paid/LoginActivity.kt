@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, { isLoggingIn ->
+        userViewModel!!.isLoading.observe(this) { isLoggingIn ->
             if (!isClickedLogin) {
                 return@observe
             }
@@ -71,28 +71,35 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 isClickedLogin = false
                 loadingDialog?.dismiss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
-                    val errorMsg: String
-                    if (userViewModel!!.errorList.value!!.get("code") == 101) {
-                        errorMsg = getString(R.string.please_activate_account_first)
-                    } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
-                        if (userViewModel!!.errorList.value!!.has("bannedReason")) {
-                            errorMsg = getString(R.string.account_is_banned, userViewModel!!.errorList.value!!.get("bannedReason"))
+                    val errorMsg: String =
+                        if (userViewModel!!.errorList.value!!.get("code") == 101) {
+                            getString(R.string.please_activate_account_first)
+                        } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
+                            if (userViewModel!!.errorList.value!!.has("bannedReason")) {
+                                getString(
+                                    R.string.account_is_banned,
+                                    userViewModel!!.errorList.value!!.get("bannedReason")
+                                )
+                            } else {
+                                getString(R.string.account_is_banned_no_reason)
+                            }
                         } else {
-                            errorMsg = getString(R.string.account_is_banned_no_reason)
+                            getString(R.string.login_failed)
                         }
-                    } else {
-                        errorMsg = getString(R.string.login_failed)
-                    }
                     Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
                     val params = Bundle()
                     params.putString("username", txtUsername!!.text.toString())
                     params.putString("errorMsg", errorMsg)
                     FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Failed", params)
                 } else {
-                    paidServerUtil.setStringSetting(PaidServerUtil.SAVED_VPN_PW, txtPassword!!.text.toString())
+                    paidServerUtil.setStringSetting(
+                        PaidServerUtil.SAVED_VPN_PW,
+                        txtPassword!!.text.toString()
+                    )
                     val params = Bundle()
                     params.putString("username", txtUsername!!.text.toString())
-                    FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Success", params)
+                    FirebaseAnalytics.getInstance(this)
+                        .logEvent("Paid_Server_Login_Success", params)
                     // Go to paid home screen
                     val paidIntent = Intent(this, PaidServerActivity::class.java)
                     paidIntent.putExtra(BaseProvider.FROM_LOGIN, true)
@@ -100,7 +107,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 }
             }
-        })
+        }
     }
 
     override fun onResume() {
@@ -115,7 +122,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             btnBackToFree -> backToFree()
             btnLogin -> {
                 if (txtUsername!!.text.isEmpty() || txtPassword!!.text.isEmpty()) {
-                    Toast.makeText(this, R.string.username_and_password_is_required, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        R.string.username_and_password_is_required,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return
                 }
                 isClickedLogin = true

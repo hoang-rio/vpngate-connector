@@ -17,7 +17,8 @@ import vn.unlimit.vpngate.adapter.OnScrollListener
 import vn.unlimit.vpngate.adapter.PurchaseHistoryAdapter
 import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 
-class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnScrollListener {
+class PurchaseHistoryFragment : Fragment(), View.OnClickListener,
+    SwipeRefreshLayout.OnRefreshListener, OnScrollListener {
     private var ivBack: ImageView? = null
     private var lnLoading: View? = null
     private var lnNoPurchase: View? = null
@@ -27,8 +28,10 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
     private var isInitListingPurchase = false
     private var purchaseHistoryAdapter: PurchaseHistoryAdapter? = null
     private var progressLoadMore: ProgressBar? = null
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_purchase_history, container, false)
     }
 
@@ -51,7 +54,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
 
     private fun bindViewModel() {
         purchaseViewModal = ViewModelProvider(this).get(PurchaseViewModel::class.java)
-        purchaseViewModal?.isLoading?.observe(viewLifecycleOwner, { isLoading ->
+        purchaseViewModal?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (!isInitListingPurchase) {
                 return@observe
             }
@@ -61,8 +64,8 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
             } else {
                 swipeRefreshLayout?.isRefreshing = false
             }
-        })
-        purchaseViewModal?.purchaseList?.observe(viewLifecycleOwner, { purchaseList ->
+        }
+        purchaseViewModal?.purchaseList?.observe(viewLifecycleOwner) { purchaseList ->
             progressLoadMore?.visibility = View.GONE
             if (purchaseList.size > 0) {
                 lnNoPurchase?.visibility = View.GONE
@@ -72,7 +75,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener, SwipeRefreshLa
                 swipeRefreshLayout?.visibility = View.GONE
                 lnNoPurchase?.visibility = View.VISIBLE
             }
-        })
+        }
         isInitListingPurchase = true
         purchaseViewModal?.listPurchase(true)
     }

@@ -22,7 +22,8 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.*
 import java.util.regex.Pattern
 
-class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
+class SignUpActivity : AppCompatActivity(), View.OnClickListener,
+    DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
     private var btnSignUp: Button? = null
     private var btnLogin: Button? = null
     private var txtUserName: EditText? = null
@@ -68,7 +69,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         timeZonesDisplay = resources.getStringArray(R.array.list_time_zone_display)
         timeZonesValue = resources.getStringArray(R.array.list_time_zone_value)
         // Create the adapter and set it to the AutoCompleteTextView
-        ArrayAdapter(this, android.R.layout.simple_list_item_1, timeZonesDisplay!!).also { adapter ->
+        ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            timeZonesDisplay!!
+        ).also { adapter ->
             txtTimeZone!!.setAdapter(adapter)
         }
         txtTimeZone!!.onFocusChangeListener = this
@@ -77,7 +82,13 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         txtCaptchaAnswer = findViewById(R.id.txt_captcha_answer)
         ivCaptcha = findViewById(R.id.iv_captcha)
         ivCaptcha!!.setOnClickListener(this)
-        datePickerDialog = DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE))
+        datePickerDialog = DatePickerDialog(
+            this,
+            this,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DATE)
+        )
         txtUserName!!.requestFocus()
         loadingDialog = LoadingDialog.newInstance()
         bindViewModel()
@@ -85,13 +96,13 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel!!.isLoading.observe(this, { isLoading ->
+        userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
-        })
+        }
     }
 
     private fun buildErrorList(): String {
@@ -100,21 +111,36 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         Log.d(TAG, errorList.toString())
         if (errorList!!.has("username")) {
             when (errorList.getInt("username")) {
-                100 -> errorMessage = errorMessage + getString(R.string.validate_field_exist_in_system, getString(R.string.prompt_user)) + "\n"
-                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_user)) + "\n"
+                100 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_exist_in_system,
+                    getString(R.string.prompt_user)
+                ) + "\n"
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_user)
+                ) + "\n"
                 108 -> errorMessage = errorMessage + getString(R.string.invalid_username) + "\n"
             }
         }
         if (errorList.has("email")) {
             when (errorList.getInt("email")) {
-                100 -> errorMessage = errorMessage + getString(R.string.validate_field_exist_in_system, getString(R.string.prompt_email)) + "\n"
-                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_email)) + "\n"
+                100 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_exist_in_system,
+                    getString(R.string.prompt_email)
+                ) + "\n"
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_email)
+                ) + "\n"
                 108 -> errorMessage = errorMessage + getString(R.string.email_is_invalid) + "\n"
             }
         }
         if (errorList.has("password")) {
             when (errorList.get("password")) {
-                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_password)) + "\n"
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_password)
+                ) + "\n"
                 108 -> errorMessage = errorMessage + getString(R.string.password_is_invalid) + "\n"
             }
         }
@@ -125,8 +151,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         }
         if (errorList.has("repassword")) {
             when (errorList.get("repassword")) {
-                107 -> errorMessage = errorMessage + getString(R.string.validate_field_cannot_empty, getString(R.string.prompt_retype_password)) + "\n"
-                109 -> errorMessage = errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_retype_password)
+                ) + "\n"
+                109 -> errorMessage =
+                    errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
             }
         }
         return errorMessage
@@ -149,7 +179,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
             }
 
             override fun onError(error: String?) {
-                Toast.makeText(this@SignUpActivity, getString(R.string.error_get_captcha), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@SignUpActivity,
+                    getString(R.string.error_get_captcha),
+                    Toast.LENGTH_SHORT
+                ).show()
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -168,7 +202,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
         return super.onSupportNavigateUp()
     }
 
-    private fun checkDigit(number: Int): String? {
+    private fun checkDigit(number: Int): String {
         return if (number <= 9) "0$number" else number.toString()
     }
 
@@ -180,7 +214,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
     private fun checkEmptyField(editText: EditText?, fieldPromptResId: Int) {
         if (editText!!.text.isEmpty()) {
             editText.requestFocus()
-            throw Exception(getString(R.string.validate_field_cannot_empty, getString(fieldPromptResId)))
+            throw Exception(
+                getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(fieldPromptResId)
+                )
+            )
         }
     }
 
@@ -235,13 +274,15 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
                 }
                 isPressedSignup = false
                 if (isRegisterSuccess) {
-                    Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_LONG)
+                        .show()
                     val intentLogin = Intent(this, LoginActivity::class.java)
                     startActivity(intentLogin)
                     finish()
                 } else if (!userViewModel!!.isLoading.value!!) {
                     val alertDialog: AlertDialog = AlertDialog.Builder(this)
-                            .setPositiveButton(android.R.string.ok) { dialogInterface, _ -> dialogInterface?.dismiss() }.create()
+                        .setPositiveButton(android.R.string.ok) { dialogInterface, _ -> dialogInterface?.dismiss() }
+                        .create()
                     alertDialog.setTitle(getString(R.string.register_failed_title))
                     alertDialog.setMessage(buildErrorList())
                     alertDialog.show()
@@ -249,15 +290,15 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, DatePickerDial
             })
             isPressedSignup = true
             userViewModel!!.register(
-                    txtUserName!!.text.toString(),
-                    txtFullName!!.text.toString(),
-                    txtEmail!!.text.toString(),
-                    txtPassword!!.text.toString(),
-                    txtRetypePassword!!.text.toString(),
-                    txtBirthday!!.text.toString(),
-                    txtTimeZone!!.text.toString(),
-                    txtCaptchaAnswer!!.text.toString().toInt(),
-                    captchaSecret!!
+                txtUserName!!.text.toString(),
+                txtFullName!!.text.toString(),
+                txtEmail!!.text.toString(),
+                txtPassword!!.text.toString(),
+                txtRetypePassword!!.text.toString(),
+                txtBirthday!!.text.toString(),
+                txtTimeZone!!.text.toString(),
+                txtCaptchaAnswer!!.text.toString().toInt(),
+                captchaSecret!!
             )
         } catch (th: Throwable) {
             if (th.message != null) {

@@ -26,6 +26,19 @@
         android:textColor="@color/colorWhite"
         android:textSize="20sp" />
 
+    <ImageView
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:id="@+id/iv_logout"
+        android:layout_alignRight="@id/text_home"
+        android:textAllCaps="false"
+        android:layout_marginTop="8dp"
+        android:src="@android:drawable/ic_lock_power_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/text_home" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/ln_swipe_refresh"
         android:layout_width="match_parent"

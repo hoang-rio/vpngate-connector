@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.paidserver.ChangePassFragment">
+
+    <RelativeLayout
+        android:id="@+id/nav_detail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPaidServer"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_back_white"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:id="@+id/ln_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/txt_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/personal_change_password"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:theme="@style/label" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/txt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_password"
+                android:imeActionLabel="@string/action_sign_in"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"/>
+            <EditText
+                android:id="@+id/txt_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_new_password"
+                android:imeActionLabel="@string/action_save"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"
+                android:layout_marginTop="10dp" />
+            <EditText
+                android:id="@+id/txt_re_new_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_re_new_password"
+                android:backgroundTint="@color/colorPaidServer"
+                android:hint="@string/prompt_re_new_password"
+                android:imeActionLabel="@string/action_save"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                tools:targetApi="lollipop"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/btn_save"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_primary_button"
+                android:text="@string/action_save"
+                android:textSize="18sp"
+                android:theme="@style/AppTheme.Button" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
