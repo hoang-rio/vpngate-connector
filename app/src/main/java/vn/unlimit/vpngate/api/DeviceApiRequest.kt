@@ -17,7 +17,7 @@ class DeviceApiRequest : BaseApiRequest() {
         val data = HashMap<String, Any>()
         data["fcmPushId"] = fcmPushId
         data["sessionId"] = sessionId
-        data["platform"] = PARAMS_USER_FLAT_FORM
+        data["platform"] = PARAMS_USER_PLATFORM
         val notificationSetting = HashMap<String, Boolean>()
         notificationSetting["ticket"] = true
         notificationSetting["data"] = true
@@ -70,6 +70,7 @@ class DeviceApiRequest : BaseApiRequest() {
     ) {
         val data = HashMap<String, Any>()
         data["data"] = isEnableNotification
+        data["ticket"] = true
         post(
             DEVICE_NOTIFICATION_SETTING.format(deviceId),
             data,

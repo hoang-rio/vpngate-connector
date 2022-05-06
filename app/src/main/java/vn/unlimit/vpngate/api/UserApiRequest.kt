@@ -116,7 +116,7 @@ class UserApiRequest : BaseApiRequest() {
         user["timezone"] = timeZone
         user["password"] = password
         user["repassword"] = repassword
-        user["userPlatform"] = PARAMS_USER_FLAT_FORM
+        user["userPlatform"] = PARAMS_USER_PLATFORM
         user["language"] = Locale.getDefault().language
         val captcha = HashMap<String, String>()
         captcha["answer"] = captchaAnswer.toString()
