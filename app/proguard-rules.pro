@@ -41,6 +41,8 @@
 -keep class vn.unlimit.vpngate.models.PurchaseHistory {*;}
 -keep class vn.unlimit.vpngate.models.ConnectedSession {*;}
 -keep class vn.unlimit.vpngate.models.ConnectedSession$* {*;}
+-keep class vn.unlimit.vpngate.models.DeviceInfo {*;}
+-keep class vn.unlimit.vpngate.models.DeviceInfo$NotificationSetting {*;}
 # for DexGuard only
 # -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 # Crashlytics

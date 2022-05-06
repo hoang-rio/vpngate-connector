@@ -23,8 +23,8 @@ class PurchaseApiRequest : BaseApiRequest() {
         val purchaseInfo = HashMap<String, Any>()
         purchaseInfo["packageId"] = purchase.sku
         purchaseInfo["purchaseId"] = purchase.orderId
-        purchaseInfo["platform"] = PARAMS_USER_FLAT_FORM
-        purchaseInfo["paymentMethod"] = PARAMS_USER_FLAT_FORM + "_IAP"
+        purchaseInfo["platform"] = PARAMS_USER_PLATFORM
+        purchaseInfo["paymentMethod"] = PARAMS_USER_PLATFORM + "_IAP"
         purchaseInfo["currency"] = skuDetails.priceCurrencyCode
         purchaseInfo["currencyPrice"] = skuDetails.priceAmountMicros.toDouble() / 1000000
         post(

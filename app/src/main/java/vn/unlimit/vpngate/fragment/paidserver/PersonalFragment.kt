@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.common.base.Strings
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.viewmodels.DeviceViewModel
 
 class PersonalFragment : Fragment(), View.OnClickListener {

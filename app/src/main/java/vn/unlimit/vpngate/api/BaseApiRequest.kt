@@ -18,7 +18,7 @@ open class BaseApiRequest {
     companion object {
         val jsonHeaders = HashMap<String, String>().put("Content-Type", "application/json")
         const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
-        const val PARAMS_USER_FLAT_FORM = "Android"
+        const val PARAMS_USER_PLATFORM = "Android"
     }
 
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
