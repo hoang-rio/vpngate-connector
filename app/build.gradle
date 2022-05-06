@@ -123,7 +123,6 @@ dependencies {
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt 'androidx.lifecycle:lifecycle-compiler:2.4.1'
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.3.0'
     implementation 'com.google.ads.mediation:applovin:11.3.3.0'
@@ -131,12 +130,12 @@ dependencies {
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
 //    }
-    def lifecycle_version = "2.0.0"
+    def lifecycle_version = "2.4.1"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     //noinspection GradleDependency
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     //noinspection LifecycleAnnotationProcessorWithJava8
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
