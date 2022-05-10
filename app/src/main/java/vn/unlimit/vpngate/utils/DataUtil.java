@@ -222,7 +222,11 @@ public class DataUtil {
             if (jsonString == null) {
                 return null;
             }
-            return gson.fromJson(jsonString, VPNGateConnection.class);
+            VPNGateConnection vpnGateConnection = gson.fromJson(jsonString, VPNGateConnection.class);
+            if (vpnGateConnection.getHostName() == null) {
+                return null;
+            }
+            return  vpnGateConnection;
         } catch (Exception e) {
             e.printStackTrace();
         }
