@@ -7,11 +7,11 @@ repositories {
     mavenCentral()
 }
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion '32.0.0'
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdkVersion 32
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -48,7 +48,7 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 75
+            versionCode 76
             versionName "1.7.6-dev"
         }
     }
