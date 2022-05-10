@@ -41,7 +41,7 @@ android {
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
             versionCode 83
-            versionName "1.8.3-dev"
+            versionName "1.8.3"
         }
 
         pro {
@@ -49,7 +49,7 @@ android {
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
             versionCode 76
-            versionName "1.7.6-dev"
+            versionName "1.7.6"
         }
     }
 
