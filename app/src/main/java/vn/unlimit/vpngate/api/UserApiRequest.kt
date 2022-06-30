@@ -23,6 +23,7 @@ class UserApiRequest : BaseApiRequest() {
         const val ACTIVATE_USER = "/user/%s/activate/%s"
         const val USER_CHANGE_PASS = "/user/password/change"
         const val USER_PROFILE = "/user/profile"
+        const val DELETE_ACCOUNT = "/user/delete"
     }
 
     fun login(username: String, password: String, requestListener: RequestListener) {
@@ -254,6 +255,20 @@ class UserApiRequest : BaseApiRequest() {
 
             override fun onError(anError: ANError?) {
                 Log.e(TAG, "Update profile error with message %s".format(anError!!.errorBody))
+                requestListener.onError(anError.errorBody)
+            }
+        })
+    }
+
+    fun deleteAccount(requestListener: RequestListener) {
+        delete(DELETE_ACCOUNT, object: JSONObjectRequestListener {
+            override fun onResponse(response: JSONObject?) {
+                Log.d(TAG, "Delete account success with response %s".format(response))
+                requestListener.onSuccess(response)
+            }
+
+            override fun onError(anError: ANError?) {
+                Log.e(TAG, "Delete account failed with message %s".format(anError!!.errorBody))
                 requestListener.onError(anError.errorBody)
             }
         })

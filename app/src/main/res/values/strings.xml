@@ -327,6 +327,10 @@
     <string name="personal_notification_setting">Notification setting</string>
     <string name="personal_profile">Profile</string>
     <string name="personal_change_password">Change password</string>
+    <string name="delete_account_dialog_title">Confirm delete account</string>
+    <string name="delete_account_description">Are you sure to want to delete your account?\nPlease notice that this action cannot be undone</string>
+    <string name="account_deleted">Account deleted!</string>
+    <string name="account_delete_failed">Account delete failed!</string>
     <!-- Notification setting -->
     <string name="receive_notification">Receive push notification on this device</string>
     <string name="notification_setting_hint">We will send notification when your account is out of remaining data or user info changed</string>

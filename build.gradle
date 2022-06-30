@@ -22,10 +22,10 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        //noinspection JcenterRepositoryObsolete
         jcenter() {
             content {
                 includeModule("com.amitshekhar.android", "android-networking")
-                includeModule("com.pixplicity.sharp", "library")
             }
         }
     }
