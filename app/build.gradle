@@ -87,7 +87,7 @@ android {
 ext.glideVersion = '4.12.0'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -109,8 +109,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
     implementation 'androidx.annotation:annotation:1.4.0'
     implementation "com.pixplicity.sharp:sharp:1.1.3@aar"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
@@ -124,9 +124,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation "androidx.core:core-ktx:1.8.0"
-    def billing_version = "3.0.3"
-    //noinspection GradleDependency
-    implementation "com.android.billingclient:billing:$billing_version"
+    def billing_version = "4.1.0"
     //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -134,7 +132,7 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation 'com.google.ads.mediation:applovin:11.4.3.0'
+    implementation 'com.google.ads.mediation:applovin:11.4.4.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
@@ -143,7 +141,7 @@ dependencies {
     //noinspection GradleDependency
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
     //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt "androidx.lifecycle:lifecycle-compiler:2.4.1"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.5.1"
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
