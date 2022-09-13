@@ -111,7 +111,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this)
                 adView = AdView(applicationContext)
-                adView!!.adSize = AdSize.LARGE_BANNER
+                adView!!.setAdSize(AdSize.LARGE_BANNER)
                 adView!!.adUnitId = resources.getString(R.string.admob_banner_bottom_l2tp)
                 adView!!.adListener = object : AdListener() {
                     override fun onAdFailedToLoad(errorCode: LoadAdError) {

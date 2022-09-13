@@ -8,9 +8,9 @@ repositories {
 }
 android {
     compileSdkVersion 32
-    buildToolsVersion '32.0.0'
+    buildToolsVersion '33.0.0'
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 32
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 83
-            versionName "1.8.3"
+            versionCode 84
+            versionName "1.8.4-dev"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 76
-            versionName "1.7.6"
+            versionCode 77
+            versionName "1.7.7-dev"
         }
     }
 
@@ -82,19 +82,20 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    namespace 'vn.unlimit.vpngate'
 }
 ext.glideVersion = '4.12.0'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
-    implementation platform('com.google.firebase:firebase-bom:28.4.0')
+    implementation platform('com.google.firebase:firebase-bom:30.1.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
@@ -105,13 +106,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.google.guava:guava:30.1.1-android'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
-    implementation 'androidx.annotation:annotation:1.3.0'
-    implementation 'com.pixplicity.sharp:library:1.1.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
+    implementation 'androidx.annotation:annotation:1.4.0'
+    implementation "com.pixplicity.sharp:sharp:1.1.3@aar"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation('com.amitshekhar.android:android-networking:1.0.2') {
         exclude group: 'com.android.support'
@@ -122,15 +123,16 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation "androidx.core:core-ktx:1.7.0"
-    def billing_version = "3.0.3"
-    implementation "com.android.billingclient:billing:$billing_version"
+    implementation "androidx.core:core-ktx:1.8.0"
+    def billing_version = "4.1.0"
+    //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "io.grpc:grpc-okhttp:1.44.1"
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation 'com.google.ads.mediation:applovin:11.3.3.0'
+    implementation 'com.google.ads.mediation:applovin:11.4.4.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
@@ -139,7 +141,7 @@ dependencies {
     //noinspection GradleDependency
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
     //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt "androidx.lifecycle:lifecycle-compiler:2.4.1"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.5.1"
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'

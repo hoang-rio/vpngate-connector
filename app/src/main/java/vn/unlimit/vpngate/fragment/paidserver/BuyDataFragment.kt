@@ -243,24 +243,26 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         rcvSkuDetails?.visibility = View.GONE
         billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
             if (isAttached) {
-                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    lnLoading?.visibility = View.GONE
-                    rcvSkuDetails?.visibility = View.VISIBLE
-                    Collections.sort(
-                        listSkuDetails!!,
-                        Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
-                            return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
-                        })
-                    skuDetailsAdapter!!.initialize(listSkuDetails)
-                } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.get_sku_list_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    FirebaseAnalytics.getInstance(requireContext())
-                        .logEvent("Paid_Server_List_Package_Error", null)
-                    findNavController().popBackStack()
+                requireActivity().runOnUiThread {
+                    if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                        lnLoading?.visibility = View.GONE
+                        rcvSkuDetails?.visibility = View.VISIBLE
+                        Collections.sort(
+                            listSkuDetails!!,
+                            Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
+                                return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
+                            })
+                        skuDetailsAdapter!!.initialize(listSkuDetails)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.get_sku_list_error),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        FirebaseAnalytics.getInstance(requireContext())
+                            .logEvent("Paid_Server_List_Package_Error", null)
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }
@@ -309,10 +311,12 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 Log.i(
                     TAG,
                     "Purchase product %s success from Google Play. Continue with api process".format(
-                        purchase.sku
+                        purchase.skus[0]
                     )
                 )
-                purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+                requireActivity().runOnUiThread {
+                    purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+                }
             }
         }
     }

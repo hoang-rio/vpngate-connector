@@ -21,7 +21,7 @@ class PurchaseApiRequest : BaseApiRequest() {
         requestListener: RequestListener
     ) {
         val purchaseInfo = HashMap<String, Any>()
-        purchaseInfo["packageId"] = purchase.sku
+        purchaseInfo["packageId"] = purchase.skus[0]
         purchaseInfo["purchaseId"] = purchase.orderId
         purchaseInfo["platform"] = PARAMS_USER_PLATFORM
         purchaseInfo["paymentMethod"] = PARAMS_USER_PLATFORM + "_IAP"
