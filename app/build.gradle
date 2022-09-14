@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 84
-            versionName "1.8.4-dev"
+            versionCode 85
+            versionName "1.8.5-dev"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 77
-            versionName "1.7.7-dev"
+            versionCode 78
+            versionName "1.7.8-dev"
         }
     }
 
@@ -95,7 +95,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
-    implementation platform('com.google.firebase:firebase-bom:30.1.0')
+    implementation platform('com.google.firebase:firebase-bom:30.3.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
