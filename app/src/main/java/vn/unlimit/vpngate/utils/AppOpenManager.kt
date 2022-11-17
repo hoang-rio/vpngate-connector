@@ -4,9 +4,10 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event.ON_START
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -20,8 +21,7 @@ import vn.unlimit.vpngate.activities.SplashActivity
 import java.util.*
 
 
-class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks,
-    LifecycleObserver {
+class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks{
     private val LOG_TAG = "AppOpenManager"
     private var AD_UNIT_ID: String? = null
     private var appOpenAd: AppOpenAd? = null
@@ -33,6 +33,18 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     private var currentActivity: Activity? = null
 
     private var loadTime: Long = 0
+
+    private val lifeCycleEventObserver = LifecycleEventObserver { _, event ->
+        run {
+            when (event) {
+                ON_START -> {
+                    showAdIfAvailable()
+                    Log.d(LOG_TAG, "onStart")
+                }
+                else -> {}
+            }
+        }
+    }
 
 
     companion object {
@@ -46,14 +58,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
         this.myApplication = myApplication
         AD_UNIT_ID = this.myApplication?.resources!!.getString(R.string.admob_open_app)
         this.myApplication?.registerActivityLifecycleCallbacks(this)
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
-    }
-
-    /** LifecycleObserver methods  */
-    @OnLifecycleEvent(ON_START)
-    fun onStart() {
-        showAdIfAvailable()
-        Log.d(LOG_TAG, "onStart")
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifeCycleEventObserver)
     }
 
 
@@ -105,7 +110,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     }
 
     /** Utility method that checks if ad exists and can be shown.  */
-    fun isAdAvailable(): Boolean {
+    private fun isAdAvailable(): Boolean {
         return appOpenAd != null && wasLoadTimeLessThanNHoursAgo(4)
     }
 
@@ -152,7 +157,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
                         isShowingAd = true
                     }
                 }
-            appOpenAd!!.setFullScreenContentCallback(fullScreenContentCallback)
+            appOpenAd!!.fullScreenContentCallback = fullScreenContentCallback
             appOpenAd!!.show(currentActivity!!)
         } else {
             Log.d(LOG_TAG, "Can not show ad.")

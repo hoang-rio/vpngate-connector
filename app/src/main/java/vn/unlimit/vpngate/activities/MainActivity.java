@@ -448,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     currentFragment.sort(sortProperty, sortType);
                 }
             });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+            if (!isFinishing() && !isDestroyed()) {
                 sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
             } else if (!isFinishing()) {
                 sortBottomSheetDialog.show(getSupportFragmentManager(), sortBottomSheetDialog.getTag());
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     homeFragment.advanceFilter(filter);
                 }
             });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+            if (!isFinishing() && !isDestroyed()) {
                 filterBottomSheetDialog.show(getSupportFragmentManager(), filterBottomSheetDialog.getTag());
             } else if (!isFinishing()) {
                 filterBottomSheetDialog.show(getSupportFragmentManager(), filterBottomSheetDialog.getTag());

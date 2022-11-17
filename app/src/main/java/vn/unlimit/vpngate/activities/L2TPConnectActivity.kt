@@ -135,7 +135,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         if (view == ivBack) {
-            onBackPressed()
+           onBackPressedDispatcher.onBackPressed()
         }
     }
 

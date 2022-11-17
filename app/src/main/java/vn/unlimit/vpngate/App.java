@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.Task;
-import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -48,10 +47,6 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
-            // Skip app initialization.
-            return;
-        }
         super.onCreate();
         if (!BuildConfig.DEBUG) {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:

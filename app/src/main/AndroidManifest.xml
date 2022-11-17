@@ -56,7 +56,7 @@
             android:name=".activities.L2TPConnectActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
-        <!-- Start paid activites -->
+        <!-- Start paid activities -->
         <activity
             android:hardwareAccelerated="false"
             android:name=".activities.paid.LoginActivity"
@@ -67,7 +67,7 @@
             android:hardwareAccelerated="false"
             android:name=".activities.paid.SignUpActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_singup"
+            android:label="@string/title_activity_signup"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
             android:hardwareAccelerated="false"
@@ -98,7 +98,7 @@
             android:configChanges="orientation|screenSize"
             android:name=".activities.paid.ServerActivity"
             android:theme="@style/AppTheme.PaidServer"/>
-        <!-- End paid activites -->
+        <!-- End paid activities -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
