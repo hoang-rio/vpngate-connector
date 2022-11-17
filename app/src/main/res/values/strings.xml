@@ -207,7 +207,7 @@
     <string name="vpn_pw_hint">[Your password]</string>
     <!-- Login screen -->
     <string name="title_activity_login">Login to Paid Server</string>
-    <string name="title_activity_singup">Sign up new Paid Server account</string>
+    <string name="title_activity_signup">Sign up new Paid Server account</string>
     <string name="prompt_user">Username</string>
     <string name="prompt_full_name">Full name</string>
     <string name="prompt_password">Password</string>

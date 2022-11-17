@@ -107,18 +107,11 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
             object : RequestListener {
                 override fun onSuccess(result: Any?) {
                     val resJson = result as JSONObject
-                    if (resJson.getString("saved") != null) {
-                        val dInfo: DeviceInfo = paidServerUtil.gson.fromJson(
-                            resJson.getString("saved"),
-                            object : TypeToken<DeviceInfo>() {}.type
-                        )
-                        setDeviceInfo(dInfo)
-                    } else {
-                        Log.e(
-                            TAG,
-                            "Save notification of device %s failed".format(deviceInfo.value!!._id)
-                        )
-                    }
+                    val dInfo: DeviceInfo = paidServerUtil.gson.fromJson(
+                        resJson.getString("saved"),
+                        object : TypeToken<DeviceInfo>() {}.type
+                    )
+                    setDeviceInfo(dInfo)
                     isLoading.value = false
                 }
 

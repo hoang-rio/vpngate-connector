@@ -108,7 +108,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                 getString(R.string.reset_pass_token_can_not_empty),
                 Toast.LENGTH_LONG
             ).show()
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
         isCheckingToken = true
         userViewModel!!.checkResetPassToken(resetPassToken!!)

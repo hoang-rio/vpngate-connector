@@ -198,7 +198,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         return super.onSupportNavigateUp()
     }
 
@@ -310,7 +310,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onClick(v: View?) {
         when (v) {
-            btnLogin -> onBackPressed()
+            btnLogin -> onBackPressedDispatcher.onBackPressed()
             ivCaptcha -> loadCaptcha(true)
             txtBirthday -> datePickerDialog!!.show()
             btnSignUp -> handleSignUp()

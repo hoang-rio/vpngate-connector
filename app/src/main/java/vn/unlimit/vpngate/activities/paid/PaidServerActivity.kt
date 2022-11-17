@@ -119,7 +119,7 @@ class PaidServerActivity : AppCompatActivity() {
             NavHostFragment.findNavController(nav_host_fragment).currentDestination?.id
         if (currentFragmentId == R.id.navigation_home) {
             if (doubleBackToExitPressedOnce) {
-                super.onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
                 return
             }
             doubleBackToExitPressedOnce = true
@@ -130,7 +130,7 @@ class PaidServerActivity : AppCompatActivity() {
             ).show()
             Handler(mainLooper).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         } else {
-            super.onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 }

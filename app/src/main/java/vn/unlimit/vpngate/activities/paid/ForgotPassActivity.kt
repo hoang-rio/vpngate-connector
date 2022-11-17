@@ -56,7 +56,7 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         return super.onSupportNavigateUp()
     }
 

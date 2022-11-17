@@ -178,7 +178,7 @@
     <string name="vpn_pw_hint">[Mật khẩu của bạn]</string>
     <!-- Login screen -->
     <string name="title_activity_login">Đăng nhập vào máy chủ trả phí</string>
-    <string name="title_activity_singup">Đăng ký tài khoản máy chủ trả phí</string>
+    <string name="title_activity_signup">Đăng ký tài khoản máy chủ trả phí</string>
     <string name="prompt_user">Tài khoản</string>
     <string name="prompt_full_name">Họ tên</string>
     <string name="prompt_password">Mật khẩu</string>
