@@ -351,7 +351,7 @@ public class VpnProfile implements Serializable, Cloneable {
             cfg.append("management-hold\n\n");
 
             cfg.append(String.format("setenv IV_GUI_VER %s \n", openVpnEscape(getVersionEnvString(context))));
-            cfg.append("setenv IV_SSO openurl,crtext\n");
+            cfg.append("setenv IV_SSO openurl,webauth,crtext\n");
             String versionString = getPlatformVersionEnvString();
             cfg.append(String.format("setenv IV_PLAT_VER %s\n", openVpnEscape(versionString)));
         } else {
@@ -1182,7 +1182,7 @@ public class VpnProfile implements Serializable, Cloneable {
         if (TextUtils.isEmpty(mExternalAuthenticator))
             return null;
         try {
-            return ExtAuthHelper.signData(c, mExternalAuthenticator, mAlias, data);
+            return ExtAuthHelper.signData(c, mExternalAuthenticator, mAlias, data, extra);
         } catch (KeyChainException | InterruptedException e) {
             VpnStatus.logError(R.string.error_extapp_sign, mExternalAuthenticator, e.getClass().toString(), e.getLocalizedMessage());
             return null;
