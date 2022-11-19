@@ -343,8 +343,10 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
 
         // Try to set the priority available since API 16 (Jellybean)
-        jbNotificationExtras(priority, nbuilder);
-        addVpnActionsToNotification(nbuilder);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            jbNotificationExtras(priority, nbuilder);
+            addVpnActionsToNotification(nbuilder);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             lpNotificationExtras(nbuilder, Notification.CATEGORY_SERVICE);
@@ -361,7 +363,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         if (tickerText != null && !tickerText.equals(""))
             nbuilder.setTicker(tickerText);
         try {
-            Notification notification = nbuilder.build();
+            @SuppressWarnings("deprecation")
+            Notification notification = nbuilder.getNotification();
 
             int notificationId = channel.hashCode();
 
@@ -958,6 +961,11 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             builder.setUnderlyingNetworks(null);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Setting this false, will cause the VPN to inherit the underlying network metered
+            // value
+            builder.setMetered(false);
+        }
 
         String session = mProfile.mName;
         if (mLocalIP != null && mLocalIPv6 != null)
@@ -1371,7 +1379,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
 
         // Try to set the priority available since API 16 (Jellybean)
-        jbNotificationExtras(PRIORITY_MAX, nbuilder);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            jbNotificationExtras(PRIORITY_MAX, nbuilder);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             lpNotificationExtras(nbuilder, Notification.CATEGORY_STATUS);
