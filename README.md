@@ -5,7 +5,7 @@
 
 **Available in Google Play Store**
 
-<img src="https://www.homenotesapp.com/wp-content/uploads/2017/04/google-play-badge.png" style="width: 300px;">
+<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="width: 300px;">
 
 
 Free Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngate
