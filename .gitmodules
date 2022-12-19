@@ -1,0 +1,5 @@
+
+[submodule "sstpClient"]
+	path = sstpClient
+	url = https://github.com/hoang-rio/Open-SSTP-Client.git
+	branch = vpngate-connector
