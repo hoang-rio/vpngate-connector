@@ -21,6 +21,8 @@ build_debug_apk:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
+    - git submodule init
+    - git submodule update
     - ./gradlew assembleFreeDebug
     - cd app/build/outputs/apk/free/$DEBUG
     - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
@@ -41,6 +43,8 @@ build_release_aar:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
+    - git submodule init
+    - git submodule update
     - ./gradlew :app:bundleFreeRelease
     - cd app/build/outputs
     - cp bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
