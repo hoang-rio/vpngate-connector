@@ -102,6 +102,8 @@
     <string name="retry_connect">Thử kết nối lại</string>
     <string name="vpn_auth_failure">Lỗi xác thực</string>
     <string name="disconnect">Ngắt kết nối</string>
+    <string name="disconnect_sstp">Ngắt kết nối MS-SSTP VPN</string>
+    <string name="cancel_sstp">Huỷ kết nối MS-SSTP VPN</string>
     <string name="disconnecting">Đang ngắt kết nối…</string>
     <string name="connecting">Đang kết nối…</string>
     <string name="canceled">Đã hủy</string>
