@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VPN Gate Connector</string>
+    <string name="app_name" translatable="false">VPN Gate Connector</string>
     <string name="home" translatable="false">Home</string>
     <string name="paid_server">Paid Server</string>
     <string name="navigation_drawer_open">Open drawer</string>
