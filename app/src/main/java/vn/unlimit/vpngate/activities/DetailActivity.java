@@ -68,6 +68,7 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
+import kittoku.osc.service.SstpVpnService;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -134,6 +135,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private boolean isConnecting = false;
     private boolean isAuthFailed = false;
     private boolean isShowAds = false;
+    private boolean isSSTPConnecting = false;
+    private static String ACTION_VPN_CONNECT = "kittoku.osc.connect";
+    private static String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -141,6 +145,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    private void startVpnSSTPService(String action) {
+        Intent intent = new Intent(getApplicationContext(), SstpVpnService.class).setAction(action);
+
+        if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getApplicationContext().startForegroundService(intent);
+        } else {
+            getApplicationContext().startService(intent);
         }
     }
 
@@ -591,15 +605,32 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(l2tpIntent);
             }
             if (view.equals(btnConnectSSTP)) {
-                Bundle params = new Bundle();
-                params.putString("type", "connect via MS-SSTP");
-                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
-                params.putString("ip", mVpnGateConnection.getIp());
-                params.putString("country", mVpnGateConnection.getCountryLong());
-                FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_SSTP", params);
-                loadAds();
-                // TODO: Process connect via MS-SSTP VPN Here
-                Toast.makeText(getApplicationContext(), "Connect via SSTP pressed", Toast.LENGTH_LONG).show();
+                if (!isSSTPConnecting) {
+                    isSSTPConnecting = true;
+                    Bundle params = new Bundle();
+                    params.putString("type", "connect via MS-SSTP");
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_SSTP", params);
+                    loadAds();
+                    startVpnSSTPService(ACTION_VPN_CONNECT);
+                    btnConnectSSTP.setBackground(getResources().getDrawable(R.drawable.selector_red_button));
+                    btnConnectSSTP.setText(R.string.disconnect);
+                    txtStatus.setText(R.string.connecting);
+                } else {
+                    isSSTPConnecting = false;
+                    Bundle params = new Bundle();
+                    params.putString("type", "cancel MS-SSTP");
+                    params.putString("hostname", mVpnGateConnection.getCalculateHostName());
+                    params.putString("ip", mVpnGateConnection.getIp());
+                    params.putString("country", mVpnGateConnection.getCountryLong());
+                    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Cancel_Via_SSTP", params);
+                    startVpnSSTPService(ACTION_VPN_DISCONNECT);
+                    btnConnectSSTP.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
+                    btnConnectSSTP.setText(R.string.connect_via_sstp);
+                    txtStatus.setText(R.string.disconnecting);
+                }
             }
             if (view.equals(btnInstallOpenVpn)) {
                 try {
