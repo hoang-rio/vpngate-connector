@@ -69,6 +69,12 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/show_l2tp_server" />
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/chb_filter_sstp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/show_sstp_server" />
         </LinearLayout>
 
         <View

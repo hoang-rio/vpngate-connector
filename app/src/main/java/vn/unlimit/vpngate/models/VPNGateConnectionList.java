@@ -259,6 +259,11 @@ public class VPNGateConnectionList implements Parcelable {
             }
             if (filter.isShowL2TP && vpnGateConnection.isL2TPSupport()) {
                 dataWithFilter.add(vpnGateConnection);
+                continue;
+            }
+            if (filter.isShowSSTP && vpnGateConnection.isSSTPSupport()) {
+                dataWithFilter.add(vpnGateConnection);
+                continue;
             }
         }
         return dataWithFilter;
@@ -276,6 +281,7 @@ public class VPNGateConnectionList implements Parcelable {
         public Boolean isShowTCP = true;
         public Boolean isShowUDP = true;
         public Boolean isShowL2TP = true;
+        public Boolean isShowSSTP = true;
         public Integer ping;
         public NumberFilterOperator pingFilterOperator = NumberFilterOperator.LESS_OR_EQUAL;
         public Integer speed;

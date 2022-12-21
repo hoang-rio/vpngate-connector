@@ -12,6 +12,7 @@
     <string name="show_tcp_server">TCP Server</string>
     <string name="show_udp_server">UDP Server</string>
     <string name="show_l2tp_server">L2TP Server</string>
+    <string name="show_sstp_server">MS-SSTP Server</string>
     <string name="must_check_at_least_1_protocol">You must check at least 1 server protocol to continue</string>
     <string-array name="number_filter_operator">
         <item>equal (=)</item>
@@ -40,6 +41,7 @@
     <string name="udp_port" translatable="false">UDP</string>
     <string name="l2tp_support">L2TP Support</string>
     <string name="l2tp_supported">Yes</string>
+    <string name="sstp_support">MS-SSTP Support</string>
     <string name="days">days</string>
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
@@ -102,6 +104,7 @@
     <string name="save_config_file">Save OpenVPN config file</string>
     <string name="saved_ovpn_file_in">Saved ovpn file in %1$s. Import to OpenVPN Connect to use it</string>
     <string name="connect_via_l2tp">Connect via L2TP VPN</string>
+    <string name="connect_via_sstp">Connect via MS-SSTP VPN</string>
     <string name="connect_use_protocol">Connect use protocol:</string>
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>

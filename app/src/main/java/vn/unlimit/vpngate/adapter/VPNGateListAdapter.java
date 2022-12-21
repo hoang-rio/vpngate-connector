@@ -110,6 +110,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         View lnUDP;
         TextView txtUDP;
         View lnL2TP;
+        View lnSSTP;
 
         VHTypeVPN(View itemView) {
             super(itemView);
@@ -128,6 +129,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             lnUDP = itemView.findViewById(R.id.ln_udp);
             txtUDP = itemView.findViewById(R.id.txt_udp_port);
             lnL2TP = itemView.findViewById(R.id.ln_l2tp);
+            lnSSTP = itemView.findViewById(R.id.ln_sstp);
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
         }
@@ -164,6 +166,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     txtUDP.setText(String.valueOf(vpnGateConnection.getUdpPort()));
                 }
                 lnL2TP.setVisibility(vpnGateConnection.isL2TPSupport() ? View.VISIBLE : View.GONE);
+                lnSSTP.setVisibility(vpnGateConnection.isSSTPSupport() ? View.VISIBLE : View.GONE);
             } catch (Exception e) {
                 e.printStackTrace();
             }

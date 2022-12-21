@@ -13,6 +13,7 @@
     <string name="show_tcp_server">Máy chủ TCP</string>
     <string name="show_udp_server">Máy chủ UDP</string>
     <string name="show_l2tp_server">Máy chủ L2TP</string>
+    <string name="show_sstp_server">Máy chủ MS-SSTP</string>
     <string name="must_check_at_least_1_protocol">Bạn cần chọn ít nhất một giao thức máy chủ để tiếp tục</string>
     <string-array name="number_filter_operator">
         <item>bằng (=)</item>
@@ -38,6 +39,7 @@
     <string name="owner">Chủ sở hữu</string>
     <string name="l2tp_support">Hỗ trợ L2TP</string>
     <string name="l2tp_supported">Có</string>
+    <string name="sstp_support">Hỗ trợ MS-SSTP</string>
     <string name="days">ngày</string>
     <string name="hours">giờ</string>
     <string name="minutes">phút</string>
@@ -96,6 +98,7 @@
     <string name="save_config_file">Lưu file cấu hình OpenVPN</string>
     <string name="saved_ovpn_file_in">Đã lưu file cấu hình tại %1$s. Nhập vào OpenVPN để sử dụng</string>
     <string name="connect_via_l2tp">Kết nối qua L2TP VPN</string>
+    <string name="connect_via_sstp">Kết nối qua MS-SSTP VPN</string>
     <string name="connect_use_protocol">Kết nối sử dụng giao thức:</string>
     <string name="retry_connect">Thử kết nối lại</string>
     <string name="vpn_auth_failure">Lỗi xác thực</string>

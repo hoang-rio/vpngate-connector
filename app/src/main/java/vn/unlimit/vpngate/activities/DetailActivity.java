@@ -101,6 +101,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private View lnL2TP;
     private View getLnL2TPBtn;
     private Button btnConnectL2TP;
+    private View lnSSTP;
+    private View lnSTTPBtn;
+    private Button btnConnectSSTP;
     View linkCheckIp;
     LinearLayout lnContentDetail;
     private DataUtil dataUtil;
@@ -197,6 +200,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         getLnL2TPBtn = findViewById(R.id.ln_l2tp_btn);
         btnConnectL2TP = findViewById(R.id.btn_l2tp_connect);
         btnConnectL2TP.setOnClickListener(this);
+        lnSSTP = findViewById(R.id.ln_sstp);
+        lnSTTPBtn = findViewById(R.id.ln_sstp_btn);
+        btnConnectSSTP = findViewById(R.id.btn_sstp_connect);
+        btnConnectSSTP.setOnClickListener(this);
         txtNetStats = findViewById(R.id.txt_net_stats);
         bindData();
         initAdMob();
@@ -373,6 +380,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     lnL2TP.setVisibility(View.GONE);
                     getLnL2TPBtn.setVisibility(View.GONE);
+                }
+
+                if (mVpnGateConnection.isSSTPSupport()) {
+                    lnSSTP.setVisibility(View.VISIBLE);
+                    lnSTTPBtn.setVisibility(View.VISIBLE);
+                } else {
+                    lnSSTP.setVisibility(View.GONE);
+                    lnSTTPBtn.setVisibility(View.GONE);
                 }
 
                 if (isCurrent() && checkStatus()) {
@@ -574,6 +589,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 Intent l2tpIntent = new Intent(this, L2TPConnectActivity.class);
                 l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection);
                 startActivity(l2tpIntent);
+            }
+            if (view.equals(btnConnectSSTP)) {
+                Bundle params = new Bundle();
+                params.putString("type", "connect via MS-SSTP");
+                params.putString("hostname", mVpnGateConnection.getCalculateHostName());
+                params.putString("ip", mVpnGateConnection.getIp());
+                params.putString("country", mVpnGateConnection.getCountryLong());
+                FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_SSTP", params);
+                loadAds();
+                // TODO: Process connect via MS-SSTP VPN Here
+                Toast.makeText(getApplicationContext(), "Connect via SSTP pressed", Toast.LENGTH_LONG).show();
             }
             if (view.equals(btnInstallOpenVpn)) {
                 try {

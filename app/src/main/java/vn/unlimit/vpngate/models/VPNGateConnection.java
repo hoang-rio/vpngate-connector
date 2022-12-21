@@ -45,6 +45,7 @@ public class VPNGateConnection implements Parcelable {
     private int tcpPort;
     private int udpPort;
     private int isL2TPSupport;
+    private int isSSTPSupport;
 
     private VPNGateConnection(Parcel in) {
         hostName = in.readString();
@@ -65,6 +66,7 @@ public class VPNGateConnection implements Parcelable {
         tcpPort = in.readInt();
         udpPort = in.readInt();
         isL2TPSupport = in.readInt();
+        isSSTPSupport = in.readInt();
     }
 
     //Empty constructor
@@ -98,10 +100,14 @@ public class VPNGateConnection implements Parcelable {
                 if (properties.length > index + 1) {
                     vpnGateConnection.isL2TPSupport = Integer.parseInt(properties[++index]);
                 }
+                if (properties.length > index + 1) {
+                    vpnGateConnection.isSSTPSupport = Integer.parseInt(properties[++index]);
+                }
             } else {
                 vpnGateConnection.tcpPort = 0;
                 vpnGateConnection.udpPort = 0;
                 vpnGateConnection.isL2TPSupport = 0;
+                vpnGateConnection.isSSTPSupport = 0;
             }
             return vpnGateConnection;
         } catch (Exception e) {
@@ -128,6 +134,7 @@ public class VPNGateConnection implements Parcelable {
         out.writeInt(tcpPort);
         out.writeInt(udpPort);
         out.writeInt(isL2TPSupport);
+        out.writeInt(isSSTPSupport);
     }
 
     private String decodeBase64(String base64str) {
@@ -380,4 +387,7 @@ public class VPNGateConnection implements Parcelable {
         return isL2TPSupport == 1;
     }
 
+    public  boolean isSSTPSupport() {
+        return isSSTPSupport == 1;
+    }
 }
