@@ -109,10 +109,15 @@
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>
     <string name="connecting">Connecting…</string>
+    <string name="sstp_connecting">Connecting MS-SSTP…</string>
     <string name="disconnect">Disconnect</string>
     <string name="disconnect_sstp">Disconnect MS-SSTP VPN</string>
     <string name="cancel_sstp">Cancel MS-SSTP VPN</string>
     <string name="disconnecting">Disconnecting…</string>
+    <string name="sstp_disconnecting">Disconnecting MS-SSTP…</string>
+    <string name="sstp_disconnected">Disconnected MS-SSTP</string>
+    <string name="sstp_connected">Connected MS-SSTP</string>
+    <string name="sstp_disconnected_by_error">Disconnected MS-SSTP because of error</string>
     <string name="canceled">Canceled</string>
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
