@@ -123,7 +123,7 @@
     <string name="resumevpn">Tiếp tục VPN</string>
     <string name="check_ip">Kiểm tra IP hiện tại</string>
     <string name="about_html">%1$s là ứng dụng cho phép kết nối đến các máy chủ VPN miễn phí cung cấp bởi tình nguyện viện trên khắp thế giới từ dự án nguồn mở VPN Gate. Thông tin về dự án VPN Gate có ở liên kết bên dưới.</string>
-    <string name="license_html">%1$s sử dụng một phần mã nguồn ICS OpenVPN làm thư viện. Thông tin giấy phép chi tiết ở liên kết bên dưới.</string>
+    <string name="license_html">%1$s sử dụng một phần mã nguồn ICS OpenVPN và Open SSTP Client for Android làm thư viện. Thông tin giấy phép chi tiết ở liên kết bên dưới.</string>
     <string name="version">Phiên bản:</string>
     <string name="license">Giấy phép</string>
     <string name="operator_message">Tin nhắn chủ sở hữu</string>
