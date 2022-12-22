@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.blinkt.openvpn.VpnProfile;
@@ -178,6 +179,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     btnConnectSSTP.setText(R.string.disconnect_sstp);
                     txtStatus.setText(R.string.sstp_connected);
                     isSSTPConnected = true;
+                    linkCheckIp.setVisibility(View.VISIBLE);
                 } else {
                     btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button,  null));
                     btnConnectSSTP.setText(R.string.connect_via_sstp);
@@ -187,6 +189,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         txtStatus.setText(R.string.sstp_disconnected_by_error);
                     }
                     isSSTPConnected = false;
+                    linkCheckIp.setVisibility(View.GONE);
                 }
                 isSSTPConnectOrDisconnecting = false;
             }
@@ -680,6 +683,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void connectSSTPVPN() {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(String.valueOf(OscPrefKey.HOME_HOSTNAME), mVpnGateConnection.getCalculateHostName());
+        editor.putString(String.valueOf(OscPrefKey.HOME_COUNTRY), mVpnGateConnection.getCountryShort().toUpperCase(Locale.ROOT));
         editor.putString(String.valueOf(OscPrefKey.HOME_USERNAME), "vpn");
         editor.putString(String.valueOf(OscPrefKey.HOME_PASSWORD), "vpn");
         editor.putString(String.valueOf(OscPrefKey.SSL_PORT), String.valueOf(mVpnGateConnection.getTcpPort()));

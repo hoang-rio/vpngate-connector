@@ -110,7 +110,7 @@
     <string name="sstp_connecting">Đang kết nối MS-SSTP…</string>
     <string name="sstp_disconnected">Đã ngắt kết nối MS-SSTP</string>
     <string name="sstp_connected">Đã kết nối MS-SSTP</string>
-    <string name="sstp_disconnected_by_error">Đã ngắt kết nối MS-SSTP do gặp lỗi</string>
+    <string name="sstp_disconnected_by_error">Đã ngắt kết nối MS-SSTP do gặp lỗi hoặc yếu tố bên ngoài.</string>
     <string name="canceled">Đã hủy</string>
     <string name="copy_ip">Sao chép IP vào bộ nhớ đệm</string>
     <string name="copy_hostname">Sao chép tên máy chủ vào bộ nhớ đệm</string>

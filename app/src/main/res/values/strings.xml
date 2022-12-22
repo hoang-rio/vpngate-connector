@@ -117,7 +117,7 @@
     <string name="sstp_disconnecting">Disconnecting MS-SSTP…</string>
     <string name="sstp_disconnected">Disconnected MS-SSTP</string>
     <string name="sstp_connected">Connected MS-SSTP</string>
-    <string name="sstp_disconnected_by_error">Disconnected MS-SSTP because of error</string>
+    <string name="sstp_disconnected_by_error">Disconnected MS-SSTP because of error or by outside problem</string>
     <string name="canceled">Canceled</string>
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
