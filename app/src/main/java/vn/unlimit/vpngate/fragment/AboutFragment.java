@@ -35,6 +35,8 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         TextView txtLicenseLink = rootView.findViewById(R.id.txt_github_link);
         txtLicenseLink.setText(getString(R.string.license_link));
         txtLicenseLink.setOnClickListener(this);
+        TextView txtLicenseLinkSStp = rootView.findViewById(R.id.txt_github_link_sstp);
+        txtLicenseLinkSStp.setOnClickListener(this);
         return rootView;
     }
 
