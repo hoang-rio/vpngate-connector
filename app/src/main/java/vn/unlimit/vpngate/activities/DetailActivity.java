@@ -174,13 +174,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         listener = (sharedPreferences, key) -> {
             if (String.valueOf(OscPrefKey.ROOT_STATE).equals(key)) {
                 boolean newState = prefs.getBoolean(String.valueOf(OscPrefKey.ROOT_STATE), false);
-                if (newState) {
-                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button,  null));
-                    btnConnectSSTP.setText(R.string.disconnect_sstp);
-                    txtStatus.setText(R.string.sstp_connected);
-                    isSSTPConnected = true;
-                    linkCheckIp.setVisibility(View.VISIBLE);
-                } else {
+                if (!newState) {
                     btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button,  null));
                     btnConnectSSTP.setText(R.string.connect_via_sstp);
                     if (isSSTPConnectOrDisconnecting) {
@@ -192,6 +186,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.GONE);
                 }
                 isSSTPConnectOrDisconnecting = false;
+            }
+            if (String.valueOf(OscPrefKey.HOME_CONNECTED_IP).equals(key)) {
+                String connectedIp = prefs.getString(String.valueOf(OscPrefKey.HOME_CONNECTED_IP), "");
+                if (!"".equals(connectedIp)) {
+                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button,  null));
+                    btnConnectSSTP.setText(R.string.disconnect_sstp);
+                    txtStatus.setText(getString(R.string.sstp_connected, connectedIp));
+                    isSSTPConnected = true;
+                    linkCheckIp.setVisibility(View.VISIBLE);
+                }
             }
         };
         prefs.registerOnSharedPreferenceChangeListener(listener);
@@ -339,7 +343,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         // Do nothing
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
         runOnUiThread(() -> {
@@ -349,6 +352,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 switch (status) {
                     case LEVEL_CONNECTED:
                         if (isCurrent()) {
+                            btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                             btnConnect.setText(getString(R.string.disconnect));
                             txtNetStats.setVisibility(View.VISIBLE);
                             if (isConnecting && !mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
@@ -376,7 +380,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 linkCheckIp.setVisibility(View.GONE);
                             }
                             btnConnect.setText(R.string.connect_to_this_server);
-                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                            btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_primary_button, null));
                             txtStatus.setText(R.string.disconnected);
                             txtNetStats.setVisibility(View.GONE);
                         }
@@ -389,7 +393,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
-                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                        btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.selector_primary_button, null));
                         txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                         linkCheckIp.setVisibility(View.GONE);
                         isConnecting = false;
