@@ -41,7 +41,7 @@ android {
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
             versionCode 88
-            versionName "1.8.8-dev"
+            versionName "1.8.8"
         }
 
         pro {
@@ -49,7 +49,7 @@ android {
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
             versionCode 81
-            versionName "1.8.-dev"
+            versionName "1.8.1"
         }
     }
 
@@ -66,6 +66,7 @@ android {
 //            shrinkResources true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
+            versionNameSuffix "-dev"
         }
     }
 //    dexOptions {

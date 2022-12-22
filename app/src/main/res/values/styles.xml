@@ -97,4 +97,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
+
+    <style name="AppTheme.SubHeading">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextSubPrimary</item>
+    </style>
 </resources>

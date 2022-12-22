@@ -67,7 +67,7 @@
         android:layout_marginTop="10dp"
         android:text="@string/license_html" />
     <TextView
-        style="@style/AppTheme.Heading"
+        style="@style/AppTheme.SubHeading"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:text="@string/license_link" />
     <TextView
-        style="@style/AppTheme.Heading"
+        style="@style/AppTheme.SubHeading"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

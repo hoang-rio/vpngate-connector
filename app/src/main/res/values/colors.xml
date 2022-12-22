@@ -10,6 +10,7 @@
     <color name="colorOverlay">#30a4a4a4</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorTextPrimary">#333333</color>
+    <color name="colorTextSubPrimary">#454545</color>
     <color name="colorTextSecondary">#616161</color>
     <color name="colorWhiteTransparent">#b0ffffff</color>
     <color name="colorSelected">#3c124097</color>
