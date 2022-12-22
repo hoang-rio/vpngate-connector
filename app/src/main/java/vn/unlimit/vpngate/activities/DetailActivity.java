@@ -197,9 +197,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         prefs.registerOnSharedPreferenceChangeListener(listener);
         isSSTPConnected = prefs.getBoolean(String.valueOf(OscPrefKey.ROOT_STATE), false);
         String sstpHostName = prefs.getString(String.valueOf(OscPrefKey.HOME_HOSTNAME), "");
-        if (isSSTPConnected && sstpHostName.equals(mVpnGateConnection.getCalculateHostName())) {
-            btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button,  null));
-            btnConnectSSTP.setText(R.string.disconnect_sstp);
+        if (isSSTPConnected) {
+            linkCheckIp.setVisibility(View.VISIBLE);
+            if (sstpHostName.equals(mVpnGateConnection.getCalculateHostName())){
+                btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
+                btnConnectSSTP.setText(R.string.disconnect_sstp);
+            }
         }
     }
     @Override
@@ -369,7 +372,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         break;
                     case LEVEL_NOTCONNECTED:
                         if (!isConnecting && !isAuthFailed) {
-                            linkCheckIp.setVisibility(View.GONE);
+                            if (!isSSTPConnected) {
+                                linkCheckIp.setVisibility(View.GONE);
+                            }
                             btnConnect.setText(R.string.connect_to_this_server);
                             btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
                             txtStatus.setText(R.string.disconnected);
@@ -723,6 +728,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             startVpnSSTPService(ACTION_VPN_DISCONNECT);
             params.putString("type", "replace connect via MS-SSTP");
             loadAds();
+            linkCheckIp.setVisibility(View.GONE);
             new Handler(getMainLooper()).postDelayed(this::connectSSTPVPN, 100);
         } else if (!isSSTPConnected) {
             params.putString("type", "connect via MS-SSTP");
