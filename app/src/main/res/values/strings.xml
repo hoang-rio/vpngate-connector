@@ -290,7 +290,7 @@
     <string name="action_purchase_history">Purchase history</string>
     <string name="calculating_data_size">Calculating…</string>
     <string name="status_dot" translatable="false">•</string>
-    <string name="app_author_server">App Author</string>
+    <string name="app_author_server">App\'s Author</string>
     <string name="community_server">Community</string>
     <string name="usage_chart">Usage chart</string>
     <string name="session_list">Session list</string>
