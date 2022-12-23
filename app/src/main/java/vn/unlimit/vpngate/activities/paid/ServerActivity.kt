@@ -63,11 +63,14 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var lnUDP: View? = null
     private var txtUDP: TextView? = null
     private var lnL2TP: View? = null
+    private var lnSSTP: View? = null
+    private var lnSSTPBtn: View? = null
     private var txtStatusColor: TextView? = null
     private var txtStatusText: TextView? = null
     private var txtDomain: TextView? = null
     private var txtMaxSession: TextView? = null
     private var btnL2TPConnect: Button? = null
+    private var btnSSTPConnect: Button? = null
     private var btnConnect: Button? = null
     private var txtCheckIp: TextView? = null
     private var txtStatus: TextView? = null
@@ -111,6 +114,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         lnUDP = findViewById(R.id.ln_udp)
         txtUDP = findViewById(R.id.txt_udp_port)
         lnL2TP = findViewById(R.id.ln_l2tp)
+        lnSSTP = findViewById(R.id.ln_sstp)
+        lnSSTPBtn = findViewById(R.id.ln_sstp_btn)
         txtStatusColor = findViewById(R.id.txt_status_color)
         txtStatusText = findViewById(R.id.txt_status_text)
         txtNetStats = findViewById(R.id.txt_net_stats)
@@ -118,6 +123,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         txtStatus = findViewById(R.id.txt_status)
         btnL2TPConnect = findViewById(R.id.btn_l2tp_connect)
         btnL2TPConnect?.setOnClickListener(this)
+        btnSSTPConnect = findViewById(R.id.btn_sstp_connect)
+        btnSSTPConnect?.setOnClickListener(this)
         btnConnect = findViewById(R.id.btn_connect)
         btnConnect?.setOnClickListener(this)
         txtCheckIp = findViewById(R.id.txt_check_ip)
@@ -280,6 +287,13 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             } else {
                 lnL2TP?.visibility = View.GONE
                 btnL2TPConnect?.visibility = View.GONE
+            }
+            if (mPaidServer!!.sstpSupport == 1) {
+                lnSSTP?.visibility = View.VISIBLE
+                lnSSTPBtn?.visibility = View.VISIBLE
+            } else {
+                lnSSTP?.visibility = View.GONE
+                lnSSTPBtn?.visibility = View.GONE
             }
             if (isCurrent() && checkStatus()) {
                 btnConnect?.text = resources.getString(R.string.disconnect)
@@ -459,6 +473,9 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 intentL2TP.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mPaidServer)
                 startActivity(intentL2TP)
             }
+            btnSSTPConnect -> {
+                // Process connect MS-SSTP here
+            }
             btnConnect -> connectVPNServer()
             txtCheckIp -> {
                 val params = Bundle()
@@ -497,7 +514,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         ConnectionUseProtocol.newInstance(mPaidServer) { useUdp: Boolean ->
                             this.handleImport(useUdp)
                         }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing && !isDestroyed) {
+                    if (!isFinishing && !isDestroyed) {
                         connectionUseProtocol.show(
                             supportFragmentManager,
                             ConnectionUseProtocol::class.java.name
