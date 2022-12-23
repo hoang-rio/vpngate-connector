@@ -19,9 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,12 +29,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -68,6 +66,7 @@ import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.utils.TotalTraffic;
 import kittoku.osc.preference.OscPrefKey;
+import kittoku.osc.service.SstpVpnService;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
@@ -76,7 +75,6 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
-import kittoku.osc.service.SstpVpnService;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -148,8 +146,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private boolean isShowAds = false;
     private boolean isSSTPConnectOrDisconnecting = false;
     private boolean isSSTPConnected = false;
-    private static final String ACTION_VPN_CONNECT = "kittoku.osc.connect";
-    private static final String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
+    public static final String ACTION_VPN_CONNECT = "kittoku.osc.connect";
+    public static final String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
