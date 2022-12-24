@@ -1,5 +1,8 @@
 image: hoangnd4rikkei/android-sdk:jdk11
 
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
 stages:
   - build
 
@@ -44,17 +47,13 @@ build_release_aar:
     - ./gradlew :app:bundleFreeRelease
     - cd app/build/outputs
     - cp bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
-    - cp mapping/freeRelease/mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-free-mapping.txt
     - cd $CI_PROJECT_DIR
     - ./gradlew :app:bundleProRelease
     - cd app/build/outputs
     - cp bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
-    - cp mapping/proRelease/mapping.txt $CI_PROJECT_DIR/$CI_BUILD_REF-pro-mapping.txt
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
       - ./$CI_BUILD_REF-free.aab
-      - ./$CI_BUILD_REF-free-mapping.txt
       - ./$CI_BUILD_REF-pro.aab
-      - ./$CI_BUILD_REF-pro-mapping.txt
     expire_in: 5 day

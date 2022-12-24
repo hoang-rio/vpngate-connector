@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VPN Gate Connector</string>
+    <string name="app_name" translatable="false">VPN Gate Connector</string>
     <string name="home" translatable="false">Home</string>
     <string name="paid_server">Paid Server</string>
     <string name="navigation_drawer_open">Open drawer</string>
@@ -12,6 +12,7 @@
     <string name="show_tcp_server">TCP Server</string>
     <string name="show_udp_server">UDP Server</string>
     <string name="show_l2tp_server">L2TP Server</string>
+    <string name="show_sstp_server">MS-SSTP Server</string>
     <string name="must_check_at_least_1_protocol">You must check at least 1 server protocol to continue</string>
     <string-array name="number_filter_operator">
         <item>equal (=)</item>
@@ -40,6 +41,7 @@
     <string name="udp_port" translatable="false">UDP</string>
     <string name="l2tp_support">L2TP Support</string>
     <string name="l2tp_supported">Yes</string>
+    <string name="sstp_support">MS-SSTP Support</string>
     <string name="days">days</string>
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
@@ -102,12 +104,20 @@
     <string name="save_config_file">Save OpenVPN config file</string>
     <string name="saved_ovpn_file_in">Saved ovpn file in %1$s. Import to OpenVPN Connect to use it</string>
     <string name="connect_via_l2tp">Connect via L2TP VPN</string>
+    <string name="connect_via_sstp">Connect via MS-SSTP</string>
     <string name="connect_use_protocol">Connect use protocol:</string>
     <string name="retry_connect">Retry connect</string>
     <string name="vpn_auth_failure">Auth failure</string>
     <string name="connecting">Connecting…</string>
+    <string name="sstp_connecting">Connecting MS-SSTP…</string>
     <string name="disconnect">Disconnect</string>
+    <string name="disconnect_sstp">Disconnect MS-SSTP</string>
+    <string name="cancel_sstp">Cancel MS-SSTP</string>
     <string name="disconnecting">Disconnecting…</string>
+    <string name="sstp_disconnecting">Disconnecting MS-SSTP…</string>
+    <string name="sstp_disconnected">Disconnected MS-SSTP</string>
+    <string name="sstp_connected">Connected MS-SSTP with IP: %1$s</string>
+    <string name="sstp_disconnected_by_error">Disconnected MS-SSTP because of error or by outside problem</string>
     <string name="canceled">Canceled</string>
     <string name="copy_ip">Copy IP to clipboard</string>
     <string name="copy_hostname">Copy HostName to clipboard</string>
@@ -118,10 +128,13 @@
     <string name="state_user_vpn_permission" translatable="false">Waiting for user permission to use VPN API</string>
     <string name="check_ip">Check your current public IP</string>
     <string name="about_html">%1$s is an application allow connection to free VPN server by volunteer around the world from VPN Gate open source project. More information about VPN Gate project in link bellow.</string>
-    <string name="license_html">%1$s use a part of ICS OpenVPN code as library. See full license in link bellow.</string>
+    <string name="license_html">%1$s use a part of ICS OpenVPN and Open SSTP Client for Android code as library. See full license in link bellow.</string>
     <string name="vpn_gate_link" translatable="false">http://www.vpngate.net/en/about_overview.aspx</string>
     <string name="version">Version:</string>
+    <string name="license_label" translatable="false">ICS OpenVPN</string>
     <string name="license_link" translatable="false">https://github.com/schwabe/ics-openvpn/blob/master/doc/LICENSE.txt</string>
+    <string name="license_sstp_label" translatable="false">Open SSTP Client for Android</string>
+    <string name="license_sstp_link" translatable="false">https://github.com/kittoku/Open-SSTP-Client/blob/main/LICENSE</string>
     <string name="license">License</string>
     <string name="operator_message">Operator message</string>
     <string name="hide_op_message_5time">Hide all message next 5 connect time</string>
@@ -277,7 +290,7 @@
     <string name="action_purchase_history">Purchase history</string>
     <string name="calculating_data_size">Calculating…</string>
     <string name="status_dot" translatable="false">•</string>
-    <string name="app_author_server">App Author</string>
+    <string name="app_author_server">App\'s Author</string>
     <string name="community_server">Community</string>
     <string name="usage_chart">Usage chart</string>
     <string name="session_list">Session list</string>

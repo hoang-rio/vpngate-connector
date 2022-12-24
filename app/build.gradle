@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 87
-            versionName "1.8.7"
+            versionCode 88
+            versionName "1.8.8"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 80
-            versionName "1.8.0"
+            versionCode 81
+            versionName "1.8.1"
         }
     }
 
@@ -66,6 +66,7 @@ android {
 //            shrinkResources true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
+            versionNameSuffix "-dev"
         }
     }
 //    dexOptions {
@@ -112,10 +113,12 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.5.0'
     implementation "com.pixplicity.sharp:sharp:1.1.3@aar"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation('com.amitshekhar.android:android-networking:1.0.2') {
         exclude group: 'com.android.support'
     }
     implementation project(path: ':vpnLib')
+    implementation project(path: ':sstpClient')
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation 'androidx.multidex:multidex:2.0.1'
     testImplementation 'junit:junit:4.13.2'
@@ -130,7 +133,7 @@ dependencies {
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation 'com.google.ads.mediation:applovin:11.5.4.0'
+    implementation 'com.google.ads.mediation:applovin:11.6.0.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"

@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.VpnService;
@@ -32,6 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -49,6 +52,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
+import java.util.Objects;
 
 import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConfigParser;
@@ -60,6 +65,8 @@ import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VPNLaunchHelper;
 import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.utils.TotalTraffic;
+import kittoku.osc.preference.OscPrefKey;
+import kittoku.osc.service.SstpVpnService;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
@@ -78,6 +85,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public static final int TYPE_NORMAL = 1000;
     public static final String TYPE_START = "vn.ulimit.vpngate.TYPE_START";
     public static final int START_VPN_PROFILE = 70;
+    public static final int START_VPN_SSTP = 80;
     private static final String TAG = "DetailActivity";
     private static IOpenVPNServiceInternal mVPNService;
     ImageView imgFlag;
@@ -101,6 +109,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private View lnL2TP;
     private View getLnL2TPBtn;
     private Button btnConnectL2TP;
+    private View lnSSTP;
+    private View lnSTTPBtn;
+    private Button btnConnectSSTP;
     View linkCheckIp;
     LinearLayout lnContentDetail;
     private DataUtil dataUtil;
@@ -114,6 +125,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private View btnInstallOpenVpn;
     private View btnSaveConfigFile;
     private TextView txtNetStats;
+    private SharedPreferences prefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -131,6 +144,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private boolean isConnecting = false;
     private boolean isAuthFailed = false;
     private boolean isShowAds = false;
+    private boolean isSSTPConnectOrDisconnecting = false;
+    private boolean isSSTPConnected = false;
+    public static final String ACTION_VPN_CONNECT = "kittoku.osc.connect";
+    public static final String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -141,6 +158,55 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void startVpnSSTPService(String action) {
+        Intent intent = new Intent(getApplicationContext(), SstpVpnService.class).setAction(action);
+
+        if (Objects.equals(action, ACTION_VPN_CONNECT) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getApplicationContext().startForegroundService(intent);
+        } else {
+            getApplicationContext().startService(intent);
+        }
+    }
+    private void initSSTP() {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        listener = (sharedPreferences, key) -> {
+            if (String.valueOf(OscPrefKey.ROOT_STATE).equals(key)) {
+                boolean newState = prefs.getBoolean(String.valueOf(OscPrefKey.ROOT_STATE), false);
+                if (!newState) {
+                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button,  null));
+                    btnConnectSSTP.setText(R.string.connect_via_sstp);
+                    if (isSSTPConnectOrDisconnecting) {
+                        txtStatus.setText(R.string.sstp_disconnected);
+                    } else {
+                        txtStatus.setText(R.string.sstp_disconnected_by_error);
+                    }
+                    isSSTPConnected = false;
+                    linkCheckIp.setVisibility(View.GONE);
+                }
+                isSSTPConnectOrDisconnecting = false;
+            }
+            if (String.valueOf(OscPrefKey.HOME_CONNECTED_IP).equals(key)) {
+                String connectedIp = prefs.getString(String.valueOf(OscPrefKey.HOME_CONNECTED_IP), "");
+                if (!"".equals(connectedIp)) {
+                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button,  null));
+                    btnConnectSSTP.setText(R.string.disconnect_sstp);
+                    txtStatus.setText(getString(R.string.sstp_connected, connectedIp));
+                    isSSTPConnected = true;
+                    linkCheckIp.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+        isSSTPConnected = prefs.getBoolean(String.valueOf(OscPrefKey.ROOT_STATE), false);
+        String sstpHostName = prefs.getString(String.valueOf(OscPrefKey.HOME_HOSTNAME), "");
+        if (isSSTPConnected) {
+            linkCheckIp.setVisibility(View.VISIBLE);
+            if (sstpHostName.equals(mVpnGateConnection.getCalculateHostName())){
+                btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
+                btnConnectSSTP.setText(R.string.disconnect_sstp);
+            }
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,10 +263,15 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         getLnL2TPBtn = findViewById(R.id.ln_l2tp_btn);
         btnConnectL2TP = findViewById(R.id.btn_l2tp_connect);
         btnConnectL2TP.setOnClickListener(this);
+        lnSSTP = findViewById(R.id.ln_sstp);
+        lnSTTPBtn = findViewById(R.id.ln_sstp_btn);
+        btnConnectSSTP = findViewById(R.id.btn_sstp_connect);
+        btnConnectSSTP.setOnClickListener(this);
         txtNetStats = findViewById(R.id.txt_net_stats);
         bindData();
         initAdMob();
         initInterstitialAd();
+        initSSTP();
         VpnStatus.addStateListener(this);
         VpnStatus.addByteCountListener(this);
         txtStatus.setText("");
@@ -262,6 +333,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         super.onDestroy();
         VpnStatus.removeStateListener(this);
         VpnStatus.removeByteCountListener(this);
+        prefs.unregisterOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
@@ -269,7 +341,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         // Do nothing
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus status, Intent Intent) {
         runOnUiThread(() -> {
@@ -279,11 +350,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 switch (status) {
                     case LEVEL_CONNECTED:
                         if (isCurrent()) {
+                            btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                             btnConnect.setText(getString(R.string.disconnect));
                             txtNetStats.setVisibility(View.VISIBLE);
                             if (isConnecting && !mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                                 MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                                if (!isFinishing() && !isDestroyed()) {
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
                                 } else if (!isFinishing()) {
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
@@ -302,9 +374,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         break;
                     case LEVEL_NOTCONNECTED:
                         if (!isConnecting && !isAuthFailed) {
-                            linkCheckIp.setVisibility(View.GONE);
+                            if (!isSSTPConnected) {
+                                linkCheckIp.setVisibility(View.GONE);
+                            }
                             btnConnect.setText(R.string.connect_to_this_server);
-                            btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                            btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_primary_button, null));
                             txtStatus.setText(R.string.disconnected);
                             txtNetStats.setVisibility(View.GONE);
                         }
@@ -317,7 +391,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
-                        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_primary_button));
+                        btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.selector_primary_button, null));
                         txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                         linkCheckIp.setVisibility(View.GONE);
                         isConnecting = false;
@@ -373,6 +447,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     lnL2TP.setVisibility(View.GONE);
                     getLnL2TPBtn.setVisibility(View.GONE);
+                }
+
+                if (mVpnGateConnection.isSSTPSupport()) {
+                    lnSSTP.setVisibility(View.VISIBLE);
+                    lnSTTPBtn.setVisibility(View.VISIBLE);
+                } else {
+                    lnSSTP.setVisibility(View.GONE);
+                    lnSTTPBtn.setVisibility(View.GONE);
                 }
 
                 if (isCurrent() && checkStatus()) {
@@ -468,9 +550,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private void handleConnection(final boolean useUdp) {
         loadAds();
+        if (isSSTPConnected) {
+            startVpnSSTPService(ACTION_VPN_DISCONNECT);
+        }
         if (checkStatus()) {
             stopVpn();
             Bundle params = new Bundle();
@@ -490,7 +574,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_VPN", params);
             prepareVpn(useUdp);
         }
-        btnConnect.setBackground(getResources().getDrawable(R.drawable.selector_apply_button));
+        btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_apply_button, null));
         txtStatus.setText(getString(R.string.connecting));
         isConnecting = true;
         btnConnect.setText(R.string.cancel);
@@ -532,7 +616,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             Toast.makeText(this, getString(R.string.connecting_use_protocol, protocol), Toast.LENGTH_SHORT).show();
                         } else {
                             ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleConnection);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                            if (!isFinishing() && !isDestroyed()) {
                                 connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                             } else if (!isFinishing()) {
                                 connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
@@ -575,6 +659,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection);
                 startActivity(l2tpIntent);
             }
+            if (view.equals(btnConnectSSTP)) {
+                handleSSTPBtn();
+            }
             if (view.equals(btnInstallOpenVpn)) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.openvpn.openvpn")));
@@ -585,7 +672,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (view.equals(btnSaveConfigFile)) {
                 if (mVpnGateConnection.getTcpPort() > 0 && mVpnGateConnection.getUdpPort() > 0) {
                     ConnectionUseProtocol connectionUseProtocol = ConnectionUseProtocol.newInstance(mVpnGateConnection, this::handleImport);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !isFinishing() && !isDestroyed()) {
+                    if (!isFinishing() && !isDestroyed()) {
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
                     } else if (!isFinishing()) {
                         connectionUseProtocol.show(getSupportFragmentManager(), ConnectionUseProtocol.class.getName());
@@ -598,6 +685,66 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
 
+    }
+
+    private void connectSSTPVPN() {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(String.valueOf(OscPrefKey.HOME_HOSTNAME), mVpnGateConnection.getCalculateHostName());
+        editor.putString(String.valueOf(OscPrefKey.HOME_COUNTRY), mVpnGateConnection.getCountryShort().toUpperCase(Locale.ROOT));
+        editor.putString(String.valueOf(OscPrefKey.HOME_USERNAME), "vpn");
+        editor.putString(String.valueOf(OscPrefKey.HOME_PASSWORD), "vpn");
+        editor.putString(String.valueOf(OscPrefKey.SSL_PORT), String.valueOf(mVpnGateConnection.getTcpPort()));
+        editor.apply();
+        btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_apply_button, null));
+        btnConnectSSTP.setText(R.string.cancel_sstp);
+        txtStatus.setText(R.string.sstp_connecting);
+        startVpnSSTPService(ACTION_VPN_CONNECT);
+    }
+
+    private void startSSTPVPN() {
+        if (checkStatus()) {
+            stopVpn();
+        }
+        Intent intent = VpnService.prepare(this);
+
+        if (intent != null) {
+            try {
+                startActivityForResult(intent, START_VPN_SSTP);
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG,"OS does not support VPN");
+            }
+        } else {
+            onActivityResult(START_VPN_SSTP, Activity.RESULT_OK, null);
+        }
+    }
+
+    private void handleSSTPBtn() {
+        isSSTPConnectOrDisconnecting = true;
+        Bundle params = new Bundle();
+        params.putString("hostname", mVpnGateConnection.getCalculateHostName());
+        params.putString("ip", mVpnGateConnection.getIp());
+        params.putString("country", mVpnGateConnection.getCountryLong());
+        String sstpHostName = prefs.getString(String.valueOf(OscPrefKey.HOME_HOSTNAME), "");
+        if (isSSTPConnected && !sstpHostName.equals(mVpnGateConnection.getCalculateHostName())) {
+            // Connected but not must disconnect old first
+            startVpnSSTPService(ACTION_VPN_DISCONNECT);
+            params.putString("type", "replace connect via MS-SSTP");
+            loadAds();
+            linkCheckIp.setVisibility(View.GONE);
+            new Handler(getMainLooper()).postDelayed(this::connectSSTPVPN, 100);
+        } else if (!isSSTPConnected) {
+            params.putString("type", "connect via MS-SSTP");
+            FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_SSTP", params);
+            loadAds();
+            startSSTPVPN();
+        } else {
+            params.putString("type", "cancel MS-SSTP");
+            FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Cancel_Via_SSTP", params);
+            startVpnSSTPService(ACTION_VPN_DISCONNECT);
+            btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button, null));
+            btnConnectSSTP.setText(R.string.connect_via_sstp);
+            txtStatus.setText(R.string.sstp_disconnecting);
+        }
     }
 
     private boolean isFullScreenAdLoaded = false;
@@ -735,6 +882,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == START_VPN_PROFILE) {
                     VPNLaunchHelper.startOpenVpn(vpnProfile, getBaseContext());
+                }
+                if (requestCode == START_VPN_SSTP) {
+                    connectSSTPVPN();
                 }
             }
         } catch (Exception e) {

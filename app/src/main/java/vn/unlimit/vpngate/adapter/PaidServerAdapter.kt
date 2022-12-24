@@ -84,6 +84,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private var lnUDP: View = itemView.findViewById(R.id.ln_udp)
         private var txtUDP: TextView = itemView.findViewById(R.id.txt_udp_port)
         private var lnL2TP: View = itemView.findViewById(R.id.ln_l2tp)
+        private var lnSSTP: View = itemView.findViewById(R.id.ln_sstp)
         private var txtStatusColor: TextView = itemView.findViewById(R.id.txt_status_color)
         private var txtStatusText: TextView = itemView.findViewById(R.id.txt_status_text)
         private var txtDomain: TextView = itemView.findViewById(R.id.txt_domain)
@@ -130,6 +131,11 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                     lnL2TP.visibility = VISIBLE
                 } else {
                     lnL2TP.visibility = GONE
+                }
+                lnSSTP.visibility = if (paidServer.sstpSupport == 1) {
+                    VISIBLE
+                } else {
+                    GONE
                 }
                 if (paidServer.isCommunity) {
                     txtOwner.text = mContext!!.getText(R.string.community_server)

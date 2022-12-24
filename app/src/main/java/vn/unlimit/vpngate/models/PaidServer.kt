@@ -8,6 +8,7 @@ import vn.unlimit.vpngate.utils.DataUtil
 class PaidServer(inParcel: Parcel) : Parcelable {
     var _id: String = ""
     var l2tpSupport: Int = 1
+    var sstpSupport: Int = 1
     var serverCountryCode: String = ""
     var isCommunity: Boolean = false
     var public: Int = 1
@@ -35,6 +36,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     init {
         _id = inParcel.readString()!!
         l2tpSupport = inParcel.readInt()
+        sstpSupport = inParcel.readInt()
         serverCountryCode = inParcel.readString()!!
         isCommunity = inParcel.readByte() == 1.toByte()
         public = inParcel.readInt()
@@ -57,6 +59,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     override fun writeToParcel(out: Parcel, flags: Int) {
         out.writeString(_id)
         out.writeInt(l2tpSupport)
+        out.writeInt(sstpSupport)
         out.writeString(serverCountryCode)
         out.writeByte(if (isCommunity) 1 else 0)
         out.writeInt(public)

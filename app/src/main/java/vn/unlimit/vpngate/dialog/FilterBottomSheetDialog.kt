@@ -42,6 +42,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     private var checkBoxTCP: CheckBox? = null
     private var checkBoxUDP: CheckBox? = null
     private var checkBoxL2TP: CheckBox? = null
+    private var checkBoxSSTP: CheckBox? = null
     private var spinnerPingOperator: AppCompatSpinner? = null
     private var spinnerSpeedOperator: AppCompatSpinner? = null
     private var spinnerSessionOperator: AppCompatSpinner? = null
@@ -49,7 +50,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     private var txtSpeed: EditText? = null
     private var txtSession: EditText? = null
     private val applyButtonClickListener = View.OnClickListener {
-        if (!checkBoxTCP!!.isChecked && !checkBoxUDP!!.isChecked && !checkBoxL2TP!!.isChecked) {
+        if (!checkBoxTCP!!.isChecked && !checkBoxUDP!!.isChecked && !checkBoxL2TP!!.isChecked && !checkBoxSSTP!!.isChecked) {
             Toast.makeText(
                 context,
                 resources.getString(R.string.must_check_at_least_1_protocol),
@@ -60,6 +61,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         mFilter.isShowTCP = checkBoxTCP!!.isChecked
         mFilter.isShowUDP = checkBoxUDP!!.isChecked
         mFilter.isShowL2TP = checkBoxL2TP!!.isChecked
+        mFilter.isShowSSTP = checkBoxSSTP!!.isChecked
         mFilter.ping = txtPing!!.text.toString().toIntOrNull()
         mFilter.speed = txtSpeed!!.text.toString().toIntOrNull()
         mFilter.sessionCount = txtSession!!.text.toString().toIntOrNull()
@@ -76,6 +78,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         checkBoxTCP = rootView.findViewById(R.id.chb_filter_tcp)
         checkBoxUDP = rootView.findViewById(R.id.chb_filter_udp)
         checkBoxL2TP = rootView.findViewById(R.id.chb_filter_l2tp)
+        checkBoxSSTP = rootView.findViewById(R.id.chb_filter_sstp)
         spinnerPingOperator = rootView.findViewById(R.id.spinner_ping_operator)
         spinnerSpeedOperator = rootView.findViewById(R.id.spinner_speed_operator)
         spinnerSessionOperator = rootView.findViewById(R.id.spinner_session_operator)
@@ -96,6 +99,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         mFilter.isShowTCP?.let { checkBoxTCP!!.isChecked = mFilter.isShowTCP }
         mFilter.isShowUDP?.let { checkBoxUDP!!.isChecked = mFilter.isShowUDP }
         mFilter.isShowL2TP?.let { checkBoxL2TP!!.isChecked = mFilter.isShowL2TP }
+        mFilter.isShowSSTP?.let { checkBoxSSTP!!.isChecked = mFilter.isShowSSTP }
         mFilter.ping?.let { txtPing!!.setText(it.toString()) }
         mFilter.speed?.let { txtSpeed!!.setText(it.toString()) }
         mFilter.sessionCount?.let { txtSession!!.setText(it.toString()) }

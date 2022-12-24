@@ -66,11 +66,29 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="@string/license_html" />
-
+    <TextView
+        style="@style/AppTheme.SubHeading"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/license_label" />
     <TextView
         android:id="@+id/txt_github_link"
         style="@style/AppTheme.Link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/license_link" />
+    <TextView
+        style="@style/AppTheme.SubHeading"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/license_sstp_label" />
+    <TextView
+        android:layout_marginTop="5dp"
+        android:id="@+id/txt_github_link_sstp"
+        style="@style/AppTheme.Link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/license_sstp_link" />
 </LinearLayout>

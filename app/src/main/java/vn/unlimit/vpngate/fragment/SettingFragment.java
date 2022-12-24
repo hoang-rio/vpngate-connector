@@ -2,7 +2,9 @@ package vn.unlimit.vpngate.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputFilter;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.text.DateFormat;
 
 import de.blinkt.openvpn.core.OpenVPNService;
+import kittoku.osc.preference.OscPrefKey;
 import vn.unlimit.vpngate.App;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.DetailActivity;
@@ -59,11 +62,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
     private View lnProtocol;
     private View lnNotifySpeed;
     private SwitchCompat swNotifySpeed;
+    private SharedPreferences prefs;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedState) {
         View rootView = inflater.inflate(R.layout.fragment_setting, container, false);
         dataUtil = App.getInstance().getDataUtil();
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
         AppCompatSpinner spinnerCacheTime = rootView.findViewById(R.id.spin_cache_time);
         spinnerCacheTime.setOnItemSelectedListener(this);
         btnClearCache = rootView.findViewById(R.id.btn_clear_cache);
@@ -202,6 +207,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             }
             if (Patterns.IP_ADDRESS.matcher(dnsIP).matches()) {
                 dataUtil.setStringSetting(settingKey, dnsIP);
+                if (settingKey.equals(DataUtil.CUSTOM_DNS_IP_1)) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS), dnsIP);
+                    editor.apply();
+                }
             }
         }
     }
@@ -289,6 +299,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             } else {
                 hideKeyBroad();
                 lnDnsIP.setVisibility(View.GONE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.remove(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS));
+                editor.apply();
             }
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Custom_DNS_Setting", params);
             return;
