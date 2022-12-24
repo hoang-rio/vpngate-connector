@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.models;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
@@ -388,6 +389,6 @@ public class VPNGateConnection implements Parcelable {
     }
 
     public  boolean isSSTPSupport() {
-        return isSSTPSupport == 1;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isSSTPSupport == 1;
     }
 }
