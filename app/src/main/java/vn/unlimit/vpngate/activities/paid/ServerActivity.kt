@@ -359,7 +359,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     if (!newState) {
                         btnSSTPConnect?.background = ResourcesCompat.getDrawable(
                             resources,
-                            R.drawable.selector_paid_button,
+                            R.drawable.selector_primary_button,
                             null
                         )
                         btnSSTPConnect?.setText(R.string.connect_via_sstp)
@@ -479,7 +479,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
             btnSSTPConnect!!.background = ResourcesCompat.getDrawable(
                 resources,
-                R.drawable.selector_paid_button,
+                R.drawable.selector_primary_button,
                 null
             )
             btnSSTPConnect!!.setText(R.string.connect_via_sstp)
