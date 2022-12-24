@@ -1,5 +1,7 @@
 package vn.unlimit.vpngate.models
 
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.os.Parcel
 import android.os.Parcelable
 import vn.unlimit.vpngate.App
@@ -118,5 +120,9 @@ class PaidServer(inParcel: Parcel) : Parcelable {
                 if (useUdp || tcpPort == 0) "UDP:$udpPort" else "TCP:$tcpPort"
             )
         } else String.format("Paid-%s[%s]", serverLocation, address)
+    }
+    
+    fun isSSTPSupport(): Boolean {
+        return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1;
     }
 }

@@ -325,7 +325,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 lnL2TP?.visibility = View.GONE
                 btnL2TPConnect?.visibility = View.GONE
             }
-            if (mPaidServer!!.sstpSupport == 1) {
+            if (mPaidServer!!.isSSTPSupport()) {
                 lnSSTP?.visibility = View.VISIBLE
                 lnSSTPBtn?.visibility = View.VISIBLE
             } else {
