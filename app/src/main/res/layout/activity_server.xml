@@ -338,7 +338,7 @@
                 <Button
                     android:id="@+id/btn_l2tp_connect"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
+                    android:layout_height="30dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/selector_apply_button"
                     android:text="@string/connect_via_l2tp"
