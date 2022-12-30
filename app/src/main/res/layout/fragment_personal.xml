@@ -233,7 +233,7 @@
         android:background="@drawable/selector_red_button"
         android:gravity="center"
         style="?attr/buttonBarButtonStyle"
-        android:text="Delete account"
+        android:text="@string/delete_account_btn"
         android:textAlignment="center"
         android:textColor="@color/colorWhite"
         android:textStyle="bold"

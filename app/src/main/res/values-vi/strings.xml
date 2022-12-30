@@ -305,6 +305,7 @@
     <string name="personal_notification_setting">Cài đặt thông báo</string>
     <string name="personal_profile">Hồ sơ</string>
     <string name="personal_change_password">Đổi mật khẩu</string>
+    <string name="delete_account_btn">Xoá tài khoản</string>
     <string name="delete_account_dialog_title">Xác nhận xoá tài khoản</string>
     <string name="delete_account_description">Bạn có chắc chắn muốn xoá tài khoản?\nVui lòng lưu ý hành động này không thể hoàn tác</string>
     <string name="account_deleted">Đã xoá tài khoản!</string>
