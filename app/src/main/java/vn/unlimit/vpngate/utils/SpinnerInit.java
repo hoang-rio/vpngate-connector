@@ -71,7 +71,7 @@ public class SpinnerInit {
                 }
             }
         }
-        final ArrayList<String> lst = new ArrayList<String>(Arrays.asList(array));
+        final ArrayList<String> lst = new ArrayList<>(Arrays.asList(array));
         if (dataAdapter == null) {
             dataAdapter = new ArrayAdapter<String>(mContext, R.layout.item_spinner, lst) {
 
