@@ -122,18 +122,19 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation 'androidx.multidex:multidex:2.0.1'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.5.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "androidx.core:core-ktx:1.9.0"
     def billing_version = "4.1.0"
     //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "io.grpc:grpc-okhttp:1.44.1"
+    implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 //    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation 'com.google.ads.mediation:applovin:11.6.0.0'
+    implementation 'com.google.ads.mediation:applovin:11.6.1.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"

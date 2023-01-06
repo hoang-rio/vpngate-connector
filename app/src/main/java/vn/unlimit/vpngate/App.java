@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.util.Log;
 
+import com.github.javiersantos.piracychecker.PiracyChecker;
+import com.github.javiersantos.piracychecker.enums.Display;
+import com.github.javiersantos.piracychecker.enums.InstallerID;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.Task;

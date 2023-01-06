@@ -357,4 +357,8 @@
     <!-- Profile -->
     <string name="update_profile_success">Update profile success!</string>
     <string name="update_profile_error">Update profile error. Please try again!</string>
+    <!-- Check app install source error message -->
+    <string name="install_source_error_title">Invalid install</string>
+    <string name="install_source_error_message">You are using illegal install version. Please install legal version from Play Store</string>
+    <string name="install_source_error_open_play_store">Open Play Store</string>
 </resources>
