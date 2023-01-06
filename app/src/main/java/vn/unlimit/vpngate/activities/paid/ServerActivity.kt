@@ -762,7 +762,6 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         runOnUiThread {
             try {
                 txtStatus!!.text = VpnStatus.getLastCleanLogMessage(this)
-                dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
                 when (level) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
                         if (isConnecting) {
@@ -784,10 +783,6 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         isAuthFailed = false
                         txtCheckIp?.visibility = View.VISIBLE
                     }
-                    ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT -> dataUtil.setBooleanSetting(
-                        DataUtil.USER_ALLOWED_VPN,
-                        false
-                    )
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
                         txtCheckIp?.visibility = View.GONE
                         btnConnect!!.setText(R.string.connect_to_this_server)

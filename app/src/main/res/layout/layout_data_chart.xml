@@ -33,7 +33,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:popupBackground="@color/colorLink"
+            android:popupElevation="0dp"
+            android:popupBackground="@color/colorProgressPaid"
             android:textAlignment="textEnd" />
     </LinearLayout>
 

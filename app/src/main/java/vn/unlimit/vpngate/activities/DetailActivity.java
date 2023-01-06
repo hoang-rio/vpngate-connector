@@ -346,7 +346,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         runOnUiThread(() -> {
             try {
                 txtStatus.setText(VpnStatus.getLastCleanLogMessage(this));
-                dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
                 switch (status) {
                     case LEVEL_CONNECTED:
                         if (isCurrent()) {
@@ -368,9 +367,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         isConnecting = false;
                         isAuthFailed = false;
                         linkCheckIp.setVisibility(View.VISIBLE);
-                        break;
-                    case LEVEL_WAITING_FOR_USER_INPUT:
-                        dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
                         break;
                     case LEVEL_NOTCONNECTED:
                         if (!isConnecting && !isAuthFailed) {
@@ -698,6 +694,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_apply_button, null));
         btnConnectSSTP.setText(R.string.cancel_sstp);
         txtStatus.setText(R.string.sstp_connecting);
+        loadAds();
         startVpnSSTPService(ACTION_VPN_CONNECT);
     }
 
@@ -729,13 +726,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             // Connected but not must disconnect old first
             startVpnSSTPService(ACTION_VPN_DISCONNECT);
             params.putString("type", "replace connect via MS-SSTP");
-            loadAds();
             linkCheckIp.setVisibility(View.GONE);
             new Handler(getMainLooper()).postDelayed(this::connectSSTPVPN, 100);
         } else if (!isSSTPConnected) {
             params.putString("type", "connect via MS-SSTP");
             FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Via_SSTP", params);
-            loadAds();
             startSSTPVPN();
         } else {
             params.putString("type", "cancel MS-SSTP");
@@ -758,12 +753,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                         isFullScreenAdLoaded = true;
                         mInterstitialAd = interstitialAd;
+                        Log.e(TAG, "Full screen ads loaded");
                     }
 
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError var1) {
                         isFullScreenAdLoaded = false;
                         mInterstitialAd = null;
+                        Log.e(TAG, String.format("Full screen ads failed to load %s", var1));
                     }
                 });
             } catch (Exception e) {
@@ -886,6 +883,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 if (requestCode == START_VPN_SSTP) {
                     connectSSTPVPN();
                 }
+                dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
+            } else {
+                dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
             }
         } catch (Exception e) {
             e.printStackTrace();

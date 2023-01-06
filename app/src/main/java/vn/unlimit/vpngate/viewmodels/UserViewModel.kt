@@ -6,12 +6,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.common.base.Strings
 import com.google.firebase.analytics.FirebaseAnalytics
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity

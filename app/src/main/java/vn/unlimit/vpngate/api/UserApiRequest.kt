@@ -8,7 +8,6 @@ import org.json.JSONObject
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.*
-import kotlin.collections.HashMap
 
 class UserApiRequest : BaseApiRequest() {
     companion object {

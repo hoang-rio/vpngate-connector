@@ -4,10 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
