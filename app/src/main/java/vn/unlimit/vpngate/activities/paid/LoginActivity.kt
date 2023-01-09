@@ -72,7 +72,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 loadingDialog?.dismiss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
                     val errorMsg: String =
-                        if (userViewModel!!.errorList.value!!.get("code") == 101) {
+                        if (!userViewModel!!.errorList.value!!.has("code")) {
+                            getString(R.string.login_failed)
+                        } else if (userViewModel!!.errorList.value!!.get("code") == 101) {
                             getString(R.string.please_activate_account_first)
                         } else if (userViewModel!!.errorList.value!!.get("code") == 102) {
                             if (userViewModel!!.errorList.value!!.has("bannedReason")) {
