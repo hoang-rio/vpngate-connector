@@ -24,6 +24,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.text.DateFormat;
 
@@ -282,6 +283,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Include_UDP_Setting", params);
             return;
         }
+        SharedPreferences.Editor editor = prefs.edit();
         if (switchCompat.equals(swDns)) {
             dataUtil.setBooleanSetting(DataUtil.USE_CUSTOM_DNS, isChecked);
             if (isChecked) {
@@ -296,13 +298,14 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
                 if (imm != null) {
                     imm.showSoftInput(txtDns1, InputMethodManager.SHOW_IMPLICIT);
                 }
+                editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), true);
             } else {
                 hideKeyBroad();
                 lnDnsIP.setVisibility(View.GONE);
-                SharedPreferences.Editor editor = prefs.edit();
                 editor.remove(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS));
-                editor.apply();
+                editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), false);
             }
+            editor.apply();
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Custom_DNS_Setting", params);
             return;
         }
@@ -329,6 +332,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             if (isChecked && swDns.isChecked()) {
                 swDns.setChecked(false);
             }
+            if (isChecked) {
+                editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), true);
+                editor.putString(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS),  FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key)));
+            } else {
+                editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), false);
+            }
+            editor.apply();
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Block_Ads_Setting", params);
         }
     }
