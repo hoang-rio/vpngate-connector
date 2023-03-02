@@ -9,13 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.common.base.Strings
-import kotlinx.android.synthetic.main.activity_paid_server.*
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
@@ -116,7 +114,7 @@ class PaidServerActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragmentId =
-            NavHostFragment.findNavController(nav_host_fragment).currentDestination?.id
+            findNavController(R.id.nav_host_fragment).currentDestination?.id
         if (currentFragmentId == R.id.navigation_home) {
             if (doubleBackToExitPressedOnce) {
                 onBackPressedDispatcher.onBackPressed()

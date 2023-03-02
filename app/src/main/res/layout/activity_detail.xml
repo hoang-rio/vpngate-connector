@@ -421,7 +421,7 @@
                         android:text=" : " />
 
                     <TextView
-                        android:id="@+id/txt_l2tp_support"
+                        android:id="@+id/txt_sstp_support"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/l2tp_supported" />

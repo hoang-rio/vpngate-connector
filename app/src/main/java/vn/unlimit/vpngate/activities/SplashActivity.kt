@@ -27,6 +27,7 @@ import vn.unlimit.vpngate.activities.paid.ActivateActivity
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.activities.paid.ResetPassActivity
+import vn.unlimit.vpngate.databinding.ActivitySplashBinding
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.utils.AppOpenManager
 import vn.unlimit.vpngate.utils.PaidServerUtil
@@ -48,7 +49,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+        setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
         AppOpenManager.splashActivity = this
         if (!BuildConfig.DEBUG) {
             PiracyChecker(this)

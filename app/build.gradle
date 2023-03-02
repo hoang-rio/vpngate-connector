@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 // Add the Firebase Crashlytics plugin.
 apply plugin: 'kotlin-kapt'
 repositories {
@@ -40,16 +39,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 89
-            versionName "1.8.9"
+            versionCode 90
+            versionName "1.9.0"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 82
-            versionName "1.8.2"
+            versionCode 83
+            versionName "1.8.3"
         }
     }
 
@@ -84,15 +83,18 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     namespace 'vn.unlimit.vpngate'
+    buildFeatures {
+        viewBinding true
+    }
 }
 ext.glideVersion = '4.12.0'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'androidx.browser:browser:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.browser:browser:1.5.0'
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'com.google.android.material:material:1.8.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
@@ -110,7 +112,7 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation 'androidx.annotation:annotation:1.6.0'
     implementation "com.pixplicity.sharp:sharp:1.1.3@aar"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
@@ -133,8 +135,9 @@ dependencies {
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-//    implementation 'com.google.android.gms:play-services-ads:20.3.0'
-    implementation 'com.google.ads.mediation:applovin:11.6.1.0'
+    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    // Remove applovin because it can login to check why
+//    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
