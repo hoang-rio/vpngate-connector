@@ -89,14 +89,13 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
         }
         val request = getAdRequest()
         AppOpenAd.load(
-            myApplication!!, AD_UNIT_ID!!, request!!,
-            AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback!!
+            myApplication!!, AD_UNIT_ID!!, request, loadCallback!!
         )
 
     }
 
     /** Creates and returns ad request.  */
-    private fun getAdRequest(): AdRequest? {
+    private fun getAdRequest(): AdRequest {
         return AdRequest.Builder().build()
     }
 
@@ -134,7 +133,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     }
 
     /** Shows the ad if one isn't already showing.  */
-    fun showAdIfAvailable() {
+    private fun showAdIfAvailable() {
         // Only show ad if there is not already an app open ad currently showing
         // and an ad is available.
         if (!isShowingAd && isAdAvailable()) {
