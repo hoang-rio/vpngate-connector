@@ -1,8 +1,8 @@
 package vn.unlimit.vpngate.api
 
 import android.util.Log
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import org.json.JSONObject
@@ -17,16 +17,16 @@ class PurchaseApiRequest : BaseApiRequest() {
 
     fun createPurchase(
         purchase: Purchase,
-        skuDetails: SkuDetails,
+        productDetails: ProductDetails,
         requestListener: RequestListener
     ) {
         val purchaseInfo = HashMap<String, Any>()
-        purchaseInfo["packageId"] = purchase.skus[0]
-        purchaseInfo["purchaseId"] = purchase.orderId
+        purchaseInfo["packageId"] = purchase.products[0]
+        purchaseInfo["purchaseId"] = purchase.orderId!!
         purchaseInfo["platform"] = PARAMS_USER_PLATFORM
         purchaseInfo["paymentMethod"] = PARAMS_USER_PLATFORM + "_IAP"
-        purchaseInfo["currency"] = skuDetails.priceCurrencyCode
-        purchaseInfo["currencyPrice"] = skuDetails.priceAmountMicros.toDouble() / 1000000
+        purchaseInfo["currency"] = productDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode!!
+        purchaseInfo["currencyPrice"] = productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros!!.toDouble() / 1000000
         post(
             "$USER_CREATE_PURCHASE_URL${if (isPro) "?version=pro" else ""}",
             purchaseInfo,

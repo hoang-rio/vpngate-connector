@@ -127,7 +127,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "androidx.core:core-ktx:1.10.1"
-    def billing_version = "4.1.0"
+    def billing_version = "6.0.0"
     //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
