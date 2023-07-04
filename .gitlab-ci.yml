@@ -26,16 +26,16 @@ build_debug_apk:
     - GPG=gpg2 blackbox_postdeploy
     - ./gradlew assembleFreeDebug
     - cd app/build/outputs/apk/free/$DEBUG
-    - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-free-debug.apk
+    - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free-debug.apk
     - cd $CI_PROJECT_DIR
     - ./gradlew assembleProDebug
     - cd app/build/outputs/apk/pro/$DEBUG
-    - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_BUILD_REF-pro-debug.apk
+    - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro-debug.apk
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_BUILD_REF-free-debug.apk
-      - ./$CI_BUILD_REF-pro-debug.apk
+      - ./$CI_COMMIT_SHA-free-debug.apk
+      - ./$CI_COMMIT_SHA-pro-debug.apk
     expire_in: 5 day
 build_release_aar:
   stage: build
@@ -46,14 +46,14 @@ build_release_aar:
     - GPG=gpg2 blackbox_postdeploy
     - ./gradlew :app:bundleFreeRelease
     - cd app/build/outputs
-    - cp bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-free.aab
+    - cp bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.aab
     - cd $CI_PROJECT_DIR
     - ./gradlew :app:bundleProRelease
     - cd app/build/outputs
-    - cp bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_BUILD_REF-pro.aab
+    - cp bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.aab
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_BUILD_REF-free.aab
-      - ./$CI_BUILD_REF-pro.aab
+      - ./$CI_COMMIT_SHA-free.aab
+      - ./$CI_COMMIT_SHA-pro.aab
     expire_in: 5 day

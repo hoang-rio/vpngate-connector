@@ -49,3 +49,6 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
