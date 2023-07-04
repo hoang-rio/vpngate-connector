@@ -1,4 +1,4 @@
-image: hoangnd4rikkei/android-sdk:jdk11
+image: hoangnd4rikkei/android-sdk:jdk17
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal

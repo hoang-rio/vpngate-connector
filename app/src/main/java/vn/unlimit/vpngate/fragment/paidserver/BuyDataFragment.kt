@@ -44,7 +44,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var txtDataSize: TextView? = null
     private var isBillingDisconnected = false
     private var userViewModel: UserViewModel? = null
-    private var buyingSkuDetails: SkuDetails? = null
+    private var buyingProductDetails: ProductDetails? = null
     private var isClickedBuyData = false
     private var isAttached = false
     private var loadingDialog: LoadingDialog? = null
@@ -166,12 +166,12 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 loadingDialog!!.dismiss()
                 if (userViewModel?.errorCode == null) {
                     // Create purchase complete
-                    Log.i(TAG, "Purchase product %s complete".format(buyingSkuDetails?.sku))
+                    Log.i(TAG, "Purchase product %s complete".format(buyingProductDetails?.productId))
                     // Force fetch user to update data size
                     userViewModel?.fetchUser(forceFetch = true)
                     Toast.makeText(
                         context,
-                        getString(R.string.purchase_successful, buyingSkuDetails?.title),
+                        getString(R.string.purchase_successful, buyingProductDetails?.title),
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
@@ -186,7 +186,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                         "username",
                         paidServerUtil.getUserInfo()?.getString("username")
                     )
-                    params.putString("packageId", buyingSkuDetails?.sku)
+                    params.putString("packageId", buyingProductDetails?.productId)
                     params.putString("errorCode", userViewModel?.errorCode?.toString())
                     context?.let {
                         FirebaseAnalytics.getInstance(it)
@@ -195,7 +195,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                     Log.e(
                         TAG,
                         "Purchase product %s error with errorCode: %s".format(
-                            buyingSkuDetails?.sku,
+                            buyingProductDetails?.productId,
                             userViewModel?.errorCode
                         )
                     )
@@ -237,22 +237,27 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     fun querySkuDetails() {
         val skuList = ArrayList<String>()
         skuList.addAll(listSkus!!)
-        val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+        val productList = ArrayList<QueryProductDetailsParams.Product>()
+        listSkus?.forEach { productList.add(QueryProductDetailsParams.Product.newBuilder()
+            .setProductId(it)
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+        )}
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         lnLoading?.visibility = View.VISIBLE
         rcvSkuDetails?.visibility = View.GONE
-        billingClient?.querySkuDetailsAsync(params.build()) { result, listSkuDetails ->
+        billingClient?.queryProductDetailsAsync(params.build()) { result, listProductDetails ->
             if (isAttached) {
                 requireActivity().runOnUiThread {
                     if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                         lnLoading?.visibility = View.GONE
                         rcvSkuDetails?.visibility = View.VISIBLE
                         Collections.sort(
-                            listSkuDetails!!,
-                            Comparator { skuDetails: SkuDetails, skuDetails1: SkuDetails ->
-                                return@Comparator skuDetails.priceAmountMicros.compareTo(skuDetails1.priceAmountMicros)
+                            listProductDetails,
+                            Comparator { productDetails: ProductDetails, productDetails1: ProductDetails ->
+                                return@Comparator productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros.compareTo(productDetails1.oneTimePurchaseOfferDetails!!.priceAmountMicros)
                             })
-                        skuDetailsAdapter!!.initialize(listSkuDetails)
+                        skuDetailsAdapter!!.initialize(listProductDetails)
                     } else {
                         Toast.makeText(
                             context,
@@ -270,14 +275,21 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
 
     override fun onItemClick(o: Any?, position: Int) {
         if (o != null) {
-            buyingSkuDetails = o as SkuDetails
-            val flowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(buyingSkuDetails!!)
-                .build()
+            buyingProductDetails = o as ProductDetails
+            val productDetailsParamsList =
+            listOf(
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setProductDetails(buyingProductDetails!!)
+                    .build()
+            )
+            val billingFlowParams =
+                BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(productDetailsParamsList)
+                    .build()
             isClickedBuyData = true
             val responseCode = billingClient?.launchBillingFlow(
                 activity as PaidServerActivity,
-                flowParams
+                billingFlowParams
             )?.responseCode
             if (responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.i(TAG, "Launch purchase flow success")
@@ -311,11 +323,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 Log.i(
                     TAG,
                     "Purchase product %s success from Google Play. Continue with api process".format(
-                        purchase.skus[0]
+                        purchase.products[0]
                     )
                 )
                 requireActivity().runOnUiThread {
-                    purchaseViewModel?.createPurchase(purchase, buyingSkuDetails!!)
+                    purchaseViewModel?.createPurchase(purchase, buyingProductDetails!!)
                 }
             }
         }

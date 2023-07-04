@@ -2,8 +2,8 @@ package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
 import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 import vn.unlimit.vpngate.api.PurchaseApiRequest
@@ -16,10 +16,10 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
     var purchaseList: MutableLiveData<ArrayList<PurchaseHistory>> = MutableLiveData(ArrayList())
     var isOutOfData = false
 
-    fun createPurchase(purchase: Purchase, skuDetails: SkuDetails) {
+    fun createPurchase(purchase: Purchase, productDetails: ProductDetails) {
         isLoading.value = true
         errorCode = null
-        purchaseApiRequest.createPurchase(purchase, skuDetails, object : RequestListener {
+        purchaseApiRequest.createPurchase(purchase, productDetails, object : RequestListener {
             override fun onSuccess(result: Any?) {
                 val resultJSon = result as JSONObject
                 if (!resultJSon.getBoolean("result")) {
