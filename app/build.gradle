@@ -92,7 +92,7 @@ dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.browser:browser:1.5.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
