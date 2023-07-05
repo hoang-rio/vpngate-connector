@@ -2,6 +2,7 @@ package vn.unlimit.vpngate.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final VPNGateConnectionList _list;
     private final LayoutInflater layoutInflater;
     private int lastPosition = 0;
+    private static final String TAG = "VPNGateListAdapter";
 
     public VPNGateListAdapter(Context context) {
         mContext = context;
@@ -168,6 +170,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 lnL2TP.setVisibility(vpnGateConnection.isL2TPSupport() ? View.VISIBLE : View.GONE);
                 lnSSTP.setVisibility(vpnGateConnection.isSSTPSupport() ? View.VISIBLE : View.GONE);
             } catch (Exception e) {
+                Log.e(TAG, "bindViewHolder error", e);
                 e.printStackTrace();
             }
         }

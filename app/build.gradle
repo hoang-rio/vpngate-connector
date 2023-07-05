@@ -130,7 +130,6 @@ dependencies {
     //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'io.grpc:grpc-okhttp:1.56.1'
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
