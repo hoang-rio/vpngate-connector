@@ -39,6 +39,7 @@ import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
+import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.*
 import java.util.regex.Pattern
@@ -548,6 +549,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 if (requestCode == DetailActivity.START_VPN_SSTP) {
                     connectSSTPVPN()
                 }
+                NotificationUtil(this).requestPermission()
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
