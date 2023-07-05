@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.Task;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -103,7 +105,8 @@ public class DataUtil {
             } else {
                 FileInputStream fileInputStream = new FileInputStream(inFile);
                 JsonReader reader = new JsonReader(new InputStreamReader(fileInputStream));
-                Cache cache = gson.fromJson(reader, Cache.class);
+                Type cacheType = new TypeToken<Cache>(){}.getType();
+                Cache cache = gson.fromJson(reader, cacheType);
                 if (cache.isExpires()) {
                     reader.close();
                     return null;
