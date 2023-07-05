@@ -16,7 +16,7 @@ import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.SplashActivity
-import java.util.*
+import java.util.Date
 
 
 class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks{

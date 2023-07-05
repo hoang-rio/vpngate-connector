@@ -14,7 +14,7 @@ import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
-import java.util.*
+import java.util.Calendar
 
 
 class UserViewModel(application: Application) : BaseViewModel(application) {

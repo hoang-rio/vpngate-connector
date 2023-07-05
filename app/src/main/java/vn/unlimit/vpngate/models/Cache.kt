@@ -1,7 +1,7 @@
 package vn.unlimit.vpngate.models
 
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Date
 
 /**
  * Created by hoangnd on 1/17/2018.

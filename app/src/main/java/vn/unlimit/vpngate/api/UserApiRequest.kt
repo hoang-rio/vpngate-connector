@@ -7,7 +7,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import org.json.JSONObject
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
-import java.util.*
+import java.util.Locale
 
 class UserApiRequest : BaseApiRequest() {
     companion object {
