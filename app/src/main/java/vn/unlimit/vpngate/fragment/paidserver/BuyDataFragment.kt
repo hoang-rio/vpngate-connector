@@ -15,7 +15,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.GsonBuilder
@@ -30,7 +38,7 @@ import vn.unlimit.vpngate.adapter.SkuDetailsAdapter
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
-import java.util.*
+import java.util.Collections
 
 class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var btnBack: ImageView? = null

@@ -1,20 +1,19 @@
 package vn.unlimit.vpngate.fragment
 
-import android.widget.EditText
-import android.widget.TextView
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.os.Bundle
-import vn.unlimit.vpngate.R
-import android.text.TextWatcher
-import android.text.Editable
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import java.lang.Exception
+import vn.unlimit.vpngate.R
 
 /**
  * Created by hoangnd on 2/6/2018.

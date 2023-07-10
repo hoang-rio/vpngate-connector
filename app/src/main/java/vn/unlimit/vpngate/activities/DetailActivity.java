@@ -75,6 +75,7 @@ import vn.unlimit.vpngate.dialog.MessageDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.provider.BaseProvider;
 import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.utils.NotificationUtil;
 
 /**
  * Created by hoangnd on 2/5/2018.
@@ -883,6 +884,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 if (requestCode == START_VPN_SSTP) {
                     connectSSTPVPN();
                 }
+                new NotificationUtil(this).requestPermission();
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true);
             } else {
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);

@@ -18,6 +18,7 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.provider.BaseProvider
+import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.DeviceViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
@@ -90,6 +91,8 @@ class PaidServerActivity : AppCompatActivity() {
         isFromLogin = intent.getBooleanExtra(BaseProvider.FROM_LOGIN, false)
         if (!isFromLogin) {
             userViewModel!!.fetchUser(true, this, true)
+        } else {
+            NotificationUtil(this).requestPermission()
         }
         if (isFromLogin || deviceViewModel?.deviceInfo?.value == null || Strings.isNullOrEmpty(
                 deviceViewModel?.deviceInfo?.value?._id

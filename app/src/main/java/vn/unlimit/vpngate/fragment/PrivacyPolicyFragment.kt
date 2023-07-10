@@ -1,19 +1,18 @@
 package vn.unlimit.vpngate.fragment
 
-import android.webkit.WebView
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import vn.unlimit.vpngate.R
-import android.widget.Toast
+import android.view.ViewGroup
+import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.lang.Exception
 
 class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
     private var btnAccept: View? = null
