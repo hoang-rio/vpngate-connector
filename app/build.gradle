@@ -133,13 +133,14 @@ dependencies {
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:22.1.0'
+    implementation 'com.google.android.gms:play-services-ads:22.2.0'
     // Remove applovin because it can login to check why
 //    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation
 //    implementation ('com.google.ads.mediation:facebook:6.5.1.1') {
 //        exclude group: "com.google.android.gms"
 //    }
+    implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     //noinspection GradleDependency
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'

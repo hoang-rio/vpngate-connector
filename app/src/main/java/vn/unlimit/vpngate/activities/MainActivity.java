@@ -37,6 +37,11 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.ump.ConsentDebugSettings;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
@@ -44,8 +49,10 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.paid.LoginActivity;
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity;
@@ -96,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private boolean disallowLoadHome = false;
     private AdView adView;
     private boolean isInFront = false;
+    private ConsentInformation consentInformation;
+    private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
     private PaidServerUtil paidServerUtil;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -180,16 +189,73 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        initAdMob();
+
+        checkUMP();
+        if (consentInformation != null) {
+            if(consentInformation.canRequestAds()) {
+                initAdMob();
+            }
+            if (BuildConfig.DEBUG) {
+                consentInformation.reset();
+            }
+        }
     }
 
     private void checkStatusMenu() {
         navigationView.getMenu().findItem(R.id.nav_status).setVisible(dataUtil.getLastVPNConnection() != null);
     }
 
+    private void checkUMP() {
+        if (!dataUtil.hasAds()) {
+            return;
+        }
+        ConsentDebugSettings debugSettings = new ConsentDebugSettings.Builder(this)
+                .addTestDeviceHashedId("D12B3256896F10E888460D16F7005BDC")
+                .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+                .build();
+        // Set tag for under age of consent. false means users are not under age
+        // of consent.
+        ConsentRequestParameters params = new ConsentRequestParameters
+                .Builder()
+                .setConsentDebugSettings(debugSettings)
+                .setTagForUnderAgeOfConsent(false)
+                .build();
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                () -> {
+                    UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                            this,
+                            (ConsentForm.OnConsentFormDismissedListener) loadAndShowError -> {
+                                if (loadAndShowError != null) {
+                                    // Consent gathering failed.
+                                    Log.w(TAG, String.format("%s: %s",
+                                            loadAndShowError.getErrorCode(),
+                                            loadAndShowError.getMessage()));
+                                }
+                                if (consentInformation.canRequestAds()) {
+                                    initAdMob();
+                                }
+                            }
+                    );
+
+                },
+                requestConsentError -> {
+                    // Consent gathering failed.
+                    Log.w(TAG, String.format("%s: %s",
+                            requestConsentError.getErrorCode(),
+                            requestConsentError.getMessage()));
+                });
+    }
+
     private void initAdMob() {
         try {
             if (dataUtil.hasAds()) {
+                if (isMobileAdsInitializeCalled.getAndSet(true)) {
+                    return;
+                }
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.LARGE_BANNER);
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
