@@ -254,16 +254,16 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     }
 
     private boolean loadVpnProfile() {
-        boolean useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false);
-        byte[] data;
-        if (useUdp) {
-            data = mVpnGateConnection.getOpenVpnConfigDataUdp().getBytes();
-        } else {
-            data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
-        }
-        ConfigParser cp = new ConfigParser();
-        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
         try {
+            boolean useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false);
+            byte[] data;
+            if (useUdp) {
+                data = mVpnGateConnection.getOpenVpnConfigDataUdp().getBytes();
+            } else {
+                data = mVpnGateConnection.getOpenVpnConfigData().getBytes();
+            }
+            ConfigParser cp = new ConfigParser();
+            InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(data));
             cp.parseConfig(isr);
             vpnProfile = cp.convertProfile();
             vpnProfile.mName = getConnectionName();

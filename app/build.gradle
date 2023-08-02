@@ -1,13 +1,13 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-// Add the Firebase Crashlytics plugin.
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-kapt'
+    id 'kotlin-android'
+}
 repositories {
     mavenCentral()
 }
 android {
-    compileSdkVersion project.ext.compileSdkVersion
-    buildToolsVersion project.ext.buildToolsVersion
+    compileSdk project.ext.compileSdkVersion
     defaultConfig {
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
@@ -33,7 +33,7 @@ android {
             keyPassword String.valueOf(System.getenv("SIGN_KEY_PASSWORD"))
         }
     }
-    flavorDimensions "tier"
+    flavorDimensions = ["tier"]
     productFlavors {
         free {
             dimension "tier"
@@ -87,7 +87,7 @@ android {
         viewBinding true
     }
 }
-ext.glideVersion = '4.12.0'
+ext.glideVersion = '4.14.2'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
