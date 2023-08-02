@@ -37,6 +37,11 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.ump.ConsentDebugSettings;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
@@ -44,8 +49,10 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import vn.unlimit.vpngate.App;
+import vn.unlimit.vpngate.BuildConfig;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.activities.paid.LoginActivity;
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity;
@@ -96,21 +103,20 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private boolean disallowLoadHome = false;
     private AdView adView;
     private boolean isInFront = false;
+    private ConsentInformation consentInformation;
+    private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
     private PaidServerUtil paidServerUtil;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (Objects.requireNonNull(intent.getAction())) {
-                case BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE:
+                case BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE -> {
                     if (isInFront) {
                         initState();
                     }
-                    break;
-
-                case BaseProvider.ACTION.ACTION_CLEAR_CACHE:
-                    setVpnGateConnectionList(null);
-                    break;
-                case BaseProvider.ACTION.ACTION_CONNECT_VPN:
+                }
+                case BaseProvider.ACTION.ACTION_CLEAR_CACHE -> setVpnGateConnectionList(null);
+                case BaseProvider.ACTION.ACTION_CONNECT_VPN -> {
                     if (dataUtil != null && dataUtil.getLastVPNConnection() != null) {
                         try {
                             navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
@@ -118,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                             e.printStackTrace();
                         }
                     }
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
         }
     };
@@ -180,16 +186,74 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        initAdMob();
+
+        checkUMP();
+        if (consentInformation != null) {
+            if(consentInformation.canRequestAds()) {
+                initAdMob();
+            }
+            if (BuildConfig.DEBUG) {
+                consentInformation.reset();
+            }
+        } else {
+            hideAdContainer();
+        }
     }
 
     private void checkStatusMenu() {
         navigationView.getMenu().findItem(R.id.nav_status).setVisible(dataUtil.getLastVPNConnection() != null);
     }
 
+    private void checkUMP() {
+        if (!dataUtil.hasAds()) {
+            return;
+        }
+        ConsentDebugSettings debugSettings = new ConsentDebugSettings.Builder(this)
+                .addTestDeviceHashedId("5A08C90645CF1173979B5320A03D1195")
+                .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+                .build();
+        // Set tag for under age of consent. false means users are not under age
+        // of consent.
+        ConsentRequestParameters params = new ConsentRequestParameters
+                .Builder()
+                .setConsentDebugSettings(debugSettings)
+                .setTagForUnderAgeOfConsent(false)
+                .build();
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                        this,
+                        (ConsentForm.OnConsentFormDismissedListener) loadAndShowError -> {
+                            if (loadAndShowError != null) {
+                                // Consent gathering failed.
+                                Log.w(TAG, String.format("%s: %s",
+                                        loadAndShowError.getErrorCode(),
+                                        loadAndShowError.getMessage()));
+                            }
+                            if (consentInformation.canRequestAds()) {
+                                initAdMob();
+                            } else if (!isMobileAdsInitializeCalled.get()) {
+                                hideAdContainer();
+                            }
+                        }
+                ),
+                requestConsentError -> {
+                    // Consent gathering failed.
+                    Log.w(TAG, String.format("%s: %s",
+                            requestConsentError.getErrorCode(),
+                            requestConsentError.getMessage()));
+                });
+    }
+
     private void initAdMob() {
         try {
             if (dataUtil.hasAds()) {
+                if (isMobileAdsInitializeCalled.getAndSet(true)) {
+                    return;
+                }
                 adView = new AdView(getApplicationContext());
                 adView.setAdSize(AdSize.LARGE_BANNER);
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_home));
@@ -357,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         MenuItem menuSearch = menu.findItem(R.id.action_search);
         menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
+            public boolean onMenuItemActionExpand(@NonNull MenuItem item) {
                 HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                 if (currentFragment != null) {
                     currentFragment.filter("");
@@ -366,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             }
 
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
+            public boolean onMenuItemActionCollapse(@NonNull MenuItem item) {
                 HomeFragment currentFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
                 if (currentFragment != null) {
                     currentFragment.closeSearch();
@@ -377,8 +441,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         try {
             final SearchView searchView = (SearchView) menuSearch.getActionView();
             if (searchManager != null) {
+                assert searchView != null;
                 searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             }
+            assert searchView != null;
             searchView.setMaxWidth(Integer.MAX_VALUE);
             final EditText editText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
             editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -507,10 +573,10 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         selectedMenuItem = menuItem;
         disallowLoadHome = true;
         Bundle params = new Bundle();
-        params.putString("title", menuItem.getTitle().toString());
+        params.putString("title", Objects.requireNonNull(menuItem.getTitle()).toString());
         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Drawer_Select", params);
         switch (menuItem.getItemId()) {
-            case R.id.nav_get_pro:
+            case R.id.nav_get_pro -> {
                 if (dataUtil.hasAds() && dataUtil.hasProInstalled()) {
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("vn.unlimit.vpngatepro");
                     if (launchIntent != null) {
@@ -520,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 } else {
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=vn.unlimit.vpngatepro")));
-                    } catch (android.content.ActivityNotFoundException ex) {
+                    } catch (ActivityNotFoundException ex) {
                         try {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
                         } catch (ActivityNotFoundException exception) {
@@ -529,16 +595,16 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                         }
                     }
                 }
-
                 return false;
-            case R.id.nav_home:
+            }
+            case R.id.nav_home -> {
                 if (vpnGateConnectionList == null) {
                     getDataServer();
                 }
                 replaceFragment("home");
                 disallowLoadHome = false;
-                break;
-            case R.id.nav_paid_server:
+            }
+            case R.id.nav_paid_server -> {
                 if (paidServerUtil.isLoggedIn()) {
                     Intent intentPaidServer = new Intent(this, PaidServerActivity.class);
                     startActivity(intentPaidServer);
@@ -547,28 +613,28 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     Intent intentLogin = new Intent(this, LoginActivity.class);
                     startActivity(intentLogin);
                 }
-                break;
-            case R.id.nav_status:
+            }
+            case R.id.nav_status -> {
                 if (dataUtil.getLastVPNConnection() == null) {
                     Toast.makeText(getApplicationContext(), getString(R.string.connect_one_warning), Toast.LENGTH_LONG).show();
                     return false;
                 }
                 replaceFragment("status");
-                break;
-            case R.id.nav_setting:
+            }
+            case R.id.nav_setting -> {
                 replaceFragment("setting");
                 stopRequest();
-                break;
-            case R.id.nav_about:
+            }
+            case R.id.nav_about -> {
                 replaceFragment("about");
                 stopRequest();
-                break;
-            case R.id.nav_help:
+            }
+            case R.id.nav_help -> {
                 replaceFragment("help");
                 stopRequest();
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         navigationView.setCheckedItem(menuItem.getItemId());
         if (toolbar != null) {
@@ -605,38 +671,38 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 String tag = "";
                 String title = getResources().getString(R.string.app_name);
                 switch (url) {
-                    case "privacy-policy":
+                    case "privacy-policy" -> {
                         fragment = new PrivacyPolicyFragment();
                         tag = PrivacyPolicyFragment.class.getName();
                         title = getString(R.string.privacy_policy_title);
-                        break;
-                    case "home":
+                    }
+                    case "home" -> {
                         fragment = new HomeFragment();
                         tag = HomeFragment.class.getName();
-                        break;
-                    case "status":
+                    }
+                    case "status" -> {
                         fragment = new StatusFragment();
                         tag = StatusFragment.class.getName();
                         title = getResources().getString(R.string.status);
-                        break;
-                    case "setting":
+                    }
+                    case "setting" -> {
                         fragment = new SettingFragment();
                         tag = SettingFragment.class.getName();
                         title = getResources().getString(R.string.setting);
-                        break;
-                    case "help":
+                    }
+                    case "help" -> {
                         fragment = new HelpFragment();
                         tag = HelpFragment.class.getName();
                         title = getResources().getString(R.string.help);
-                        break;
-                    case "about":
+                    }
+                    case "about" -> {
                         fragment = new AboutFragment();
                         tag = AboutFragment.class.getName();
                         title = getResources().getString(R.string.about);
                         navigationView.setCheckedItem(R.id.nav_about);
-                        break;
-                    default:
-                        break;
+                    }
+                    default -> {
+                    }
                 }
                 if (fragment != null && !fragment.isAdded()) {
                     frameContent.setVisibility(View.VISIBLE);

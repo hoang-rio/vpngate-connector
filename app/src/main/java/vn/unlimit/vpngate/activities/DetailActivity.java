@@ -283,7 +283,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this);
                 adView = new AdView(getApplicationContext());
-                adView.setAdSize(AdSize.BANNER);
+                adView.setAdSize(AdSize.LARGE_BANNER);
                 adView.setAdUnitId(getResources().getString(R.string.admob_banner_bottom_detail));
                 adView.setAdListener(new AdListener() {
                     @Override
