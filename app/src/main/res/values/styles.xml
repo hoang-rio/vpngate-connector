@@ -1,20 +1,26 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="backgroundColor">@color/colorPrimary</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="bottomSheetDialogTheme">@style/Theme.Design.BottomSheetDialog</item>
     </style>
 
-    <style name="AppTheme.PaidServer" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/colorWhite</item>
+    </style>
+
+    <style name="AppTheme.PaidServer" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPaidServer</item>
         <item name="colorPrimaryDark">@color/colorPaidServer</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme.PaidServer.ProgressBar" parent="AppTheme.PaidServer">
@@ -31,7 +37,6 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
     <style name="ToolbarColoredBackArrow" parent="AppTheme">
@@ -45,7 +50,7 @@
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.DayNight" />
 
     <style name="AppTheme.Button">
         <item name="android:textColor">@color/colorWhite</item>
@@ -54,13 +59,11 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="label">
+    <style name="label" parent="Theme.AppCompat.DayNight">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
 
-    <style name="AppTheme.VPNItem">
-        <item name="android:textColor">@color/colorTextPrimary</item>
+    <style name="AppTheme.VPNItem" parent="Theme.AppCompat.DayNight">
     </style>
 
     <style name="AppTheme.BottomSheetDialog">

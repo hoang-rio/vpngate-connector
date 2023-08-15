@@ -20,8 +20,7 @@
             android:layout_weight="1"
             android:gravity="start"
             android:text="@string/session_list"
-            android:textAlignment="textStart"
-            android:textColor="@color/colorTextPrimary" />
+            android:textAlignment="textStart"/>
     </LinearLayout>
 
     <View

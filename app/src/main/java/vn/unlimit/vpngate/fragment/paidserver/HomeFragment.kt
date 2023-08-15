@@ -280,6 +280,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         dataSet.lineWidth = 2.5F
         dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.colorProgressPaid)
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.colorLink)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         dataSet.fillAlpha = 150
         dataSet.valueFormatter = ChartValueFormatter()
         dataSet.setDrawCircles(false)
@@ -290,7 +291,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lineChart?.axisLeft?.axisMinimum = 0F
         lineChart?.axisRight?.isEnabled = false
         lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
+        lineChart?.xAxis?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.axisLeft?.valueFormatter = ChartValueFormatter()
+        lineChart?.axisLeft?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.invalidate()
         lnLoadingChart?.visibility = View.GONE
     }

@@ -82,8 +82,7 @@
                             android:layout_weight="1"
                             android:gravity="start"
                             android:text="@string/remaining_data_size"
-                            android:textAlignment="textStart"
-                            android:textColor="@color/colorTextPrimary" />
+                            android:textAlignment="textStart" />
 
                         <TextView
                             android:id="@+id/txt_data_size"

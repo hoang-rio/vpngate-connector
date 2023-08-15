@@ -12,6 +12,5 @@
         android:padding="10dp"
         android:text="@string/no_network"
         android:textAlignment="center"
-        android:textColor="@color/colorTextSecondary"
         android:textSize="13sp" />
 </RelativeLayout>

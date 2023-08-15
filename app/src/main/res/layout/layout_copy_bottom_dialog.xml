@@ -48,7 +48,6 @@
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:text="@string/copy_ip"
-            android:textColor="@color/colorTextSecondary"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -75,7 +74,6 @@
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:text="@string/copy_hostname"
-            android:textColor="@color/colorTextSecondary"
             android:textSize="16sp" />
     </LinearLayout>
 </LinearLayout>
