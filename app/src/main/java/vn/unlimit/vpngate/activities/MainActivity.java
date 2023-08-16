@@ -36,11 +36,13 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.ump.ConsentDebugSettings;
 import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.FormError;
 import com.google.android.ump.UserMessagingPlatform;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -189,11 +191,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
         checkUMP();
         if (consentInformation != null) {
-            if(consentInformation.canRequestAds()) {
-                initAdMob();
-            }
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && consentInformation.getPrivacyOptionsRequirementStatus() == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED) {
                 consentInformation.reset();
+            }
+            if (consentInformation.canRequestAds()) {
+                initAdMob();
             }
         } else {
             hideAdContainer();
@@ -232,6 +234,9 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                                 Log.w(TAG, String.format("%s: %s",
                                         loadAndShowError.getErrorCode(),
                                         loadAndShowError.getMessage()));
+                                if (loadAndShowError.getErrorCode() == FormError.ErrorCode.INVALID_OPERATION) {
+                                    initAdMob();
+                                }
                             }
                             if (consentInformation.canRequestAds()) {
                                 initAdMob();
