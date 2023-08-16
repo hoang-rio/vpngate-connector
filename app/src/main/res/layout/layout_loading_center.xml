@@ -16,6 +16,5 @@
         android:padding="10dp"
         android:text="@string/loading_text"
         android:textAlignment="center"
-        android:textColor="@color/colorTextSecondary"
         android:textSize="13sp" />
 </LinearLayout>

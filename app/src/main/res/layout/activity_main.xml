@@ -17,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorPrimaryDark"
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/AppTheme"
             app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -28,8 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/ad_container_home"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/colorWhite" />
+            android:layout_marginTop="?attr/actionBarSize" />
 
         <include layout="@layout/layout_error" />
 
@@ -56,5 +55,7 @@
         app:headerLayout="@layout/header_drawer"
         app:insetForeground="#4a000000"
         app:itemBackground="@drawable/selector_drawer"
+        app:itemTextColor="@color/colorTextPrimary"
+        app:itemIconTint="@color/colorTextPrimary"
         app:menu="@menu/menu_navigation" />
 </androidx.drawerlayout.widget.DrawerLayout>

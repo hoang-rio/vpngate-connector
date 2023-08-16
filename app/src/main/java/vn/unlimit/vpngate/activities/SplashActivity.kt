@@ -146,7 +146,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    fun startStartUpActivity(delay: Long = 300) {
+    fun startStartUpActivity(delay: Long = 100) {
         if (AppOpenManager.isShowingAd) {
             return
         }

@@ -21,5 +21,8 @@
     <color name="colorPaidServerTransparent">#994EDA99</color>
     <color name="colorPaidServerDisabled">#234737</color>
     <color name="colorBuyButton">#4CAF50</color>
+    <color name="colorBuyButtonFocus">#59D55F</color>
     <color name="colorProgressPaid">#2196F3</color>
+    <color name="colorHistoryButton">#2196F3</color>
+    <color name="colorHistoryButtonFocus">#49AEFF</color>
 </resources>

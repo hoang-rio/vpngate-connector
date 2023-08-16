@@ -21,8 +21,7 @@
             android:gravity="start"
             android:layout_weight="3"
             android:text="@string/usage_chart"
-            android:textAlignment="textStart"
-            android:textColor="@color/colorTextPrimary" />
+            android:textAlignment="textStart" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spin_chart_type"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0E3277</color>
+    <color name="colorPrimaryTransparent">#961B6BFF</color>
+    <color name="colorPrimaryDark">#0F3275</color>
+    <color name="colorAccent">#AA5035</color>
+    <color name="colorRed">#850000</color>
+    <color name="colorAccentTransparent">#96fd754c</color>
+    <color name="lineColor">#bdbdbd</color>
+    <color name="colorOverlay">#30a4a4a4</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSubPrimary">#F5F5F5</color>
+    <color name="colorTextSecondary">#E3E3E3</color>
+    <color name="colorWhiteTransparent">#b0ffffff</color>
+    <color name="colorSelected">#3c124097</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorLink">#13589C</color>
+    <color name="colorPaidServer">#248758</color>
+    <color name="colorGoodStatus">#188E57</color>
+    <color name="colorPaidServerTransparent">#994EDA99</color>
+    <color name="colorPaidServerDisabled">#234737</color>
+    <color name="colorBuyButton">#3E9543</color>
+    <color name="colorBuyButtonFocus">#53C657</color>
+    <color name="colorProgressPaid">#135488</color>
+    <color name="colorHistoryButton">#115285</color>
+    <color name="colorHistoryButtonFocus">#167AC8</color>
+</resources>
