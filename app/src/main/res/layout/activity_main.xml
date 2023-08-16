@@ -55,5 +55,7 @@
         app:headerLayout="@layout/header_drawer"
         app:insetForeground="#4a000000"
         app:itemBackground="@drawable/selector_drawer"
+        app:itemTextColor="@color/colorTextPrimary"
+        app:itemIconTint="@color/colorTextPrimary"
         app:menu="@menu/menu_navigation" />
 </androidx.drawerlayout.widget.DrawerLayout>

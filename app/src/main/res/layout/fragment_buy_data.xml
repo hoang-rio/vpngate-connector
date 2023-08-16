@@ -52,7 +52,6 @@
             android:text="@string/calculating_data_size"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
     <include layout="@layout/layout_loading_paid" />

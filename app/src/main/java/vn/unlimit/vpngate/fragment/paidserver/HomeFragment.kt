@@ -287,6 +287,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         val lineData = LineData(dataSet)
         lineChart?.data = lineData
         lineChart?.description!!.isEnabled = false
+        lineChart?.legend!!.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.xAxis?.position = XAxis.XAxisPosition.BOTTOM
         lineChart?.axisLeft?.axisMinimum = 0F
         lineChart?.axisRight?.isEnabled = false

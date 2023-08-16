@@ -2,8 +2,8 @@
     android:shape="rectangle">
 
     <corners android:radius="8dp" />
-    <solid android:color="#1C9821" />
+    <solid android:color="@color/colorBuyButtonFocus" />
     <stroke
         android:width="1dip"
-        android:color="#1C9821" />
+        android:color="@color/colorBuyButtonFocus" />
 </shape>
