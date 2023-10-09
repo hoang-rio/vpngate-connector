@@ -18,7 +18,7 @@
             android:gravity="center"
             android:text="1"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorTextPrimary"
             tools:ignore="HardcodedText" />
 
         <View
@@ -34,7 +34,7 @@
             android:gravity="center"
             android:text="2GB"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorTextPrimary"
             tools:ignore="HardcodedText" />
 
         <View
@@ -50,7 +50,7 @@
             android:gravity="center"
             android:text="2.5GB"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorTextPrimary"
             tools:ignore="HardcodedText" />
 
         <View
@@ -66,7 +66,7 @@
             android:gravity="center"
             android:text="22.000VND"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorTextPrimary"
             tools:ignore="HardcodedText" />
 
         <View
@@ -83,7 +83,7 @@
             android:gravity="center"
             android:text="2020/11/17 14:16"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorTextPrimary"
             tools:ignore="HardcodedText" />
 
         <View
