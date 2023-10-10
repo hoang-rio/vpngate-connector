@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorOverlay"
-        android:paddingLeft="10dp">
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
 
         <ImageView
             android:layout_width="30dp"
@@ -55,18 +56,21 @@
                     android:id="@+id/radio_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/speed" />
 
                 <RadioButton
                     android:id="@+id/radio_session"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/session" />
 
                 <RadioButton
                     android:id="@+id/radio_country"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/country" />
 
             </RadioGroup>
@@ -81,18 +85,21 @@
                     android:id="@+id/radio_ping"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/ping" />
 
                 <RadioButton
                     android:id="@+id/radio_score"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/score_short" />
 
                 <RadioButton
                     android:id="@+id/radio_uptime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/uptime" />
             </RadioGroup>
         </LinearLayout>
@@ -126,12 +133,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/sort_asc" />
 
                 <RadioButton
                     android:id="@+id/radio_sort_type_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@drawable/checkbox_tint"
                     android:text="@string/sort_desc" />
             </RadioGroup>
         </LinearLayout>
