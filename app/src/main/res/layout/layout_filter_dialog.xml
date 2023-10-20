@@ -53,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
+                android:buttonTint="@drawable/checkbox_tint"
                 android:text="@string/show_tcp_server" />
 
             <androidx.appcompat.widget.AppCompatCheckBox
@@ -60,6 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
+                android:buttonTint="@drawable/checkbox_tint"
                 android:text="@string/show_udp_server" />
 
             <androidx.appcompat.widget.AppCompatCheckBox
@@ -67,12 +69,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
+                android:buttonTint="@drawable/checkbox_tint"
                 android:text="@string/show_l2tp_server" />
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/chb_filter_sstp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
+                android:buttonTint="@drawable/checkbox_tint"
                 android:text="@string/show_sstp_server" />
         </LinearLayout>
 
@@ -119,6 +123,7 @@
                 android:layout_weight="4"
                 android:autofillHints="@string/ping"
                 android:hint="@string/ping"
+                android:backgroundTint="@color/colorTextPrimary"
                 android:inputType="number"
                 android:paddingStart="7dp"
                 android:paddingEnd="7dp" />
@@ -166,6 +171,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="4"
                 android:autofillHints="@string/speed"
+                android:backgroundTint="@color/colorTextPrimary"
                 android:hint="@string/speed"
                 android:inputType="number"
                 android:paddingStart="7dp"
@@ -216,6 +222,7 @@
                 android:autofillHints="@string/session"
                 android:hint="@string/session"
                 android:inputType="number"
+                android:backgroundTint="@color/colorTextPrimary"
                 android:paddingStart="7dp"
                 android:paddingEnd="7dp" />
         </LinearLayout>

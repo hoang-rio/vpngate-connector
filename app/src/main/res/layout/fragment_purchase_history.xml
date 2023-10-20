@@ -93,7 +93,7 @@
                         android:padding="5dp"
                         android:text="@string/history_index"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/colorTextPrimary"
                         android:textStyle="bold" />
 
                     <View
@@ -110,7 +110,7 @@
                         android:gravity="center"
                         android:text="@string/history_data_size"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/colorTextPrimary"
                         android:textStyle="bold" />
 
                     <View
@@ -128,7 +128,7 @@
                         android:padding="3dp"
                         android:text="@string/history_data_size_receive"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/colorTextPrimary"
                         android:textStyle="bold" />
 
                     <View
@@ -145,7 +145,7 @@
                         android:gravity="center"
                         android:text="@string/history_price"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/colorTextPrimary"
                         android:textStyle="bold" />
 
                     <View
@@ -163,7 +163,7 @@
                         android:gravity="center"
                         android:text="@string/history_date_time"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/colorTextPrimary"
                         android:textStyle="bold" />
 
                     <View
