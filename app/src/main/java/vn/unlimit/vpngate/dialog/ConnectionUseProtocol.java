@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
