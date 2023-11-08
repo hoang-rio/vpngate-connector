@@ -248,6 +248,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         sendConnectVPN()
     }
 
+    @Suppress("DEPRECATION")
     private fun bindData() {
         mPaidServer = if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             paidServerUtil.getLastConnectServer()
@@ -354,7 +355,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private fun initSSTP() {
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         listener =
-            OnSharedPreferenceChangeListener { _: SharedPreferences?, key: String ->
+            OnSharedPreferenceChangeListener { _: SharedPreferences, key: String? ->
                 if (OscPrefKey.ROOT_STATE.toString() == key) {
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
@@ -370,7 +371,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             txtStatus!!.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
-                        txtCheckIp?.setVisibility(View.GONE)
+                        txtCheckIp?.visibility = View.GONE
                     }
                     isSSTPConnectOrDisconnecting = false
                 }
@@ -378,12 +379,10 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     val connectedIp =
                         prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
                     if ("" != connectedIp) {
-                        btnSSTPConnect?.setBackground(
-                            ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.selector_red_button,
-                                null
-                            )
+                        btnSSTPConnect?.background = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.selector_red_button,
+                            null
                         )
                         btnSSTPConnect?.setText(R.string.disconnect_sstp)
                         txtStatus!!.text = getString(R.string.sstp_connected, connectedIp)
@@ -439,6 +438,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun startSSTPVPN() {
         if (checkStatus()) {
             stopVpn()
@@ -539,6 +539,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         return true
     }
 
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         try {
@@ -759,7 +761,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         logmessage: String?,
         localizedResId: Int,
         level: ConnectionStatus?,
-        Intent: Intent?
+        intent: Intent?
     ) {
         runOnUiThread {
             try {

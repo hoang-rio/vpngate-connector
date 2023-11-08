@@ -25,4 +25,5 @@
     <color name="colorProgressPaid">#2196F3</color>
     <color name="colorHistoryButton">#2196F3</color>
     <color name="colorHistoryButtonFocus">#49AEFF</color>
+    <color name="background">#fafafa</color>
 </resources>

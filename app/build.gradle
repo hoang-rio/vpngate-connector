@@ -39,16 +39,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 97
-            versionName "1.9.7"
+            versionCode 98
+            versionName "1.9.8"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 90
-            versionName "1.9.0"
+            versionCode 91
+            versionName "1.9.1"
         }
     }
 
@@ -91,10 +91,10 @@ ext.glideVersion = '4.14.2'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.browser:browser:1.5.0'
+    implementation 'androidx.browser:browser:1.6.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
@@ -109,12 +109,12 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-android'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
-    implementation 'androidx.annotation:annotation:1.6.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.annotation:annotation:1.7.0'
     implementation "com.pixplicity.sharp:sharp:1.1.3@aar"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation('com.amitshekhar.android:android-networking:1.0.2') {
         exclude group: 'com.android.support'
     }
@@ -125,7 +125,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation "androidx.core:core-ktx:1.10.1"
+    implementation "androidx.core:core-ktx:1.12.0"
     def billing_version = '6.0.1'
     //noinspection GradleDependency
     implementation "com.android.billingclient:billing-ktx:$billing_version"
@@ -133,7 +133,7 @@ dependencies {
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:22.2.0'
+    implementation 'com.google.android.gms:play-services-ads:22.5.0'
     // Remove applovin because it can login to check why
 //    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation
@@ -145,7 +145,7 @@ dependencies {
     //noinspection GradleDependency
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt "androidx.lifecycle:lifecycle-compiler:2.6.1"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.6.2"
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
