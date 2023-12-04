@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -180,7 +181,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
         filter.addAction(BaseProvider.ACTION.ACTION_CLEAR_CACHE);
         filter.addAction(BaseProvider.ACTION.ACTION_CONNECT_VPN);
-        registerReceiver(broadcastReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(broadcastReceiver, filter, RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(broadcastReceiver, filter);
+        }
         try {
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
