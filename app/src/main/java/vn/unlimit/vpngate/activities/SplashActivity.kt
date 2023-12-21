@@ -19,7 +19,6 @@ import com.github.javiersantos.piracychecker.enums.PirateApp
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
@@ -167,42 +166,40 @@ class SplashActivity : AppCompatActivity() {
         }, delay)
     }
 
+    private fun redirectDeepLink(deepLink: String) {
+        val matcherActivate = Pattern.compile(ACTIVATE_URL_REGEX).matcher(deepLink)
+        if (matcherActivate.find()) {
+            val userId = matcherActivate.group(1)
+            val activateCode = matcherActivate.group(2)
+            val intentActivate = Intent(this, ActivateActivity::class.java)
+            intentActivate.putExtra(PaidServerProvider.USER_ID, userId)
+            intentActivate.putExtra(PaidServerProvider.ACTIVATE_CODE, activateCode)
+            startActivity(intentActivate)
+            finish()
+            return
+        }
+        val matcherResetPass = Pattern.compile(PASS_RESET_URL_REGEX).matcher(deepLink)
+        if (matcherResetPass.find()) {
+            val token = matcherResetPass.group(1)
+            val intentResetPass = Intent(this, ResetPassActivity::class.java)
+            intentResetPass.putExtra(PaidServerProvider.RESET_PASS_TOKEN, token)
+            startActivity(intentResetPass)
+            finish()
+            return
+        }
+        Log.d(TAG, "Deep link %s does not match any regex. Go to home".format(deepLink))
+        checkAppUpdateAndStartActivityWithDelay()
+    }
+
     private fun checkDynamicLink() {
-        FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
-            .addOnSuccessListener {
-                // Get deep link from result (may be null if no link is found)
-                if (it != null && it.link != null) {
-                    val deepLink = it.link.toString()
-                    Log.w(TAG, "Got url from dynamic link: %s".format(deepLink))
-                    val matcherActivate = Pattern.compile(ACTIVATE_URL_REGEX).matcher(deepLink)
-                    if (matcherActivate.find()) {
-                        val userId = matcherActivate.group(1)
-                        val activateCode = matcherActivate.group(2)
-                        val intentActivate = Intent(this, ActivateActivity::class.java)
-                        intentActivate.putExtra(PaidServerProvider.USER_ID, userId)
-                        intentActivate.putExtra(PaidServerProvider.ACTIVATE_CODE, activateCode)
-                        startActivity(intentActivate)
-                        finish()
-                        return@addOnSuccessListener
-                    }
-                    val matcherResetPass = Pattern.compile(PASS_RESET_URL_REGEX).matcher(deepLink)
-                    if (matcherResetPass.find()) {
-                        val token = matcherResetPass.group(1)
-                        val intentResetPass = Intent(this, ResetPassActivity::class.java)
-                        intentResetPass.putExtra(PaidServerProvider.RESET_PASS_TOKEN, token)
-                        startActivity(intentResetPass)
-                        finish()
-                        return@addOnSuccessListener
-                    }
-                    checkAppUpdateAndStartActivityWithDelay()
-                } else {
-                    Log.d(TAG, "No dynamic link found")
-                    checkAppUpdateAndStartActivityWithDelay()
-                }
-            }
-            .addOnFailureListener {
-                Log.e(TAG, "getDynamicLink:onFailure", it)
-                checkAppUpdateAndStartActivityWithDelay()
-            }
+        val action: String? = intent.action
+        var deepLink: String? = intent.data?.toString()
+        if (action?.equals("android.intent.action.VIEW") == true && deepLink != null && deepLink.contains("https://app.")) {
+            Log.d(TAG, "Got action %s with url %s".format(action, deepLink))
+            redirectDeepLink(deepLink.toString())
+            return
+        }
+        Log.d(TAG, "Start app normal because of no deeplink")
+        checkAppUpdateAndStartActivityWithDelay()
     }
 }

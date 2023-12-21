@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="link.vpngate-connector.com"
+                    android:host="app.vpngate-connector.com"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter>

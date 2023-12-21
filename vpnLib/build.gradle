@@ -22,6 +22,7 @@ android {
     namespace 'de.blinkt.openvpn'
     buildFeatures {
         aidl true
+        buildConfig true
     }
 }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -27,10 +28,10 @@ class PaidServerActivity : AppCompatActivity() {
 
     private var isFromLogin = false
     var userViewModel: UserViewModel? = null
-    var deviceViewModel: DeviceViewModel? = null
+    private var deviceViewModel: DeviceViewModel? = null
     private var doubleBackToExitPressedOnce = false
     private var isPaused = false
-    var navController: NavController? = null
+    private var navController: NavController? = null
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -65,6 +66,11 @@ class PaidServerActivity : AppCompatActivity() {
             }
         }
         supportActionBar!!.hide()
+        onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleBackPress()
+            }
+        })
     }
 
     private fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -115,7 +121,7 @@ class PaidServerActivity : AppCompatActivity() {
         isPaused = false
     }
 
-    override fun onBackPressed() {
+    fun handleBackPress() {
         val currentFragmentId =
             findNavController(R.id.nav_host_fragment).currentDestination?.id
         if (currentFragmentId == R.id.navigation_home) {
