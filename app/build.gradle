@@ -120,18 +120,15 @@ dependencies {
     }
     implementation project(path: ':vpnLib')
     implementation project(path: ':sstpClient')
-    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation 'androidx.multidex:multidex:2.0.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "androidx.core:core-ktx:1.12.0"
-    def billing_version = '6.0.1'
-    //noinspection GradleDependency
+    def billing_version = '6.1.0'
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
-    //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
     // Remove applovin because it can login to check why
