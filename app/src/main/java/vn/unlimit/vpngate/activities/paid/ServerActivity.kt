@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.VpnProfile
@@ -31,7 +32,6 @@ import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
 import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.L2TPConnectActivity
@@ -265,7 +265,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
         }
         try {
-            GlideApp.with(this)
+            Glide.with(this)
                 .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
                 .placeholder(R.color.colorOverlay)
                 .error(R.color.colorOverlay)

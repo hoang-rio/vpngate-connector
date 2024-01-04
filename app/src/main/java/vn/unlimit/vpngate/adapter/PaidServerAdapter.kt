@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
 
@@ -94,7 +94,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         fun bindViewHolder(position: Int) {
             try {
                 val paidServer: PaidServer = _list.get(getRealPosition(position))
-                GlideApp.with(mContext!!)
+                Glide.with(mContext!!)
                     .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
                     .placeholder(R.color.colorOverlay)
                     .error(R.color.colorOverlay)

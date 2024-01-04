@@ -12,8 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
@@ -139,7 +140,7 @@ public class VPNGateListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void bindViewHolder(int position) {
             try {
                 VPNGateConnection vpnGateConnection = _list.get(getRealPosition(position));
-                GlideApp.with(mContext)
+                Glide.with(mContext)
                         .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + vpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
                         .error(R.color.colorOverlay)
