@@ -8,9 +8,9 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.android.gms.ads.*
 import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.models.VPNGateConnection
@@ -57,12 +57,12 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
         txtVPNUser = findViewById(R.id.txt_vpn_user)
         txtVPNPw = findViewById(R.id.txt_vpn_pw)
         try {
-            GlideApp.with(this)
+            Glide.with(this)
                 .load(R.drawable.add_vpn_connection)
                 .placeholder(R.color.colorOverlay)
                 .error(R.color.colorOverlay)
                 .into(ivStep1!!)
-            GlideApp.with(this)
+            Glide.with(this)
                 .load(R.drawable.connected_vpn)
                 .placeholder(R.color.colorOverlay)
                 .error(R.color.colorOverlay)
@@ -81,9 +81,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 loadBannerAds()
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    window.statusBarColor = resources.getColor(R.color.colorPaidServer)
-                }
+                window.statusBarColor = resources.getColor(R.color.colorPaidServer)
                 lnNavDetail?.setBackgroundColor(resources.getColor(R.color.colorPaidServer))
                 //Hide ad banner
                 val paidServerUtil = App.getInstance().paidServerUtil

@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -20,10 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 
@@ -47,7 +46,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         BottomSheetDialog dialog =
-                new BottomSheetDialog(Objects.requireNonNull(getActivity()));
+                new BottomSheetDialog(requireActivity());
 
         dialog.setOnShowListener(dialog1 -> {
             try {
@@ -63,6 +62,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
         return dialog;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(@NotNull Dialog dialog, int style) {
         try {
@@ -71,7 +71,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
             TextView txtTitle = contentView.findViewById(R.id.txt_title);
             txtTitle.setText(mVpnGateConnection.getIp());
             ImageView imgFlag = contentView.findViewById(R.id.img_flag);
-            GlideApp.with(this)
+            Glide.with(this)
                     .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
                     .placeholder(R.color.colorOverlay)
                     .error(R.color.colorOverlay)
@@ -88,7 +88,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
     @Override
     public void onClick(View view) {
         try {
-            ClipboardManager clipboard = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = null;
             if (view.equals(btnCopyIp)) {
                 Bundle params = new Bundle();
@@ -96,7 +96,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 params.putString("ip", mVpnGateConnection.getIp());
                 params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
-                FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
+                FirebaseAnalytics.getInstance(requireActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getIp());
             } else if (view.equals(btnCopyHostName)) {
                 Bundle params = new Bundle();
@@ -104,7 +104,7 @@ public class CopyBottomSheetDialog extends BottomSheetDialogFragment implements 
                 params.putString("ip", mVpnGateConnection.getIp());
                 params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                 params.putString("country", mVpnGateConnection.getCountryLong());
-                FirebaseAnalytics.getInstance(getActivity().getApplicationContext()).logEvent("Copy", params);
+                FirebaseAnalytics.getInstance(requireActivity().getApplicationContext()).logEvent("Copy", params);
                 clip = ClipData.newPlainText("text", mVpnGateConnection.getCalculateHostName());
             }
             if (clip != null) {

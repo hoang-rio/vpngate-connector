@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.PreferenceManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -68,7 +69,6 @@ import de.blinkt.openvpn.utils.TotalTraffic;
 import kittoku.osc.preference.OscPrefKey;
 import kittoku.osc.service.SstpVpnService;
 import vn.unlimit.vpngate.App;
-import vn.unlimit.vpngate.GlideApp;
 import vn.unlimit.vpngate.R;
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol;
 import vn.unlimit.vpngate.dialog.MessageDialog;
@@ -410,7 +410,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void bindData() {
         if (mVpnGateConnection != null) {
             try {
-                GlideApp.with(this)
+                Glide.with(this)
                         .load(App.getInstance().getDataUtil().getBaseUrl() + "/images/flags/" + mVpnGateConnection.getCountryShort() + ".png")
                         .placeholder(R.color.colorOverlay)
                         .error(R.color.colorOverlay)

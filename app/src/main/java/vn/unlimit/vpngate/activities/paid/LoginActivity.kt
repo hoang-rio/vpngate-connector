@@ -11,9 +11,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
 import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.GlideApp
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.dialog.LoadingDialog
@@ -138,12 +138,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
                     txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
                     txtPassword!!.transformationMethod = null
-                    GlideApp.with(this).load(R.drawable.ic_eye_hide).into(ivHidePassword!!)
+                    Glide.with(this).load(R.drawable.ic_eye_hide).into(ivHidePassword!!)
                     isFirstTimeHidePass = false
                 } else {
                     txtPassword!!.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                     txtPassword!!.transformationMethod = PasswordTransformationMethod.getInstance()
-                    GlideApp.with(this).load(R.drawable.ic_eye_show).into(ivHidePassword!!)
+                    Glide.with(this).load(R.drawable.ic_eye_show).into(ivHidePassword!!)
                 }
                 txtPassword!!.setSelection(txtPassword!!.text.length)
             }
