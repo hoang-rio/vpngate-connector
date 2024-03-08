@@ -27,7 +27,7 @@
             android:name=".activities.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.SplashScreen"
-            tools:ignore="LockedOrientationActivity"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -43,6 +43,9 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
         </activity>
         <activity
