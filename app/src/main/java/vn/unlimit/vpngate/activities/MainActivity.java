@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         return mSortType;
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
