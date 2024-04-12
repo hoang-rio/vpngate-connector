@@ -137,7 +137,6 @@ class SplashActivity : AppCompatActivity() {
     }
 
     @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_UPDATE_CODE && resultCode != Activity.RESULT_OK) {
@@ -193,7 +192,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkDynamicLink() {
         val action: String? = intent.action
-        var deepLink: String? = intent.data?.toString()
+        val deepLink: String? = intent.data?.toString()
         if (action?.equals("android.intent.action.VIEW") == true && deepLink != null && deepLink.contains("https://app.")) {
             Log.d(TAG, "Got action %s with url %s".format(action, deepLink))
             redirectDeepLink(deepLink.toString())
