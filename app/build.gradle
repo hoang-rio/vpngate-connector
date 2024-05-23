@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 103
-            versionName "2.0.3"
+            versionCode 104
+            versionName "2.0.4"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 96
-            versionName "1.9.6"
+            versionCode 97
+            versionName "1.9.7"
         }
     }
 
@@ -62,17 +62,10 @@ android {
         }
 
         debug {
-//            minifyEnabled true
-//            shrinkResources true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
             versionNameSuffix "-dev"
         }
     }
-//    dexOptions {
-//        incremental true
-//        javaMaxHeapSize "4g"
-//    }
     useLibrary 'android.test.runner'
 
     useLibrary 'android.test.base'
@@ -100,7 +93,7 @@ dependencies {
         exclude group: "com.android.support"
         transitive = true
     }
-    implementation platform('com.google.firebase:firebase-bom:32.8.0')
+    implementation platform('com.google.firebase:firebase-bom:33.0.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
@@ -111,7 +104,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
-    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'androidx.annotation:annotation:1.8.0'
     implementation 'com.pixplicity.sharp:sharp:1.1.3@aar'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
@@ -122,12 +115,12 @@ dependencies {
     implementation project(path: ':sstpClient')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
-    def billing_version = '6.2.0'
+    def billing_version = '7.0.0'
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     ksp "com.github.bumptech.glide:ksp:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:23.0.0'
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
     // Remove applovin because it can login to check why
 //    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation
