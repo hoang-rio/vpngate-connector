@@ -2,26 +2,16 @@ package vn.unlimit.vpngate.activities
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.github.javiersantos.piracychecker.PiracyChecker
-import com.github.javiersantos.piracychecker.callbacks.PiracyCheckerCallback
-import com.github.javiersantos.piracychecker.enums.InstallerID
-import com.github.javiersantos.piracychecker.enums.PiracyCheckerError
-import com.github.javiersantos.piracychecker.enums.PirateApp
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import vn.unlimit.vpngate.App
-import vn.unlimit.vpngate.BuildConfig
-import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.ActivateActivity
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
@@ -50,50 +40,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
         AppOpenManager.splashActivity = this
-        if (!BuildConfig.DEBUG) {
-            PiracyChecker(this)
-                .enableInstallerId(InstallerID.GOOGLE_PLAY)
-                .callback(object : PiracyCheckerCallback() {
-                    override fun allow() {
-                        checkDynamicLink()
-                    }
-
-                    override fun doNotAllow(error: PiracyCheckerError, app: PirateApp?) {
-                        AlertDialog.Builder(this@SplashActivity)
-                            .setTitle(getString(R.string.install_source_error_title))
-                            .setMessage(getString(R.string.install_source_error_message))
-                            .setPositiveButton(
-                                R.string.install_source_error_open_play_store
-                            ) { _, _ ->
-                                try {
-                                    startActivity(
-                                        Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID)
-                                        )
-                                    )
-                                } catch (ex: ActivityNotFoundException) {
-                                    try {
-                                        startActivity(
-                                            Intent(
-                                                Intent.ACTION_VIEW,
-                                                Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)
-                                            )
-                                        )
-                                    } catch (exception: ActivityNotFoundException) {
-                                        // No activity to handle this action
-                                        exception.printStackTrace()
-                                    }
-                                }
-                                finish()
-                            }.show()
-                    }
-
-                })
-                .start()
-        } else {
-            checkDynamicLink()
-        }
+        checkDynamicLink()
     }
 
     private fun checkAppUpdateAndStartActivity() {

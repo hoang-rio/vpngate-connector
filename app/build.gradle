@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 104
-            versionName "2.0.4"
+            versionCode 105
+            versionName "2.0.5"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 97
-            versionName "1.9.7"
+            versionCode 98
+            versionName "1.9.8"
         }
     }
 
@@ -85,7 +85,7 @@ android {
 ext.glideVersion = '4.16.0'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.browser:browser:1.8.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -93,7 +93,7 @@ dependencies {
         exclude group: "com.android.support"
         transitive = true
     }
-    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+    implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
@@ -118,7 +118,6 @@ dependencies {
     def billing_version = '7.0.0'
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.github.javiersantos:PiracyChecker:1.2.8'
     ksp "com.github.bumptech.glide:ksp:$glideVersion"
     implementation 'com.google.android.gms:play-services-ads:23.1.0'
     // Remove applovin because it can login to check why
