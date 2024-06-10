@@ -99,7 +99,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.android.play:core:1.10.3'
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
     implementation 'com.google.guava:guava:33.0.0-android'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
