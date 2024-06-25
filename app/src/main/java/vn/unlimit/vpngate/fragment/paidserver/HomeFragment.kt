@@ -169,11 +169,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         this.userViewModel = paidServerActivity?.userViewModel
         userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
-                if (isAttached) {
+                if (userInfo != null && isAttached) {
                     txtWelcome!!.text =
-                        getString(R.string.home_paid_welcome, userInfo?.fullname)
+                        getString(R.string.home_paid_welcome, userInfo.fullname)
                     txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                        userInfo!!.dataSize!!,
+                        userInfo.dataSize!!,
                         false,
                         resources
                     )
@@ -287,14 +287,17 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         val lineData = LineData(dataSet)
         lineChart?.data = lineData
         lineChart?.description!!.isEnabled = false
-        lineChart?.legend!!.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.legend!!.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.xAxis?.position = XAxis.XAxisPosition.BOTTOM
         lineChart?.axisLeft?.axisMinimum = 0F
         lineChart?.axisRight?.isEnabled = false
         lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
-        lineChart?.xAxis?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.xAxis?.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.axisLeft?.valueFormatter = ChartValueFormatter()
-        lineChart?.axisLeft?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.axisLeft?.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.invalidate()
         lnLoadingChart?.visibility = View.GONE
     }

@@ -24,6 +24,7 @@ import java.net.HttpURLConnection
 open class BaseViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         const val ITEM_PER_PAGE = 30
+        const val PARAMS_USER_PLATFORM = "Android"
     }
 
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil

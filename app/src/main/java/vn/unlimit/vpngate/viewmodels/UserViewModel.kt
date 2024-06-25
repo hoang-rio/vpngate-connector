@@ -35,7 +35,6 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "UserViewModel"
         const val USER_CACHE_TIME = 10 * 60 * 1000 // 10 Minute
-        const val PARAMS_USER_PLATFORM = "Android"
     }
     var userInfo: MutableLiveData<vn.unlimit.vpngate.models.User?> = MutableLiveData(paidServerUtil.getUserInfo())
 
