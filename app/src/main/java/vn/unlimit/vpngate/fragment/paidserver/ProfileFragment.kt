@@ -80,11 +80,11 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                 loadingDialog.dismiss()
             }
         }
-        txtUserName!!.setText(userViewModel?.userInfo?.value?.getString("username"))
-        txtEmail!!.setText(userViewModel?.userInfo?.value?.getString("email"))
-        txtFullName!!.setText(userViewModel?.userInfo?.value?.getString("fullname"))
-        if (userViewModel?.userInfo?.value?.has("birthday") == true) {
-            val birthday = userViewModel?.userInfo?.value?.getString("birthday")
+        txtUserName!!.setText(userViewModel?.userInfo?.value?.username)
+        txtEmail!!.setText(userViewModel?.userInfo?.value?.email)
+        txtFullName!!.setText(userViewModel?.userInfo?.value?.fullname)
+        if (userViewModel?.userInfo?.value?.birthday != null) {
+            val birthday = userViewModel?.userInfo?.value?.birthday
             val dateArr = birthday!!.split("/")
             calendar.set(Calendar.YEAR, dateArr[2].toInt())
             calendar.set(Calendar.MONTH, dateArr[1].toInt() - 1)
@@ -98,7 +98,7 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DATE)
         )
-        txtTimeZone!!.setText(userViewModel?.userInfo?.value?.getString("timeZone"))
+        txtTimeZone!!.setText(userViewModel?.userInfo?.value?.timeZone)
     }
 
     override fun onClick(v: View?) {

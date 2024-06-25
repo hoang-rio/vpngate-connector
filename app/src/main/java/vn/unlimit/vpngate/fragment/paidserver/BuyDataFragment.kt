@@ -67,7 +67,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 val params = Bundle()
-                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("username", paidServerUtil.getUserInfo()?.username)
                 context?.let {
                     FirebaseAnalytics.getInstance(it)
                         .logEvent("Paid_Server_User_Cancel_Purchase", params)
@@ -76,7 +76,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
             } else {
                 // Handle any other error codes.
                 val params = Bundle()
-                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("username", paidServerUtil.getUserInfo()?.username)
                 params.putString("errorCode", billingResult.responseCode.toString())
                 context?.let {
                     FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Purchase_Error", params)
@@ -120,7 +120,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val root = inflater.inflate(R.layout.fragment_buy_data, container, false)
         txtDataSize = root.findViewById(R.id.txt_data_size)
         txtDataSize?.text = OpenVPNService.humanReadableByteCount(
-            paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources
+            paidServerUtil.getUserInfo()!!.dataSize!!, false, resources
         )
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
@@ -150,7 +150,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
             run {
                 if (isAttached) {
                     txtDataSize?.text = OpenVPNService.humanReadableByteCount(
-                        userInfo!!.getLong("dataSize"),
+                        userInfo!!.dataSize!!,
                         false,
                         resources
                     )
@@ -193,7 +193,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                     val params = Bundle()
                     params.putString(
                         "username",
-                        paidServerUtil.getUserInfo()?.getString("username")
+                        paidServerUtil.getUserInfo()?.username
                     )
                     params.putString("packageId", buyingProductDetails?.productId)
                     params.putString("errorCode", userViewModel?.errorCode?.toString())

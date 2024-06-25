@@ -87,7 +87,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 val paidServerUtil = App.getInstance().paidServerUtil
                 adContainer?.visibility = View.GONE
                 txtSharedSecret?.text = getString(R.string.vpn_paid_shared_secret)
-                txtVPNUser?.text = paidServerUtil.getUserInfo()?.getString("username")
+                txtVPNUser?.text = paidServerUtil.getUserInfo()?.username
                 txtVPNPw?.text = getString(R.string.vpn_pw_hint)
                 val paidServer: PaidServer =
                     intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)!!

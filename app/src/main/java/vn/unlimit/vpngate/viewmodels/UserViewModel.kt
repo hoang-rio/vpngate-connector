@@ -7,24 +7,37 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import retrofit2.HttpException
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
-import vn.unlimit.vpngate.api.UserApiRequest
+import vn.unlimit.vpngate.api.UserApiService
+import vn.unlimit.vpngate.models.Captcha
+import vn.unlimit.vpngate.models.request.ChangePasswordRequest
+import vn.unlimit.vpngate.models.request.ForgotPasswordRequest
+import vn.unlimit.vpngate.models.request.RegisterRequest
+import vn.unlimit.vpngate.models.request.ResetPasswordRequest
+import vn.unlimit.vpngate.models.request.UpdateProfileRequest
+import vn.unlimit.vpngate.models.request.UserLoginRequest
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.Calendar
+import java.util.Locale
 
 
 class UserViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "UserViewModel"
         const val USER_CACHE_TIME = 10 * 60 * 1000 // 10 Minute
+        const val PARAMS_USER_PLATFORM = "Android"
     }
-
-    private val userApiRequest = UserApiRequest()
-    var userInfo: MutableLiveData<JSONObject?> = MutableLiveData(paidServerUtil.getUserInfo())
+    var userInfo: MutableLiveData<vn.unlimit.vpngate.models.User?> = MutableLiveData(paidServerUtil.getUserInfo())
 
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
@@ -34,31 +47,35 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     var isValidResetPassToken: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorCode: Int? = null
     var isProfileUpdate = false
+    private var userApiService: UserApiService = retrofit.create(UserApiService::class.java)
 
     fun login(username: String, password: String) {
         isLoading.value = true
-        userApiRequest.login(username, password, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                Log.d(TAG, "Login success with response %s".format(result!!.toString()))
-                val userInfoRes = (result as JSONObject).getJSONObject("user")
-                userInfo.value = userInfoRes
-                paidServerUtil.setUserInfo(userInfoRes)
-                isLoggedIn.value = true
+        viewModelScope.launch {
+            try {
+                val loginResponse = userApiService.login(UserLoginRequest(username, password))
+                Log.d(TAG, "Login success with response %s".format(loginResponse.toString()))
+                userInfo.postValue(loginResponse.user)
+                isLoggedIn.postValue(true)
+                isLoading.postValue(false)
+                paidServerUtil.setUserInfo(loginResponse.user!!)
                 paidServerUtil.setIsLoggedIn(true)
-                isLoading.value = false
-            }
-
-            override fun onError(error: String) {
-                Log.e(TAG, "Login failure with error %s".format(error))
-                try {
-                    isLoggedIn.value = false
-                    errorList.value = JSONObject(error)
-                    isLoading.value = false
-                } catch (e: Exception) {
-                    isLoading.value = false
+                loginResponse.sessionId?.let {
+                    paidServerUtil.setStringSetting(
+                        PaidServerUtil.SESSION_ID_KEY,
+                        it
+                    )
                 }
+            } catch (e: HttpException) {
+                Log.e(TAG, "Login error with HttpException", e)
+                isLoggedIn.postValue(false)
+                isLoading.postValue(false)
+            } catch (e: Exception) {
+                Log.e(TAG, "Login error with Exception", e)
+                isLoggedIn.postValue(false)
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     fun localLogout(activity: Activity?) {
@@ -66,24 +83,25 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         paidServerUtil.setIsLoggedIn(false)
         paidServerUtil.removeSetting(PaidServerUtil.USER_INFO_KEY)
         userInfo.value = null
-        if (activity != null && !activity.isFinishing) {
-            val intentLogin = Intent(activity, LoginActivity::class.java)
-            activity.startActivity(intentLogin)
-            activity.finish()
+        activity?.let {
+            if (!activity.isFinishing) {
+                val intentLogin = Intent(activity, LoginActivity::class.java)
+                activity.startActivity(intentLogin)
+                activity.finish()
+            }
         }
     }
 
     fun logout(activity: Activity?) {
-        userApiRequest.logout(object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                localLogout(activity)
+        viewModelScope.launch {
+            try {
+                userApiService.logout()
+            } finally {
+                withContext(Dispatchers.Main) {
+                    localLogout(activity)
+                }
             }
-
-            override fun onError(error: String?) {
-                //Nothing todo here
-                localLogout(activity)
-            }
-        })
+        }
     }
 
     fun fetchUser(
@@ -95,40 +113,41 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         var date = Calendar.getInstance().time
         var nowInMs = date.time
         if (!forceFetch && lastFetchTime + USER_CACHE_TIME > nowInMs || updateLoading && isLoading.value!!) {
-            // Skip fetch user user in cache
+            // Skip fetch and use user in cache
             return
         }
         if (updateLoading) {
             isLoading.value = true
         }
-        userApiRequest.fetchUser(object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                Log.d(TAG, "fetch user success with response %s".format(result!!.toString()))
-                val userInfoRes = (result as JSONObject)
-                userInfo.value = userInfoRes
-                paidServerUtil.setUserInfo(userInfoRes)
+        viewModelScope.launch {
+            try {
+                val fetchUser = userApiService.fetchUser()
+                paidServerUtil.setUserInfo(fetchUser)
                 if (updateLoading) {
-                    isLoading.value = false
+                    isLoading.postValue(false)
                 }
                 date = Calendar.getInstance().time
                 nowInMs = date.time
                 paidServerUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
                 isProfileUpdate = false
-            }
-
-            override fun onError(error: String?) {
+            } catch (e: HttpException) {
+                Log.e(TAG, "fetch user error with HttpException", e)
                 val params = Bundle()
-                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
-                params.putString("errorInfo", error)
+                params.putString("username", paidServerUtil.getUserInfo()?.username)
+                params.putString("errorInfo", e.message)
                 FirebaseAnalytics.getInstance(getApplication())
                     .logEvent("Paid_Server_Fetch_User_Error", params)
-                baseErrorHandle(error)
-                Log.e(TAG, "fetch user error with error %s".format(error))
                 if (updateLoading) {
-                    isLoading.value = false
+                    isLoading.postValue(false)
+                }
+                baseErrorHandle(e.code(), activity)
+            } catch (e: Exception) {
+                Log.e(TAG, "fetch user error with Exception", e)
+                if (updateLoading) {
+                    isLoading.postValue(false)
                 }
             }
-        }, activity)
+        }
     }
 
     fun register(
@@ -143,167 +162,181 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         captchaSecret: String
     ) {
         isLoading.value = true
-        userApiRequest.register(
-            username,
-            fullName,
-            email,
-            password,
-            repassword,
-            birthDay,
-            timeZone,
-            captchaAnswer,
-            captchaSecret,
-            object : RequestListener {
-                override fun onSuccess(result: Any?) {
-                    isLoading.value = true
-                    isRegisterSuccess.value = true
+        viewModelScope.launch {
+            try {
+                val isPro = !App.getInstance().dataUtil.hasAds()
+                userApiService.register(
+                    RegisterRequest(
+                        username,
+                        fullName,
+                        email,
+                        password,
+                        repassword,
+                        birthDay,
+                        timeZone,
+                        language = Locale.getDefault().language,
+                        userPlatform = PARAMS_USER_PLATFORM,
+                        captcha = Captcha(answer = captchaAnswer, secret = captchaSecret)
+                    ),
+                    version = if (isPro) "pro" else null
+                )
+                isRegisterSuccess.postValue(true)
+            } catch (e: HttpException) {
+                Log.d(TAG, "Got HttpException when register", e)
+                val errorResponse = JSONObject(e.response()?.errorBody().toString())
+                if (errorResponse.has("errorList")) {
+                    errorList.value = errorResponse.get("errorList") as JSONObject
                 }
-
-                override fun onError(error: String?) {
-                    val errorResponse = JSONObject(error!!.toString())
-                    if (errorResponse.has("errorList")) {
-                        errorList.value = errorResponse.get("errorList") as JSONObject
-                    }
-                    isLoading.value = false
-                    isRegisterSuccess.value = false
-                }
-            })
+                isRegisterSuccess.postValue(false)
+            } catch (e: Exception) {
+                Log.d(TAG, "Got exception when register", e)
+                isRegisterSuccess.postValue(false)
+            } finally {
+                isLoading.postValue(false)
+            }
+        }
     }
 
     fun activateUser(userId: String, activateCode: String) {
         isLoading.value = true
         isUserActivated.value = false
-        userApiRequest.activateUser(userId, activateCode, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                isUserActivated.value =
-                    !((result as JSONObject).has("result") && !result.getBoolean("result"))
-                if (!isUserActivated.value!!) {
-                    errorCode = result.getInt("errorCode")
+        viewModelScope.launch {
+            try {
+                val userActivateResponse = userApiService.activateUser(userId, activateCode)
+                isUserActivated.postValue(userActivateResponse.result)
+                userActivateResponse.errorCode.let {
+                    errorCode = it
                 }
-                isLoading.value = false
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when activate user", e)
+                isUserActivated.postValue(false)
+            } finally {
+                isLoading.postValue(false)
             }
-
-            override fun onError(error: String?) {
-                isLoading.value = false
-                isUserActivated.value = true
-            }
-        })
+        }
     }
 
     fun forgotPassword(usernameOrEmail: String, captchaSecret: String, captchaAnswer: Int) {
         isLoading.value = true
         isForgotPassSuccess.value = false
-        userApiRequest.forgotPassword(
-            usernameOrEmail,
-            captchaSecret,
-            captchaAnswer,
-            object : RequestListener {
-                override fun onSuccess(result: Any?) {
-                    isLoading.value = false
-                    isForgotPassSuccess.value = true
-                }
-
-                override fun onError(error: String?) {
-                    isLoading.value = false
-                    isForgotPassSuccess.value = false
-                }
-            })
+        viewModelScope.launch {
+            try {
+                userApiService.forgotPassword(ForgotPasswordRequest(usernameOrEmail, captchaSecret, captchaAnswer))
+                isForgotPassSuccess.postValue(true)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when forgot password", e)
+                isForgotPassSuccess.postValue(false)
+            } finally {
+                isLoading.postValue(false)
+            }
+        }
     }
 
     fun checkResetPassToken(resetPassToken: String) {
-        userApiRequest.checkResetPassToken(resetPassToken, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                isValidResetPassToken.value = true
+        viewModelScope.launch {
+            try {
+                userApiService.checkResetPassToken(resetPassToken)
+                isValidResetPassToken.postValue(true)
+            } catch (e: Exception) {
+                Log.e(TAG,"Got exception when check reset pass token", e)
+                isValidResetPassToken.postValue(false)
             }
-
-            override fun onError(error: String?) {
-                isValidResetPassToken.value = false
-            }
-        })
+        }
     }
 
     fun resetPassword(resetPassToken: String, newPassword: String, renewPassword: String) {
         isLoading.value = true
         isPasswordReset.value = false
-        userApiRequest.resetPassword(
-            resetPassToken,
-            newPassword,
-            renewPassword,
-            object : RequestListener {
-                override fun onSuccess(result: Any?) {
-                    isPasswordReset.value = true
-                    isLoading.value = false
+        viewModelScope.launch {
+            try {
+                userApiService.resetPassword(ResetPasswordRequest(resetPassToken, newPassword, renewPassword))
+                isPasswordReset.postValue(true)
+            } catch (e: HttpException) {
+                Log.d(TAG, "Got HttpException when reset password", e)
+                val errorResponse = JSONObject(e.response()?.errorBody().toString())
+                if (errorResponse.has("errorList")) {
+                    errorList.postValue(errorResponse.get("errorList") as JSONObject)
                 }
-
-                override fun onError(error: String?) {
-                    val errorResponse = JSONObject(error!!.toString())
-                    if (errorResponse.has("errorList")) {
-                        errorList.value = errorResponse.get("errorList") as JSONObject
-                    }
-                    isPasswordReset.value = false
-                    isLoading.value = false
-                }
-            })
+                isPasswordReset.postValue(false)
+            } catch (e: Exception) {
+                Log.d(TAG, "Got exception when reset password", e)
+                isPasswordReset.postValue(false)
+            } finally {
+                isLoading.postValue(false)
+            }
+        }
     }
 
     fun changePass(password: String, newPassword: String, activity: Activity) {
         isLoading.value = true
-        userApiRequest.changePass(password, newPassword, object : RequestListener {
-            override fun onSuccess(result: Any?) {
+        viewModelScope.launch {
+            try {
+                userApiService.changePass(ChangePasswordRequest(password, newPassword))
                 localLogout(activity)
                 Toast.makeText(
                     activity,
                     activity.getText(R.string.password_changed),
                     Toast.LENGTH_LONG
                 ).show()
-                isLoading.value = false
-            }
-
-            override fun onError(error: String?) {
+            } catch (e: Exception) {
+                Log.e(TAG,"Got exception when change pass", e)
                 Toast.makeText(
                     activity,
                     activity.getText(R.string.incorrect_current_password),
                     Toast.LENGTH_LONG
                 ).show()
-                isLoading.value = false
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     fun updateProfile(fullName: String, birthDay: String, timeZone: String, requestListener: RequestListener) {
         isLoading.value = true
-        userApiRequest.updateProfile(fullName, birthDay, timeZone, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                val json = result as JSONObject
-                if (json.has("user")) {
-                    userInfo.value = json.getJSONObject("user")
-                    paidServerUtil.setUserInfo(json.getJSONObject("user"))
-                    isProfileUpdate = true
-                    requestListener.onSuccess(json.getJSONObject("user"))
+        viewModelScope.launch {
+            try {
+                val updateProfileResponse = userApiService.updateProfile(UpdateProfileRequest(fullName, birthDay, timeZone))
+                if (updateProfileResponse.result) {
+                    requestListener.onSuccess(updateProfileResponse.user)
                 } else {
                     requestListener.onError("")
                 }
-                isLoading.value = false
-            }
-
-            override fun onError(error: String?) {
+            } catch (e: HttpException) {
+                Log.e(TAG, "Got HttpException when update profile.", e)
                 requestListener.onError("")
-                isLoading.value = false
+            } catch (e: Exception) {
+                Log.e(TAG, "Got Exception when update profile.", e)
+                requestListener.onError("")
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     fun deleteAccount(requestListener: RequestListener) {
         isLoading.value = true
-        userApiRequest.deleteAccount(object: RequestListener{
-            override fun onSuccess(result: Any?) {
-                isLoading.value = false
+        viewModelScope.launch {
+            try {
+                userApiService.delete()
                 requestListener.onSuccess(true)
-            }
-            override fun onError(error: String?) {
-                isLoading.value = false
+            } catch (e: HttpException) {
+                Log.e(TAG, "Got exception when delete account", e)
                 requestListener.onSuccess(false)
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
+    }
+
+    fun getCaptcha(requestListener: RequestListener) {
+        viewModelScope.launch {
+            try {
+                val captchaResponse = userApiService.getCaptcha()
+                requestListener.onSuccess(captchaResponse)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get captcha", e)
+                requestListener.onError(e.message)
+            }
+        }
     }
 }

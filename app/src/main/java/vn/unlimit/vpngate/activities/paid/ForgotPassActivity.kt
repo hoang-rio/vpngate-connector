@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -16,8 +17,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
 import org.json.JSONObject
 import vn.unlimit.vpngate.R
-import vn.unlimit.vpngate.api.UserApiRequest
+import vn.unlimit.vpngate.api.UserApiService
 import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
@@ -25,7 +27,6 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private var loadingDialog: LoadingDialog? = null
     private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
-    private val userApiRequest = UserApiRequest()
     private var userViewModel: UserViewModel? = null
     private var txtCaptchaAnswer: EditText? = null
     private var txtEmail: EditText? = null
@@ -102,10 +103,11 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             loadingDialog = LoadingDialog.newInstance(getString(R.string.reloading_captcha))
             loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
         }
-        userApiRequest.getCaptcha(object : RequestListener {
+        userViewModel?.getCaptcha(object : RequestListener {
+            @SuppressLint("SetTextI18n")
             override fun onSuccess(result: Any?) {
-                val svgImage: String = (result as JSONObject).getString("image")
-                captchaSecret = result.getString("secret")
+                val svgImage: String = (result as CaptchaResponse).image
+                captchaSecret = result.secret
                 Sharp.loadString(svgImage).into(ivCaptcha!!)
                 txtCaptchaAnswer!!.setText("")
                 if (isReload) {

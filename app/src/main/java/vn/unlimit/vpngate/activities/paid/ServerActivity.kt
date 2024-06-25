@@ -415,7 +415,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             OscPrefKey.HOME_COUNTRY.toString(),
             mPaidServer!!.serverCountryCode.uppercase()
         )
-        editor.putString(OscPrefKey.HOME_USERNAME.toString(), paidServerUtil.getUserInfo()!!.getString("username"))
+        editor.putString(OscPrefKey.HOME_USERNAME.toString(), paidServerUtil.getUserInfo()!!.username)
         editor.putString(OscPrefKey.HOME_PASSWORD.toString(), paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW))
         editor.putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
         editor.apply()
@@ -526,7 +526,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     vpnProfile?.mDNS2 = dns2
                 }
             }
-            vpnProfile?.mUsername = paidServerUtil.getUserInfo()!!.getString("username")
+            vpnProfile?.mUsername = paidServerUtil.getUserInfo()!!.username
             vpnProfile?.mPassword = paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
             ProfileManager.setTemporaryProfile(applicationContext, vpnProfile)
         } catch (e: IOException) {

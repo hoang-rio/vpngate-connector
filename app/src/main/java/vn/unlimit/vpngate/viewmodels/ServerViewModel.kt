@@ -61,7 +61,7 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                     val params = Bundle()
                     params.putString(
                         "username",
-                        paidServerUtil.getUserInfo()?.getString("username")
+                        paidServerUtil.getUserInfo()?.username
                     )
                     params.putString("errorInfo", error)
                     FirebaseAnalytics.getInstance(getApplication())

@@ -80,10 +80,10 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         if (paidServerUtil.getUserInfo() != null) {
             txtWelcome!!.text = getString(
                 R.string.home_paid_welcome,
-                paidServerUtil.getUserInfo()!!.getString("fullname")
+                paidServerUtil.getUserInfo()!!.username
             )
             txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
             )
@@ -108,7 +108,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
             }
             val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("username", userViewModel?.userInfo?.value?.username)
             params.putString("chart_type", chartViewModel?.chartType?.value.toString())
             FirebaseAnalytics.getInstance(requireContext())
                 .logEvent("user_change_chart_type", params)
@@ -149,10 +149,10 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
             txtWelcome!!.text = getString(
                 R.string.home_paid_welcome,
-                paidServerUtil.getUserInfo()!!.getString("fullname")
+                paidServerUtil.getUserInfo()!!.fullname
             )
             txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
             )
@@ -171,9 +171,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             run {
                 if (isAttached) {
                     txtWelcome!!.text =
-                        getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                        getString(R.string.home_paid_welcome, userInfo?.fullname)
                     txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                        userInfo!!.getLong("dataSize"),
+                        userInfo!!.dataSize!!,
                         false,
                         resources
                     )
@@ -228,7 +228,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
             loadingDialog.show(parentFragmentManager, TAG)
             val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("username", userViewModel?.userInfo?.value?.username)
             params.putString("server_name", connectedSession.serverId?.serverName)
             params.putString("session_id", connectedSession.sessionId)
             sessionViewModel?.deleteSession(connectedSession._id, object : RequestListener {
