@@ -6,22 +6,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import retrofit2.HttpException
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.PurchaseApiService
 import vn.unlimit.vpngate.models.PurchaseHistory
 import vn.unlimit.vpngate.models.request.PurchaseCreateRequest
-import vn.unlimit.vpngate.request.RequestListener
 
 class PurchaseViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "PurchaseViewModel"
     }
+
     var errorCode: Int? = null
-    private var purchaseApiService: PurchaseApiService = retrofit.create(PurchaseApiService::class.java)
+    private var purchaseApiService: PurchaseApiService =
+        retrofit.create(PurchaseApiService::class.java)
     var purchaseList: MutableLiveData<ArrayList<PurchaseHistory>> = MutableLiveData(ArrayList())
     var isOutOfData = false
 
@@ -31,14 +29,16 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
         viewModelScope.launch {
             try {
                 val isPro = !App.getInstance().dataUtil.hasAds()
-                val res = purchaseApiService.createPurchase(PurchaseCreateRequest(
-                    packageId = purchase.products[0],
-                    purchaseId = purchase.orderId!!,
-                    platform = PARAMS_USER_PLATFORM,
-                    paymentMethod = PARAMS_USER_PLATFORM + "_IAP",
-                    currency = productDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode!!,
-                    currencyPrice = productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros!!.toDouble() / 1000000
-                ), version = if (isPro) "pro" else null)
+                val res = purchaseApiService.createPurchase(
+                    PurchaseCreateRequest(
+                        packageId = purchase.products[0],
+                        purchaseId = purchase.orderId!!,
+                        platform = PARAMS_USER_PLATFORM,
+                        paymentMethod = PARAMS_USER_PLATFORM + "_IAP",
+                        currency = productDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode!!,
+                        currencyPrice = productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros!!.toDouble() / 1000000
+                    ), version = if (isPro) "pro" else null
+                )
                 if (!res.result) {
                     errorCode = res.errorCode
                 }

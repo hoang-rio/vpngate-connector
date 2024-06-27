@@ -4,21 +4,18 @@ import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
-import vn.unlimit.vpngate.api.ServerApiRequest
+import vn.unlimit.vpngate.api.ServerApiService
 import vn.unlimit.vpngate.models.PaidServer
-import vn.unlimit.vpngate.request.RequestListener
-import java.lang.reflect.Type
 
 class ServerViewModel(application: Application) : BaseViewModel(application) {
     var serverList: MutableLiveData<LinkedHashSet<PaidServer>> =
         MutableLiveData(paidServerUtil.getServersCache())
-    private val serverApiRequest = ServerApiRequest()
+    private val serverApiService = retrofit.create(ServerApiService::class.java)
     private var isOutOfData: Boolean = false
 
     companion object {
@@ -36,39 +33,34 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                 skip = 0
                 isOutOfData = false
             }
-            serverApiRequest.loadServer(ITEM_PER_PAGE, skip, object : RequestListener {
-                override fun onSuccess(result: Any?) {
-                    val type: Type = object : TypeToken<LinkedHashSet<PaidServer?>?>() {}.type
-                    val listServerArray = (result as JSONObject).get("listServer") as JSONArray
-                    val listServer: LinkedHashSet<PaidServer> =
-                        Gson().fromJson(listServerArray.toString(), type)
+            viewModelScope.launch {
+                try {
+                    val loadServerResponse = serverApiService.loadServer(take = ITEM_PER_PAGE, skip)
                     if (loadFromStart) {
-                        serverList.value = listServer
+                        serverList.postValue(loadServerResponse.listServer)
                     } else {
-                        serverList.value?.addAll(listServer)
-                        serverList.value = serverList.value
+                        serverList.value?.addAll(loadServerResponse.listServer)
+                        serverList.postValue(serverList.value)
                     }
                     if (serverList.value != null) {
                         paidServerUtil.setServersCache(serverList.value!!)
                     }
-                    isOutOfData = serverList.value?.size!! >= result.get("countServer") as Int
-                    isLoading.value = false
-                }
-
-                override fun onError(error: String?) {
-                    baseErrorHandle(error)
-                    isLoading.value = false
+                    isOutOfData = serverList.value?.size!! >= loadServerResponse.countServer
+                } catch (e: HttpException) {
+                    Log.e(TAG, "Got HttpException when load server", e)
+                    baseErrorHandle(e.code(), activity)
                     val params = Bundle()
                     params.putString(
                         "username",
                         paidServerUtil.getUserInfo()?.username
                     )
-                    params.putString("errorInfo", error)
+                    params.putString("errorInfo", e.message)
                     FirebaseAnalytics.getInstance(getApplication())
                         .logEvent("Paid_Server_List_Server_Error", params)
-                    Log.e(TAG, "Load paid server error with message: %s".format(error))
+                } finally {
+                    isLoading.postValue(false)
                 }
-            }, activity)
+            }
         }
     }
 }

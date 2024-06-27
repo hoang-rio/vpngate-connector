@@ -58,6 +58,7 @@ import vn.unlimit.vpngate.utils.DataUtil;
  */
 
 public class StatusFragment extends Fragment implements View.OnClickListener, VpnStatus.StateListener, VpnStatus.ByteCountListener {
+    private final String TAG = "StatusFragment";
     private ImageView btnOnOff;
     private TextView txtStatus;
     private TextView txtUploadSession;
@@ -68,16 +69,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
     private TextView txtDownloadSpeed;
     private Button btnClearStatistics;
     private IOpenVPNServiceInternal mVPNService;
-    private DataUtil dataUtil;
-    private VPNGateConnection mVpnGateConnection;
-    private final String TAG = "StatusFragment";
-    private boolean isConnecting = false;
-    private boolean isAuthFailed = false;
-    private boolean isDetached = false;
-    private InterstitialAd mInterstitialAd;
-    private VpnProfile vpnProfile;
-    private Context mContext;
-
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -92,6 +83,15 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         }
 
     };
+    private DataUtil dataUtil;
+    private VPNGateConnection mVpnGateConnection;
+    private boolean isConnecting = false;
+    private boolean isAuthFailed = false;
+    private boolean isDetached = false;
+    private InterstitialAd mInterstitialAd;
+    private VpnProfile vpnProfile;
+    private Context mContext;
+    private boolean isFullScreenAdsLoaded = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -163,8 +163,6 @@ public class StatusFragment extends Fragment implements View.OnClickListener, Vp
         }
 
     }
-
-    private boolean isFullScreenAdsLoaded = false;
 
     private void loadAdMob() {
         if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {

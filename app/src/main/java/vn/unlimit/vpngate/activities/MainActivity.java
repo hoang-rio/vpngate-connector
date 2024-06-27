@@ -79,10 +79,11 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 //        System.loadLibrary("native-lib");
 //    }
 
+    public static final String TARGET_FRAGMENT = "TARGET_FRAGMENT";
     private static final String TAG = "MainActivity";
     private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
     private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
-    public static final String TARGET_FRAGMENT = "TARGET_FRAGMENT";
+    private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
     VPNGateConnectionList vpnGateConnectionList;
     VPNGateTask vpnGateTask;
     View lnLoading;
@@ -105,9 +106,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private boolean disallowLoadHome = false;
     private AdView adView;
     private boolean isInFront = false;
-    private ConsentInformation consentInformation;
-    private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
-    private PaidServerUtil paidServerUtil;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -132,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             }
         }
     };
+    private ConsentInformation consentInformation;
+    private PaidServerUtil paidServerUtil;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 params,
                 () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(
                         this,
-                        (ConsentForm.OnConsentFormDismissedListener) loadAndShowError -> {
+                        loadAndShowError -> {
                             if (loadAndShowError != null) {
                                 // Consent gathering failed.
                                 Log.w(TAG, String.format("%s: %s",

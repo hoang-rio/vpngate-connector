@@ -7,19 +7,24 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.Button
+import android.widget.DatePicker
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
-import org.json.JSONObject
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
-import java.util.*
+import java.util.Calendar
 import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity(), View.OnClickListener,
@@ -114,10 +119,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_exist_in_system,
                     getString(R.string.prompt_user)
                 ) + "\n"
+
                 107 -> errorMessage = errorMessage + getString(
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_user)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.invalid_username) + "\n"
             }
         }
@@ -127,10 +134,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_exist_in_system,
                     getString(R.string.prompt_email)
                 ) + "\n"
+
                 107 -> errorMessage = errorMessage + getString(
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_email)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.email_is_invalid) + "\n"
             }
         }
@@ -140,6 +149,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_password)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.password_is_invalid) + "\n"
             }
         }
@@ -154,6 +164,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_retype_password)
                 ) + "\n"
+
                 109 -> errorMessage =
                     errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
             }

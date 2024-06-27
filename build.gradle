@@ -26,12 +26,6 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        //noinspection JcenterRepositoryObsolete
-        jcenter() {
-            content {
-                includeModule("com.amitshekhar.android", "android-networking")
-            }
-        }
     }
     project.ext {
         compileSdkVersion = 34

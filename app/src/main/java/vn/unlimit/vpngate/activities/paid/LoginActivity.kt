@@ -134,6 +134,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 isClickedLogin = true
                 userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
+
             ivHidePassword -> {
                 if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
                     txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
@@ -147,10 +148,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 txtPassword!!.setSelection(txtPassword!!.text.length)
             }
+
             btnSignUp -> {
                 val intentSignUp = Intent(this, SignUpActivity::class.java)
                 startActivity(intentSignUp)
             }
+
             btnForgotPass -> {
                 val intentForgot = Intent(this, ForgotPassActivity::class.java)
                 startActivity(intentForgot)

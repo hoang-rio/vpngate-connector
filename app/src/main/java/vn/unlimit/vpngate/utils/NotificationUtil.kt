@@ -6,19 +6,27 @@ import androidx.appcompat.app.AppCompatActivity
 
 class NotificationUtil(appCompatActivity: AppCompatActivity) {
     private var mAppCompatActivity: AppCompatActivity
+
     companion object {
-        private const val REQUEST_PERMISSION_CODE = 1010;
+        private const val REQUEST_PERMISSION_CODE = 1010
     }
+
     init {
         this.mAppCompatActivity = appCompatActivity
     }
+
     fun requestPermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && this.mAppCompatActivity.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            this.mAppCompatActivity.requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                REQUEST_PERMISSION_CODE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && this.mAppCompatActivity.checkSelfPermission(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            this.mAppCompatActivity.requestPermissions(
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_PERMISSION_CODE
+            )
         }
     }
 }

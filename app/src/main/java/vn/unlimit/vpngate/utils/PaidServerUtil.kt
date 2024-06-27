@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
@@ -50,7 +49,10 @@ class PaidServerUtil(context: Context) {
         context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
     var mContext: Context = context
     private var userInfo: User? =
-        if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else Gson().fromJson(getStringSetting(USER_INFO_KEY, ""), User::class.java)
+        if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else Gson().fromJson(
+            getStringSetting(USER_INFO_KEY, ""),
+            User::class.java
+        )
 
     /**
      * Check paid user is logged in or not

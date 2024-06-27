@@ -31,7 +31,7 @@ class NotificationSettingFragment : Fragment(), CompoundButton.OnCheckedChangeLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         swNotificationSetting = view.findViewById(R.id.sw_notify_setting)
-        btnBack = view.findViewById(R.id.btn_back);
+        btnBack = view.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
         bindViewModel()
         swNotificationSetting?.setOnCheckedChangeListener(this)

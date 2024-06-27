@@ -2,7 +2,7 @@ package vn.unlimit.vpngate.models.request
 
 import vn.unlimit.vpngate.models.Captcha
 
-data class RegisterRequest (
+data class RegisterRequest(
     val username: String,
     val fullName: String,
     val email: String,

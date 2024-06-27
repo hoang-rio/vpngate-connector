@@ -137,7 +137,9 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         billingClient = BillingClient.newBuilder(requireActivity())
             .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            )
             .build()
         initBilling()
         bindViewModel()
@@ -175,7 +177,10 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 loadingDialog!!.dismiss()
                 if (userViewModel?.errorCode == null) {
                     // Create purchase complete
-                    Log.i(TAG, "Purchase product %s complete".format(buyingProductDetails?.productId))
+                    Log.i(
+                        TAG,
+                        "Purchase product %s complete".format(buyingProductDetails?.productId)
+                    )
                     // Force fetch user to update data size
                     userViewModel?.fetchUser(forceFetch = true)
                     Toast.makeText(
@@ -247,11 +252,14 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val skuList = ArrayList<String>()
         skuList.addAll(listSkus!!)
         val productList = ArrayList<QueryProductDetailsParams.Product>()
-        listSkus?.forEach { productList.add(QueryProductDetailsParams.Product.newBuilder()
-            .setProductId(it)
-            .setProductType(BillingClient.ProductType.INAPP)
-            .build()
-        )}
+        listSkus?.forEach {
+            productList.add(
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(it)
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .build()
+            )
+        }
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         lnLoading?.visibility = View.VISIBLE
         rcvSkuDetails?.visibility = View.GONE
@@ -264,7 +272,9 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                         Collections.sort(
                             listProductDetails,
                             Comparator { productDetails: ProductDetails, productDetails1: ProductDetails ->
-                                return@Comparator productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros.compareTo(productDetails1.oneTimePurchaseOfferDetails!!.priceAmountMicros)
+                                return@Comparator productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros.compareTo(
+                                    productDetails1.oneTimePurchaseOfferDetails!!.priceAmountMicros
+                                )
                             })
                         skuDetailsAdapter!!.initialize(listProductDetails)
                     } else {
@@ -286,11 +296,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         if (o != null) {
             buyingProductDetails = o as ProductDetails
             val productDetailsParamsList =
-            listOf(
-                BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setProductDetails(buyingProductDetails!!)
-                    .build()
-            )
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(buyingProductDetails!!)
+                        .build()
+                )
             val billingFlowParams =
                 BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(productDetailsParamsList)

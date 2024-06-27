@@ -121,8 +121,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
             )
         } else String.format("Paid-%s[%s]", serverLocation, address)
     }
-    
+
     fun isSSTPSupport(): Boolean {
-        return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1;
+        return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1
     }
 }

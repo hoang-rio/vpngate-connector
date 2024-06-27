@@ -7,17 +7,13 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.internal.http2.ErrorCode
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
-import vn.unlimit.vpngate.api.BaseApiRequest
-import vn.unlimit.vpngate.api.BaseApiRequest.Companion.ERROR_SESSION_EXPIRES
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.net.HttpURLConnection
 
@@ -25,6 +21,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
     companion object {
         const val ITEM_PER_PAGE = 30
         const val PARAMS_USER_PLATFORM = "Android"
+        const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
     }
 
     val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
@@ -42,9 +39,9 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     var retrofit: Retrofit = Retrofit.Builder().baseUrl(
-            FirebaseRemoteConfig.getInstance()
+        FirebaseRemoteConfig.getInstance()
             .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
-        )
+    )
         .client(httpClientBuilder.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()

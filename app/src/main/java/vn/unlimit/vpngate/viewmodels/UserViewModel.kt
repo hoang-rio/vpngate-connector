@@ -36,7 +36,9 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         const val TAG = "UserViewModel"
         const val USER_CACHE_TIME = 10 * 60 * 1000 // 10 Minute
     }
-    var userInfo: MutableLiveData<vn.unlimit.vpngate.models.User?> = MutableLiveData(paidServerUtil.getUserInfo())
+
+    var userInfo: MutableLiveData<vn.unlimit.vpngate.models.User?> =
+        MutableLiveData(paidServerUtil.getUserInfo())
 
     var isRegisterSuccess: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorList: MutableLiveData<JSONObject> = MutableLiveData(JSONObject())
@@ -220,7 +222,13 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         isForgotPassSuccess.value = false
         viewModelScope.launch {
             try {
-                userApiService.forgotPassword(ForgotPasswordRequest(usernameOrEmail, captchaSecret, captchaAnswer))
+                userApiService.forgotPassword(
+                    ForgotPasswordRequest(
+                        usernameOrEmail,
+                        captchaSecret,
+                        captchaAnswer
+                    )
+                )
                 isForgotPassSuccess.postValue(true)
             } catch (e: Exception) {
                 Log.e(TAG, "Got exception when forgot password", e)
@@ -237,7 +245,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 userApiService.checkResetPassToken(resetPassToken)
                 isValidResetPassToken.postValue(true)
             } catch (e: Exception) {
-                Log.e(TAG,"Got exception when check reset pass token", e)
+                Log.e(TAG, "Got exception when check reset pass token", e)
                 isValidResetPassToken.postValue(false)
             }
         }
@@ -248,7 +256,13 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         isPasswordReset.value = false
         viewModelScope.launch {
             try {
-                userApiService.resetPassword(ResetPasswordRequest(resetPassToken, newPassword, renewPassword))
+                userApiService.resetPassword(
+                    ResetPasswordRequest(
+                        resetPassToken,
+                        newPassword,
+                        renewPassword
+                    )
+                )
                 isPasswordReset.postValue(true)
             } catch (e: HttpException) {
                 Log.d(TAG, "Got HttpException when reset password", e)
@@ -278,7 +292,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     Toast.LENGTH_LONG
                 ).show()
             } catch (e: Exception) {
-                Log.e(TAG,"Got exception when change pass", e)
+                Log.e(TAG, "Got exception when change pass", e)
                 Toast.makeText(
                     activity,
                     activity.getText(R.string.incorrect_current_password),
@@ -290,11 +304,17 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         }
     }
 
-    fun updateProfile(fullName: String, birthDay: String, timeZone: String, requestListener: RequestListener) {
+    fun updateProfile(
+        fullName: String,
+        birthDay: String,
+        timeZone: String,
+        requestListener: RequestListener
+    ) {
         isLoading.value = true
         viewModelScope.launch {
             try {
-                val updateProfileResponse = userApiService.updateProfile(UpdateProfileRequest(fullName, birthDay, timeZone))
+                val updateProfileResponse =
+                    userApiService.updateProfile(UpdateProfileRequest(fullName, birthDay, timeZone))
                 if (updateProfileResponse.result) {
                     requestListener.onSuccess(updateProfileResponse.user)
                 } else {

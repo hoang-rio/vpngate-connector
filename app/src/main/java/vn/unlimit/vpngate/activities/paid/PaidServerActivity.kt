@@ -66,7 +66,7 @@ class PaidServerActivity : AppCompatActivity() {
             }
         }
         supportActionBar!!.hide()
-        onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 handleBackPress()
             }

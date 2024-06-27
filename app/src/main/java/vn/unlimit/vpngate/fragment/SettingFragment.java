@@ -334,7 +334,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, A
             }
             if (isChecked) {
                 editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), true);
-                editor.putString(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS),  FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key)));
+                editor.putString(String.valueOf(OscPrefKey.DNS_CUSTOM_ADDRESS), FirebaseRemoteConfig.getInstance().getString(getString(R.string.dns_block_ads_primary_cfg_key)));
             } else {
                 editor.putBoolean(String.valueOf(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER), false);
             }

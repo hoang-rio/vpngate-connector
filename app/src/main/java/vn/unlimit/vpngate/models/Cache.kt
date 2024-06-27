@@ -9,6 +9,7 @@ import java.util.Date
 class Cache : Type {
     @JvmField
     var expires: Date? = null
+
     @JvmField
     var cacheData: VPNGateConnectionList? = null
 

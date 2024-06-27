@@ -64,6 +64,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private MainActivity mActivity;
     private InterstitialAd interstitialAd;
     private TextView txtEmpty;
+    //Flag ads is showed need request new ad
+    private boolean isShowedAd = true;
 
     public HomeFragment() {
 
@@ -112,9 +114,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             Log.e(TAG, e.getMessage(), e);
         }
     }
-
-    //Flag ads is showed need request new ad
-    private boolean isShowedAd = true;
 
     private boolean checkAndShowAd(final VPNGateConnection vpnGateConnection) {
         if (dataUtil.hasAds()) {

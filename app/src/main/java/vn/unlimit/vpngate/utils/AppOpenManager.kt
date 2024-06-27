@@ -19,7 +19,7 @@ import vn.unlimit.vpngate.activities.SplashActivity
 import java.util.Date
 
 
-class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks{
+class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks {
     private val LOG_TAG = "AppOpenManager"
     private var AD_UNIT_ID: String? = null
     private var appOpenAd: AppOpenAd? = null
@@ -39,6 +39,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
                     showAdIfAvailable()
                     Log.d(LOG_TAG, "onStart")
                 }
+
                 else -> {}
             }
         }

@@ -67,7 +67,8 @@ class ChangePassFragment : Fragment(), View.OnClickListener {
                     checkEmptyField(txtNewPassword, R.string.prompt_new_password)
                     checkEmptyField(txtReNewPassword, R.string.prompt_re_new_password)
                     // Check password regex
-                    val matcher = Pattern.compile(SignUpActivity.passWordRegex).matcher(txtNewPassword!!.text)
+                    val matcher =
+                        Pattern.compile(SignUpActivity.passWordRegex).matcher(txtNewPassword!!.text)
                     if (!matcher.matches()) {
                         throw Exception(getString(R.string.new_password_is_invalid))
                     }
@@ -78,7 +79,11 @@ class ChangePassFragment : Fragment(), View.OnClickListener {
                     if (txtNewPassword!!.text.toString() != txtReNewPassword!!.text.toString()) {
                         throw Exception(getString(R.string.re_type_password_does_not_match))
                     }
-                    userViewModel?.changePass(txtPassword!!.text.toString(), txtNewPassword!!.text.toString(), requireActivity())
+                    userViewModel?.changePass(
+                        txtPassword!!.text.toString(),
+                        txtNewPassword!!.text.toString(),
+                        requireActivity()
+                    )
                 } catch (ex: Exception) {
                     Toast.makeText(requireContext(), ex.message.toString(), Toast.LENGTH_SHORT)
                         .show()
@@ -91,7 +96,10 @@ class ChangePassFragment : Fragment(), View.OnClickListener {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel!!.isLoading.observe(viewLifecycleOwner) {
             if (it && !loadingDialog.isVisible) {
-               return@observe loadingDialog.show(parentFragmentManager, LoadingDialog::class.java.name)
+                return@observe loadingDialog.show(
+                    parentFragmentManager,
+                    LoadingDialog::class.java.name
+                )
             }
             if (loadingDialog.isVisible) {
                 loadingDialog.dismiss()

@@ -6,15 +6,15 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import vn.unlimit.vpngate.models.request.UpdateProfileRequest
-import vn.unlimit.vpngate.models.response.UpdateProfileResponse
 import vn.unlimit.vpngate.models.User
 import vn.unlimit.vpngate.models.request.ChangePasswordRequest
 import vn.unlimit.vpngate.models.request.ForgotPasswordRequest
 import vn.unlimit.vpngate.models.request.RegisterRequest
 import vn.unlimit.vpngate.models.request.ResetPasswordRequest
+import vn.unlimit.vpngate.models.request.UpdateProfileRequest
 import vn.unlimit.vpngate.models.request.UserLoginRequest
 import vn.unlimit.vpngate.models.response.CaptchaResponse
+import vn.unlimit.vpngate.models.response.UpdateProfileResponse
 import vn.unlimit.vpngate.models.response.UserActivateResponse
 import vn.unlimit.vpngate.models.response.UserLoginResponse
 

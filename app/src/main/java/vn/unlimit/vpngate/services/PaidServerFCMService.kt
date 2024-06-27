@@ -62,7 +62,8 @@ class PaidServerFCMService : FirebaseMessagingService() {
                     notificationSetting.data = true
                     notificationSetting.ticket = true
                 } else {
-                    notificationSetting = paidServerUtil.gson.fromJson(json, object : TypeToken<DeviceInfo>() {}.type)
+                    notificationSetting =
+                        paidServerUtil.gson.fromJson(json, object : TypeToken<DeviceInfo>() {}.type)
                 }
                 GlobalScope.launch {
                     try {
@@ -80,7 +81,9 @@ class PaidServerFCMService : FirebaseMessagingService() {
                         )
                         Log.d(
                             TAG,
-                            "Add device in FCMService success with message %s".format(deviceAddResponse.toString())
+                            "Add device in FCMService success with message %s".format(
+                                deviceAddResponse.toString()
+                            )
                         )
                     } catch (e: Exception) {
                         Log.e(TAG, "Add device error with message %s", e)

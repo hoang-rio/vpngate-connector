@@ -6,14 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import vn.unlimit.vpngate.api.ChartApiService
-import vn.unlimit.vpngate.request.RequestListener
 
 open class ChartViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "ChartViewModel"
     }
+
     enum class ChartType {
         HOURLY,
         DAILY,

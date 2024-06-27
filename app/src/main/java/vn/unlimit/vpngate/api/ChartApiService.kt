@@ -1,6 +1,5 @@
 package vn.unlimit.vpngate.api
 
-import org.json.JSONArray
 import retrofit2.http.GET
 
 interface ChartApiService {

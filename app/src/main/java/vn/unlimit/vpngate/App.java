@@ -19,15 +19,13 @@ import vn.unlimit.vpngate.utils.PaidServerUtil;
 
 public class App extends Application {
 
+    private static final String TAG = "VpnGateApp";
+    @SuppressLint("StaticFieldLeak")
+    public static AppOpenManager appOpenManager;
     private static App instance;
     private static boolean isImportToOpenVPN = false;
     private DataUtil dataUtil;
     private PaidServerUtil paidServerUtil;
-    private static final String TAG = "VpnGateApp";
-
-    @SuppressLint("StaticFieldLeak")
-    public static AppOpenManager appOpenManager;
-
 
     public static String getResourceString(int resId) {
         return instance.getString(resId);

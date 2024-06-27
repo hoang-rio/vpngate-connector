@@ -72,6 +72,7 @@ class PersonalFragment : Fragment(), View.OnClickListener {
                 intent.putExtra(MainActivity.TARGET_FRAGMENT, "about")
                 startActivity(intent)
             }
+
             R.id.ln_notification_setting -> findNavController().navigate(R.id.navigation_notification_setting)
             R.id.ln_change_password -> findNavController().navigate(R.id.navigation_change_pass)
             R.id.ln_profile -> findNavController().navigate(R.id.navigation_profile)
@@ -89,9 +90,17 @@ class PersonalFragment : Fragment(), View.OnClickListener {
                         val deleteResult = result as Boolean
                         if (deleteResult) {
                             userViewModel.localLogout(requireActivity())
-                            Toast.makeText(requireContext(), R.string.account_deleted, Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.account_deleted,
+                                Toast.LENGTH_LONG
+                            ).show()
                         } else {
-                            Toast.makeText(requireContext(), R.string.account_activate_failed, Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.account_activate_failed,
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
 

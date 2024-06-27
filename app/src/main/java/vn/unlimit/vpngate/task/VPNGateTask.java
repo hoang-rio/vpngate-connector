@@ -22,9 +22,9 @@ import vn.unlimit.vpngate.utils.DataUtil;
  */
 
 public class VPNGateTask extends AsyncTask<Void, Void, VPNGateConnectionList> {
+    private static final String TAG = "VPNGateTask";
     private RequestListener requestListener;
     private Boolean isRetried = false;
-    private static final String TAG = "VPNGateTask";
 
     @Override
     protected VPNGateConnectionList doInBackground(Void... voids) {

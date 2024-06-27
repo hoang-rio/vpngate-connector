@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.DatePicker
+import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import vn.unlimit.vpngate.R
@@ -14,7 +18,7 @@ import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
-import java.util.*
+import java.util.Calendar
 
 class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDateSetListener,
     View.OnFocusChangeListener {
@@ -115,6 +119,7 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                             getText(R.string.prompt_full_name)
                         )
                     }
+
                     txtBirthday!!.text.isNullOrEmpty() -> {
                         txtBirthday!!.requestFocus()
                         errorMsg = getString(
@@ -122,6 +127,7 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                             getText(R.string.prompt_birthday)
                         )
                     }
+
                     txtTimeZone!!.text.isNullOrEmpty() -> {
                         txtTimeZone!!.requestFocus()
                         errorMsg = getString(
@@ -129,10 +135,12 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                             getText(R.string.prompt_timezone)
                         )
                     }
+
                     (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) -> {
                         txtTimeZone!!.requestFocus()
                         getText(R.string.invalid_timezone)
                     }
+
                     else -> {}
                 }
                 if (errorMsg != null) {

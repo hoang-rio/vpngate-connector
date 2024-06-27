@@ -65,7 +65,10 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
                                     if (deviceAddResponse.result) {
                                         setDeviceInfo(deviceAddResponse.userDevice!!)
                                     }
-                                    Log.d(TAG, "Add device result %s".format(deviceAddResponse.toString()))
+                                    Log.d(
+                                        TAG,
+                                        "Add device result %s".format(deviceAddResponse.toString())
+                                    )
                                 } catch (e: Exception) {
                                     Log.e(TAG, "Got exception when add device after login", e)
                                 }

@@ -72,10 +72,11 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 val productDetails: ProductDetails = _list[position]
                 txtTitle.text = productDetails.title
                 txtDescription.text = productDetails.description
-                val priceToGb = productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros / 1000000 / productDetails.productId.replace(
-                    Regex("[^0-9]"),
-                    ""
-                ).toInt()
+                val priceToGb =
+                    productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros / 1000000 / productDetails.productId.replace(
+                        Regex("[^0-9]"),
+                        ""
+                    ).toInt()
                 btnBuy.text = mContext!!.getString(
                     R.string.btn_buy_data,
                     productDetails.oneTimePurchaseOfferDetails!!.formattedPrice,

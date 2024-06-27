@@ -23,15 +23,15 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList;
  */
 
 public class SortBottomSheetDialog extends BottomSheetDialogFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
-    private static String PROPERTY_KEY = "PROPERTY_KEY";
-    private static String TYPE_KEY = "TYPE_KEY";
+    private static final String PROPERTY_KEY = "PROPERTY_KEY";
+    private static final String TYPE_KEY = "TYPE_KEY";
     View btnApply;
     private String mSortProperty;
     private int mSortType = VPNGateConnectionList.ORDER.ASC;
     private RadioGroup rdgSortProperty;
     private RadioGroup rdgSortProperty2;
     private RadioGroup rdgSortType;
-    private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
+    private final BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
 
         @Override
         public void onStateChanged(@NonNull View bottomSheet, int newState) {

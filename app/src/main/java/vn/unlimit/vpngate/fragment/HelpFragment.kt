@@ -82,7 +82,7 @@ class HelpFragment : Fragment(), View.OnClickListener {
                     )
                     false
                 } else {
-                    txtErrorContent?.setText("")
+                    txtErrorContent?.text = ""
                     true
                 }
             }

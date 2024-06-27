@@ -2,14 +2,23 @@ package vn.unlimit.vpngate.activities.paid
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.net.VpnService
-import android.os.*
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.RemoteException
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -26,8 +35,15 @@ import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.VpnProfile
-import de.blinkt.openvpn.core.*
+import de.blinkt.openvpn.core.ConfigParser
 import de.blinkt.openvpn.core.ConfigParser.ConfigParseError
+import de.blinkt.openvpn.core.ConnectionStatus
+import de.blinkt.openvpn.core.IOpenVPNServiceInternal
+import de.blinkt.openvpn.core.OpenVPNManagement
+import de.blinkt.openvpn.core.OpenVPNService
+import de.blinkt.openvpn.core.ProfileManager
+import de.blinkt.openvpn.core.VPNLaunchHelper
+import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
@@ -41,7 +57,11 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.util.regex.Pattern
 
 class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener,
@@ -287,6 +307,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     )
                     txtStatusText?.text = getText(R.string.full)
                 }
+
                 mPaidServer!!.serverStatus === "Medium" -> {
                     txtStatusColor?.setTextColor(
                         ResourcesCompat.getColor(
@@ -297,6 +318,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     )
                     txtStatusText?.text = getText(R.string.medium)
                 }
+
                 else -> {
                     txtStatusColor?.setTextColor(
                         ResourcesCompat.getColor(
@@ -415,8 +437,14 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             OscPrefKey.HOME_COUNTRY.toString(),
             mPaidServer!!.serverCountryCode.uppercase()
         )
-        editor.putString(OscPrefKey.HOME_USERNAME.toString(), paidServerUtil.getUserInfo()!!.username)
-        editor.putString(OscPrefKey.HOME_PASSWORD.toString(), paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW))
+        editor.putString(
+            OscPrefKey.HOME_USERNAME.toString(),
+            paidServerUtil.getUserInfo()!!.username
+        )
+        editor.putString(
+            OscPrefKey.HOME_PASSWORD.toString(),
+            paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
+        )
         editor.putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
         editor.apply()
         btnSSTPConnect!!.background = ResourcesCompat.getDrawable(
@@ -654,6 +682,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 intentL2TP.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mPaidServer)
                 startActivity(intentL2TP)
             }
+
             btnSSTPConnect -> handleSSTPBtn()
             btnConnect -> connectVPNServer()
             txtCheckIp -> {
@@ -670,6 +699,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 )
                 startActivity(browserIntent)
             }
+
             btnInstallOpenVpn -> {
                 try {
                     startActivity(
@@ -687,6 +717,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     )
                 }
             }
+
             btnSaveConfigFile -> {
                 if (mPaidServer!!.tcpPort > 0 && mPaidServer!!.udpPort > 0) {
                     val connectionUseProtocol: ConnectionUseProtocol =
@@ -787,6 +818,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         isAuthFailed = false
                         txtCheckIp?.visibility = View.VISIBLE
                     }
+
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
                         txtCheckIp?.visibility = View.GONE
                         btnConnect!!.setText(R.string.connect_to_this_server)
@@ -799,6 +831,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         txtNetStats!!.visibility = View.GONE
                         paidServerUtil.clearCurrentSession()
                     }
+
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
                         isAuthFailed = true
                         btnConnect!!.text = getString(R.string.retry_connect)
@@ -818,6 +851,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         isConnecting = false
                         paidServerUtil.clearCurrentSession()
                     }
+
                     else -> txtCheckIp?.visibility = View.GONE
                 }
             } catch (th: Throwable) {
