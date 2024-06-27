@@ -2,8 +2,6 @@ package vn.unlimit.vpngate.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -41,21 +40,20 @@ import vn.unlimit.vpngate.dialog.CopyBottomSheetDialog;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
-import vn.unlimit.vpngate.request.RequestListener;
-import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.utils.DataUtil;
+import vn.unlimit.vpngate.viewmodels.ConnectionListViewModel;
 
 /**
  * Created by hoangnd on 1/30/2018.
  */
 
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, RequestListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener, OnScrollListener {
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener, OnScrollListener {
     private final String TAG = "HOME_FREE";
     private SwipeRefreshLayout lnSwipeRefresh;
     private Context mContext;
     private RecyclerView recyclerViewVPN;
     private VPNGateListAdapter vpnGateListAdapter;
-    private VPNGateTask vpnGateTask;
+    private ConnectionListViewModel connectionListViewModel;
     private DataUtil dataUtil;
     private View btnToTop;
     private boolean isSearching = false;
@@ -74,9 +72,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (vpnGateTask != null) {
-            vpnGateTask.stop();
-        }
     }
 
     @Override
@@ -151,6 +146,17 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             dataUtil = App.getInstance().getDataUtil();
             vpnGateListAdapter = new VPNGateListAdapter(mContext);
             handler = new Handler();
+            connectionListViewModel = new ViewModelProvider(this).get(ConnectionListViewModel.class);
+            connectionListViewModel.isLoading().observe(this, isLoading -> {
+                if (!isLoading && connectionListViewModel.getVpnGateConnectionList().getValue() != null) {
+                    onSuccess(connectionListViewModel.getVpnGateConnectionList().getValue());
+                }
+            });
+            connectionListViewModel.isError().observe(this, isError -> {
+                if (isError) {
+                    onError("");
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage(), e);
@@ -250,9 +256,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void stopTask() {
         lnSwipeRefresh.setEnabled(false);
         lnSwipeRefresh.setRefreshing(false);
-        if (vpnGateTask != null && !vpnGateTask.isCancelled()) {
-            vpnGateTask.stop();
-        }
     }
 
     /**
@@ -302,7 +305,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             params.putString("country", ((VPNGateConnection) o).getCountryLong());
             FirebaseAnalytics.getInstance(mContext).logEvent("Long_Click_Server", params);
             CopyBottomSheetDialog dialog = CopyBottomSheetDialog.newInstance((VPNGateConnection) o);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && !mActivity.isFinishing() && !mActivity.isDestroyed()) {
+            if (!mActivity.isFinishing() && !mActivity.isDestroyed()) {
                 assert getFragmentManager() != null;
                 dialog.show(getFragmentManager(), CopyBottomSheetDialog.class.getName());
             } else if (!mActivity.isFinishing()) {
@@ -327,15 +330,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        if (vpnGateTask != null && !vpnGateTask.isCancelled()) {
-            vpnGateTask.stop();
-        }
-        vpnGateTask = new VPNGateTask();
-        vpnGateTask.setRequestListener(this);
-        vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        connectionListViewModel.getAPIData();
     }
 
-    @Override
     public void onSuccess(Object o) {
         mActivity.setVpnGateConnectionList((VPNGateConnectionList) o);
         if (!"".equals(mActivity.getSortProperty())) {
@@ -348,7 +345,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         lnSwipeRefresh.setRefreshing(false);
     }
 
-    @Override
     public void onError(String error) {
         try {
             lnSwipeRefresh.setRefreshing(false);

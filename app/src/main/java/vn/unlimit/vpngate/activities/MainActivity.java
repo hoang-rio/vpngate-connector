@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +30,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -39,7 +39,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.ump.ConsentDebugSettings;
-import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
 import com.google.android.ump.FormError;
@@ -68,24 +67,17 @@ import vn.unlimit.vpngate.fragment.SettingFragment;
 import vn.unlimit.vpngate.fragment.StatusFragment;
 import vn.unlimit.vpngate.models.VPNGateConnectionList;
 import vn.unlimit.vpngate.provider.BaseProvider;
-import vn.unlimit.vpngate.request.RequestListener;
-import vn.unlimit.vpngate.task.VPNGateTask;
 import vn.unlimit.vpngate.utils.DataUtil;
 import vn.unlimit.vpngate.utils.PaidServerUtil;
+import vn.unlimit.vpngate.viewmodels.ConnectionListViewModel;
 
-public class MainActivity extends AppCompatActivity implements RequestListener, View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    //    // Used to load the 'native-lib' library on application startup.
-//    static {
-//        System.loadLibrary("native-lib");
-//    }
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public static final String TARGET_FRAGMENT = "TARGET_FRAGMENT";
     private static final String TAG = "MainActivity";
     private static final String SORT_PROPERTY_KEY = "SORT_PROPERTY_KEY";
     private static final String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
-    VPNGateConnectionList vpnGateConnectionList;
-    VPNGateTask vpnGateTask;
+    public ConnectionListViewModel connectionListViewModel;
     View lnLoading;
     View frameContent;
     boolean isLoading = true;
@@ -153,12 +145,27 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataUtil = ((App) getApplication()).getDataUtil();
+        connectionListViewModel = new ViewModelProvider(this).get(ConnectionListViewModel.class);
+        connectionListViewModel.isLoading().observe(this, aBoolean -> {
+            if (aBoolean) {
+                lnLoading.setVisibility(View.VISIBLE);
+            } else {
+                onSuccess();
+            }
+        });
+        connectionListViewModel.isError().observe(this, isError -> {
+            if (isError) {
+                onError("");
+            } else {
+                lnError.setVisibility(View.GONE);
+            }
+        });
         if (savedInstanceState != null) {
             isLoading = false;
             currentUrl = savedInstanceState.getString("currentUrl");
             currentTitle = savedInstanceState.getString("currentTitle");
             setVpnGateConnectionList(dataUtil.getConnectionsCache());
-            disallowLoadHome = vpnGateConnectionList != null && vpnGateConnectionList.size() > 0;
+            disallowLoadHome = connectionListViewModel.getVpnGateConnectionList().getValue() != null && connectionListViewModel.getVpnGateConnectionList().getValue().size() > 0;
         }
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
@@ -320,11 +327,12 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         if (!disallowLoadHome) {
             if (DataUtil.isOnline(getApplicationContext())) {
                 lnNoNetwork.setVisibility(View.GONE);
-                setVpnGateConnectionList(dataUtil.getConnectionsCache());
+                VPNGateConnectionList vpnGateConnectionList = dataUtil.getConnectionsCache();
+                setVpnGateConnectionList(vpnGateConnectionList);
                 if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
                     getDataServer();
                 } else {
-                    updateData(vpnGateConnectionList);
+                    connectionListViewModel.isLoading().postValue(false);
                 }
                 if (FirebaseRemoteConfig.getInstance().getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil.getBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, false)) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -376,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     protected void onResume() {
         super.onResume();
         try {
-            if (currentUrl.equals("home") && (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0)) {
+            if (currentUrl.equals("home") && (connectionListViewModel.getVpnGateConnectionList().getValue() == null || connectionListViewModel.getVpnGateConnectionList().getValue().size() == 0)) {
                 initState();
             }
             isInFront = true;
@@ -388,25 +396,16 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (vpnGateTask != null) {
-            vpnGateTask.stop();
-        }
         unregisterReceiver(broadcastReceiver);
     }
 
     @SuppressWarnings("deprecation")
     private void getDataServer() {
         isLoading = true;
-        lnLoading.setVisibility(View.VISIBLE);
         lnError.setVisibility(View.GONE);
         frameContent.setVisibility(View.GONE);
         lnNoNetwork.setVisibility(View.GONE);
-        if (vpnGateTask != null && vpnGateTask.isCancelled()) {
-            vpnGateTask.stop();
-        }
-        vpnGateTask = new VPNGateTask();
-        vpnGateTask.setRequestListener(this);
-        vpnGateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        connectionListViewModel.getAPIData();
     }
 
     @Override
@@ -484,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     return false;
                 }
             });
-            if (vpnGateConnectionList != null && vpnGateConnectionList.getFilter() != null) {
+            if (connectionListViewModel.getVpnGateConnectionList().getValue() != null && connectionListViewModel.getVpnGateConnectionList().getValue().getFilter() != null) {
                 menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_active_white);
             }
         } catch (Exception e) {
@@ -531,8 +530,8 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             return true;
         }
 
-        if (itemId == R.id.action_filter && vpnGateConnectionList != null) {
-            FilterBottomSheetDialog filterBottomSheetDialog = FilterBottomSheetDialog.newInstance(vpnGateConnectionList.getFilter());
+        if (itemId == R.id.action_filter && connectionListViewModel.getVpnGateConnectionList().getValue() != null) {
+            FilterBottomSheetDialog filterBottomSheetDialog = FilterBottomSheetDialog.newInstance(connectionListViewModel.getVpnGateConnectionList().getValue().getFilter());
             filterBottomSheetDialog.setOnButtonClickListener(filter -> {
                 mMenu.findItem(R.id.action_filter).setIcon(filter == null ? R.drawable.ic_filter_white : R.drawable.ic_filter_active_white);
                 HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
@@ -540,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                     Bundle params = new Bundle();
                     params.putString("filterObj", new Gson().toJson(filter));
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Filter", params);
-                    vpnGateConnectionList.setFilter(filter);
+                    connectionListViewModel.getVpnGateConnectionList().getValue().setFilter(filter);
                     homeFragment.advanceFilter(filter);
                 }
             });
@@ -554,21 +553,20 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSuccess(Object o) {
+    public void onSuccess() {
+        VPNGateConnectionList vpnGateConnectionList = connectionListViewModel.getVpnGateConnectionList().getValue();
         isLoading = false;
         lnLoading.setVisibility(View.GONE);
         frameContent.setVisibility(View.VISIBLE);
         if (!"".equals(mSortProperty)) {
-            ((VPNGateConnectionList) o).sort(mSortProperty, mSortType);
+            vpnGateConnectionList.sort(mSortProperty, mSortType);
         }
-        updateData((VPNGateConnectionList) o);
+        updateData(vpnGateConnectionList);
         dataUtil.setConnectionsCache(vpnGateConnectionList);
     }
 
     private void updateData(VPNGateConnectionList o) {
         isLoading = false;
-        this.setVpnGateConnectionList(o);
         lnLoading.setVisibility(View.GONE);
         replaceFragment("home");
     }
@@ -608,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
                 return false;
             }
             case R.id.nav_home -> {
-                if (vpnGateConnectionList == null) {
+                if (connectionListViewModel.getVpnGateConnectionList().getValue() == null) {
                     getDataServer();
                 }
                 replaceFragment("home");
@@ -656,9 +654,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
 
     private void stopRequest() {
         try {
-            if (vpnGateTask != null && !vpnGateTask.isCancelled()) {
-                vpnGateTask.stop();
-            }
             lnError.setVisibility(View.GONE);
             lnLoading.setVisibility(View.GONE);
             lnNoNetwork.setVisibility(View.GONE);
@@ -670,7 +665,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     private void replaceFragment(String url) {
         try {
             if (url != null && (!url.equals(currentUrl) || url.equals("home"))) {
-                toggleAction(url.equals("home") && vpnGateConnectionList != null);
+                toggleAction(url.equals("home") && connectionListViewModel.getVpnGateConnectionList().getValue() != null);
                 if (!url.equals("home")) {
                     lnLoading.setVisibility(View.GONE);
                     lnNoNetwork.setVisibility(View.GONE);
@@ -767,7 +762,7 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
             Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
             new Handler(getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
         } else {
-            if (vpnGateConnectionList == null) {
+            if (connectionListViewModel.getVpnGateConnectionList().getValue() == null) {
                 getDataServer();
             }
             navigationView.setCheckedItem(R.id.nav_home);
@@ -783,7 +778,6 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
         }
     }
 
-    @Override
     public void onError(String error) {
         Bundle params = new Bundle();
         params.putString("screen", "home");
@@ -796,13 +790,13 @@ public class MainActivity extends AppCompatActivity implements RequestListener, 
     }
 
     public VPNGateConnectionList getVpnGateConnectionList() {
-        return vpnGateConnectionList;
+        return connectionListViewModel.getVpnGateConnectionList().getValue();
     }
 
     public void setVpnGateConnectionList(VPNGateConnectionList _vpnGateConnectionList) {
-        vpnGateConnectionList = _vpnGateConnectionList;
+        connectionListViewModel.getVpnGateConnectionList().postValue(_vpnGateConnectionList);
         if (mMenu != null) {
-            mMenu.findItem(R.id.action_filter).setIcon(vpnGateConnectionList != null && vpnGateConnectionList.getFilter() != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
+            mMenu.findItem(R.id.action_filter).setIcon(_vpnGateConnectionList != null && _vpnGateConnectionList.getFilter() != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
         }
     }
 }

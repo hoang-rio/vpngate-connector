@@ -38,7 +38,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         return@addInterceptor it.proceed(requestBuilder.build())
     }
 
-    var retrofit: Retrofit = Retrofit.Builder().baseUrl(
+    open var retrofit: Retrofit = Retrofit.Builder().baseUrl(
         FirebaseRemoteConfig.getInstance()
             .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
     )
