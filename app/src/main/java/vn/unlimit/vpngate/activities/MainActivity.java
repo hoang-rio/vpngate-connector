@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         try {
                             navigationView.getMenu().findItem(R.id.nav_status).setVisible(true);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "Got exception when handle broadcast receive", e);
                         }
                     }
                 }
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Log.e(TAG, "Got exception handle support action bar", ex);
         }
 
         checkUMP();
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             hideAdContainer();
         }
+        addBackPressedHandler();
     }
 
     private void checkStatusMenu() {
@@ -289,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 navigationView.getMenu().setGroupVisible(R.id.menu_top, false);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when initAdMob", e);
         }
     }
 
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             findViewById(R.id.ad_container_home).setVisibility(View.GONE);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when hideAdContainer", e);
         }
     }
 
@@ -335,14 +337,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     connectionListViewModel.isLoading().postValue(false);
                 }
                 if (FirebaseRemoteConfig.getInstance().getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil.getBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, false)) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                    alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
-                        // Allow invite => Redirect to paid screen
-                        dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
-                        Intent intentPaidServer = new Intent(this, LoginActivity.class);
-                        startActivity(intentPaidServer);
-                        finish();
-                    });
+                    AlertDialog.Builder alertDialogBuilder = getAlertDialogBuilder();
                     alertDialogBuilder.setNegativeButton(android.R.string.no, ((dialogInterface, i) -> {
                         dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
                         dialogInterface.dismiss();
@@ -364,6 +359,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lnError.setVisibility(View.GONE);
             lnLoading.setVisibility(View.GONE);
         }
+    }
+
+    private AlertDialog.Builder getAlertDialogBuilder() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+            // Allow invite => Redirect to paid screen
+            dataUtil.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true);
+            Intent intentPaidServer = new Intent(this, LoginActivity.class);
+            startActivity(intentPaidServer);
+            finish();
+        });
+        return alertDialogBuilder;
     }
 
     @Override
@@ -389,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             isInFront = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when handle onResume", e);
         }
     }
 
@@ -399,7 +406,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unregisterReceiver(broadcastReceiver);
     }
 
-    @SuppressWarnings("deprecation")
     private void getDataServer() {
         isLoading = true;
         lnError.setVisibility(View.GONE);
@@ -487,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_active_white);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when handle search view", e);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -558,14 +564,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         isLoading = false;
         lnLoading.setVisibility(View.GONE);
         frameContent.setVisibility(View.VISIBLE);
-        if (!"".equals(mSortProperty)) {
+        if (vpnGateConnectionList != null && !"".equals(mSortProperty)) {
             vpnGateConnectionList.sort(mSortProperty, mSortType);
         }
-        updateData(vpnGateConnectionList);
+        updateData();
         dataUtil.setConnectionsCache(vpnGateConnectionList);
     }
 
-    private void updateData(VPNGateConnectionList o) {
+    private void updateData() {
         isLoading = false;
         lnLoading.setVisibility(View.GONE);
         replaceFragment("home");
@@ -599,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")));
                         } catch (ActivityNotFoundException exception) {
                             // No activity to handle this action
-                            exception.printStackTrace();
+                            Log.e(TAG, "Got exception when handle onNavigationItemSelected", exception);
                         }
                     }
                 }
@@ -658,7 +664,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lnLoading.setVisibility(View.GONE);
             lnNoNetwork.setVisibility(View.GONE);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when handle stopRequest", e);
         }
     }
 
@@ -719,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when handle replaceFragment", e);
         }
     }
 
@@ -737,7 +743,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(i);
             this.finishAffinity();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Got exception when handle restartApp", e);
             this.startHome();
         }
     }
@@ -750,25 +756,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        String startUpUrl = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? "home" : "status";
-        if (startUpUrl.equals(currentUrl)) {
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
+    void addBackPressedHandler() {
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                String startUpUrl = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0 ? "home" : "status";
+                if (startUpUrl.equals(currentUrl)) {
+                    if (doubleBackToExitPressedOnce) {
+                        MainActivity.this.finish();
+                        return;
+                    }
+                    doubleBackToExitPressedOnce = true;
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+                    new Handler(getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+                } else {
+                    if (connectionListViewModel.getVpnGateConnectionList().getValue() == null) {
+                        getDataServer();
+                    }
+                    navigationView.setCheckedItem(R.id.nav_home);
+                    replaceFragment(startUpUrl);
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
             }
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, getResources().getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
-            new Handler(getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
-        } else {
-            if (connectionListViewModel.getVpnGateConnectionList().getValue() == null) {
-                getDataServer();
-            }
-            navigationView.setCheckedItem(R.id.nav_home);
-            replaceFragment(startUpUrl);
-        }
-        drawerLayout.closeDrawer(GravityCompat.START);
+        });
     }
 
     private void setTitleActionbar(String title) {
