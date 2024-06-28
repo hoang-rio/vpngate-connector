@@ -68,7 +68,7 @@ class ChangePassFragment : Fragment(), View.OnClickListener {
                     checkEmptyField(txtReNewPassword, R.string.prompt_re_new_password)
                     // Check password regex
                     val matcher =
-                        Pattern.compile(SignUpActivity.passWordRegex).matcher(txtNewPassword!!.text)
+                        Pattern.compile(SignUpActivity.PASSWORD_REGEX).matcher(txtNewPassword!!.text)
                     if (!matcher.matches()) {
                         throw Exception(getString(R.string.new_password_is_invalid))
                     }

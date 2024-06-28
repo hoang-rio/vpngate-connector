@@ -45,7 +45,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
         lnForm = findViewById(R.id.ln_form)
         lnInvalidToken = findViewById(R.id.ln_invalid_token)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this, Observer {
             if (it) {
                 loadingDialog =
@@ -119,7 +119,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
         isPressedResetPass = true
         val newPassword = txtNewPassword!!.text.toString()
         val reRenewPassword = txtRenewPassword!!.text.toString()
-        val matcher = Pattern.compile(SignUpActivity.passWordRegex).matcher(newPassword)
+        val matcher = Pattern.compile(SignUpActivity.PASSWORD_REGEX).matcher(newPassword)
         if (!matcher.matches()) {
             return Toast.makeText(this, getString(R.string.password_is_invalid), Toast.LENGTH_LONG)
                 .show()

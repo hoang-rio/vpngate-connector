@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoggingIn ->
             if (!isClickedLogin) {
                 return@observe

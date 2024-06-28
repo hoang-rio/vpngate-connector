@@ -51,7 +51,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     companion object {
         private const val TAG = "SignUpActivity"
-        const val passWordRegex = "^[-\\w.$@*!]{5,30}$"
+        const val PASSWORD_REGEX = "^[-\\w.$@*!]{5,30}$"
         private const val USER_NAME_REGEX = "^[a-z0-9]{5,30}$"
     }
 
@@ -99,7 +99,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
@@ -280,7 +280,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                 throw Exception(getString(R.string.username_is_invalid))
             }
             // Check password regex
-            matcher = Pattern.compile(passWordRegex).matcher(txtPassword!!.text)
+            matcher = Pattern.compile(PASSWORD_REGEX).matcher(txtPassword!!.text)
             if (!matcher.matches()) {
                 throw Exception(getString(R.string.password_is_invalid))
             }

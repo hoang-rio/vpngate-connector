@@ -84,8 +84,8 @@ class PaidServerActivity : AppCompatActivity() {
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        deviceViewModel = ViewModelProvider(this).get(DeviceViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        deviceViewModel = ViewModelProvider(this)[DeviceViewModel::class.java]
         userViewModel!!.isLoggedIn.observe(this) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed

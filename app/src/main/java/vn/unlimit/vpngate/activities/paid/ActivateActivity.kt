@@ -39,7 +39,7 @@ class ActivateActivity : AppCompatActivity() {
         lnActivating = findViewById(R.id.ln_activating)
         lnActivated = findViewById(R.id.ln_activated)
         lnActivateFailed = findViewById(R.id.ln_activate_failed)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         lnActivateFailed!!.visibility = View.INVISIBLE
         lnActivated!!.visibility = View.INVISIBLE
         lnActivating!!.visibility = View.VISIBLE

@@ -190,7 +190,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             if (String.valueOf(OscPrefKey.HOME_CONNECTED_IP).equals(key)) {
                 String connectedIp = prefs.getString(String.valueOf(OscPrefKey.HOME_CONNECTED_IP), "");
-                if (!"".equals(connectedIp)) {
+                if (!connectedIp.isEmpty()) {
                     btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                     btnConnectSSTP.setText(R.string.disconnect_sstp);
                     txtStatus.setText(getString(R.string.sstp_connected, connectedIp));
@@ -226,7 +226,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Open_Detail", params);
             } catch (NullPointerException ex) {
-                ex.printStackTrace();
+                Log.e(TAG, "onCreate error", ex);
             }
 
         } else {
@@ -317,7 +317,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 hideAdContainer();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "initAdMob error", e);
         }
     }
 
@@ -328,7 +328,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "hideAdContainer error", e);
         }
     }
 
@@ -356,7 +356,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                             btnConnect.setText(getString(R.string.disconnect));
                             txtNetStats.setVisibility(View.VISIBLE);
-                            if (isConnecting && !mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
+                            if (isConnecting && !mVpnGateConnection.getMessage().isEmpty() && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                                 MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
                                 if (!isFinishing() && !isDestroyed()) {
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
@@ -404,7 +404,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             } catch (Exception e) {
                 Log.e(TAG, "UpdateState error", e);
-                e.printStackTrace();
             }
         });
     }
@@ -469,7 +468,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "bindData error", e);
             }
         }
     }
@@ -504,7 +503,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onResume error", e);
         }
     }
 
@@ -515,7 +514,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             TotalTraffic.saveTotal(this);
             unbindService(mConnection);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onPause error", e);
         }
     }
 
@@ -546,7 +545,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }, 500);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "handleImport error", e);
         }
     }
 
@@ -587,7 +586,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         try {
             if (view.equals(btnBack)) {
-                onBackPressed();
+                finish();
                 return;
             }
             if (view.equals(btnConnect)) {
@@ -682,7 +681,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onClick error", e);
         }
 
     }
@@ -766,7 +765,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "initInterstitialAd error", e);
             }
         }
     }
@@ -780,7 +779,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "loadAds error", e);
         }
     }
 
@@ -825,7 +824,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             ProfileManager.setTemporaryProfile(getApplicationContext(), vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {
-            e.printStackTrace();
+            Log.e(TAG, "loadVpnProfile error", e);
             return false;
         }
 
@@ -836,7 +835,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             return VpnStatus.isVPNActive();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "checkStatus error", e);
         }
 
         return false;
@@ -891,7 +890,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onActivityResult error", e);
         }
     }
 

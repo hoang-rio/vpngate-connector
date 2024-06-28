@@ -124,6 +124,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_server)
@@ -568,7 +569,6 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         try {

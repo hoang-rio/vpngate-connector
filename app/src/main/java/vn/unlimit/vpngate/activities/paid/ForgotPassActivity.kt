@@ -37,7 +37,6 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_pass)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         loadingDialog = LoadingDialog.newInstance()
         ivCaptcha = findViewById(R.id.iv_captcha)
         ivCaptcha!!.setOnClickListener(this)
@@ -81,7 +80,7 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
