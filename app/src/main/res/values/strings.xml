@@ -362,4 +362,6 @@
     <string name="install_source_error_title">Invalid install</string>
     <string name="install_source_error_message">You are using illegal install version. Please install legal version from Play Store</string>
     <string name="install_source_error_open_play_store">Open Play Store</string>
+    <string name="notification_channel_id" translatable="false">vpn_gate_notification_channel</string>
+    <string name="notification_channel_name">Out of data</string>
 </resources>

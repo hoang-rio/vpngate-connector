@@ -327,4 +327,5 @@
     <string name="install_source_error_title">Cài đặt không hợp lệ</string>
     <string name="install_source_error_message">Bạn đang sử dụng phiên bản app được cài đặt trái phép. Vui lòng cài đặt phiên bản hợp lệ từ CH Play</string>
     <string name="install_source_error_open_play_store">Mở CH Play</string>
+    <string name="notification_channel_name">Hết dung lượng</string>
 </resources>
