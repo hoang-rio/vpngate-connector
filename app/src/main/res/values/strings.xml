@@ -261,6 +261,7 @@
     <string name="email_is_invalid">Email is invalid, please check.</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
     <string name="birthday_is_invalid">Birthday is invalid</string>
+    <string name="captcha_answer_is_not_correct">Captcha answer is not correct</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Account activate failed: %1$s</string>
     <string name="account_activate_failed_already_activate">Account already activated</string>

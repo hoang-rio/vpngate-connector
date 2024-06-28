@@ -28,6 +28,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
     val vpnGateConnectionList = MutableLiveData<VPNGateConnectionList>()
     private var isRetried = false
     var isError: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val vpnGateApiService: VPNGateApiService = retrofit.create(VPNGateApiService::class.java)
 
     private fun getConnectionList(str: String?): VPNGateConnectionList {
         val vpnGateConnectionList = VPNGateConnectionList()
@@ -63,8 +64,8 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
         if (isLoading.value == true) {
             return
         }
-        isLoading.postValue(true)
-        isError.postValue(false)
+        isLoading.value = true
+        isError.value = false
         viewModelScope.launch {
             try {
                 val connectionList: VPNGateConnectionList
@@ -76,11 +77,6 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                     } else {
                         dataUtil.baseUrl + "/api/iphone/"
                     }
-                val retrofit: Retrofit = Retrofit.Builder()
-                    .addConverterFactory(ScalarsConverterFactory.create())
-                    .baseUrl(url)
-                    .build()
-                val vpnGateApiService = retrofit.create(VPNGateApiService::class.java)
                 csvString = vpnGateApiService.getCsvString(url, version)
                 connectionList = getConnectionList(csvString)
                 if (connectionList.size() == 0 && !isRetried) {

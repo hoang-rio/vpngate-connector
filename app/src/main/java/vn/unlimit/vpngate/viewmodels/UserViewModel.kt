@@ -9,16 +9,20 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.api.UserApiService
 import vn.unlimit.vpngate.models.Captcha
+import vn.unlimit.vpngate.models.UserRegister
 import vn.unlimit.vpngate.models.request.ChangePasswordRequest
 import vn.unlimit.vpngate.models.request.ForgotPasswordRequest
 import vn.unlimit.vpngate.models.request.RegisterRequest
@@ -69,6 +73,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 }
             } catch (e: HttpException) {
                 Log.e(TAG, "Login error with HttpException", e)
+                val responseError = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
+                errorList.postValue(responseError)
                 isLoggedIn.postValue(false)
                 isLoading.postValue(false)
             } catch (e: Exception) {
@@ -168,32 +174,34 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 val isPro = !App.getInstance().dataUtil.hasAds()
                 userApiService.register(
                     RegisterRequest(
-                        username,
-                        fullName,
-                        email,
-                        password,
-                        repassword,
-                        birthDay,
-                        timeZone,
-                        language = Locale.getDefault().language,
-                        userPlatform = PARAMS_USER_PLATFORM,
+                        user = UserRegister(
+                            username,
+                            fullName,
+                            email,
+                            password,
+                            repassword,
+                            birthDay,
+                            timeZone,
+                            language = Locale.getDefault().language,
+                            userPlatform = PARAMS_USER_PLATFORM,
+                        ),
                         captcha = Captcha(answer = captchaAnswer, secret = captchaSecret)
                     ),
                     version = if (isPro) "pro" else null
                 )
                 isRegisterSuccess.postValue(true)
             } catch (e: HttpException) {
-                Log.d(TAG, "Got HttpException when register", e)
-                val errorResponse = JSONObject(e.response()?.errorBody().toString())
+                Log.e(TAG, "Got HttpException when register", e)
+                val errorResponse = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
                 if (errorResponse.has("errorList")) {
-                    errorList.value = errorResponse.get("errorList") as JSONObject
+                    errorList.postValue(errorResponse.get("errorList") as JSONObject)
                 }
+                isLoading.postValue(false)
                 isRegisterSuccess.postValue(false)
             } catch (e: Exception) {
                 Log.d(TAG, "Got exception when register", e)
-                isRegisterSuccess.postValue(false)
-            } finally {
                 isLoading.postValue(false)
+                isRegisterSuccess.postValue(false)
             }
         }
     }

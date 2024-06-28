@@ -128,6 +128,14 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                 108 -> errorMessage = errorMessage + getString(R.string.invalid_username) + "\n"
             }
         }
+        if (errorList.has("fullname")) {
+            when (errorList.getInt("fullname")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_full_name)
+                ) + "\n"
+            }
+        }
         if (errorList.has("email")) {
             when (errorList.getInt("email")) {
                 100 -> errorMessage = errorMessage + getString(
@@ -167,6 +175,11 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
                 109 -> errorMessage =
                     errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
+            }
+        }
+        if (errorList.has("captcha")) {
+            when (errorList.get("captcha")) {
+                109 -> errorMessage = errorMessage + getString(R.string.captcha_answer_is_not_correct) + "\n"
             }
         }
         return errorMessage
@@ -250,6 +263,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     private fun handleSignUp() {
         try {
             checkEmptyField(txtUserName, R.string.prompt_user)
+            checkEmptyField(txtFullName, R.string.prompt_full_name)
             checkEmptyField(txtEmail, R.string.prompt_email)
             checkEmptyField(txtBirthday, R.string.prompt_birthday)
             checkEmptyField(txtTimeZone, R.string.timezone_field)

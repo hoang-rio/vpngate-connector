@@ -228,6 +228,7 @@
     <string name="email_is_invalid">Email không hợp lệ, vui lòng kiểm tra.</string>
     <string name="re_type_password_does_not_match">Nhập lại mật khẩu không khớp.</string>
     <string name="birthday_is_invalid">Ngày sinh không hợp lệ</string>
+    <string name="captcha_answer_is_not_correct">Captcha không chính xác</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Kích hoạt tài khoản thất bại: %1$s</string>
     <string name="account_activate_failed_already_activate">Tài khoản đã được kích hoạt trước đó</string>

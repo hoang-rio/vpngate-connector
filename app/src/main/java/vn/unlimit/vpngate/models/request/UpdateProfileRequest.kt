@@ -1,7 +1,7 @@
 package vn.unlimit.vpngate.models.request
 
 data class UpdateProfileRequest(
-    val fullName: String,
-    val birthDay: String,
+    val fullname: String,
+    val birthday: String,
     val timeZone: String
 )

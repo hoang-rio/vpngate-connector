@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
@@ -43,10 +44,11 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
             .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
     )
         .client(httpClientBuilder.build())
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    fun baseErrorHandle(error: String?) {
+    private fun baseErrorHandle(error: String?) {
         if (error === ERROR_SESSION_EXPIRES) {
             isLoggedIn.value = false
             paidServerUtil.setIsLoggedIn(false)

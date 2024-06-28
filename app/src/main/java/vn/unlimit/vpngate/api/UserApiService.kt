@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.api
 
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -34,7 +35,7 @@ interface UserApiService {
     @POST("user/profile")
     suspend fun updateProfile(@Body updateProfileRequest: UpdateProfileRequest): UpdateProfileResponse
 
-    @POST("user/changepass")
+    @POST("user/password/change")
     suspend fun changePass(@Body changePasswordRequest: ChangePasswordRequest)
 
     @POST("user/password-reset")
