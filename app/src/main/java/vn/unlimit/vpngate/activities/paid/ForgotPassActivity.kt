@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -59,6 +60,26 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         return super.onSupportNavigateUp()
     }
 
+    private fun buildErrorList(): String {
+        var errorMessage = ""
+        val value = userViewModel?.errorList?.value
+        if (value?.has("captcha") == true) {
+            when (value.get("captcha")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_captcha_answer)
+                ) + "\n"
+                109 -> errorMessage = errorMessage + getString(R.string.captcha_answer_is_not_correct) + "\n"
+            }
+        }
+        if (value?.has("email") == true) {
+            when(value.get("email")) {
+                103 -> errorMessage = errorMessage + getString(R.string.account_did_not_exist) + "\n"
+            }
+        }
+        return errorMessage
+    }
+
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel!!.isLoading.observe(this) { isLoading ->
@@ -84,12 +105,12 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
                     backToLogin()
                 }, 1000)
             } else {
-                // Show toast try again
-                Toast.makeText(
-                    this,
-                    getString(R.string.request_forgot_pass_failure),
-                    Toast.LENGTH_LONG
-                ).show()
+                val alertDialog: AlertDialog = AlertDialog.Builder(this)
+                    .setPositiveButton(android.R.string.ok) { dialogInterface, _ -> dialogInterface?.dismiss() }
+                    .create()
+                alertDialog.setTitle(getString(R.string.request_forgot_pass_failure))
+                alertDialog.setMessage(buildErrorList())
+                alertDialog.show()
                 loadCaptcha(false)
             }
         })

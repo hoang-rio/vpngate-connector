@@ -9,14 +9,11 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
@@ -233,16 +230,23 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 userApiService.forgotPassword(
                     ForgotPasswordRequest(
                         usernameOrEmail,
-                        captchaSecret,
-                        captchaAnswer
+                        captcha = Captcha(secret = captchaSecret, answer = captchaAnswer)
                     )
                 )
+                isLoading.postValue(false)
                 isForgotPassSuccess.postValue(true)
+            } catch (e: HttpException) {
+                Log.e(TAG, "Got HttpException when forgot password", e)
+                val errorResponse = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
+                if (errorResponse.has("errorList")) {
+                    errorList.postValue(errorResponse.get("errorList") as JSONObject)
+                }
+                isLoading.postValue(false)
+                isForgotPassSuccess.postValue(false)
             } catch (e: Exception) {
                 Log.e(TAG, "Got exception when forgot password", e)
-                isForgotPassSuccess.postValue(false)
-            } finally {
                 isLoading.postValue(false)
+                isForgotPassSuccess.postValue(false)
             }
         }
     }
@@ -274,7 +278,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 isPasswordReset.postValue(true)
             } catch (e: HttpException) {
                 Log.d(TAG, "Got HttpException when reset password", e)
-                val errorResponse = JSONObject(e.response()?.errorBody().toString())
+                val errorResponse = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
                 if (errorResponse.has("errorList")) {
                     errorList.postValue(errorResponse.get("errorList") as JSONObject)
                 }

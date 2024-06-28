@@ -240,6 +240,7 @@
     <string name="action_reset_pass">Đặt lại mật khẩu</string>
     <string name="request_forgot_pass_success">Yêu cầu đặt lại mật khẩu thành công. Vui lòng kiểm tra email để tiếp tục.</string>
     <string name="request_forgot_pass_failure">Yêu cầu đặt lại mật khẩu thất bại. Vui lòng thử lại</string>
+    <string name="account_did_not_exist">Tài khoản không tồn tại</string>
     <!-- Reset pass screen -->
     <string name="title_activity_reset_pass">Đặt lại mật khẩu</string>
     <string name="prompt_new_password">Mật khẩu mới</string>

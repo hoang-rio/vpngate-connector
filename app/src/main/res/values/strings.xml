@@ -273,6 +273,7 @@
     <string name="action_reset_pass">Reset password</string>
     <string name="request_forgot_pass_success">Forgot password request success. Please check email to continue.</string>
     <string name="request_forgot_pass_failure">Forgot password failure. Please try again.</string>
+    <string name="account_did_not_exist">Account did not exist</string>
     <!-- Reset pass screen -->
     <string name="title_activity_reset_pass">Reset password</string>
     <string name="prompt_new_password">New password</string>

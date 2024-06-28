@@ -1,7 +1,8 @@
 package vn.unlimit.vpngate.models.request
 
+import vn.unlimit.vpngate.models.Captcha
+
 data class ForgotPasswordRequest(
-    val usernameOrEmail: String,
-    val captchaSecret: String,
-    val captchaAnswer: Int
+    val email: String,
+    val captcha: Captcha
 )

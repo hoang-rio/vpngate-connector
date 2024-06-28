@@ -179,6 +179,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
         }
         if (errorList.has("captcha")) {
             when (errorList.get("captcha")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_captcha_answer)
+                ) + "\n"
                 109 -> errorMessage = errorMessage + getString(R.string.captcha_answer_is_not_correct) + "\n"
             }
         }
@@ -310,6 +314,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     alertDialog.setTitle(getString(R.string.register_failed_title))
                     alertDialog.setMessage(buildErrorList())
                     alertDialog.show()
+                    loadCaptcha(false)
                 }
             })
             isPressedSignup = true
