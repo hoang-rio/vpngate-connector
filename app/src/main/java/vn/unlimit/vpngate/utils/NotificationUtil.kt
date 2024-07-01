@@ -5,14 +5,10 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 
 class NotificationUtil(appCompatActivity: AppCompatActivity) {
-    private var mAppCompatActivity: AppCompatActivity
+    private var mAppCompatActivity: AppCompatActivity = appCompatActivity
 
     companion object {
         private const val REQUEST_PERMISSION_CODE = 1010
-    }
-
-    init {
-        this.mAppCompatActivity = appCompatActivity
     }
 
     fun requestPermission() {

@@ -186,6 +186,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     ),
                     version = if (isPro) "pro" else null
                 )
+                isLoading.postValue(false)
                 isRegisterSuccess.postValue(true)
             } catch (e: HttpException) {
                 Log.e(TAG, "Got HttpException when register", e)
