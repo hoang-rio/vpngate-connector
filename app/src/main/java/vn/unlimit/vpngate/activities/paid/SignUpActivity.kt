@@ -255,12 +255,19 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             txtBirthday -> if (hasFocus) datePickerDialog!!.show()
             txtTimeZone -> {
                 if (!hasFocus) {
-                    val tmpArray = txtTimeZone!!.text.split(": ")
-                    if (tmpArray.size == 2) {
-                        txtTimeZone!!.setText(tmpArray[1])
-                    }
+                    normalizeTimeZone()
                 }
             }
+        }
+    }
+
+    private fun normalizeTimeZone() {
+        if (txtTimeZone?.text == null || txtTimeZone!!.text.isEmpty()) {
+            return
+        }
+        val tmpArray = txtTimeZone!!.text.split(": ")
+        if (tmpArray.size == 2) {
+            txtTimeZone!!.setText(tmpArray[1])
         }
     }
 
@@ -291,6 +298,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
                 throw Exception(getString(R.string.email_is_invalid))
             }
+            normalizeTimeZone()
             // Validate timeZone
             if (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) {
                 txtTimeZone!!.requestFocus()

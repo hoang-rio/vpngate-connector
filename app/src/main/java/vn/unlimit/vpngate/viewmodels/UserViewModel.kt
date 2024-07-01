@@ -134,6 +134,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 nowInMs = date.time
                 paidServerUtil.setLongSetting(PaidServerUtil.LAST_USER_FETCH_TIME, nowInMs)
                 isProfileUpdate = false
+                userInfo.postValue(fetchUser)
             } catch (e: HttpException) {
                 Log.e(TAG, "fetch user error with HttpException", e)
                 val params = Bundle()

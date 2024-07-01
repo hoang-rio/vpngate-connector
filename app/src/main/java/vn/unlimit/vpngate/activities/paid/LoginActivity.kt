@@ -85,6 +85,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             } else {
                                 getString(R.string.account_is_banned_no_reason)
                             }
+                        } else if (userViewModel!!.errorList.value!!.get("code") == 103) {
+                            getString(R.string.account_did_not_exist)
                         } else {
                             getString(R.string.login_failed)
                         }

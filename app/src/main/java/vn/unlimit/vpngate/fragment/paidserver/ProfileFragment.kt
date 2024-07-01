@@ -73,7 +73,7 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
 
     private fun bindViewModel() {
         userViewModel = (activity as PaidServerActivity).userViewModel
-        userViewModel?.isLoading?.observe((activity as PaidServerActivity)) {
+        userViewModel?.isLoading?.observe(viewLifecycleOwner) {
             if (it && !loadingDialog.isVisible) {
                 return@observe loadingDialog.show(
                     requireActivity().supportFragmentManager,
@@ -111,6 +111,7 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
             txtBirthday -> datePickerDialog!!.show()
             btnSave -> {
                 var errorMsg: CharSequence? = null
+                normalizeTimeZone()
                 when (true) {
                     txtFullName!!.text.isNullOrEmpty() -> {
                         txtFullName!!.requestFocus()
@@ -157,7 +158,10 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                                 getText(R.string.update_profile_success),
                                 Toast.LENGTH_SHORT
                             ).show()
-                            userViewModel?.fetchUser()
+                            userViewModel?.fetchUser(forceFetch = true)
+                            if (loadingDialog.isVisible) {
+                                loadingDialog.dismiss()
+                            }
                             findNavController().popBackStack()
                         }
 
@@ -167,6 +171,9 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                                 getText(R.string.update_profile_error),
                                 Toast.LENGTH_SHORT
                             ).show()
+                            if (loadingDialog.isVisible) {
+                                loadingDialog.dismiss()
+                            }
                         }
                     }
                 )
@@ -188,12 +195,19 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
             txtBirthday -> if (hasFocus) datePickerDialog!!.show()
             txtTimeZone -> {
                 if (!hasFocus) {
-                    val tmpArray = txtTimeZone!!.text.split(": ")
-                    if (tmpArray.size == 2) {
-                        txtTimeZone!!.setText(tmpArray[1])
-                    }
+                    normalizeTimeZone()
                 }
             }
+        }
+    }
+
+    private fun normalizeTimeZone() {
+        if (txtTimeZone?.text == null || txtTimeZone!!.text.isEmpty()) {
+            return
+        }
+        val tmpArray = txtTimeZone!!.text.split(": ")
+        if (tmpArray.size == 2) {
+            txtTimeZone!!.setText(tmpArray[1])
         }
     }
 }

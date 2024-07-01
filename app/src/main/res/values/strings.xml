@@ -237,7 +237,8 @@
     <string name="action_show_password">Show</string>
     <string name="default_loading_text">Loading…</string>
     <string name="username_and_password_is_required">Username and password is required</string>
-    <string name="account_is_banned_no_reason">You account is banned.</string>
+    <string name="account_is_banned_no_reason">Your account is banned.</string>
+    <string name="account_did_not_exists">Account did not exist.</string>
     <string name="account_is_banned">You account is banned with reason: %1$s</string>
     <string name="session_expires">Login session expires. Please login again!</string>
     <!-- Sign up screen -->
