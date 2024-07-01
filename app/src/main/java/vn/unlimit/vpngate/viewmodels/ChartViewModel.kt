@@ -1,13 +1,18 @@
 package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
-import org.json.JSONArray
-import vn.unlimit.vpngate.api.ChartApiRequest
-import vn.unlimit.vpngate.request.RequestListener
+import kotlinx.coroutines.launch
+import vn.unlimit.vpngate.api.ChartApiService
 
 open class ChartViewModel(application: Application) : BaseViewModel(application) {
+    companion object {
+        const val TAG = "ChartViewModel"
+    }
+
     enum class ChartType {
         HOURLY,
         DAILY,
@@ -16,7 +21,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
 
     var chartType: MutableLiveData<ChartType> = MutableLiveData(ChartType.HOURLY)
     var isError: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val chartApiRequest: ChartApiRequest = ChartApiRequest()
+    private val chartApiService: ChartApiService = retrofit.create(ChartApiService::class.java)
     var chartData: MutableLiveData<ArrayList<Entry>> = MutableLiveData(ArrayList())
     var xLabels: ArrayList<String> = ArrayList()
 
@@ -36,71 +41,66 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
     }
 
     private fun getHourlyChart() {
-        chartApiRequest.getHourlyChart(object : RequestListener {
-            override fun onError(error: String?) {
-                baseErrorHandle(error)
-                isError.value = true
-                isLoading.value = false
-            }
-
-            override fun onSuccess(result: Any?) {
-                val data = (result as JSONArray)
+        viewModelScope.launch {
+            try {
+                val data = chartApiService.getHourlyChart()
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                for (i in 1 until data.length()) {
-                    val item = data.getJSONArray(i)
-                    resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
+                for (i in 1 until data.size) {
+                    val item = data[i]
+                    resChartData.add(Entry((i - 1).toFloat(), (item[1] as Double).toFloat()))
                     xLabels.add((i - 1).toString())
                 }
-                chartData.value = resChartData
-                isLoading.value = false
+                isError.postValue(false)
+                chartData.postValue(resChartData)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get hourly chart", e)
+                isError.postValue(true)
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     private fun getDailyChart() {
-        chartApiRequest.getDailyChart(object : RequestListener {
-            override fun onError(error: String?) {
-                baseErrorHandle(error)
-                isError.value = true
-                isLoading.value = false
-            }
-
-            override fun onSuccess(result: Any?) {
-                val data = (result as JSONArray)
+        viewModelScope.launch {
+            try {
+                val data = chartApiService.getDailyChart()
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                for (i in 1 until data.length()) {
-                    val item = data.getJSONArray(i)
-                    resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
-                    xLabels.add(item.getString(0))
+                for (i in 1 until data.size) {
+                    val item = data[i]
+                    resChartData.add(Entry((i - 1).toFloat(), (item[1] as Double).toFloat()))
+                    xLabels.add(item[0] as String)
                 }
-                chartData.value = resChartData
-                isLoading.value = false
+                chartData.postValue(resChartData)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get daily chart", e)
+                isError.postValue(true)
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     private fun getMonthlyChart() {
-        chartApiRequest.getMontlyChart(object : RequestListener {
-            override fun onError(error: String?) {
-                baseErrorHandle(error)
-                isError.value = true
-                isLoading.value = false
-            }
-
-            override fun onSuccess(result: Any?) {
-                val data = (result as JSONArray)
+        viewModelScope.launch {
+            try {
+                val data = chartApiService.getMonthlyChart()
                 val resChartData: ArrayList<Entry> = ArrayList()
                 xLabels.clear()
-                for (i in 1 until data.length()) {
-                    val item = data.getJSONArray(i)
-                    resChartData.add(Entry((i - 1).toFloat(), item.getDouble(1).toFloat()))
-                    xLabels.add(item.getString(0))
+                for (i in 1 until data.size) {
+                    val item = data[i]
+                    resChartData.add(Entry((i - 1).toFloat(), (item[1] as Double).toFloat()))
+                    xLabels.add(item[0] as String)
                 }
-                chartData.value = resChartData
-                isLoading.value = false
+                chartData.postValue(resChartData)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get daily chart", e)
+                isError.postValue(true)
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 }

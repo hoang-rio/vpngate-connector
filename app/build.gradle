@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 106
-            versionName "2.0.6"
+            versionCode 107
+            versionName "2.0.7"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 99
-            versionName "1.9.9"
+            versionCode 100
+            versionName "2.0.0"
         }
     }
 
@@ -93,7 +93,7 @@ dependencies {
         exclude group: "com.android.support"
         transitive = true
     }
-    implementation platform('com.google.firebase:firebase-bom:33.1.0')
+    implementation platform('com.google.firebase:firebase-bom:33.1.1')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
@@ -109,13 +109,10 @@ dependencies {
     implementation 'com.pixplicity.sharp:sharp:1.1.3@aar'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation('com.amitshekhar.android:android-networking:1.0.2') {
-        exclude group: 'com.android.support'
-    }
     implementation project(path: ':vpnLib')
     implementation project(path: ':sstpClient')
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:runner:1.6.1'
     def billing_version = '7.0.0'
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -129,4 +126,7 @@ dependencies {
 //    }
     implementation 'com.google.android.ump:user-messaging-platform:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
 }

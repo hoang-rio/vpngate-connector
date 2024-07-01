@@ -1,19 +1,22 @@
 package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import org.json.JSONObject
-import vn.unlimit.vpngate.api.SessionApiRequest
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import vn.unlimit.vpngate.api.SessionApiService
 import vn.unlimit.vpngate.models.ConnectedSession
 import vn.unlimit.vpngate.request.RequestListener
-import java.lang.reflect.Type
 
 open class SessionViewModel(application: Application) : BaseViewModel(application) {
+    companion object {
+        const val TAG = "SessionViewModel"
+    }
+
     var sessionList: MutableLiveData<LinkedHashSet<ConnectedSession>> =
         MutableLiveData(LinkedHashSet())
-    var sessionApiRequest = SessionApiRequest()
+    private var sessionApiService = retrofit.create(SessionApiService::class.java)
     var isError = MutableLiveData(false)
 
     fun getListSession() {
@@ -22,22 +25,29 @@ open class SessionViewModel(application: Application) : BaseViewModel(applicatio
         }
         isLoading.value = true
         isError.value = false
-        sessionApiRequest.getList(object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                val type: Type = object : TypeToken<LinkedHashSet<ConnectedSession?>?>() {}.type
-                val listSessionArray = (result as JSONObject).getJSONArray("listSession")
-                sessionList.value = Gson().fromJson(listSessionArray.toString(), type)
-                isLoading.value = false
+        viewModelScope.launch {
+            try {
+                val listSessionResponse = sessionApiService.getList()
+                sessionList.postValue(listSessionResponse.listSession)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get list session", e)
+                isError.postValue(true)
+            } finally {
+                isLoading.postValue(false)
             }
-
-            override fun onError(error: String?) {
-                isError.value = true
-                isLoading.value = false
-            }
-        })
+        }
     }
 
     fun deleteSession(sessionId: String, requestListener: RequestListener) {
-        sessionApiRequest.deleteSession(sessionId, requestListener)
+        viewModelScope.launch {
+            try {
+                sessionApiService.deleteSession(sessionId)
+                Log.d(TAG, "Deleted session with sessionId %s".format(sessionId))
+                requestListener.onSuccess("")
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when delete session", e)
+                requestListener.onError(e.message)
+            }
+        }
     }
 }

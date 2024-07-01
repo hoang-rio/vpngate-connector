@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoggingIn ->
             if (!isClickedLogin) {
                 return@observe
@@ -85,6 +85,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             } else {
                                 getString(R.string.account_is_banned_no_reason)
                             }
+                        } else if (userViewModel!!.errorList.value!!.get("code") == 103) {
+                            getString(R.string.account_did_not_exist)
                         } else {
                             getString(R.string.login_failed)
                         }
@@ -134,6 +136,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 isClickedLogin = true
                 userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
             }
+
             ivHidePassword -> {
                 if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
                     txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
@@ -147,10 +150,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 txtPassword!!.setSelection(txtPassword!!.text.length)
             }
+
             btnSignUp -> {
                 val intentSignUp = Intent(this, SignUpActivity::class.java)
                 startActivity(intentSignUp)
             }
+
             btnForgotPass -> {
                 val intentForgot = Intent(this, ForgotPassActivity::class.java)
                 startActivity(intentForgot)

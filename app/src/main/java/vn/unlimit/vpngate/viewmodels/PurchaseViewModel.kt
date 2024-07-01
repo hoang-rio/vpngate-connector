@@ -1,39 +1,54 @@
 package vn.unlimit.vpngate.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.google.gson.reflect.TypeToken
-import org.json.JSONObject
-import vn.unlimit.vpngate.api.PurchaseApiRequest
+import kotlinx.coroutines.launch
+import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.api.PurchaseApiService
 import vn.unlimit.vpngate.models.PurchaseHistory
-import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.models.request.PurchaseCreateRequest
 
 class PurchaseViewModel(application: Application) : BaseViewModel(application) {
+    companion object {
+        const val TAG = "PurchaseViewModel"
+    }
+
     var errorCode: Int? = null
-    var purchaseApiRequest: PurchaseApiRequest = PurchaseApiRequest()
+    private var purchaseApiService: PurchaseApiService =
+        retrofit.create(PurchaseApiService::class.java)
     var purchaseList: MutableLiveData<ArrayList<PurchaseHistory>> = MutableLiveData(ArrayList())
     var isOutOfData = false
 
     fun createPurchase(purchase: Purchase, productDetails: ProductDetails) {
         isLoading.value = true
         errorCode = null
-        purchaseApiRequest.createPurchase(purchase, productDetails, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                val resultJSon = result as JSONObject
-                if (!resultJSon.getBoolean("result")) {
-                    errorCode = resultJSon.getInt("errorCode")
+        viewModelScope.launch {
+            try {
+                val isPro = !App.getInstance().dataUtil.hasAds()
+                val res = purchaseApiService.createPurchase(
+                    PurchaseCreateRequest(
+                        packageId = purchase.products[0],
+                        purchaseId = purchase.orderId!!,
+                        platform = PARAMS_USER_PLATFORM,
+                        paymentMethod = PARAMS_USER_PLATFORM + "_IAP",
+                        currency = productDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode!!,
+                        currencyPrice = productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros!!.toDouble() / 1000000
+                    ), version = if (isPro) "pro" else null
+                )
+                if (!res.result) {
+                    errorCode = res.errorCode
                 }
-                isLoading.value = false
-            }
-
-            override fun onError(error: String?) {
-                baseErrorHandle(error)
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when create purchase", e)
                 errorCode = 1
-                isLoading.value = false
+            } finally {
+                isLoading.postValue(false)
             }
-        })
+        }
     }
 
     fun listPurchase(fromStart: Boolean? = false) {
@@ -43,27 +58,21 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
         isLoading.value = true
         val take = ITEM_PER_PAGE
         val skip = if (fromStart!!) 0 else purchaseList.value!!.size
-        purchaseApiRequest.listPurchase(take, skip, object : RequestListener {
-            override fun onSuccess(result: Any?) {
-                val resultObj = result as JSONObject
-                var purchaseList = ArrayList<PurchaseHistory>()
+        viewModelScope.launch {
+            try {
+                var purchases = ArrayList<PurchaseHistory>()
                 if (skip != 0) {
-                    purchaseList = this@PurchaseViewModel.purchaseList.value!!
+                    purchases = purchaseList.value!!
                 }
-                val resListPurchase: ArrayList<PurchaseHistory> = paidServerUtil.gson.fromJson(
-                    resultObj.getString("listPurchase"),
-                    object : TypeToken<ArrayList<PurchaseHistory>>() {}.type
-                )
-                purchaseList.addAll(resListPurchase)
-                this@PurchaseViewModel.purchaseList.value = purchaseList
-                isOutOfData = resultObj.getJSONArray("listPurchase").length() < take
-                isLoading.value = false
+                val res = purchaseApiService.listPurchase(take, skip)
+                purchases.addAll(res.listPurchase)
+                purchaseList.postValue(purchases)
+                isOutOfData = res.listPurchase.size < take
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when get purchase list", e)
+            } finally {
+                isLoading.postValue(false)
             }
-
-            override fun onError(error: String?) {
-                baseErrorHandle(error)
-                isLoading.value = false
-            }
-        })
+        }
     }
 }

@@ -67,7 +67,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 val params = Bundle()
-                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("username", paidServerUtil.getUserInfo()?.username)
                 context?.let {
                     FirebaseAnalytics.getInstance(it)
                         .logEvent("Paid_Server_User_Cancel_Purchase", params)
@@ -76,7 +76,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
             } else {
                 // Handle any other error codes.
                 val params = Bundle()
-                params.putString("username", paidServerUtil.getUserInfo()?.getString("username"))
+                params.putString("username", paidServerUtil.getUserInfo()?.username)
                 params.putString("errorCode", billingResult.responseCode.toString())
                 context?.let {
                     FirebaseAnalytics.getInstance(it).logEvent("Paid_Server_Purchase_Error", params)
@@ -120,7 +120,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val root = inflater.inflate(R.layout.fragment_buy_data, container, false)
         txtDataSize = root.findViewById(R.id.txt_data_size)
         txtDataSize?.text = OpenVPNService.humanReadableByteCount(
-            paidServerUtil.getUserInfo()!!.getLong("dataSize"), false, resources
+            paidServerUtil.getUserInfo()!!.dataSize!!, false, resources
         )
         btnBack = root.findViewById(R.id.btn_back)
         btnBack?.setOnClickListener(this)
@@ -137,7 +137,9 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         billingClient = BillingClient.newBuilder(requireActivity())
             .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            )
             .build()
         initBilling()
         bindViewModel()
@@ -150,7 +152,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
             run {
                 if (isAttached) {
                     txtDataSize?.text = OpenVPNService.humanReadableByteCount(
-                        userInfo!!.getLong("dataSize"),
+                        userInfo!!.dataSize!!,
                         false,
                         resources
                     )
@@ -175,7 +177,10 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 loadingDialog!!.dismiss()
                 if (userViewModel?.errorCode == null) {
                     // Create purchase complete
-                    Log.i(TAG, "Purchase product %s complete".format(buyingProductDetails?.productId))
+                    Log.i(
+                        TAG,
+                        "Purchase product %s complete".format(buyingProductDetails?.productId)
+                    )
                     // Force fetch user to update data size
                     userViewModel?.fetchUser(forceFetch = true)
                     Toast.makeText(
@@ -193,7 +198,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                     val params = Bundle()
                     params.putString(
                         "username",
-                        paidServerUtil.getUserInfo()?.getString("username")
+                        paidServerUtil.getUserInfo()?.username
                     )
                     params.putString("packageId", buyingProductDetails?.productId)
                     params.putString("errorCode", userViewModel?.errorCode?.toString())
@@ -247,11 +252,14 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val skuList = ArrayList<String>()
         skuList.addAll(listSkus!!)
         val productList = ArrayList<QueryProductDetailsParams.Product>()
-        listSkus?.forEach { productList.add(QueryProductDetailsParams.Product.newBuilder()
-            .setProductId(it)
-            .setProductType(BillingClient.ProductType.INAPP)
-            .build()
-        )}
+        listSkus?.forEach {
+            productList.add(
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(it)
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .build()
+            )
+        }
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         lnLoading?.visibility = View.VISIBLE
         rcvSkuDetails?.visibility = View.GONE
@@ -264,7 +272,9 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                         Collections.sort(
                             listProductDetails,
                             Comparator { productDetails: ProductDetails, productDetails1: ProductDetails ->
-                                return@Comparator productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros.compareTo(productDetails1.oneTimePurchaseOfferDetails!!.priceAmountMicros)
+                                return@Comparator productDetails.oneTimePurchaseOfferDetails!!.priceAmountMicros.compareTo(
+                                    productDetails1.oneTimePurchaseOfferDetails!!.priceAmountMicros
+                                )
                             })
                         skuDetailsAdapter!!.initialize(listProductDetails)
                     } else {
@@ -286,11 +296,11 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         if (o != null) {
             buyingProductDetails = o as ProductDetails
             val productDetailsParamsList =
-            listOf(
-                BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setProductDetails(buyingProductDetails!!)
-                    .build()
-            )
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(buyingProductDetails!!)
+                        .build()
+                )
             val billingFlowParams =
                 BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(productDetailsParamsList)

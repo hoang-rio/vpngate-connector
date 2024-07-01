@@ -7,19 +7,24 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.Button
+import android.widget.DatePicker
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
-import org.json.JSONObject
 import vn.unlimit.vpngate.R
-import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
-import java.util.*
+import java.util.Calendar
 import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity(), View.OnClickListener,
@@ -38,7 +43,6 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     private var txtCaptchaAnswer: EditText? = null
     private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
-    private val userApiRequest = UserApiRequest()
     private var userViewModel: UserViewModel? = null
     private var loadingDialog: LoadingDialog? = null
     private var timeZonesDisplay: Array<out String>? = null
@@ -47,7 +51,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     companion object {
         private const val TAG = "SignUpActivity"
-        const val passWordRegex = "^[-\\w.$@*!]{5,30}$"
+        const val PASSWORD_REGEX = "^[-\\w.$@*!]{5,30}$"
         private const val USER_NAME_REGEX = "^[a-z0-9]{5,30}$"
     }
 
@@ -95,7 +99,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
@@ -115,11 +119,21 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_exist_in_system,
                     getString(R.string.prompt_user)
                 ) + "\n"
+
                 107 -> errorMessage = errorMessage + getString(
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_user)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.invalid_username) + "\n"
+            }
+        }
+        if (errorList.has("fullname")) {
+            when (errorList.getInt("fullname")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_full_name)
+                ) + "\n"
             }
         }
         if (errorList.has("email")) {
@@ -128,10 +142,12 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_exist_in_system,
                     getString(R.string.prompt_email)
                 ) + "\n"
+
                 107 -> errorMessage = errorMessage + getString(
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_email)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.email_is_invalid) + "\n"
             }
         }
@@ -141,6 +157,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_password)
                 ) + "\n"
+
                 108 -> errorMessage = errorMessage + getString(R.string.password_is_invalid) + "\n"
             }
         }
@@ -155,8 +172,18 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     R.string.validate_field_cannot_empty,
                     getString(R.string.prompt_retype_password)
                 ) + "\n"
+
                 109 -> errorMessage =
                     errorMessage + getString(R.string.re_type_password_does_not_match) + "\n"
+            }
+        }
+        if (errorList.has("captcha")) {
+            when (errorList.get("captcha")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_captcha_answer)
+                ) + "\n"
+                109 -> errorMessage = errorMessage + getString(R.string.captcha_answer_is_not_correct) + "\n"
             }
         }
         return errorMessage
@@ -168,10 +195,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             loadingDialog = LoadingDialog.newInstance(getString(R.string.reloading_captcha))
             loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
         }
-        userApiRequest.getCaptcha(object : RequestListener {
+        userViewModel?.getCaptcha(object : RequestListener {
             override fun onSuccess(result: Any?) {
-                val svgImage: String = (result as JSONObject).getString("image")
-                captchaSecret = result.getString("secret")
+                val svgImage: String = (result as CaptchaResponse).image
+                captchaSecret = result.secret
                 Sharp.loadString(svgImage).into(ivCaptcha!!)
                 if (isReload) {
                     loadingDialog.dismiss()
@@ -228,18 +255,26 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             txtBirthday -> if (hasFocus) datePickerDialog!!.show()
             txtTimeZone -> {
                 if (!hasFocus) {
-                    val tmpArray = txtTimeZone!!.text.split(": ")
-                    if (tmpArray.size == 2) {
-                        txtTimeZone!!.setText(tmpArray[1])
-                    }
+                    normalizeTimeZone()
                 }
             }
+        }
+    }
+
+    private fun normalizeTimeZone() {
+        if (txtTimeZone?.text == null || txtTimeZone!!.text.isEmpty()) {
+            return
+        }
+        val tmpArray = txtTimeZone!!.text.split(": ")
+        if (tmpArray.size == 2) {
+            txtTimeZone!!.setText(tmpArray[1])
         }
     }
 
     private fun handleSignUp() {
         try {
             checkEmptyField(txtUserName, R.string.prompt_user)
+            checkEmptyField(txtFullName, R.string.prompt_full_name)
             checkEmptyField(txtEmail, R.string.prompt_email)
             checkEmptyField(txtBirthday, R.string.prompt_birthday)
             checkEmptyField(txtTimeZone, R.string.timezone_field)
@@ -252,7 +287,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                 throw Exception(getString(R.string.username_is_invalid))
             }
             // Check password regex
-            matcher = Pattern.compile(passWordRegex).matcher(txtPassword!!.text)
+            matcher = Pattern.compile(PASSWORD_REGEX).matcher(txtPassword!!.text)
             if (!matcher.matches()) {
                 throw Exception(getString(R.string.password_is_invalid))
             }
@@ -263,6 +298,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
                 throw Exception(getString(R.string.email_is_invalid))
             }
+            normalizeTimeZone()
             // Validate timeZone
             if (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) {
                 txtTimeZone!!.requestFocus()
@@ -286,6 +322,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
                     alertDialog.setTitle(getString(R.string.register_failed_title))
                     alertDialog.setMessage(buildErrorList())
                     alertDialog.show()
+                    loadCaptcha(false)
                 }
             })
             isPressedSignup = true

@@ -412,7 +412,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
-                android:text="D: 500kbps, U: 500kbps"
                 android:textColor="@color/colorLink"
                 android:textSize="12sp"
                 android:textStyle="bold"

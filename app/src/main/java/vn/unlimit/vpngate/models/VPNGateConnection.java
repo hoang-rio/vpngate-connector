@@ -263,6 +263,10 @@ public class VPNGateConnection implements Parcelable {
         return openVpnConfigDataTmp;
     }
 
+    public void setOpenVpnConfigData(String openVpnConfigData) {
+        this.openVpnConfigData = decodeBase64(openVpnConfigData);
+    }
+
     public String getOpenVpnConfigDataUdp() {
         String openVpnConfigDataUdp = openVpnConfigData;
         if (this.tcpPort > 0) {
@@ -278,10 +282,6 @@ public class VPNGateConnection implements Parcelable {
         }
         // Current config is udp only
         return openVpnConfigDataUdp;
-    }
-
-    public void setOpenVpnConfigData(String openVpnConfigData) {
-        this.openVpnConfigData = decodeBase64(openVpnConfigData);
     }
 
     public int getSpeed() {
@@ -388,7 +388,7 @@ public class VPNGateConnection implements Parcelable {
         return isL2TPSupport == 1;
     }
 
-    public  boolean isSSTPSupport() {
+    public boolean isSSTPSupport() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isSSTPSupport == 1;
     }
 }

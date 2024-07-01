@@ -140,7 +140,10 @@ class SplashActivity : AppCompatActivity() {
     private fun checkDynamicLink() {
         val action: String? = intent.action
         val deepLink: String? = intent.data?.toString()
-        if (action?.equals("android.intent.action.VIEW") == true && deepLink != null && deepLink.contains("https://app.")) {
+        if (action?.equals("android.intent.action.VIEW") == true && deepLink != null && deepLink.contains(
+                "https://app."
+            )
+        ) {
             Log.d(TAG, "Got action %s with url %s".format(action, deepLink))
             redirectDeepLink(deepLink.toString())
             return

@@ -8,10 +8,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import org.json.JSONObject
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
+import vn.unlimit.vpngate.models.User
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -48,9 +48,10 @@ class PaidServerUtil(context: Context) {
     private val sharedPreferencesSetting: SharedPreferences =
         context.getSharedPreferences("vpn_setting_paid_" + BuildConfig.FLAVOR, Context.MODE_PRIVATE)
     var mContext: Context = context
-    private var userInfo: JSONObject? =
-        if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else JSONObject(
-            getStringSetting(USER_INFO_KEY)!!
+    private var userInfo: User? =
+        if (getStringSetting(USER_INFO_KEY, "")!!.isEmpty()) null else Gson().fromJson(
+            getStringSetting(USER_INFO_KEY, ""),
+            User::class.java
         )
 
     /**
@@ -84,15 +85,15 @@ class PaidServerUtil(context: Context) {
      * Set user info after login success
      * @param userInfo user info from server or fetch user
      */
-    fun setUserInfo(userInfo: JSONObject) {
+    fun setUserInfo(userInfo: User) {
         this.userInfo = userInfo
-        setStringSetting(USER_INFO_KEY, this.userInfo!!.toString())
+        setStringSetting(USER_INFO_KEY, Gson().toJson(this.userInfo))
     }
 
     /**
      * Get logged in user info
      */
-    fun getUserInfo(): JSONObject? {
+    fun getUserInfo(): User? {
         return this.userInfo
     }
 

@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -10,14 +11,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
-import org.json.JSONObject
 import vn.unlimit.vpngate.R
-import vn.unlimit.vpngate.api.UserApiRequest
 import vn.unlimit.vpngate.dialog.LoadingDialog
+import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
@@ -25,7 +26,6 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private var loadingDialog: LoadingDialog? = null
     private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
-    private val userApiRequest = UserApiRequest()
     private var userViewModel: UserViewModel? = null
     private var txtCaptchaAnswer: EditText? = null
     private var txtEmail: EditText? = null
@@ -37,7 +37,6 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_pass)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         loadingDialog = LoadingDialog.newInstance()
         ivCaptcha = findViewById(R.id.iv_captcha)
         ivCaptcha!!.setOnClickListener(this)
@@ -60,8 +59,28 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
         return super.onSupportNavigateUp()
     }
 
+    private fun buildErrorList(): String {
+        var errorMessage = ""
+        val value = userViewModel?.errorList?.value
+        if (value?.has("captcha") == true) {
+            when (value.get("captcha")) {
+                107 -> errorMessage = errorMessage + getString(
+                    R.string.validate_field_cannot_empty,
+                    getString(R.string.prompt_captcha_answer)
+                ) + "\n"
+                109 -> errorMessage = errorMessage + getString(R.string.captcha_answer_is_not_correct) + "\n"
+            }
+        }
+        if (value?.has("email") == true) {
+            when(value.get("email")) {
+                103 -> errorMessage = errorMessage + getString(R.string.account_did_not_exist) + "\n"
+            }
+        }
+        return errorMessage
+    }
+
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
             if (isLoading && !loadingDialog!!.isVisible) {
                 loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
@@ -85,12 +104,12 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
                     backToLogin()
                 }, 1000)
             } else {
-                // Show toast try again
-                Toast.makeText(
-                    this,
-                    getString(R.string.request_forgot_pass_failure),
-                    Toast.LENGTH_LONG
-                ).show()
+                val alertDialog: AlertDialog = AlertDialog.Builder(this)
+                    .setPositiveButton(android.R.string.ok) { dialogInterface, _ -> dialogInterface?.dismiss() }
+                    .create()
+                alertDialog.setTitle(getString(R.string.request_forgot_pass_failure))
+                alertDialog.setMessage(buildErrorList())
+                alertDialog.show()
                 loadCaptcha(false)
             }
         })
@@ -102,10 +121,11 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             loadingDialog = LoadingDialog.newInstance(getString(R.string.reloading_captcha))
             loadingDialog.show(supportFragmentManager, LoadingDialog::class.java.name)
         }
-        userApiRequest.getCaptcha(object : RequestListener {
+        userViewModel?.getCaptcha(object : RequestListener {
+            @SuppressLint("SetTextI18n")
             override fun onSuccess(result: Any?) {
-                val svgImage: String = (result as JSONObject).getString("image")
-                captchaSecret = result.getString("secret")
+                val svgImage: String = (result as CaptchaResponse).image
+                captchaSecret = result.secret
                 Sharp.loadString(svgImage).into(ivCaptcha!!)
                 txtCaptchaAnswer!!.setText("")
                 if (isReload) {

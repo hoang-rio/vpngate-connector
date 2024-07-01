@@ -3,7 +3,6 @@ package vn.unlimit.vpngate.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -19,10 +18,6 @@ import vn.unlimit.vpngate.models.PaidServer;
 import vn.unlimit.vpngate.models.VPNGateConnection;
 
 public class ConnectionUseProtocol extends BottomSheetDialogFragment implements View.OnClickListener {
-    public interface ClickResult {
-        void onResult(boolean useUdp);
-    }
-
     private VPNGateConnection mVpnGateConnection;
     private PaidServer paidServer;
     private Button btnUseTCP;
@@ -92,5 +87,9 @@ public class ConnectionUseProtocol extends BottomSheetDialogFragment implements 
             clickResult.onResult(!btnUseTCP.equals(view));
         }
         this.dismiss();
+    }
+
+    public interface ClickResult {
+        void onResult(boolean useUdp);
     }
 }

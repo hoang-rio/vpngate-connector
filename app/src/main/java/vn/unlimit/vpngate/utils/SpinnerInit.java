@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import vn.unlimit.vpngate.R;
  */
 
 public class SpinnerInit {
+    private final String TAG = "SpinnerInit";
     int selectedItem = -1;
     Context mContext;
     AppCompatSpinner mSpinner;
@@ -46,7 +48,7 @@ public class SpinnerInit {
                     selectedItem = i;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(TAG, "Got exception whenonItemSelected", e);
             }
         }
 

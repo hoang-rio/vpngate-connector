@@ -1,7 +1,6 @@
 package vn.unlimit.vpngate.activities
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -9,7 +8,12 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.PaidServer
@@ -87,7 +91,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 val paidServerUtil = App.getInstance().paidServerUtil
                 adContainer?.visibility = View.GONE
                 txtSharedSecret?.text = getString(R.string.vpn_paid_shared_secret)
-                txtVPNUser?.text = paidServerUtil.getUserInfo()?.getString("username")
+                txtVPNUser?.text = paidServerUtil.getUserInfo()?.username
                 txtVPNPw?.text = getString(R.string.vpn_pw_hint)
                 val paidServer: PaidServer =
                     intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)!!
@@ -133,7 +137,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         if (view == ivBack) {
-           onBackPressedDispatcher.onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 

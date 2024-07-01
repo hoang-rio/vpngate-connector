@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -54,10 +55,10 @@ public class DataUtil {
     public static final String IS_LAST_CONNECTED_PAID = "IS_LAST_CONNECTED_PAID";
     private static final String USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER";
     private static final String ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY";
+    private final String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
     private Context mContext;
     private SharedPreferences sharedPreferencesSetting;
     private Gson gson;
-    private final String CONNECTION_CACHE_KEY = "CONNECTION_CACHE_KEY";
 
     public DataUtil(Context context) {
         try {
@@ -105,7 +106,8 @@ public class DataUtil {
             } else {
                 FileInputStream fileInputStream = new FileInputStream(inFile);
                 JsonReader reader = new JsonReader(new InputStreamReader(fileInputStream));
-                Type cacheType = new TypeToken<Cache>(){}.getType();
+                Type cacheType = new TypeToken<Cache>() {
+                }.getType();
                 Cache cache = gson.fromJson(reader, cacheType);
                 if (cache.isExpires()) {
                     reader.close();
@@ -139,7 +141,7 @@ public class DataUtil {
             cache.cacheData = vpnGateConnectionList;
             File outFile = new File(mContext.getFilesDir(), CONNECTION_CACHE_KEY);
             FileOutputStream out = new FileOutputStream(outFile);
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "utf8"));
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
             gson.toJson(cache, Cache.class, writer);
             writer.close();
             setConnectionCacheExpire(cache.expires);
@@ -229,7 +231,7 @@ public class DataUtil {
             if (vpnGateConnection.getHostName() == null) {
                 return null;
             }
-            return  vpnGateConnection;
+            return vpnGateConnection;
         } catch (Exception e) {
             e.printStackTrace();
         }

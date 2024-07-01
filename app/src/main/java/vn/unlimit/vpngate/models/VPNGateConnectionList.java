@@ -23,15 +23,6 @@ public class VPNGateConnectionList implements Parcelable {
         }
     };
     private Filter filter;
-
-    public Filter getFilter() {
-        return filter;
-    }
-
-    public void setFilter(Filter filter) {
-        this.filter = filter;
-    }
-
     private List<VPNGateConnection> data;
 
     public VPNGateConnectionList() {
@@ -40,6 +31,14 @@ public class VPNGateConnectionList implements Parcelable {
 
     private VPNGateConnectionList(Parcel in) {
         data = in.createTypedArrayList(VPNGateConnection.CREATOR);
+    }
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 
     /**
@@ -269,6 +268,22 @@ public class VPNGateConnectionList implements Parcelable {
         return dataWithFilter;
     }
 
+    public List<VPNGateConnection> getData() {
+        return data;
+    }
+
+    public void setData(List<VPNGateConnection> data) {
+        this.data = data;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeTypedList(data);
+    }
+
     public enum NumberFilterOperator {
         EQUAL,
         GREATER,
@@ -288,22 +303,6 @@ public class VPNGateConnectionList implements Parcelable {
         public NumberFilterOperator speedFilterOperator = NumberFilterOperator.GREATER_OR_EQUAL;
         public Integer sessionCount;
         public NumberFilterOperator sessionCountFilterOperator = NumberFilterOperator.LESS_OR_EQUAL;
-    }
-
-    public List<VPNGateConnection> getData() {
-        return data;
-    }
-
-    public void setData(List<VPNGateConnection> data) {
-        this.data = data;
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeTypedList(data);
     }
 
     public static final class ORDER {

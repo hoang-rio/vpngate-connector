@@ -12,7 +12,7 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.ConnectedSession
 import java.text.DateFormat.getDateTimeInstance
-import java.util.*
+import java.util.Calendar
 
 class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val mContext = context

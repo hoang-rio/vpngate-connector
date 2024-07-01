@@ -80,10 +80,10 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         if (paidServerUtil.getUserInfo() != null) {
             txtWelcome!!.text = getString(
                 R.string.home_paid_welcome,
-                paidServerUtil.getUserInfo()!!.getString("fullname")
+                paidServerUtil.getUserInfo()!!.username
             )
             txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
             )
@@ -108,7 +108,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
             }
             val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("username", userViewModel?.userInfo?.value?.username)
             params.putString("chart_type", chartViewModel?.chartType?.value.toString())
             FirebaseAnalytics.getInstance(requireContext())
                 .logEvent("user_change_chart_type", params)
@@ -149,10 +149,10 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
             txtWelcome!!.text = getString(
                 R.string.home_paid_welcome,
-                paidServerUtil.getUserInfo()!!.getString("fullname")
+                paidServerUtil.getUserInfo()!!.fullname
             )
             txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.getLong("dataSize"),
+                paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
             )
@@ -169,11 +169,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         this.userViewModel = paidServerActivity?.userViewModel
         userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
-                if (isAttached) {
+                if (userInfo != null && isAttached) {
                     txtWelcome!!.text =
-                        getString(R.string.home_paid_welcome, userInfo?.getString("fullname"))
+                        getString(R.string.home_paid_welcome, userInfo.fullname)
                     txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
-                        userInfo!!.getLong("dataSize"),
+                        userInfo.dataSize!!,
                         false,
                         resources
                     )
@@ -228,7 +228,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             val loadingDialog = LoadingDialog.newInstance(getString(R.string.disconnecting_session))
             loadingDialog.show(parentFragmentManager, TAG)
             val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.getString("username"))
+            params.putString("username", userViewModel?.userInfo?.value?.username)
             params.putString("server_name", connectedSession.serverId?.serverName)
             params.putString("session_id", connectedSession.sessionId)
             sessionViewModel?.deleteSession(connectedSession._id, object : RequestListener {
@@ -287,14 +287,17 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         val lineData = LineData(dataSet)
         lineChart?.data = lineData
         lineChart?.description!!.isEnabled = false
-        lineChart?.legend!!.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.legend!!.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.xAxis?.position = XAxis.XAxisPosition.BOTTOM
         lineChart?.axisLeft?.axisMinimum = 0F
         lineChart?.axisRight?.isEnabled = false
         lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
-        lineChart?.xAxis?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.xAxis?.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.axisLeft?.valueFormatter = ChartValueFormatter()
-        lineChart?.axisLeft?.textColor = ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+        lineChart?.axisLeft?.textColor =
+            ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
         lineChart?.invalidate()
         lnLoadingChart?.visibility = View.GONE
     }

@@ -237,7 +237,8 @@
     <string name="action_show_password">Show</string>
     <string name="default_loading_text">Loading…</string>
     <string name="username_and_password_is_required">Username and password is required</string>
-    <string name="account_is_banned_no_reason">You account is banned.</string>
+    <string name="account_is_banned_no_reason">Your account is banned.</string>
+    <string name="account_did_not_exists">Account did not exist.</string>
     <string name="account_is_banned">You account is banned with reason: %1$s</string>
     <string name="session_expires">Login session expires. Please login again!</string>
     <!-- Sign up screen -->
@@ -261,6 +262,7 @@
     <string name="email_is_invalid">Email is invalid, please check.</string>
     <string name="re_type_password_does_not_match">Re type password does not match</string>
     <string name="birthday_is_invalid">Birthday is invalid</string>
+    <string name="captcha_answer_is_not_correct">Captcha answer is not correct</string>
     <!-- Activate screen -->
     <string name="account_activate_failed">Account activate failed: %1$s</string>
     <string name="account_activate_failed_already_activate">Account already activated</string>
@@ -272,6 +274,7 @@
     <string name="action_reset_pass">Reset password</string>
     <string name="request_forgot_pass_success">Forgot password request success. Please check email to continue.</string>
     <string name="request_forgot_pass_failure">Forgot password failure. Please try again.</string>
+    <string name="account_did_not_exist">Account did not exist</string>
     <!-- Reset pass screen -->
     <string name="title_activity_reset_pass">Reset password</string>
     <string name="prompt_new_password">New password</string>
@@ -361,4 +364,6 @@
     <string name="install_source_error_title">Invalid install</string>
     <string name="install_source_error_message">You are using illegal install version. Please install legal version from Play Store</string>
     <string name="install_source_error_open_play_store">Open Play Store</string>
+    <string name="notification_channel_id" translatable="false">vpn_gate_notification_channel</string>
+    <string name="notification_channel_name">Out of data</string>
 </resources>

@@ -87,47 +87,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public static final String TYPE_START = "vn.ulimit.vpngate.TYPE_START";
     public static final int START_VPN_PROFILE = 70;
     public static final int START_VPN_SSTP = 80;
+    public static final String ACTION_VPN_CONNECT = "kittoku.osc.connect";
+    public static final String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
     private static final String TAG = "DetailActivity";
     private static IOpenVPNServiceInternal mVPNService;
-    ImageView imgFlag;
-    TextView txtCountry;
-    TextView txtIp;
-    TextView txtHostname;
-    TextView txtScore;
-    TextView txtUptime;
-    TextView txtSpeed;
-    TextView txtPing;
-    TextView txtSession;
-    TextView txtOwner;
-    TextView txtTotalUser;
-    TextView txtTotalTraffic;
-    TextView txtLogType;
-    TextView txtStatus;
-    private View lnTCP;
-    private TextView txtTCP;
-    private View lnUDP;
-    private TextView txtUDP;
-    private View lnL2TP;
-    private View getLnL2TPBtn;
-    private Button btnConnectL2TP;
-    private View lnSSTP;
-    private View lnSTTPBtn;
-    private Button btnConnectSSTP;
-    View linkCheckIp;
-    LinearLayout lnContentDetail;
-    private DataUtil dataUtil;
-    private VPNGateConnection mVpnGateConnection;
-    private Button btnConnect;
-    private View btnBack;
-    private VpnProfile vpnProfile;
-    private InterstitialAd mInterstitialAd;
-    private AdView adView;
-    private AdView adViewBellow;
-    private View btnInstallOpenVpn;
-    private View btnSaveConfigFile;
-    private TextView txtNetStats;
-    private SharedPreferences prefs;
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -142,13 +105,51 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
 
     };
+    ImageView imgFlag;
+    TextView txtCountry;
+    TextView txtIp;
+    TextView txtHostname;
+    TextView txtScore;
+    TextView txtUptime;
+    TextView txtSpeed;
+    TextView txtPing;
+    TextView txtSession;
+    TextView txtOwner;
+    TextView txtTotalUser;
+    TextView txtTotalTraffic;
+    TextView txtLogType;
+    TextView txtStatus;
+    View linkCheckIp;
+    LinearLayout lnContentDetail;
+    private View lnTCP;
+    private TextView txtTCP;
+    private View lnUDP;
+    private TextView txtUDP;
+    private View lnL2TP;
+    private View getLnL2TPBtn;
+    private Button btnConnectL2TP;
+    private View lnSSTP;
+    private View lnSTTPBtn;
+    private Button btnConnectSSTP;
+    private DataUtil dataUtil;
+    private VPNGateConnection mVpnGateConnection;
+    private Button btnConnect;
+    private View btnBack;
+    private VpnProfile vpnProfile;
+    private InterstitialAd mInterstitialAd;
+    private AdView adView;
+    private AdView adViewBellow;
+    private View btnInstallOpenVpn;
+    private View btnSaveConfigFile;
+    private TextView txtNetStats;
+    private SharedPreferences prefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
     private boolean isConnecting = false;
     private boolean isAuthFailed = false;
     private boolean isShowAds = false;
     private boolean isSSTPConnectOrDisconnecting = false;
     private boolean isSSTPConnected = false;
-    public static final String ACTION_VPN_CONNECT = "kittoku.osc.connect";
-    public static final String ACTION_VPN_DISCONNECT = "kittoku.osc.disconnect";
+    private boolean isFullScreenAdLoaded = false;
 
     private void checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -168,13 +169,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             getApplicationContext().startService(intent);
         }
     }
+
     private void initSSTP() {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         listener = (sharedPreferences, key) -> {
             if (String.valueOf(OscPrefKey.ROOT_STATE).equals(key)) {
                 boolean newState = prefs.getBoolean(String.valueOf(OscPrefKey.ROOT_STATE), false);
                 if (!newState) {
-                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button,  null));
+                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_paid_button, null));
                     btnConnectSSTP.setText(R.string.connect_via_sstp);
                     if (isSSTPConnectOrDisconnecting) {
                         txtStatus.setText(R.string.sstp_disconnected);
@@ -188,8 +190,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             if (String.valueOf(OscPrefKey.HOME_CONNECTED_IP).equals(key)) {
                 String connectedIp = prefs.getString(String.valueOf(OscPrefKey.HOME_CONNECTED_IP), "");
-                if (!"".equals(connectedIp)) {
-                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button,  null));
+                if (!connectedIp.isEmpty()) {
+                    btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                     btnConnectSSTP.setText(R.string.disconnect_sstp);
                     txtStatus.setText(getString(R.string.sstp_connected, connectedIp));
                     isSSTPConnected = true;
@@ -202,12 +204,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         String sstpHostName = prefs.getString(String.valueOf(OscPrefKey.HOME_HOSTNAME), "");
         if (isSSTPConnected) {
             linkCheckIp.setVisibility(View.VISIBLE);
-            if (sstpHostName.equals(mVpnGateConnection.getCalculateHostName())){
+            if (sstpHostName.equals(mVpnGateConnection.getCalculateHostName())) {
                 btnConnectSSTP.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                 btnConnectSSTP.setText(R.string.disconnect_sstp);
             }
         }
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,7 +226,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 params.putString("country", mVpnGateConnection.getCountryLong());
                 FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Open_Detail", params);
             } catch (NullPointerException ex) {
-                ex.printStackTrace();
+                Log.e(TAG, "onCreate error", ex);
             }
 
         } else {
@@ -314,7 +317,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 hideAdContainer();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "initAdMob error", e);
         }
     }
 
@@ -325,7 +328,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 adView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "hideAdContainer error", e);
         }
     }
 
@@ -353,7 +356,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_red_button, null));
                             btnConnect.setText(getString(R.string.disconnect));
                             txtNetStats.setVisibility(View.VISIBLE);
-                            if (isConnecting && !mVpnGateConnection.getMessage().equals("") && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
+                            if (isConnecting && !mVpnGateConnection.getMessage().isEmpty() && dataUtil.getIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0) == 0) {
                                 MessageDialog messageDialog = MessageDialog.newInstance(mVpnGateConnection.getMessage(), dataUtil);
                                 if (!isFinishing() && !isDestroyed()) {
                                     messageDialog.show(getSupportFragmentManager(), MessageDialog.class.getName());
@@ -388,7 +391,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         params.putString("hostname", mVpnGateConnection.getCalculateHostName());
                         params.putString("country", mVpnGateConnection.getCountryLong());
                         FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Connect_Error", params);
-                        btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.selector_primary_button, null));
+                        btnConnect.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_primary_button, null));
                         txtStatus.setText(getResources().getString(R.string.vpn_auth_failure));
                         linkCheckIp.setVisibility(View.GONE);
                         isConnecting = false;
@@ -401,7 +404,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             } catch (Exception e) {
                 Log.e(TAG, "UpdateState error", e);
-                e.printStackTrace();
             }
         });
     }
@@ -466,7 +468,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     linkCheckIp.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "bindData error", e);
             }
         }
     }
@@ -501,7 +503,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onResume error", e);
         }
     }
 
@@ -512,7 +514,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             TotalTraffic.saveTotal(this);
             unbindService(mConnection);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onPause error", e);
         }
     }
 
@@ -543,7 +545,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }, 500);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "handleImport error", e);
         }
     }
 
@@ -584,7 +586,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         try {
             if (view.equals(btnBack)) {
-                onBackPressed();
+                finish();
                 return;
             }
             if (view.equals(btnConnect)) {
@@ -679,7 +681,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onClick error", e);
         }
 
     }
@@ -709,7 +711,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             try {
                 startActivityForResult(intent, START_VPN_SSTP);
             } catch (ActivityNotFoundException e) {
-                Log.e(TAG,"OS does not support VPN");
+                Log.e(TAG, "OS does not support VPN");
             }
         } else {
             onActivityResult(START_VPN_SSTP, Activity.RESULT_OK, null);
@@ -743,8 +745,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private boolean isFullScreenAdLoaded = false;
-
     private void initInterstitialAd() {
         if (dataUtil.hasAds()) {
             try {
@@ -765,7 +765,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "initInterstitialAd error", e);
             }
         }
     }
@@ -779,7 +779,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "loadAds error", e);
         }
     }
 
@@ -824,7 +824,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             ProfileManager.setTemporaryProfile(getApplicationContext(), vpnProfile);
         } catch (IOException | ConfigParser.ConfigParseError e) {
-            e.printStackTrace();
+            Log.e(TAG, "loadVpnProfile error", e);
             return false;
         }
 
@@ -835,7 +835,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             return VpnStatus.isVPNActive();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "checkStatus error", e);
         }
 
         return false;
@@ -890,7 +890,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 dataUtil.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "onActivityResult error", e);
         }
     }
 
