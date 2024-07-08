@@ -48,7 +48,7 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                     isOutOfData = serverList.value?.size!! >= loadServerResponse.countServer
                 } catch (e: HttpException) {
                     Log.e(TAG, "Got HttpException when load server", e)
-                    baseErrorHandle(e.code(), activity)
+                    handleExpiresError(e.code(), activity)
                     val params = Bundle()
                     params.putString(
                         "username",
@@ -57,6 +57,8 @@ class ServerViewModel(application: Application) : BaseViewModel(application) {
                     params.putString("errorInfo", e.message)
                     FirebaseAnalytics.getInstance(getApplication())
                         .logEvent("Paid_Server_List_Server_Error", params)
+                } catch (e: Throwable) {
+                    Log.e(TAG, "Got HttpException when load server", e)
                 } finally {
                     isLoading.postValue(false)
                 }

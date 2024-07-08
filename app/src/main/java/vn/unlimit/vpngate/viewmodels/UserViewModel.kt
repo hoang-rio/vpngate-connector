@@ -74,8 +74,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 errorList.postValue(responseError)
                 isLoggedIn.postValue(false)
                 isLoading.postValue(false)
-            } catch (e: Exception) {
-                Log.e(TAG, "Login error with Exception", e)
+            } catch (th: Throwable) {
+                Log.e(TAG, "Login error with Exception", th)
                 isLoggedIn.postValue(false)
                 isLoading.postValue(false)
             }
@@ -145,8 +145,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 if (updateLoading) {
                     isLoading.postValue(false)
                 }
-                baseErrorHandle(e.code(), activity)
-            } catch (e: Exception) {
+                handleExpiresError(e.code(), activity)
+            } catch (e: Throwable) {
                 Log.e(TAG, "fetch user error with Exception", e)
                 if (updateLoading) {
                     isLoading.postValue(false)
@@ -197,7 +197,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 }
                 isLoading.postValue(false)
                 isRegisterSuccess.postValue(false)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.d(TAG, "Got exception when register", e)
                 isLoading.postValue(false)
                 isRegisterSuccess.postValue(false)
@@ -215,7 +215,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 userActivateResponse.errorCode.let {
                     errorCode = it
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when activate user", e)
                 isUserActivated.postValue(false)
             } finally {
@@ -245,7 +245,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 }
                 isLoading.postValue(false)
                 isForgotPassSuccess.postValue(false)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when forgot password", e)
                 isLoading.postValue(false)
                 isForgotPassSuccess.postValue(false)
@@ -258,7 +258,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             try {
                 userApiService.checkResetPassToken(resetPassToken)
                 isValidResetPassToken.postValue(true)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when check reset pass token", e)
                 isValidResetPassToken.postValue(false)
             }
@@ -285,7 +285,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     errorList.postValue(errorResponse.get("errorList") as JSONObject)
                 }
                 isPasswordReset.postValue(false)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.d(TAG, "Got exception when reset password", e)
                 isPasswordReset.postValue(false)
             } finally {
@@ -305,7 +305,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                     activity.getText(R.string.password_changed),
                     Toast.LENGTH_LONG
                 ).show()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when change pass", e)
                 Toast.makeText(
                     activity,
@@ -337,7 +337,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             } catch (e: HttpException) {
                 Log.e(TAG, "Got HttpException when update profile.", e)
                 requestListener.onError("")
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got Exception when update profile.", e)
                 requestListener.onError("")
             } finally {
@@ -352,7 +352,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             try {
                 userApiService.delete()
                 requestListener.onSuccess(true)
-            } catch (e: HttpException) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when delete account", e)
                 requestListener.onSuccess(false)
             } finally {
@@ -366,7 +366,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             try {
                 val captchaResponse = userApiService.getCaptcha()
                 requestListener.onSuccess(captchaResponse)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get captcha", e)
                 requestListener.onError(e.message)
             }

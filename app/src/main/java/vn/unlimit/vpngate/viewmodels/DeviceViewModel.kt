@@ -69,7 +69,7 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
                                         TAG,
                                         "Add device result %s".format(deviceAddResponse.toString())
                                     )
-                                } catch (e: Exception) {
+                                } catch (e: Throwable) {
                                     Log.e(TAG, "Got exception when add device after login", e)
                                 }
                             }
@@ -91,7 +91,7 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
                 withContext(Dispatchers.Main) {
                     setDeviceInfo(deviceInfo)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get notification setting", e)
             } finally {
                 isLoading.postValue(false)
@@ -122,7 +122,7 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
                         setDeviceInfo(setNotificationSettingResponse.userDevice)
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when set notification setting", e)
             } finally {
                 isLoading.postValue(false)

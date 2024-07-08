@@ -86,7 +86,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                 } else {
                     vpnGateConnectionList.postValue(connectionList)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get connection list", e)
                 isError.postValue(true)
             } finally {

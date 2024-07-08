@@ -39,7 +39,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         return@addInterceptor it.proceed(requestBuilder.build())
     }
 
-    open var retrofit: Retrofit = Retrofit.Builder().baseUrl(
+    var retrofit: Retrofit = Retrofit.Builder().baseUrl(
         FirebaseRemoteConfig.getInstance()
             .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
     )
@@ -48,16 +48,14 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private fun baseErrorHandle(error: String?) {
-        if (error === ERROR_SESSION_EXPIRES) {
-            isLoggedIn.value = false
-            paidServerUtil.setIsLoggedIn(false)
-        }
+    private fun handleExpiresError() {
+        isLoggedIn.value = false
+        paidServerUtil.setIsLoggedIn(false)
     }
 
-    fun baseErrorHandle(errorCode: Int?, activity: Activity?) {
+    fun handleExpiresError(errorCode: Int?, activity: Activity?) {
         if (errorCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            baseErrorHandle(ERROR_SESSION_EXPIRES)
+            handleExpiresError()
             activity?.let {
                 // Session expires
                 paidServerUtil.setIsLoggedIn(false)
