@@ -541,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             filterBottomSheetDialog.setOnButtonClickListener(filter -> {
                 mMenu.findItem(R.id.action_filter).setIcon(filter == null ? R.drawable.ic_filter_white : R.drawable.ic_filter_active_white);
                 HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
-                if (homeFragment != null) {
+                if (homeFragment != null && connectionListViewModel.getVpnGateConnectionList().getValue() != null) {
                     Bundle params = new Bundle();
                     params.putString("filterObj", new Gson().toJson(filter));
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Filter", params);
