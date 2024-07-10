@@ -220,14 +220,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (!dataUtil!!.hasAds()) {
             return
         }
-        val debugSettings = ConsentDebugSettings.Builder(this)
-            .addTestDeviceHashedId("5A08C90645CF1173979B5320A03D1195")
-            .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
-            .build()
+//        val debugSettings = ConsentDebugSettings.Builder(this)
+//            .addTestDeviceHashedId("5A08C90645CF1173979B5320A03D1195")
+//            .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+//            .build()
         // Set tag for under age of consent. false means users are not under age
         // of consent.
         val params = ConsentRequestParameters.Builder()
-            .setConsentDebugSettings(debugSettings)
+//            .setConsentDebugSettings(debugSettings)
             .setTagForUnderAgeOfConsent(false)
             .build()
 
