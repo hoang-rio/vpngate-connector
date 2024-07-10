@@ -14,3 +14,10 @@
 # class:
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
+-keep class de.blinkt.openvpn.VpnProfile
+-keepclassmembers class de.blinkt.openvpn.VpnProfile { public *;}
+-keep class de.blinkt.openvpn.core.**
+-keepclassmembers class de.blinkt.openvpn.core.** { public *;}
+-keep class de.blinkt.openvpn.utils.PropertiesService
+-keep class de.blinkt.openvpn.utils.TotalTraffic
+-keepclassmembers class de.blinkt.openvpn.utils.** { public *;}
