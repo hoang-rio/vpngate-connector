@@ -79,7 +79,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
 
     fun getOpenVpnConfigDataUdp(): String {
         var openVpnConfigDataTmp: String = ovpnContent
-        if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (!App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTmp = openVpnConfigDataTmp.replace(serverDomain, serverIp)
         }
         return openVpnConfigDataTmp
@@ -93,7 +93,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
                 .replace("proto udp", "proto tcp")
                 .replace("remote $serverDomain $tcpPort", "remote $serverDomain $udpPort")
         }
-        if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (!App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTcp = openVpnConfigDataTcp.replace(serverDomain, serverIp)
         }
         // Current config is udp only
@@ -102,10 +102,10 @@ class PaidServer(inParcel: Parcel) : Parcelable {
 
     fun getName(useUdp: Boolean): String {
         var address: String = serverIp
-        if (App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             address = serverDomain
         }
-        return if (App.getInstance().dataUtil.getBooleanSetting(
+        return if (App.instance!!.dataUtil!!.getBooleanSetting(
                 DataUtil.INCLUDE_UDP_SERVER,
                 true
             )

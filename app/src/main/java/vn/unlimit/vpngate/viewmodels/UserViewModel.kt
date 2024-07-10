@@ -169,7 +169,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         isLoading.value = true
         viewModelScope.launch {
             try {
-                val isPro = !App.getInstance().dataUtil.hasAds()
+                val isPro = !App.instance!!.dataUtil!!.hasAds()
                 userApiService.register(
                     RegisterRequest(
                         user = UserRegister(

@@ -100,8 +100,8 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var txtStatus: TextView? = null
     private var txtNetStats: TextView? = null
     private var mPaidServer: PaidServer? = null
-    private val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
-    private val dataUtil: DataUtil = App.getInstance().dataUtil
+    private val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
+    private val dataUtil: DataUtil = App.instance!!.dataUtil!!
     private var isConnecting = false
     private var isAuthFailed = false
     private var vpnProfile: VpnProfile? = null
@@ -186,7 +186,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
             }, 300)
-            if (!App.isIsImportToOpenVPN()) {
+            if (!App.isImportToOpenVPN) {
                 btnInstallOpenVpn?.visibility = View.GONE
                 btnSaveConfigFile?.visibility = View.GONE
                 btnConnect!!.visibility = View.VISIBLE
@@ -287,7 +287,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
         try {
             Glide.with(this)
-                .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
+                .load(App.instance!!.dataUtil!!.baseUrl + "/images/flags/" + mPaidServer!!.serverCountryCode + ".png")
                 .placeholder(R.color.colorOverlay)
                 .error(R.color.colorOverlay)
                 .into(ivFlag!!)

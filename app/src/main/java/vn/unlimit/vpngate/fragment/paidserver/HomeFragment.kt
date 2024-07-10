@@ -43,7 +43,7 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 
 class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
-    private val paidServerUtil = App.getInstance().paidServerUtil
+    private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var txtWelcome: TextView? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var userViewModel: UserViewModel? = null
@@ -99,19 +99,22 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         lineChart = root.findViewById(R.id.line_chart)
         spinnerChartType = root.findViewById(R.id.spin_chart_type)
         val chartTypes = resources.getStringArray(R.array.chart_type)
-        val spinnerInit = SpinnerInit(requireContext(), spinnerChartType)
+        val spinnerInit = SpinnerInit(requireContext(), spinnerChartType!!)
         spinnerInit.setStringArray(chartTypes, chartTypes[0])
-        spinnerInit.setOnItemSelectedIndexListener { _, index ->
-            when (index) {
-                0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
-                1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
-                2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
+        spinnerInit.onItemSelectedIndexListener = object : SpinnerInit.OnItemSelectedIndexListener {
+            override fun onItemSelected(name: String?, index: Int) {
+                when (index) {
+                    0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
+                    1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
+                    2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
+                }
+                val params = Bundle()
+                params.putString("username", userViewModel?.userInfo?.value?.username)
+                params.putString("chart_type", chartViewModel?.chartType?.value.toString())
+                FirebaseAnalytics.getInstance(requireContext())
+                    .logEvent("user_change_chart_type", params)
             }
-            val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.username)
-            params.putString("chart_type", chartViewModel?.chartType?.value.toString())
-            FirebaseAnalytics.getInstance(requireContext())
-                .logEvent("user_change_chart_type", params)
+
         }
         lnChartError = root.findViewById(R.id.ln_chart_error)
         lnChartError?.setOnClickListener { chartViewModel?.getChartData() }

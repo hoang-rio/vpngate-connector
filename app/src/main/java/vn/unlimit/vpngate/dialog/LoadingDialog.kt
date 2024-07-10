@@ -24,7 +24,7 @@ class LoadingDialog : DialogFragment() {
 
         fun newInstance(): LoadingDialog {
             val loadingDialog = LoadingDialog()
-            loadingDialog.loadingText = App.getInstance().getString(R.string.default_loading_text)
+            loadingDialog.loadingText = App.instance!!.getString(R.string.default_loading_text)
             return loadingDialog
         }
     }

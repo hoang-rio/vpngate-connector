@@ -23,7 +23,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
         const val TAG = "VPNGateViewModel"
     }
 
-    var dataUtil: DataUtil = App.getInstance().dataUtil
+    var dataUtil: DataUtil = App.instance!!.dataUtil!!
 
     val vpnGateConnectionList = MutableLiveData<VPNGateConnectionList>()
     private var isRetried = false

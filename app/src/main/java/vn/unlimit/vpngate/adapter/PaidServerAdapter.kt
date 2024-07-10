@@ -98,7 +98,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
             try {
                 val paidServer: PaidServer = _list.get(getRealPosition(position))
                 Glide.with(mContext!!)
-                    .load(App.getInstance().dataUtil.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
+                    .load(App.instance!!.dataUtil!!.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
                     .placeholder(R.color.colorOverlay)
                     .error(R.color.colorOverlay)
                     .into(imgFlag)

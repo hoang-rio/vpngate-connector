@@ -42,7 +42,7 @@ class PaidServerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paid_server)
         val paidServerUtil = (application as App).paidServerUtil
-        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
+        paidServerUtil?.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnItemSelectedListener {
             return@setOnItemSelectedListener onNavigationItemSelected(it)

@@ -82,7 +82,7 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
             mainActivity!!.finish()
         } else if (view == btnAccept) {
             //Start home fragment
-            App.getInstance().dataUtil.isAcceptedPrivacyPolicy = true
+            App.instance!!.dataUtil!!.isAcceptedPrivacyPolicy = true
             mainActivity!!.restartApp()
         }
     }

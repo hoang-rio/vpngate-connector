@@ -80,7 +80,7 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
                 lnCreated.visibility = View.GONE
             }
             lnDisconnect.setOnClickListener(this)
-            if (App.getInstance().paidServerUtil.isCurrentSession(
+            if (App.instance!!.paidServerUtil!!.isCurrentSession(
                     session.serverId!!._id,
                     session.clientIp
                 )

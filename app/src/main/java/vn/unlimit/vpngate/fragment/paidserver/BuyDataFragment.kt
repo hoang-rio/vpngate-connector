@@ -44,8 +44,8 @@ import java.util.Collections
 class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private var btnBack: ImageView? = null
     private var listSkus: Array<String>? = null
-    private var dataUtil = App.getInstance().dataUtil
-    private var paidServerUtil = App.getInstance().paidServerUtil
+    private var dataUtil = App.instance!!.dataUtil!!
+    private var paidServerUtil = App.instance!!.paidServerUtil!!
     private var billingClient: BillingClient? = null
     private var lnLoading: View? = null
     private var rcvSkuDetails: RecyclerView? = null
@@ -159,7 +159,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 }
             }
         }
-        purchaseViewModel = ViewModelProvider(this).get(PurchaseViewModel::class.java)
+        purchaseViewModel = ViewModelProvider(this)[PurchaseViewModel::class.java]
         purchaseViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn) {
                 // Go to login screen if user login status is changed

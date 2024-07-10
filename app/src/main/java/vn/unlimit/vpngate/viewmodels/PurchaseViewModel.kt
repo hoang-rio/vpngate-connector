@@ -28,7 +28,7 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
         errorCode = null
         viewModelScope.launch {
             try {
-                val isPro = !App.getInstance().dataUtil.hasAds()
+                val isPro = !App.instance!!.dataUtil!!.hasAds()
                 val res = purchaseApiService.createPurchase(
                     PurchaseCreateRequest(
                         packageId = purchase.products[0],

@@ -183,8 +183,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationView.setNavigationItemSelectedListener(this);
         mSortProperty = dataUtil.getStringSetting(SORT_PROPERTY_KEY, "");
         mSortType = dataUtil.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC);
-        paidServerUtil = App.getInstance().getPaidServerUtil();
+        paidServerUtil = Objects.requireNonNull(App.getInstance()).paidServerUtil;
         // Set startup screen to free server when open MainActivity
+        assert paidServerUtil != null;
         paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.FREE_SERVER);
         IntentFilter filter = new IntentFilter();
         filter.addAction(BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE);
@@ -489,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return false;
                 }
             });
-            if (connectionListViewModel.getVpnGateConnectionList().getValue() != null && connectionListViewModel.getVpnGateConnectionList().getValue().getFilter() != null) {
+            if (connectionListViewModel.getVpnGateConnectionList().getValue() != null && connectionListViewModel.getVpnGateConnectionList().getValue().filter != null) {
                 menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_active_white);
             }
         } catch (Exception e) {
@@ -537,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (itemId == R.id.action_filter && connectionListViewModel.getVpnGateConnectionList().getValue() != null) {
-            FilterBottomSheetDialog filterBottomSheetDialog = FilterBottomSheetDialog.newInstance(connectionListViewModel.getVpnGateConnectionList().getValue().getFilter());
+            FilterBottomSheetDialog filterBottomSheetDialog = FilterBottomSheetDialog.newInstance(connectionListViewModel.getVpnGateConnectionList().getValue().filter);
             filterBottomSheetDialog.setOnButtonClickListener(filter -> {
                 mMenu.findItem(R.id.action_filter).setIcon(filter == null ? R.drawable.ic_filter_white : R.drawable.ic_filter_active_white);
                 HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.class.getName());
@@ -545,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Bundle params = new Bundle();
                     params.putString("filterObj", new Gson().toJson(filter));
                     FirebaseAnalytics.getInstance(getApplicationContext()).logEvent("Filter", params);
-                    connectionListViewModel.getVpnGateConnectionList().getValue().setFilter(filter);
+                    connectionListViewModel.getVpnGateConnectionList().getValue().filter = filter;
                     homeFragment.advanceFilter(filter);
                 }
             });
@@ -806,7 +807,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void setVpnGateConnectionList(VPNGateConnectionList _vpnGateConnectionList) {
         connectionListViewModel.getVpnGateConnectionList().postValue(_vpnGateConnectionList);
         if (mMenu != null) {
-            mMenu.findItem(R.id.action_filter).setIcon(_vpnGateConnectionList != null && _vpnGateConnectionList.getFilter() != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
+            mMenu.findItem(R.id.action_filter).setIcon(_vpnGateConnectionList != null && _vpnGateConnectionList.filter != null ? R.drawable.ic_filter_active_white : R.drawable.ic_filter_white);
         }
     }
 }

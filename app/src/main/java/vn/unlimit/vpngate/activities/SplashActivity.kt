@@ -95,7 +95,7 @@ class SplashActivity : AppCompatActivity() {
         if (AppOpenManager.isShowingAd) {
             return
         }
-        val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+        val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
         val actIntent: Intent =
             if (paidServerUtil.getStartUpScreen() == PaidServerUtil.StartUpScreen.PAID_SERVER) {
                 if (paidServerUtil.isLoggedIn()) {

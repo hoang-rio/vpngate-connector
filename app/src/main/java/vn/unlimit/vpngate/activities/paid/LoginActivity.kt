@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private var btnForgotPass: Button? = null
     private var ivHidePassword: ImageView? = null
     private var userViewModel: UserViewModel? = null
-    private val paidServerUtil = App.getInstance().paidServerUtil
+    private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var loadingDialog: LoadingDialog? = null
     private var isFirstTimeHidePass = true
     private var isClickedLogin = false

@@ -28,7 +28,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         const val MAX_RETRY_COUNT = 3
     }
 
-    val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+    val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerUtil.isLoggedIn())
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 

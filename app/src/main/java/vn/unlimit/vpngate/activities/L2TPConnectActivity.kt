@@ -29,7 +29,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     private var txtHint: TextView? = null
     private var ivStep1: ImageView? = null
     private var txtEndPoint: TextView? = null
-    private var dataUtil: DataUtil = App.getInstance().dataUtil
+    private var dataUtil: DataUtil = App.instance!!.dataUtil!!
     private var adContainer: RelativeLayout? = null
     private var adView: AdView? = null
     private var ivStep2: ImageView? = null
@@ -88,7 +88,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 window.statusBarColor = resources.getColor(R.color.colorPaidServer)
                 lnNavDetail?.setBackgroundColor(resources.getColor(R.color.colorPaidServer))
                 //Hide ad banner
-                val paidServerUtil = App.getInstance().paidServerUtil
+                val paidServerUtil = App.instance!!.paidServerUtil!!
                 adContainer?.visibility = View.GONE
                 txtSharedSecret?.text = getString(R.string.vpn_paid_shared_secret)
                 txtVPNUser?.text = paidServerUtil.getUserInfo()?.username
