@@ -125,4 +125,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     fun isSSTPSupport(): Boolean {
         return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1
     }
+
+    fun isL2TPSupport() : Boolean {
+        return Build.VERSION.SDK_INT < VERSION_CODES.TIRAMISU && l2tpSupport == 1
+    }
 }

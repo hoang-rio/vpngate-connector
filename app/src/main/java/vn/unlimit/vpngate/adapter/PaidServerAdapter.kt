@@ -130,7 +130,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                 } else {
                     lnUDP.visibility = GONE
                 }
-                if (paidServer.l2tpSupport == 1) {
+                if (paidServer.isL2TPSupport()) {
                     lnL2TP.visibility = VISIBLE
                 } else {
                     lnL2TP.visibility = GONE

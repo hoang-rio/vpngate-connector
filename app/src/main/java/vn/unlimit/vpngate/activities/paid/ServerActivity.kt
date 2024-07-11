@@ -343,7 +343,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             } else {
                 lnUDP?.visibility = View.GONE
             }
-            if (mPaidServer!!.l2tpSupport == 1) {
+            if (mPaidServer!!.isL2TPSupport()) {
                 lnL2TP?.visibility = View.VISIBLE
                 btnL2TPConnect?.visibility = View.VISIBLE
             } else {
