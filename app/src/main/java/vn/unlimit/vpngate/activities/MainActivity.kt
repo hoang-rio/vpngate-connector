@@ -26,9 +26,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.AdListener
@@ -50,6 +48,7 @@ import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.databinding.ActivityMainBinding
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog.Companion.newInstance
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog.OnButtonClickListener
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog
@@ -72,18 +71,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
     private val isMobileAdsInitializeCalled = AtomicBoolean(false)
     var connectionListViewModel: ConnectionListViewModel? = null
-    private var lnLoading: View? = null
-    private var frameContent: View? = null
     var isLoading: Boolean = true
     var doubleBackToExitPressedOnce: Boolean = false
     private var selectedMenuItem: MenuItem? = null
     private var dataUtil: DataUtil? = null
-    private var toolbar: Toolbar? = null
-    private var drawerLayout: DrawerLayout? = null
-    private var navigationView: NavigationView? = null
     private var drawerToggle: ActionBarDrawerToggle? = null
-    private var lnError: View? = null
-    private var lnNoNetwork: View? = null
     private var currentUrl: String? = ""
     var sortProperty: String? = ""
         private set
@@ -94,6 +86,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private var disallowLoadHome = false
     private var adView: AdView? = null
     private var isInFront = false
+    private lateinit var binding: ActivityMainBinding
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (Objects.requireNonNull<String?>(intent.action)) {
@@ -107,7 +100,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 BaseProvider.ACTION.ACTION_CONNECT_VPN -> {
                     if (dataUtil != null && dataUtil!!.lastVPNConnection != null) {
                         try {
-                            navigationView!!.menu.findItem(R.id.nav_status).setVisible(true)
+                            binding.navMain.menu.findItem(R.id.nav_status).setVisible(true)
                         } catch (e: Exception) {
                             Log.e(TAG, "Got exception when handle broadcast receive", e)
                         }
@@ -134,7 +127,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->
             if (aBoolean) {
-                lnLoading!!.visibility = View.VISIBLE
+                binding.incLoading.lnLoading.visibility = View.VISIBLE
             } else {
                 onSuccess()
             }
@@ -143,7 +136,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if (isError) {
                 onError("")
             } else {
-                lnError!!.visibility = View.GONE
+                binding.incError.lnError.visibility = View.GONE
             }
         }
         if (savedInstanceState != null) {
@@ -155,25 +148,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 connectionListViewModel!!.vpnGateConnectionList.value != null && connectionListViewModel!!.vpnGateConnectionList.value!!
                     .size() > 0
         }
-        setContentView(R.layout.activity_main)
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        lnLoading = findViewById(R.id.ln_loading)
-        lnError = findViewById(R.id.ln_error)
-        lnNoNetwork = findViewById(R.id.ln_no_network)
-        lnError!!.setOnClickListener(this)
-        frameContent = findViewById(R.id.frame_content)
-        drawerLayout = findViewById(R.id.activity_main_drawer)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        binding.incError.lnError.setOnClickListener(this)
         drawerToggle = ActionBarDrawerToggle(
             this,
-            drawerLayout,
-            toolbar,
+            binding.activityMainDrawer,
+            binding.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-        drawerLayout!!.addDrawerListener(drawerToggle!!)
-        navigationView = findViewById(R.id.nav_main)
-        navigationView!!.setNavigationItemSelectedListener(this)
+        binding.activityMainDrawer.addDrawerListener(drawerToggle!!)
+        binding.navMain.setNavigationItemSelectedListener(this)
         sortProperty = dataUtil!!.getStringSetting(SORT_PROPERTY_KEY, "")
         sortType = dataUtil!!.getIntSetting(SORT_TYPE_KEY, VPNGateConnectionList.ORDER.ASC)
         paidServerUtil = instance!!.paidServerUtil!!
@@ -211,7 +198,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun checkStatusMenu() {
-        navigationView!!.menu.findItem(R.id.nav_status)
+        binding.navMain.menu.findItem(R.id.nav_status)
             .setVisible(dataUtil!!.lastVPNConnection != null)
     }
 
@@ -290,7 +277,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 adView!!.loadAd(AdRequest.Builder().build())
             } else {
                 hideAdContainer()
-                navigationView!!.menu.setGroupVisible(R.id.menu_top, false)
+                binding.navMain.menu.setGroupVisible(R.id.menu_top, false)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when initAdMob", e)
@@ -299,7 +286,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun hideAdContainer() {
         try {
-            findViewById<View>(R.id.ad_container_home).visibility = View.GONE
+            binding.adContainerHome.visibility = View.GONE
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when hideAdContainer", e)
         }
@@ -320,7 +307,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ) == 1 && dataUtil!!.lastVPNConnection != null
         ) {
             replaceFragment("status")
-            navigationView!!.menu.findItem(R.id.nav_status).setChecked(true)
+            binding.navMain.menu.findItem(R.id.nav_status).setChecked(true)
             return
         }
         val targetFragment = this.intent.getStringExtra(TARGET_FRAGMENT)
@@ -334,7 +321,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun loadData() {
         if (!disallowLoadHome) {
             if (isOnline(applicationContext)) {
-                lnNoNetwork!!.visibility = View.GONE
+                binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
                 val vpnGateConnectionList = dataUtil!!.connectionsCache
                 this.vpnGateConnectionList = vpnGateConnectionList
                 if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
@@ -363,15 +350,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     alertDialog.show()
                 }
             } else {
-                lnNoNetwork!!.visibility = View.VISIBLE
-                lnError!!.visibility = View.GONE
-                lnLoading!!.visibility = View.GONE
-                frameContent!!.visibility = View.GONE
+                binding.incNoNetwork.lnNoNetwork.visibility = View.VISIBLE
+                binding.incError.lnError.visibility = View.GONE
+                binding.incLoading.lnLoading.visibility = View.GONE
+                binding.frameContent.visibility = View.GONE
             }
         } else {
             setTitleActionbar(currentTitle)
-            lnError!!.visibility = View.GONE
-            lnLoading!!.visibility = View.GONE
+            binding.incError.lnError.visibility = View.GONE
+            binding.incLoading.lnLoading.visibility = View.GONE
         }
     }
 
@@ -389,8 +376,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 
     override fun onClick(view: View) {
-        if (view == lnError) {
-            lnError!!.visibility = View.GONE
+        if (view == binding.incError.lnError) {
+            binding.incError.lnError.visibility = View.GONE
             callDataServer()
         }
     }
@@ -421,9 +408,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     fun callDataServer() {
         isLoading = true
-        lnError!!.visibility = View.GONE
-        frameContent!!.visibility = View.GONE
-        lnNoNetwork!!.visibility = View.GONE
+        binding.incError.lnError.visibility = View.GONE
+        binding.frameContent.visibility = View.GONE
+        binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
         connectionListViewModel!!.getAPIData()
     }
 
@@ -603,8 +590,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     fun onSuccess() {
         val vpnGateConnectionList = connectionListViewModel!!.vpnGateConnectionList.value
         isLoading = false
-        lnLoading!!.visibility = View.GONE
-        frameContent!!.visibility = View.VISIBLE
+        binding.incLoading.lnLoading.visibility = View.GONE
+        binding.frameContent.visibility = View.VISIBLE
         if (vpnGateConnectionList != null && "" != sortProperty) {
             vpnGateConnectionList.sort(sortProperty, sortType)
         }
@@ -614,7 +601,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun updateData() {
         isLoading = false
-        lnLoading!!.visibility = View.GONE
+        binding.incLoading.lnLoading.visibility = View.GONE
         replaceFragment("home")
     }
 
@@ -716,19 +703,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             else -> {}
         }
-        navigationView!!.setCheckedItem(menuItem.itemId)
-        if (toolbar != null) {
-            toolbar!!.collapseActionView()
-        }
-        drawerLayout!!.closeDrawers()
+        binding.navMain.setCheckedItem(menuItem.itemId)
+        binding.toolbar.collapseActionView()
+        binding.activityMainDrawer.closeDrawers()
         return true
     }
 
     private fun stopRequest() {
         try {
-            lnError!!.visibility = View.GONE
-            lnLoading!!.visibility = View.GONE
-            lnNoNetwork!!.visibility = View.GONE
+            binding.incError.lnError.visibility = View.GONE
+            binding.incLoading.lnLoading.visibility = View.GONE
+            binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when handle stopRequest", e)
         }
@@ -739,9 +724,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if (url != null && (url != currentUrl || url == "home")) {
                 toggleAction(url == "home" && connectionListViewModel!!.vpnGateConnectionList.value != null)
                 if (url != "home") {
-                    lnLoading!!.visibility = View.GONE
-                    lnNoNetwork!!.visibility = View.GONE
-                    lnError!!.visibility = View.GONE
+                    binding.incLoading.lnLoading.visibility = View.GONE
+                    binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
+                    binding.incError.lnError.visibility = View.GONE
                 }
                 currentUrl = url
                 var fragment: Fragment? = null
@@ -781,13 +766,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         fragment = AboutFragment()
                         tag = AboutFragment::class.java.name
                         title = resources.getString(R.string.about)
-                        navigationView!!.setCheckedItem(R.id.nav_about)
+                        binding.navMain.setCheckedItem(R.id.nav_about)
                     }
 
                     else -> {}
                 }
                 if (fragment != null && !fragment.isAdded) {
-                    frameContent!!.visibility = View.VISIBLE
+                    binding.frameContent.visibility = View.VISIBLE
                     setTitleActionbar(title)
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(R.id.frame_content, fragment, tag)
@@ -851,10 +836,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     if (connectionListViewModel!!.vpnGateConnectionList.value == null) {
                         callDataServer()
                     }
-                    navigationView!!.setCheckedItem(R.id.nav_home)
+                    binding.navMain.setCheckedItem(R.id.nav_home)
                     replaceFragment(startUpUrl)
                 }
-                drawerLayout!!.closeDrawer(GravityCompat.START)
+                binding.activityMainDrawer.closeDrawer(GravityCompat.START)
             }
         })
     }
@@ -870,11 +855,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val params = Bundle()
         params.putString("screen", "home")
         FirebaseAnalytics.getInstance(applicationContext).logEvent("Error", params)
-        frameContent!!.visibility = View.GONE
-        lnLoading!!.visibility = View.GONE
-        lnError!!.visibility = View.VISIBLE
-        lnNoNetwork!!.visibility = View.GONE
-        print(error)
+        binding.frameContent.visibility = View.GONE
+        binding.incLoading.lnLoading.visibility = View.GONE
+        binding.incError.lnError.visibility = View.VISIBLE
+        binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
+        Log.w(TAG, "Error on MainActivity.onError %s".format(error))
     }
 
     var vpnGateConnectionList: VPNGateConnectionList?

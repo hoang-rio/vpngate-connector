@@ -20,11 +20,7 @@ import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +56,7 @@ import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.dialog.MessageDialog
 import vn.unlimit.vpngate.models.VPNGateConnection
@@ -89,43 +86,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             mVPNService = null
         }
     }
-    private lateinit var imgFlag: ImageView
-    private lateinit var txtCountry: TextView
-    private lateinit var txtIp: TextView
-    private lateinit var txtHostname: TextView
-    private lateinit var txtScore: TextView
-    private lateinit var txtUptime: TextView
-    private lateinit var txtSpeed: TextView
-    private lateinit var txtPing: TextView
-    private lateinit var txtSession: TextView
-    private lateinit var txtOwner: TextView
-    private lateinit var txtTotalUser: TextView
-    private lateinit var txtTotalTraffic: TextView
-    private lateinit var txtLogType: TextView
-    private lateinit var txtStatus: TextView
-    private lateinit var linkCheckIp: View
-    private lateinit var lnContentDetail: LinearLayout
-    private lateinit var lnTCP: View
-    private lateinit var txtTCP: TextView
-    private lateinit var lnUDP: View
-    private lateinit var txtUDP: TextView
-    private lateinit var lnL2TP: View
-    private lateinit var getLnL2TPBtn: View
-    private lateinit var btnConnectL2TP: Button
-    private lateinit var lnSSTP: View
-    private lateinit var lnSTTPBtn: View
-    private lateinit var btnConnectSSTP: Button
     private lateinit var dataUtil: DataUtil
     private var mVpnGateConnection: VPNGateConnection? = null
-    private lateinit var btnConnect: Button
-    private lateinit var btnBack: View
     private lateinit var vpnProfile: VpnProfile
     private var mInterstitialAd: InterstitialAd? = null
     private lateinit var adView: AdView
     private lateinit var adViewBellow: AdView
-    private lateinit var btnInstallOpenVpn: View
-    private lateinit var btnSaveConfigFile: View
-    private lateinit var txtNetStats: TextView
     private lateinit var prefs: SharedPreferences
     private lateinit var listener: OnSharedPreferenceChangeListener
     private var isConnecting = false
@@ -134,6 +100,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var isSSTPConnectOrDisconnecting = false
     private var isSSTPConnected = false
     private var isFullScreenAdLoaded = false
+    private lateinit var binding: ActivityDetailBinding
 
     private fun checkConnectionData() {
         if (mVpnGateConnection == null) {
@@ -161,30 +128,30 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 if (OscPrefKey.ROOT_STATE.toString() == key) {
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
-                        btnConnectSSTP.background = ResourcesCompat.getDrawable(
+                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_paid_button, null
                         )
-                        btnConnectSSTP.setText(R.string.connect_via_sstp)
+                        binding.btnSstpConnect.setText(R.string.connect_via_sstp)
                         if (isSSTPConnectOrDisconnecting) {
-                            txtStatus.setText(R.string.sstp_disconnected)
+                            binding.txtStatus.setText(R.string.sstp_disconnected)
                         } else {
-                            txtStatus.setText(R.string.sstp_disconnected_by_error)
+                            binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
-                        linkCheckIp.visibility = View.GONE
+                        binding.txtCheckIp.visibility = View.GONE
                     }
                     isSSTPConnectOrDisconnecting = false
                 }
                 if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
                     val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
                     if (connectedIp!!.isNotEmpty()) {
-                        btnConnectSSTP.background = ResourcesCompat.getDrawable(
+                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_red_button, null
                         )
-                        btnConnectSSTP.setText(R.string.disconnect_sstp)
-                        txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                        binding.btnSstpConnect.setText(R.string.disconnect_sstp)
+                        binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
                         isSSTPConnected = true
-                        linkCheckIp.visibility = View.VISIBLE
+                        binding.txtCheckIp.visibility = View.VISIBLE
                     }
                 }
             }
@@ -192,12 +159,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         isSSTPConnected = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
         val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
         if (isSSTPConnected) {
-            linkCheckIp.visibility = View.VISIBLE
+            binding.txtCheckIp.visibility = View.VISIBLE
             if (sstpHostName == mVpnGateConnection!!.calculateHostName) {
-                btnConnectSSTP.background = ResourcesCompat.getDrawable(
+                binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
                     resources, R.drawable.selector_red_button, null
                 )
-                btnConnectSSTP.setText(R.string.disconnect_sstp)
+                binding.btnSstpConnect.setText(R.string.disconnect_sstp)
             }
         }
     }
@@ -231,52 +198,22 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             ))
         }
         checkConnectionData()
-        setContentView(R.layout.activity_detail)
-        btnConnect = findViewById(R.id.btn_connect)
-        btnSaveConfigFile = findViewById(R.id.btn_save_config_file)
-        btnSaveConfigFile.setOnClickListener(this)
-        btnInstallOpenVpn = findViewById(R.id.btn_install_openvpn)
-        btnInstallOpenVpn.setOnClickListener(this)
-        btnBack = findViewById(R.id.btn_back)
-        btnBack.setOnClickListener(this)
-        btnConnect.setOnClickListener(this)
-        imgFlag = findViewById(R.id.img_flag)
-        txtCountry = findViewById(R.id.txt_country)
-        txtIp = findViewById(R.id.txt_ip)
-        txtHostname = findViewById(R.id.txt_hostname)
-        txtScore = findViewById(R.id.txt_score)
-        txtUptime = findViewById(R.id.txt_uptime)
-        txtSpeed = findViewById(R.id.txt_speed)
-        txtPing = findViewById(R.id.txt_ping)
-        txtSession = findViewById(R.id.txt_session)
-        txtOwner = findViewById(R.id.txt_owner)
-        txtTotalUser = findViewById(R.id.txt_total_user)
-        txtTotalTraffic = findViewById(R.id.txt_total_traffic)
-        txtLogType = findViewById(R.id.txt_log_type)
-        txtStatus = findViewById(R.id.txt_status)
-        linkCheckIp = findViewById(R.id.txt_check_ip)
-        linkCheckIp.setOnClickListener(this)
-        lnContentDetail = findViewById(R.id.ln_content_detail)
-        lnTCP = findViewById(R.id.ln_tcp)
-        txtTCP = findViewById(R.id.txt_tcp_port)
-        lnUDP = findViewById(R.id.ln_udp)
-        txtUDP = findViewById(R.id.txt_udp_port)
-        lnL2TP = findViewById(R.id.ln_l2tp)
-        getLnL2TPBtn = findViewById(R.id.ln_l2tp_btn)
-        btnConnectL2TP = findViewById(R.id.btn_l2tp_connect)
-        btnConnectL2TP.setOnClickListener(this)
-        lnSSTP = findViewById(R.id.ln_sstp)
-        lnSTTPBtn = findViewById(R.id.ln_sstp_btn)
-        btnConnectSSTP = findViewById(R.id.btn_sstp_connect)
-        btnConnectSSTP.setOnClickListener(this)
-        txtNetStats = findViewById(R.id.txt_net_stats)
+        binding = ActivityDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.btnSaveConfigFile.setOnClickListener(this)
+        binding.btnInstallOpenvpn.setOnClickListener(this)
+        binding.btnBack.setOnClickListener(this)
+        binding.btnConnect.setOnClickListener(this)
+        binding.txtCheckIp.setOnClickListener(this)
+        binding.btnL2tpConnect.setOnClickListener(this)
+        binding.btnSstpConnect.setOnClickListener(this)
         bindData()
         initAdMob()
         initInterstitialAd()
         initSSTP()
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
-        txtStatus.text = ""
+        binding.txtStatus.text = ""
     }
 
     private fun initAdMob() {
@@ -310,7 +247,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         adViewBellow.visibility = View.GONE
                     }
                 }
-                lnContentDetail.addView(adViewBellow)
+                binding.lnContentDetail.addView(adViewBellow)
                 adViewBellow.loadAd(AdRequest.Builder().build())
             } else {
                 hideAdContainer()
@@ -349,15 +286,15 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     ) {
         runOnUiThread {
             try {
-                txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
+                binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
                 when (status) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
                         if (isCurrent) {
-                            btnConnect.background = ResourcesCompat.getDrawable(
+                            binding.btnConnect.background = ResourcesCompat.getDrawable(
                                 resources, R.drawable.selector_red_button, null
                             )
-                            btnConnect.text = getString(R.string.disconnect)
-                            txtNetStats.visibility = View.VISIBLE
+                            binding.btnConnect.text = getString(R.string.disconnect)
+                            binding.txtNetStats.visibility = View.VISIBLE
                             if (isConnecting && mVpnGateConnection!!.message!!.isNotEmpty() && dataUtil.getIntSetting(
                                     DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT,
                                     0
@@ -385,39 +322,39 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         }
                         isConnecting = false
                         isAuthFailed = false
-                        linkCheckIp.visibility = View.VISIBLE
+                        binding.txtCheckIp.visibility = View.VISIBLE
                     }
 
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
                         if (!isSSTPConnected) {
-                            linkCheckIp.visibility = View.GONE
+                            binding.txtCheckIp.visibility = View.GONE
                         }
-                        btnConnect.setText(R.string.connect_to_this_server)
-                        btnConnect.background = ResourcesCompat.getDrawable(
+                        binding.btnConnect.setText(R.string.connect_to_this_server)
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_primary_button, null
                         )
-                        txtStatus.setText(R.string.disconnected)
-                        txtNetStats.visibility = View.GONE
+                        binding.txtStatus.setText(R.string.disconnected)
+                        binding.txtNetStats.visibility = View.GONE
                     }
 
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
                         isAuthFailed = true
-                        btnConnect.text = getString(R.string.retry_connect)
+                        binding.btnConnect.text = getString(R.string.retry_connect)
                         val params = Bundle()
                         params.putString("ip", mVpnGateConnection!!.ip)
                         params.putString("hostname", mVpnGateConnection!!.calculateHostName)
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(applicationContext)
                             .logEvent("Connect_Error", params)
-                        btnConnect.background = ResourcesCompat.getDrawable(
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_primary_button, null
                         )
-                        txtStatus.text = resources.getString(R.string.vpn_auth_failure)
-                        linkCheckIp.visibility = View.GONE
+                        binding.txtStatus.text = resources.getString(R.string.vpn_auth_failure)
+                        binding.txtCheckIp.visibility = View.GONE
                         isConnecting = false
                     }
 
-                    else -> linkCheckIp.visibility = View.GONE
+                    else -> binding.txtCheckIp.visibility = View.GONE
                 }
                 if (dataUtil.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false) && !isShowAds) {
                     loadAds()
@@ -436,58 +373,58 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     .load(dataUtil.baseUrl + "/images/flags/" + mVpnGateConnection!!.countryShort + ".png")
                     .placeholder(R.color.colorOverlay)
                     .error(R.color.colorOverlay)
-                    .into(imgFlag)
-                txtCountry.text = mVpnGateConnection!!.countryLong
-                txtIp.text = mVpnGateConnection!!.ip
-                txtHostname.text = mVpnGateConnection!!.calculateHostName
-                txtScore.text = mVpnGateConnection!!.scoreAsString
-                txtUptime.text = mVpnGateConnection!!.getCalculateUpTime(applicationContext)
-                txtSpeed.text = mVpnGateConnection!!.calculateSpeed
-                txtPing.text = mVpnGateConnection!!.pingAsString
-                txtSession.text = mVpnGateConnection!!.numVpnSessionAsString
-                txtOwner.text = mVpnGateConnection!!.operator
-                txtTotalUser.text = mVpnGateConnection!!.totalUser.toString()
-                txtTotalTraffic.text = mVpnGateConnection!!.calculateTotalTraffic
-                txtLogType.text = mVpnGateConnection!!.logType
+                    .into(binding.imgFlag)
+                binding.txtCountry.text = mVpnGateConnection!!.countryLong
+                binding.txtIp.text = mVpnGateConnection!!.ip
+                binding.txtHostname.text = mVpnGateConnection!!.calculateHostName
+                binding.txtScore.text = mVpnGateConnection!!.scoreAsString
+                binding.txtUptime.text = mVpnGateConnection!!.getCalculateUpTime(applicationContext)
+                binding.txtSpeed.text = mVpnGateConnection!!.calculateSpeed
+                binding.txtPing.text = mVpnGateConnection!!.pingAsString
+                binding.txtSession.text = mVpnGateConnection!!.numVpnSessionAsString
+                binding.txtOwner.text = mVpnGateConnection!!.operator
+                binding.txtTotalUser.text = mVpnGateConnection!!.totalUser.toString()
+                binding.txtTotalTraffic.text = mVpnGateConnection!!.calculateTotalTraffic
+                binding.txtLogType.text = mVpnGateConnection!!.logType
                 val isIncludeUDP =
                     dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)
                 if (!isIncludeUDP || mVpnGateConnection!!.tcpPort == 0) {
-                    lnTCP.visibility = View.GONE
+                    binding.lnTcp.visibility = View.GONE
                 } else {
-                    txtTCP.text = mVpnGateConnection!!.tcpPort.toString()
+                    binding.txtTcpPort.text = mVpnGateConnection!!.tcpPort.toString()
                 }
                 if (!isIncludeUDP || mVpnGateConnection!!.udpPort == 0) {
-                    lnUDP.visibility = View.GONE
+                    binding.lnUdp.visibility = View.GONE
                 } else {
-                    txtUDP.text = mVpnGateConnection!!.udpPort.toString()
+                    binding.txtUdpPort.text = mVpnGateConnection!!.udpPort.toString()
                 }
                 if (mVpnGateConnection!!.isL2TPSupport()) {
-                    lnL2TP.visibility = View.VISIBLE
-                    getLnL2TPBtn.visibility = View.VISIBLE
+                    binding.lnTcp.visibility = View.VISIBLE
+                    binding.lnL2tpBtn.visibility = View.VISIBLE
                 } else {
-                    lnL2TP.visibility = View.GONE
-                    getLnL2TPBtn.visibility = View.GONE
+                    binding.lnL2tp.visibility = View.GONE
+                    binding.lnL2tpBtn.visibility = View.GONE
                 }
 
                 if (mVpnGateConnection!!.isSSTPSupport()) {
-                    lnSSTP.visibility = View.VISIBLE
-                    lnSTTPBtn.visibility = View.VISIBLE
+                    binding.lnSstp.visibility = View.VISIBLE
+                    binding.lnSstpBtn.visibility = View.VISIBLE
                 } else {
-                    lnSSTP.visibility = View.GONE
-                    lnSTTPBtn.visibility = View.GONE
+                    binding.lnSstp.visibility = View.GONE
+                    binding.lnSstpBtn.visibility = View.GONE
                 }
 
                 if (isCurrent && checkStatus()) {
-                    btnConnect.text = resources.getString(R.string.disconnect)
-                    btnConnect.background =
+                    binding.btnConnect.text = resources.getString(R.string.disconnect)
+                    binding.btnConnect.background =
                         resources.getDrawable(R.drawable.selector_apply_button, resources.newTheme())
-                    txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
-                    txtNetStats.visibility = View.VISIBLE
+                    binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
+                    binding.txtNetStats.visibility = View.VISIBLE
                 } else {
-                    txtNetStats.visibility = View.GONE
+                    binding.txtNetStats.visibility = View.GONE
                 }
                 if (checkStatus()) {
-                    linkCheckIp.visibility = View.VISIBLE
+                    binding.txtCheckIp.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "bindData error", e)
@@ -512,17 +449,17 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
             }, 300)
             if (!App.isImportToOpenVPN) {
-                btnInstallOpenVpn.visibility = View.GONE
-                btnSaveConfigFile.visibility = View.GONE
-                btnConnect.visibility = View.VISIBLE
+                binding.btnInstallOpenvpn.visibility = View.GONE
+                binding.btnSaveConfigFile.visibility = View.GONE
+                binding.btnConnect.visibility = View.VISIBLE
             } else {
-                btnConnect.visibility = View.GONE
+                binding.btnConnect.visibility = View.GONE
                 if (dataUtil.hasOpenVPNInstalled()) {
-                    btnSaveConfigFile.visibility = View.VISIBLE
-                    btnInstallOpenVpn.visibility = View.GONE
+                    binding.btnSaveConfigFile.visibility = View.VISIBLE
+                    binding.btnInstallOpenvpn.visibility = View.GONE
                 } else {
-                    btnSaveConfigFile.visibility = View.GONE
-                    btnInstallOpenVpn.visibility = View.VISIBLE
+                    binding.btnSaveConfigFile.visibility = View.GONE
+                    binding.btnInstallOpenvpn.visibility = View.VISIBLE
                 }
             }
         } catch (e: Exception) {
@@ -598,7 +535,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("ip", mVpnGateConnection!!.ip)
             params.putString("country", mVpnGateConnection!!.countryLong)
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_VPN", params)
-            linkCheckIp.visibility = View.GONE
+            binding.txtCheckIp.visibility = View.GONE
             Handler(Looper.getMainLooper()).postDelayed({ prepareVpn(useUdp) }, 500)
         } else {
             val params = Bundle()
@@ -609,14 +546,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_VPN", params)
             prepareVpn(useUdp)
         }
-        btnConnect.background = ResourcesCompat.getDrawable(
+        binding.btnConnect.background = ResourcesCompat.getDrawable(
             resources,
             R.drawable.selector_apply_button,
             null
         )
-        txtStatus.text = getString(R.string.connecting)
+        binding.txtStatus.text = getString(R.string.connecting)
         isConnecting = true
-        btnConnect.setText(R.string.cancel)
+        binding.btnConnect.setText(R.string.cancel)
         dataUtil.lastVPNConnection = mVpnGateConnection
         sendConnectVPN()
     }
@@ -624,11 +561,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onClick(view: View) {
         try {
-            if (view == btnBack) {
+            if (view == binding.btnBack) {
                 finish()
                 return
             }
-            if (view == btnConnect) {
+            if (view == binding.btnConnect) {
                 if (!isConnecting) {
                     if (checkStatus() && isCurrent) {
                         val params = Bundle()
@@ -639,10 +576,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         FirebaseAnalytics.getInstance(applicationContext)
                             .logEvent("Disconnect_VPN", params)
                         stopVpn()
-                        btnConnect.background =
+                        binding.btnConnect.background =
                             resources.getDrawable(R.drawable.selector_primary_button, resources.newTheme())
-                        btnConnect.setText(R.string.connect_to_this_server)
-                        txtStatus.setText(R.string.disconnecting)
+                        binding.btnConnect.setText(R.string.connect_to_this_server)
+                        binding.txtStatus.setText(R.string.disconnecting)
                     } else if (mVpnGateConnection!!.tcpPort > 0 && mVpnGateConnection!!.udpPort > 0) {
                         if (dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0) != 0) {
                             // Apply default protocol in setting
@@ -692,13 +629,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     params.putString("country", mVpnGateConnection!!.countryLong)
                     FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_VPN", params)
                     stopVpn()
-                    btnConnect.background =
+                    binding.btnConnect.background =
                         resources.getDrawable(R.drawable.selector_primary_button, resources.newTheme())
-                    btnConnect.setText(R.string.connect_to_this_server)
-                    txtStatus.text = getString(R.string.canceled)
+                    binding.btnConnect.setText(R.string.connect_to_this_server)
+                    binding.txtStatus.text = getString(R.string.canceled)
                     isConnecting = false
                 }
-            } else if (view == linkCheckIp) {
+            } else if (view == binding.txtCheckIp) {
                 val params = Bundle()
                 params.putString("type", "check ip click")
                 params.putString("hostname", mVpnGateConnection!!.calculateHostName)
@@ -710,7 +647,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url"))
                 )
                 startActivity(browserIntent)
-            } else if (view == btnConnectL2TP) {
+            } else if (view == binding.btnL2tpConnect) {
                 val params = Bundle()
                 params.putString("type", "connect via L2TP")
                 params.putString("hostname", mVpnGateConnection!!.calculateHostName)
@@ -723,10 +660,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection)
                 startActivity(l2tpIntent)
             }
-            if (view == btnConnectSSTP) {
+            if (view == binding.btnSstpConnect) {
                 handleSSTPBtn()
             }
-            if (view == btnInstallOpenVpn) {
+            if (view == binding.btnInstallOpenvpn) {
                 try {
                     startActivity(
                         Intent(
@@ -743,7 +680,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     )
                 }
             }
-            if (view == btnSaveConfigFile) {
+            if (view == binding.btnSaveConfigFile) {
                 if (mVpnGateConnection!!.tcpPort > 0 && mVpnGateConnection!!.udpPort > 0) {
                     val connectionUseProtocol =
                         ConnectionUseProtocol.newInstance(mVpnGateConnection, object: ConnectionUseProtocol.ClickResult {
@@ -785,13 +722,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         editor.putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
         editor.putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
         editor.apply()
-        btnConnectSSTP.background = ResourcesCompat.getDrawable(
+        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,
             R.drawable.selector_apply_button,
             null
         )
-        btnConnectSSTP.setText(R.string.cancel_sstp)
-        txtStatus.setText(R.string.sstp_connecting)
+        binding.btnSstpConnect.setText(R.string.cancel_sstp)
+        binding.txtStatus.setText(R.string.sstp_connecting)
         loadAds()
         startVpnSSTPService(ACTION_VPN_CONNECT)
     }
@@ -830,7 +767,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             // Connected but not must disconnect old first
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
             params.putString("type", "replace connect via MS-SSTP")
-            linkCheckIp.visibility = View.GONE
+            binding.txtCheckIp.visibility = View.GONE
             Handler(mainLooper).postDelayed({ this.connectSSTPVPN() }, 100)
         } else if (!isSSTPConnected) {
             params.putString("type", "connect via MS-SSTP")
@@ -841,13 +778,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("type", "cancel MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_Via_SSTP", params)
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
-            btnConnectSSTP.background = ResourcesCompat.getDrawable(
+            binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.selector_paid_button,
                 null
             )
-            btnConnectSSTP.setText(R.string.connect_via_sstp)
-            txtStatus.setText(R.string.sstp_disconnecting)
+            binding.btnSstpConnect.setText(R.string.connect_via_sstp)
+            binding.txtStatus.setText(R.string.sstp_disconnecting)
         }
     }
 
@@ -1035,7 +972,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     resources
                 )
             )
-            txtNetStats.text = netstat
+            binding.txtNetStats.text = netstat
         }
     }
 
