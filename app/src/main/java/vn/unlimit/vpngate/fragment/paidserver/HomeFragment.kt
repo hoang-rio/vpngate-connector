@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,10 +32,12 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.activities.paid.ServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SessionAdapter
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.ConnectedSession
+import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.viewmodels.ChartViewModel
@@ -125,6 +128,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         sessionAdapter = SessionAdapter(requireContext())
         sessionAdapter?.onDisconnectListener =
             OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
+        sessionAdapter?.onOpenDetailServer =
+            OnItemClickListener { _, _ -> openDetailServer() }
         rcvSession?.adapter = sessionAdapter
         lnSessionEmpty = root.findViewById(R.id.ln_session_empty)
         return root
@@ -213,6 +218,13 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         }
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()
+    }
+
+    private fun openDetailServer() {
+        val intentServer = Intent(context, ServerActivity::class.java)
+        val paidServer = paidServerUtil.getLastConnectServer()
+        intentServer.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, paidServer)
+        startActivity(intentServer)
     }
 
     private fun disConnectSession(connectedSession: ConnectedSession) {

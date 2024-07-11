@@ -19,6 +19,7 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
     private val listSession = ArrayList<ConnectedSession>()
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     var onDisconnectListener: OnItemClickListener? = null
+    var onOpenDetailServer: OnItemClickListener? = null
 
     @SuppressLint("NotifyDataSetChanged")
     fun initialize(list: LinkedHashSet<ConnectedSession>) {
@@ -58,9 +59,14 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
         private val txtCreated: TextView = itemView.findViewById(R.id.txt_created)
         private val txtUpdate: TextView = itemView.findViewById(R.id.txt_updated)
         private val lnDisconnect: View = itemView.findViewById(R.id.ln_btn_disconnect)
+        private val lnOpenDetailServer: View = itemView.findViewById(R.id.ln_btn_open_detail)
 
         override fun onClick(v: View?) {
-            onDisconnectListener?.onItemClick(listSession[adapterPosition], adapterPosition)
+            when(v) {
+                lnDisconnect -> onDisconnectListener?.onItemClick(listSession[adapterPosition], adapterPosition)
+                lnOpenDetailServer -> onOpenDetailServer?.onItemClick(listSession[adapterPosition], adapterPosition)
+            }
+
         }
 
         fun bindViewHolder(session: ConnectedSession) {
@@ -80,16 +86,19 @@ class SessionAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewH
                 lnCreated.visibility = View.GONE
             }
             lnDisconnect.setOnClickListener(this)
+            lnOpenDetailServer.setOnClickListener(this)
             if (App.instance!!.paidServerUtil!!.isCurrentSession(
                     session.serverId!!._id,
                     session.clientIp
                 )
             ) {
                 lnCurrentSession.visibility = View.VISIBLE
+                lnOpenDetailServer.visibility = View.VISIBLE
                 lnDisconnect.visibility = View.GONE
             } else {
                 lnDisconnect.visibility = View.VISIBLE
                 lnCurrentSession.visibility = View.GONE
+                lnOpenDetailServer.visibility = View.GONE
             }
         }
     }

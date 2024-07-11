@@ -51,7 +51,7 @@ class ServersFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, OnItem
     }
 
     private fun bindViewModel() {
-        serverViewModel = ViewModelProvider(this).get(ServerViewModel::class.java)
+        serverViewModel = ViewModelProvider(this)[ServerViewModel::class.java]
         serverViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn!!) {
                 // Go to login screen if user login status is changed

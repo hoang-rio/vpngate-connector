@@ -396,6 +396,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             txtStatus!!.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
+                        paidServerUtil.clearCurrentSession()
                         txtCheckIp?.visibility = View.GONE
                     }
                     isSSTPConnectOrDisconnecting = false
@@ -523,6 +524,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             btnSSTPConnect!!.setText(R.string.connect_via_sstp)
             txtStatus!!.setText(R.string.sstp_disconnecting)
         }
+        paidServerUtil.setLastConnectServer(mPaidServer!!)
     }
 
     private fun stopVpn() {
