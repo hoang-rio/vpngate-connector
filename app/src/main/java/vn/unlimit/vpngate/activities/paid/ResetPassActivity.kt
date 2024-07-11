@@ -3,47 +3,32 @@ package vn.unlimit.vpngate.activities.paid
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.ActivityResetPassBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.regex.Pattern
 
 class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
-    private var txtNewPassword: EditText? = null
-    private var txtRenewPassword: EditText? = null
-    private var btnResetPass: Button? = null
-    private var btnBackToFree: Button? = null
-    private var btnBackToFreeError: Button? = null
     private var resetPassToken: String? = null
     private var userViewModel: UserViewModel? = null
     private var loadingDialog: LoadingDialog? = null
-    private var lnCheckingToken: View? = null
-    private var lnInvalidToken: View? = null
-    private var lnForm: View? = null
     private var isCheckingToken = false
     private var isPressedResetPass = false
+    private lateinit var binding: ActivityResetPassBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_pass)
-        txtNewPassword = findViewById(R.id.txt_new_password)
-        txtRenewPassword = findViewById(R.id.txt_re_new_password)
-        btnResetPass = findViewById(R.id.btn_reset_pass)
-        btnBackToFree = findViewById(R.id.btn_back_to_free)
-        btnBackToFreeError = findViewById(R.id.btn_back_to_free_error)
-        btnBackToFreeError!!.setOnClickListener(this)
-        btnBackToFree!!.setOnClickListener(this)
-        btnResetPass!!.setOnClickListener(this)
-        lnCheckingToken = findViewById(R.id.ln_checking_token)
-        lnForm = findViewById(R.id.ln_form)
-        lnInvalidToken = findViewById(R.id.ln_invalid_token)
+        binding = ActivityResetPassBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.btnBackToFreeError.setOnClickListener(this)
+        binding.btnBackToFree.setOnClickListener(this)
+        binding.btnResetPass.setOnClickListener(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this, Observer {
@@ -88,14 +73,14 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
             isCheckingToken = false
             if (it) {
                 // Valid token => hide checking and show form
-                lnCheckingToken!!.visibility = View.GONE
-                lnInvalidToken!!.visibility = View.GONE
-                lnForm!!.visibility = View.VISIBLE
+                binding.lnCheckingToken.visibility = View.GONE
+                binding.lnInvalidToken.visibility = View.GONE
+                binding.lnForm.visibility = View.VISIBLE
             } else {
                 // Invalid token => show error layout
-                lnCheckingToken!!.visibility = View.GONE
-                lnForm!!.visibility = View.GONE
-                lnInvalidToken!!.visibility = View.VISIBLE
+                binding.lnCheckingToken.visibility = View.GONE
+                binding.lnForm.visibility = View.GONE
+                binding.lnInvalidToken.visibility = View.VISIBLE
             }
         })
     }
@@ -117,8 +102,8 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun doResetPass() {
         isPressedResetPass = true
-        val newPassword = txtNewPassword!!.text.toString()
-        val reRenewPassword = txtRenewPassword!!.text.toString()
+        val newPassword = binding.txtNewPassword.text.toString()
+        val reRenewPassword = binding.txtReNewPassword.text.toString()
         val matcher = Pattern.compile(SignUpActivity.PASSWORD_REGEX).matcher(newPassword)
         if (!matcher.matches()) {
             return Toast.makeText(this, getString(R.string.password_is_invalid), Toast.LENGTH_LONG)
@@ -142,9 +127,9 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            btnBackToFree -> backToFree()
-            btnBackToFreeError -> backToFree()
-            btnResetPass -> doResetPass()
+            binding.btnBackToFree -> backToFree()
+            binding.btnBackToFreeError -> backToFree()
+            binding.btnResetPass -> doResetPass()
         }
     }
 }

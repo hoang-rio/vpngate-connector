@@ -7,9 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.ActivityForgotPassBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
@@ -24,28 +22,20 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private var loadingDialog: LoadingDialog? = null
-    private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
     private var userViewModel: UserViewModel? = null
-    private var txtCaptchaAnswer: EditText? = null
-    private var txtEmail: EditText? = null
-    private var btnLogin: Button? = null
-    private var btnResetPass: Button? = null
     private var isResetPasClicked = false
+    private lateinit var binding: ActivityForgotPassBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_forgot_pass)
+        binding = ActivityForgotPassBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         loadingDialog = LoadingDialog.newInstance()
-        ivCaptcha = findViewById(R.id.iv_captcha)
-        ivCaptcha!!.setOnClickListener(this)
-        txtCaptchaAnswer = findViewById(R.id.txt_captcha_answer)
-        btnLogin = findViewById(R.id.btn_login)
-        btnResetPass = findViewById(R.id.btn_reset_pass)
-        btnLogin!!.setOnClickListener(this)
-        btnResetPass!!.setOnClickListener(this)
-        txtEmail = findViewById(R.id.txt_email)
+        binding.ivCaptcha.setOnClickListener(this)
+        binding.btnLogin.setOnClickListener(this)
+        binding.btnResetPass.setOnClickListener(this)
         bindViewModel()
     }
 
@@ -126,8 +116,8 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
             override fun onSuccess(result: Any?) {
                 val svgImage: String = (result as CaptchaResponse).image
                 captchaSecret = result.secret
-                Sharp.loadString(svgImage).into(ivCaptcha!!)
-                txtCaptchaAnswer!!.setText("")
+                Sharp.loadString(svgImage).into(binding.ivCaptcha)
+                binding.txtCaptchaAnswer.setText("")
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -154,15 +144,15 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when (view) {
-            ivCaptcha -> loadCaptcha(true)
-            btnLogin -> backToLogin()
-            btnResetPass -> {
-                if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
+            binding.ivCaptcha -> loadCaptcha(true)
+            binding.btnLogin -> backToLogin()
+            binding.btnResetPass -> {
+                if (!Patterns.EMAIL_ADDRESS.matcher(binding.txtEmail.text.toString()).matches()) {
                     Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT)
                         .show()
                     return
                 }
-                if (txtCaptchaAnswer!!.text.isBlank()) {
+                if (binding.txtCaptchaAnswer.text.isBlank()) {
                     Toast.makeText(
                         this,
                         getString(
@@ -175,9 +165,9 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 isResetPasClicked = true
                 userViewModel!!.forgotPassword(
-                    txtEmail!!.text.toString(),
+                    binding.txtEmail.text.toString(),
                     captchaSecret.toString(),
-                    txtCaptchaAnswer!!.text.toString().toInt()
+                    binding.txtCaptchaAnswer.text.toString().toInt()
                 )
             }
         }

@@ -5,9 +5,6 @@ import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -16,45 +13,30 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.ActivityLoginBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
-    private var btnBackToFree: Button? = null
-    private var txtUsername: EditText? = null
-    private var txtPassword: EditText? = null
-    private var btnLogin: Button? = null
-    private var btnSignUp: Button? = null
-    private var btnForgotPass: Button? = null
-    private var ivHidePassword: ImageView? = null
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var loadingDialog: LoadingDialog? = null
     private var isFirstTimeHidePass = true
     private var isClickedLogin = false
-
-    companion object {
-        private const val TAG = "LoginActivity"
-    }
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        btnBackToFree = findViewById(R.id.btn_back_to_free)
-        txtUsername = findViewById(R.id.txt_username)
-        txtPassword = findViewById(R.id.txt_password)
-        btnBackToFree!!.setOnClickListener(this)
-        ivHidePassword = findViewById(R.id.iv_hide_password)
-        ivHidePassword!!.setOnClickListener(this)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.btnBackToFree.setOnClickListener(this)
+        binding.ivHidePassword.setOnClickListener(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        btnLogin = findViewById(R.id.btn_login)
-        btnLogin!!.setOnClickListener(this)
-        btnSignUp = findViewById(R.id.btn_sign_up)
-        btnSignUp!!.setOnClickListener(this)
-        btnForgotPass = findViewById(R.id.btn_forgot_pass)
-        btnForgotPass!!.setOnClickListener(this)
+        binding.btnLogin.setOnClickListener(this)
+        binding.btnSignUp.setOnClickListener(this)
+        binding.btnForgotPass.setOnClickListener(this)
         loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
         bindViewModel()
     }
@@ -92,16 +74,16 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
                     val params = Bundle()
-                    params.putString("username", txtUsername!!.text.toString())
+                    params.putString("username", binding.txtUsername.text.toString())
                     params.putString("errorMsg", errorMsg)
                     FirebaseAnalytics.getInstance(this).logEvent("Paid_Server_Login_Failed", params)
                 } else {
                     paidServerUtil.setStringSetting(
                         PaidServerUtil.SAVED_VPN_PW,
-                        txtPassword!!.text.toString()
+                        binding.txtPassword.text.toString()
                     )
                     val params = Bundle()
-                    params.putString("username", txtUsername!!.text.toString())
+                    params.putString("username", binding.txtUsername.text.toString())
                     FirebaseAnalytics.getInstance(this)
                         .logEvent("Paid_Server_Login_Success", params)
                     // Go to paid home screen
@@ -116,16 +98,16 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        if (!txtPassword!!.isFocused) {
-            txtUsername!!.requestFocus()
+        if (!binding.txtPassword.isFocused) {
+            binding.txtUsername.requestFocus()
         }
     }
 
     override fun onClick(v: View?) {
         when (v) {
-            btnBackToFree -> backToFree()
-            btnLogin -> {
-                if (txtUsername!!.text.isEmpty() || txtPassword!!.text.isEmpty()) {
+            binding.btnBackToFree -> backToFree()
+            binding.btnLogin -> {
+                if (binding.txtUsername.text.isEmpty() || binding.txtPassword.text.isEmpty()) {
                     Toast.makeText(
                         this,
                         R.string.username_and_password_is_required,
@@ -134,29 +116,29 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     return
                 }
                 isClickedLogin = true
-                userViewModel!!.login(txtUsername!!.text.toString(), txtPassword!!.text.toString())
+                userViewModel!!.login(binding.txtUsername.text.toString(), binding.txtPassword.text.toString())
             }
 
-            ivHidePassword -> {
-                if (txtPassword!!.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
-                    txtPassword!!.inputType = InputType.TYPE_CLASS_TEXT
-                    txtPassword!!.transformationMethod = null
-                    Glide.with(this).load(R.drawable.ic_eye_hide).into(ivHidePassword!!)
+            binding.ivHidePassword -> {
+                if (binding.txtPassword.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD || isFirstTimeHidePass) {
+                    binding.txtPassword.inputType = InputType.TYPE_CLASS_TEXT
+                    binding.txtPassword.transformationMethod = null
+                    Glide.with(this).load(R.drawable.ic_eye_hide).into(binding.ivHidePassword)
                     isFirstTimeHidePass = false
                 } else {
-                    txtPassword!!.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    txtPassword!!.transformationMethod = PasswordTransformationMethod.getInstance()
-                    Glide.with(this).load(R.drawable.ic_eye_show).into(ivHidePassword!!)
+                    binding.txtPassword.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    binding.txtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                    Glide.with(this).load(R.drawable.ic_eye_show).into(binding.ivHidePassword)
                 }
-                txtPassword!!.setSelection(txtPassword!!.text.length)
+                binding.txtPassword.setSelection(binding.txtPassword.text.length)
             }
 
-            btnSignUp -> {
+            binding.btnSignUp -> {
                 val intentSignUp = Intent(this, SignUpActivity::class.java)
                 startActivity(intentSignUp)
             }
 
-            btnForgotPass -> {
+            binding.btnForgotPass -> {
                 val intentForgot = Intent(this, ForgotPassActivity::class.java)
                 startActivity(intentForgot)
             }

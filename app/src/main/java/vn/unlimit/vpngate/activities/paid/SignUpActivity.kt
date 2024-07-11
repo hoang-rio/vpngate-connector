@@ -8,11 +8,8 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.ActivitySignUpBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
@@ -29,25 +27,15 @@ import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
-    private var btnSignUp: Button? = null
-    private var btnLogin: Button? = null
-    private var txtUserName: EditText? = null
-    private var txtFullName: EditText? = null
-    private var txtEmail: EditText? = null
-    private var txtBirthday: EditText? = null
     private val calendar = Calendar.getInstance()
     private var datePickerDialog: DatePickerDialog? = null
-    private var txtTimeZone: AutoCompleteTextView? = null
-    private var txtPassword: EditText? = null
-    private var txtRetypePassword: EditText? = null
-    private var txtCaptchaAnswer: EditText? = null
-    private var ivCaptcha: ImageView? = null
     private var captchaSecret: String? = null
     private var userViewModel: UserViewModel? = null
     private var loadingDialog: LoadingDialog? = null
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
     private var isPressedSignup = false
+    private lateinit var binding: ActivitySignUpBinding
 
     companion object {
         private const val TAG = "SignUpActivity"
@@ -57,19 +45,13 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_up)
+        binding = ActivitySignUpBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        btnSignUp = findViewById(R.id.btn_sign_up)
-        btnSignUp!!.setOnClickListener(this)
-        btnLogin = findViewById(R.id.btn_login)
-        btnLogin!!.setOnClickListener(this)
-        txtUserName = findViewById(R.id.txt_username)
-        txtFullName = findViewById(R.id.txt_full_name)
-        txtEmail = findViewById(R.id.txt_email)
-        txtBirthday = findViewById(R.id.txt_birthday)
-        txtBirthday!!.onFocusChangeListener = this
-        txtBirthday!!.setOnClickListener(this)
-        txtTimeZone = findViewById(R.id.txt_timezone)
+        binding.btnSignUp.setOnClickListener(this)
+        binding.btnLogin.setOnClickListener(this)
+        binding.txtBirthday.onFocusChangeListener = this
+        binding.txtBirthday.setOnClickListener(this)
         timeZonesDisplay = resources.getStringArray(R.array.list_time_zone_display)
         timeZonesValue = resources.getStringArray(R.array.list_time_zone_value)
         // Create the adapter and set it to the AutoCompleteTextView
@@ -78,14 +60,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             android.R.layout.simple_list_item_1,
             timeZonesDisplay!!
         ).also { adapter ->
-            txtTimeZone!!.setAdapter(adapter)
+            binding.txtTimezone.setAdapter(adapter)
         }
-        txtTimeZone!!.onFocusChangeListener = this
-        txtPassword = findViewById(R.id.txt_password)
-        txtRetypePassword = findViewById(R.id.txt_retype_password)
-        txtCaptchaAnswer = findViewById(R.id.txt_captcha_answer)
-        ivCaptcha = findViewById(R.id.iv_captcha)
-        ivCaptcha!!.setOnClickListener(this)
+        binding.txtTimezone.onFocusChangeListener = this
+        binding.ivCaptcha.setOnClickListener(this)
         datePickerDialog = DatePickerDialog(
             this,
             this,
@@ -93,7 +71,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DATE)
         )
-        txtUserName!!.requestFocus()
+        binding.txtUsername.requestFocus()
         loadingDialog = LoadingDialog.newInstance()
         bindViewModel()
     }
@@ -199,7 +177,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             override fun onSuccess(result: Any?) {
                 val svgImage: String = (result as CaptchaResponse).image
                 captchaSecret = result.secret
-                Sharp.loadString(svgImage).into(ivCaptcha!!)
+                Sharp.loadString(svgImage).into(binding.ivCaptcha)
                 if (isReload) {
                     loadingDialog.dismiss()
                 }
@@ -235,7 +213,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        txtBirthday!!.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
+        binding.txtBirthday.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
     }
 
     private fun checkEmptyField(editText: EditText?, fieldPromptResId: Int) {
@@ -252,8 +230,8 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {
         when (v) {
-            txtBirthday -> if (hasFocus) datePickerDialog!!.show()
-            txtTimeZone -> {
+            binding.txtBirthday -> if (hasFocus) datePickerDialog!!.show()
+            binding.txtTimezone -> {
                 if (!hasFocus) {
                     normalizeTimeZone()
                 }
@@ -262,46 +240,46 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun normalizeTimeZone() {
-        if (txtTimeZone?.text == null || txtTimeZone!!.text.isEmpty()) {
+        if (binding.txtTimezone.text == null || binding.txtTimezone.text.isEmpty()) {
             return
         }
-        val tmpArray = txtTimeZone!!.text.split(": ")
+        val tmpArray = binding.txtTimezone.text.split(": ")
         if (tmpArray.size == 2) {
-            txtTimeZone!!.setText(tmpArray[1])
+            binding.txtTimezone.setText(tmpArray[1])
         }
     }
 
     private fun handleSignUp() {
         try {
-            checkEmptyField(txtUserName, R.string.prompt_user)
-            checkEmptyField(txtFullName, R.string.prompt_full_name)
-            checkEmptyField(txtEmail, R.string.prompt_email)
-            checkEmptyField(txtBirthday, R.string.prompt_birthday)
-            checkEmptyField(txtTimeZone, R.string.timezone_field)
-            checkEmptyField(txtPassword, R.string.prompt_password)
-            checkEmptyField(txtRetypePassword, R.string.prompt_retype_password)
-            checkEmptyField(txtCaptchaAnswer, R.string.prompt_captcha_answer)
+            checkEmptyField(binding.txtUsername, R.string.prompt_user)
+            checkEmptyField(binding.txtFullName, R.string.prompt_full_name)
+            checkEmptyField(binding.txtEmail, R.string.prompt_email)
+            checkEmptyField(binding.txtBirthday, R.string.prompt_birthday)
+            checkEmptyField(binding.txtTimezone, R.string.timezone_field)
+            checkEmptyField(binding.txtPassword, R.string.prompt_password)
+            checkEmptyField(binding.txtRetypePassword, R.string.prompt_retype_password)
+            checkEmptyField(binding.txtCaptchaAnswer, R.string.prompt_captcha_answer)
             // Check username regex
-            var matcher = Pattern.compile(USER_NAME_REGEX).matcher(txtUserName!!.text)
+            var matcher = Pattern.compile(USER_NAME_REGEX).matcher(binding.txtUsername.text)
             if (!matcher.matches()) {
                 throw Exception(getString(R.string.username_is_invalid))
             }
             // Check password regex
-            matcher = Pattern.compile(PASSWORD_REGEX).matcher(txtPassword!!.text)
+            matcher = Pattern.compile(PASSWORD_REGEX).matcher(binding.txtPassword.text)
             if (!matcher.matches()) {
                 throw Exception(getString(R.string.password_is_invalid))
             }
             // Check retype password
-            if (txtPassword!!.text.toString() != txtRetypePassword!!.text.toString()) {
+            if (binding.txtPassword.text.toString() != binding.txtRetypePassword.text.toString()) {
                 throw Exception(getString(R.string.re_type_password_does_not_match))
             }
-            if (!Patterns.EMAIL_ADDRESS.matcher(txtEmail!!.text.toString()).matches()) {
+            if (!Patterns.EMAIL_ADDRESS.matcher(binding.txtEmail.text.toString()).matches()) {
                 throw Exception(getString(R.string.email_is_invalid))
             }
             normalizeTimeZone()
             // Validate timeZone
-            if (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) {
-                txtTimeZone!!.requestFocus()
+            if (timeZonesValue!!.indexOf(binding.txtTimezone.text.toString()) == -1) {
+                binding.txtTimezone.requestFocus()
                 throw Exception(resources.getString(R.string.invalid_timezone))
             }
             userViewModel!!.isRegisterSuccess.observe(this, Observer { isRegisterSuccess ->
@@ -327,14 +305,14 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             })
             isPressedSignup = true
             userViewModel!!.register(
-                txtUserName!!.text.toString(),
-                txtFullName!!.text.toString(),
-                txtEmail!!.text.toString(),
-                txtPassword!!.text.toString(),
-                txtRetypePassword!!.text.toString(),
-                txtBirthday!!.text.toString(),
-                txtTimeZone!!.text.toString(),
-                txtCaptchaAnswer!!.text.toString().toInt(),
+                binding.txtUsername.text.toString(),
+                binding.txtFullName.text.toString(),
+                binding.txtEmail.text.toString(),
+                binding.txtPassword.text.toString(),
+                binding.txtRetypePassword.text.toString(),
+                binding.txtBirthday.text.toString(),
+                binding.txtTimezone.text.toString(),
+                binding.txtCaptchaAnswer.text.toString().toInt(),
                 captchaSecret!!
             )
         } catch (th: Throwable) {
@@ -347,10 +325,10 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onClick(v: View?) {
         when (v) {
-            btnLogin -> onBackPressedDispatcher.onBackPressed()
-            ivCaptcha -> loadCaptcha(true)
-            txtBirthday -> datePickerDialog!!.show()
-            btnSignUp -> handleSignUp()
+            binding.btnLogin -> onBackPressedDispatcher.onBackPressed()
+            binding.ivCaptcha -> loadCaptcha(true)
+            binding.txtBirthday -> datePickerDialog!!.show()
+            binding.btnSignUp -> handleSignUp()
         }
     }
 }
