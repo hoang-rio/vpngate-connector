@@ -235,7 +235,6 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     txtStatus!!.text = getString(R.string.connecting)
                     btnOnOff!!.isActivated = true
                     isConnecting = true
-                    dataUtil!!.lastVPNConnection = mVpnGateConnection
                 }
             } else {
                 val params = Bundle()
@@ -422,7 +421,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         logmessage: String,
         localizedResId: Int,
         status: ConnectionStatus,
-        intent: Intent
+        intent: Intent?
     ) {
         requireActivity().runOnUiThread {
             try {

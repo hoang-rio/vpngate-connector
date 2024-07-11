@@ -835,6 +835,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         } else if (!isSSTPConnected) {
             params.putString("type", "connect via MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_Via_SSTP", params)
+            dataUtil.lastVPNConnection = mVpnGateConnection
             startSSTPVPN()
         } else {
             params.putString("type", "cancel MS-SSTP")

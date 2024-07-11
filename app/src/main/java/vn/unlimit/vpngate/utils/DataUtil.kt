@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.common.reflect.TypeToken
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -239,7 +240,7 @@ class DataUtil(context: Context?) {
                     return bundle.getString("com.google.android.gms.ads.APPLICATION_ID")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Got exception when get admobId", e)
             }
             return null
         }
@@ -294,6 +295,7 @@ class DataUtil(context: Context?) {
         }
 
     companion object {
+        const val TAG = "DataUtil"
         const val SETTING_CACHE_TIME_KEY: String = "SETTING_CACHE_TIME_KEY"
         const val SETTING_HIDE_OPERATOR_MESSAGE_COUNT: String =
             "SETTING_HIDE_OPERATOR_MESSAGE_COUNT"
