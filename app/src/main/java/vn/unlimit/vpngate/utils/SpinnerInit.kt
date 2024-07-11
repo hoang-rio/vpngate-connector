@@ -11,13 +11,14 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import vn.unlimit.vpngate.R
-import java.util.Arrays
 
 /**
  * Created by hoangnd on 2/1/2018.
  */
-class SpinnerInit(var mContext: Context?, var mSpinner: AppCompatSpinner) {
-    private val TAG = "SpinnerInit"
+class SpinnerInit(var mContext: Context?, private var mSpinner: AppCompatSpinner) {
+    companion object {
+        const val TAG = "SpinnerInit"
+    }
     var selectedItem: Int = -1
     private var dataAdapter: ArrayAdapter<String>? = null
     var initializingList: Boolean = false
@@ -25,7 +26,7 @@ class SpinnerInit(var mContext: Context?, var mSpinner: AppCompatSpinner) {
     var onItemSelectedIndexListener: OnItemSelectedIndexListener? = null
     private var onItemSelectedQuality: AdapterView.OnItemSelectedListener =
         object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, i: Int, l: Long) {
                 try {
                     if (initializingList) {
                         initializingList = false
