@@ -53,7 +53,7 @@ class PurchaseHistoryFragment : Fragment(), View.OnClickListener,
     }
 
     private fun bindViewModel() {
-        purchaseViewModal = ViewModelProvider(this).get(PurchaseViewModel::class.java)
+        purchaseViewModal = ViewModelProvider(this)[PurchaseViewModel::class.java]
         purchaseViewModal?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (!isInitListingPurchase) {
                 return@observe

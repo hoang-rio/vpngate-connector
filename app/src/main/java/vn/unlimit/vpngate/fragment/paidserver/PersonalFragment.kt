@@ -21,9 +21,9 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 class PersonalFragment : Fragment(), View.OnClickListener {
 
     private var lnNotificationSetting: View? = null
-    var deviceViewModel: DeviceViewModel? = null
+    private var deviceViewModel: DeviceViewModel? = null
     val userViewModel by lazy {
-        ViewModelProvider(this).get(UserViewModel::class.java)
+        ViewModelProvider(this)[UserViewModel::class.java]
     }
     val loadingDialog by lazy {
         LoadingDialog.newInstance()
@@ -45,7 +45,7 @@ class PersonalFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deviceViewModel = ViewModelProvider(this).get(DeviceViewModel::class.java)
+        deviceViewModel = ViewModelProvider(this)[DeviceViewModel::class.java]
         if (deviceViewModel!!.deviceInfo.value == null || Strings.isNullOrEmpty(deviceViewModel!!.deviceInfo.value?._id)) {
             lnNotificationSetting?.visibility = View.GONE
             view.findViewById<View>(R.id.line_notification_setting).visibility = View.GONE

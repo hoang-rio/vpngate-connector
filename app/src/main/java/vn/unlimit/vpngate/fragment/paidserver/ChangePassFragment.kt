@@ -93,7 +93,7 @@ class ChangePassFragment : Fragment(), View.OnClickListener {
     }
 
     private fun bindViewModel() {
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(viewLifecycleOwner) {
             if (it && !loadingDialog.isVisible) {
                 return@observe loadingDialog.show(

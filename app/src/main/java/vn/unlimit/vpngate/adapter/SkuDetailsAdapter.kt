@@ -31,8 +31,8 @@ class SkuDetailsAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    fun setOnItemClickListener(_onItemClickListener: OnItemClickListener?) {
-        onItemClickListener = _onItemClickListener
+    fun setOnItemClickListener(inOnItemClickListener: OnItemClickListener?) {
+        onItemClickListener = inOnItemClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

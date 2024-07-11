@@ -39,16 +39,12 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    fun setOnItemClickListener(_onItemClickListener: OnItemClickListener?) {
-        onItemClickListener = _onItemClickListener
+    fun setOnItemClickListener(onItemClickListener1: OnItemClickListener?) {
+        onItemClickListener = onItemClickListener1
     }
 
-    fun setOnItemLongClickListener(_onItemLongPressListener: OnItemLongClickListener?) {
-        onItemLongClickListener = _onItemLongPressListener
-    }
-
-    fun setOnScrollListener(_onScrollListener: OnScrollListener?) {
-        onScrollListener = _onScrollListener
+    fun setOnScrollListener(onScrollListener1: OnScrollListener?) {
+        onScrollListener = onScrollListener1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -76,7 +72,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
 
     inner class VHTypeVPN(itemView: View) : RecyclerView.ViewHolder(itemView), OnClickListener,
         OnLongClickListener {
-        var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
+        private var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
         private var txtCountry: TextView = itemView.findViewById(R.id.txt_country)
         private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
         private var txtHostname: TextView = itemView.findViewById(R.id.txt_hostname)
@@ -96,7 +92,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         @Suppress("DEPRECATION")
         fun bindViewHolder(position: Int) {
             try {
-                val paidServer: PaidServer = _list.get(getRealPosition(position))
+                val paidServer: PaidServer = _list[getRealPosition(position)]
                 Glide.with(mContext!!)
                     .load(App.instance!!.dataUtil!!.baseUrl + "/images/flags/" + paidServer.serverCountryCode + ".png")
                     .placeholder(R.color.colorOverlay)
@@ -156,7 +152,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
             try {
                 if (onItemLongClickListener != null) {
                     val clickedPost = getRealPosition(adapterPosition)
-                    val item: PaidServer = _list.get(clickedPost)
+                    val item: PaidServer = _list[clickedPost]
                     onItemLongClickListener!!.onItemLongClick(item, clickedPost)
                     return true
                 }
@@ -170,7 +166,7 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
             try {
                 if (onItemClickListener != null) {
                     val clickedPost = getRealPosition(adapterPosition)
-                    val item: PaidServer = _list.get(clickedPost)
+                    val item: PaidServer = _list[clickedPost]
                     onItemClickListener!!.onItemClick(item, clickedPost)
                 }
             } catch (e: Exception) {

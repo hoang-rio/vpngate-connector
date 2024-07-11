@@ -48,9 +48,6 @@ class VPNGateConnectionList : Parcelable {
         return result
     }
 
-    val all: List<VPNGateConnection>?
-        get() = data
-
     /**
      * Get ordered list
      *
@@ -265,18 +262,13 @@ class VPNGateConnectionList : Parcelable {
         const val SESSION: String = "SESSION"
     }
 
-    companion object {
-        @JvmField
-        val CREATOR
-                : Parcelable.Creator<VPNGateConnectionList> =
-            object : Parcelable.Creator<VPNGateConnectionList> {
-                override fun createFromParcel(`in`: Parcel): VPNGateConnectionList {
-                    return VPNGateConnectionList(`in`)
-                }
+    companion object CREATOR : Parcelable.Creator<VPNGateConnectionList> {
+        override fun createFromParcel(`in`: Parcel): VPNGateConnectionList {
+            return VPNGateConnectionList(`in`)
+        }
 
-                override fun newArray(size: Int): Array<VPNGateConnectionList?> {
-                    return arrayOfNulls(size)
-                }
-            }
+        override fun newArray(size: Int): Array<VPNGateConnectionList?> {
+            return arrayOfNulls(size)
+        }
     }
 }

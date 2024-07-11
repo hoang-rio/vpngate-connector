@@ -7,6 +7,5 @@ class DeviceInfo {
     }
 
     var _id = ""
-    val userId = ""
     val notificationSetting: NotificationSetting? = null
 }

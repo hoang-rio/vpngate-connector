@@ -9,11 +9,11 @@ import vn.unlimit.vpngate.utils.DataUtil
 
 class PaidServer(inParcel: Parcel) : Parcelable {
     var _id: String = ""
-    var l2tpSupport: Int = 1
-    var sstpSupport: Int = 1
+    private var l2tpSupport: Int = 1
+    private var sstpSupport: Int = 1
     var serverCountryCode: String = ""
     var isCommunity: Boolean = false
-    var public: Int = 1
+    private var public: Int = 1
     var serverName: String = ""
     var serverLocation = "Singapore"
     var serverDomain = ""
@@ -22,7 +22,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var udpPort = 0
     var maxSession = 0
     var sessionCount = 0
-    var ovpnContent = ""
+    private var ovpnContent = ""
     var serverStatus = ""
 
     companion object CREATOR : Parcelable.Creator<PaidServer?> {

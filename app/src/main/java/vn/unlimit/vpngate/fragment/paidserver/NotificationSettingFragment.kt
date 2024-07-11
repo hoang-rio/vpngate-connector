@@ -39,7 +39,7 @@ class NotificationSettingFragment : Fragment(), CompoundButton.OnCheckedChangeLi
 
     private fun bindViewModel() {
         val paidServiceActivity = activity as PaidServerActivity
-        deviceViewModel = ViewModelProvider(requireActivity()).get(DeviceViewModel::class.java)
+        deviceViewModel = ViewModelProvider(requireActivity())[DeviceViewModel::class.java]
         swNotificationSetting?.isChecked =
             deviceViewModel!!.deviceInfo.value?.notificationSetting?.data == true
         deviceViewModel!!.deviceInfo.observe(viewLifecycleOwner) {

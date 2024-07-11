@@ -13,7 +13,6 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.fragment.app.DialogFragment
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.utils.DataUtil
-import java.util.Objects
 
 /**
  * Created by hoangnd on 2/6/2018.

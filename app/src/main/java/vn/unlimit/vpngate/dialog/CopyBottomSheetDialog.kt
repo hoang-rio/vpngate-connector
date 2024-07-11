@@ -94,7 +94,6 @@ class CopyBottomSheetDialog : BottomSheetDialogFragment(), View.OnClickListener 
                 clip = ClipData.newPlainText("text", mVpnGateConnection!!.calculateHostName)
             }
             if (clip != null) {
-                checkNotNull(clipboard)
                 clipboard.setPrimaryClip(clip)
                 Toast.makeText(context, resources.getString(R.string.copied), Toast.LENGTH_SHORT)
                     .show()

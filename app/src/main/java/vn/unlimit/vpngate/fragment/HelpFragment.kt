@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -47,6 +48,7 @@ class HelpFragment : Fragment(), View.OnClickListener {
                 //Do nothing
             }
 
+            @SuppressLint("SetTextI18n")
             override fun afterTextChanged(editable: Editable) {
                 isValidName = if (editable.length < minNameLength) {
                     txtErrorName?.text = String.format(
@@ -74,6 +76,7 @@ class HelpFragment : Fragment(), View.OnClickListener {
                 //Do nothing
             }
 
+            @SuppressLint("SetTextI18n")
             override fun afterTextChanged(editable: Editable) {
                 isValidContent = if (editable.length < minContentLength) {
                     txtErrorContent?.text = String.format(

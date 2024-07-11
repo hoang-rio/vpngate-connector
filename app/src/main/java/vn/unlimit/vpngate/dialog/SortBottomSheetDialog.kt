@@ -18,7 +18,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList
  */
 class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedChangeListener,
     View.OnClickListener {
-    var btnApply: View? = null
+    private var btnApply: View? = null
     private var mSortProperty: String? = null
     private var mSortType = VPNGateConnectionList.ORDER.ASC
     private var rdgSortProperty: RadioGroup? = null
@@ -129,9 +129,9 @@ class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedC
         }
     }
 
-    fun setOnApplyClickListener(_onApplyClickListener: OnApplyClickListener?) {
+    fun setOnApplyClickListener(inOnApplyClickListener: OnApplyClickListener?) {
         if ("" != mSortProperty) {
-            onApplyClickListener = _onApplyClickListener
+            onApplyClickListener = inOnApplyClickListener
         }
     }
 

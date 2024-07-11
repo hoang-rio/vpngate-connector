@@ -63,7 +63,7 @@ class PurchaseHistoryAdapter(context: Context?) : RecyclerView.Adapter<RecyclerV
 
         @SuppressLint("SetTextI18n")
         fun bindViewHolder(position: Int) {
-            val purchaseHistory = _list.get(position)
+            val purchaseHistory = _list[position]
             txtIndex.text = (position + 1).toString()
             txtDataSize.text = purchaseHistory.dataSizeStr
             txtDataSizeReceive.text = purchaseHistory.getDisplayDataSize(mContext!!.resources)

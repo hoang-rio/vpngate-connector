@@ -12,7 +12,7 @@ class PurchaseHistory {
     var currencyPrice: String = ""
     var currency: String = ""
     var dataSizeStr: String = ""
-    var dataSize: Double = 0.0
+    private var dataSize: Double = 0.0
     private var _created: Long = 0
 
     fun getDisplayDataSize(res: Resources): String {

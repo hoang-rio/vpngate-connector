@@ -46,7 +46,7 @@ class SpinnerInit(var mContext: Context?, private var mSpinner: AppCompatSpinner
                         selectedItem = i
                     }
                 } catch (e: Exception) {
-                    Log.d(TAG, "Got exception whenonItemSelected", e)
+                    Log.d(TAG, "Got exception when onItemSelected", e)
                 }
             }
 
