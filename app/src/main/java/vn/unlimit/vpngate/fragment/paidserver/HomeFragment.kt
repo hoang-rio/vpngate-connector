@@ -183,7 +183,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 }
             }
         }
-        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        chartViewModel = ViewModelProvider(this)[ChartViewModel::class.java]
         chartViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE
         }
@@ -198,7 +198,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         chartViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
             lnChartError?.visibility = if (isError) View.VISIBLE else View.GONE
         }
-        sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
+        sessionViewModel = ViewModelProvider(this)[SessionViewModel::class.java]
         sessionViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             run {
                 lnLoadingSession?.visibility = if (isLoading) View.VISIBLE else View.GONE

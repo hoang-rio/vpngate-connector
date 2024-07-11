@@ -241,6 +241,6 @@ class PaidServerUtil(context: Context) {
     }
 
     fun isCurrentSession(serverId: String, privateIp: String): Boolean {
-        return "%s:%s".format(serverId, privateIp).equals(getStringSetting(CURRENT_SESSION_KEY))
+        return "%s:%s".format(serverId, privateIp) == getStringSetting(CURRENT_SESSION_KEY)
     }
 }

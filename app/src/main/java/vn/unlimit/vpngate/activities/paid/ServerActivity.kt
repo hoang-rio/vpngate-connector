@@ -271,7 +271,6 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         sendConnectVPN()
     }
 
-    @Suppress("DEPRECATION")
     private fun bindData() {
         mPaidServer = if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             paidServerUtil.getLastConnectServer()
@@ -282,6 +281,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     PaidServer::class.java
                 )
             } else {
+                @Suppress("DEPRECATION")
                 intent.getParcelableExtra(
                     BaseProvider.PASS_DETAIL_VPN_CONNECTION
                 )
@@ -411,6 +411,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         )
                         btnSSTPConnect?.setText(R.string.disconnect_sstp)
                         txtStatus!!.text = getString(R.string.sstp_connected, connectedIp)
+                        paidServerUtil.setCurrentSession(mPaidServer!!._id, connectedIp!!)
                         isSSTPConnected = true
                         txtCheckIp?.visibility = View.VISIBLE
                     }
