@@ -529,33 +529,38 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val sortBottomSheetDialog = SortBottomSheetDialog.newInstance(
                 sortProperty, sortType
             )
-            sortBottomSheetDialog.setOnApplyClickListener { sortProperty: String?, sortType: Int ->
-                if (dataUtil!!.hasAds()) {
-                    Toast.makeText(
-                        applicationContext,
-                        getText(R.string.feature_available_in_pro),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@setOnApplyClickListener
+            sortBottomSheetDialog.setOnApplyClickListener(object : SortBottomSheetDialog.OnApplyClickListener {
+                override fun onApplyClick(sortProperty: String?, sortType: Int) {
+                    if (dataUtil!!.hasAds()) {
+                        Toast.makeText(
+                            applicationContext,
+                            getText(R.string.feature_available_in_pro),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return
+                    }
+                    this@MainActivity.sortProperty = sortProperty
+                    this@MainActivity.sortType = sortType
+                    dataUtil!!.setStringSetting(SORT_PROPERTY_KEY, this@MainActivity.sortProperty)
+                    dataUtil!!.setIntSetting(SORT_TYPE_KEY, this@MainActivity.sortType)
+                    val currentFragment = supportFragmentManager.findFragmentByTag(
+                        HomeFragment::class.java.name
+                    ) as HomeFragment?
+                    if (currentFragment != null) {
+                        val params = Bundle()
+                        params.putString("property", this@MainActivity.sortProperty)
+                        params.putString(
+                            "type",
+                            if (this@MainActivity.sortType == VPNGateConnectionList.ORDER.ASC) "ASC" else "DESC"
+                        )
+                        FirebaseAnalytics.getInstance(applicationContext).logEvent("Sort", params)
+                        currentFragment.sort(this@MainActivity.sortProperty,
+                            this@MainActivity.sortType
+                        )
+                    }
                 }
-                this.sortProperty = sortProperty
-                this.sortType = sortType
-                dataUtil!!.setStringSetting(SORT_PROPERTY_KEY, this.sortProperty)
-                dataUtil!!.setIntSetting(SORT_TYPE_KEY, this.sortType)
-                val currentFragment = supportFragmentManager.findFragmentByTag(
-                    HomeFragment::class.java.name
-                ) as HomeFragment?
-                if (currentFragment != null) {
-                    val params = Bundle()
-                    params.putString("property", sortProperty)
-                    params.putString(
-                        "type",
-                        if (sortType == VPNGateConnectionList.ORDER.ASC) "ASC" else "DESC"
-                    )
-                    FirebaseAnalytics.getInstance(applicationContext).logEvent("Sort", params)
-                    currentFragment.sort(sortProperty, sortType)
-                }
-            }
+
+            })
             if (!isFinishing && !isDestroyed) {
                 sortBottomSheetDialog.show(supportFragmentManager, sortBottomSheetDialog.tag)
             } else if (!isFinishing) {

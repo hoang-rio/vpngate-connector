@@ -127,9 +127,17 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         rcvSession?.layoutManager = LinearLayoutManager(requireContext())
         sessionAdapter = SessionAdapter(requireContext())
         sessionAdapter?.onDisconnectListener =
-            OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
+            object: OnItemClickListener {
+                override fun onItemClick(o: Any?, position: Int) {
+                    disConnectSession(o as ConnectedSession)
+                }
+            }
         sessionAdapter?.onOpenDetailServer =
-            OnItemClickListener { _, _ -> openDetailServer() }
+            object: OnItemClickListener {
+                override fun onItemClick(o: Any?, position: Int) {
+                    openDetailServer()
+                }
+            }
         rcvSession?.adapter = sessionAdapter
         lnSessionEmpty = root.findViewById(R.id.ln_session_empty)
         return root

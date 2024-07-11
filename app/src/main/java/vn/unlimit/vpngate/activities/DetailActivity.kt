@@ -664,9 +664,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             ).show()
                         } else {
                             val connectionUseProtocol =
-                                ConnectionUseProtocol.newInstance(mVpnGateConnection) { useUdp: Boolean ->
-                                    this.handleConnection(useUdp)
-                                }
+                                ConnectionUseProtocol.newInstance(mVpnGateConnection, object : ConnectionUseProtocol.ClickResult {
+                                    override fun onResult(useUdp: Boolean) {
+                                        handleConnection(useUdp)
+                                    }
+                                })
                             if (!isFinishing && !isDestroyed) {
                                 connectionUseProtocol.show(
                                     supportFragmentManager,
@@ -744,9 +746,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             if (view == btnSaveConfigFile) {
                 if (mVpnGateConnection!!.tcpPort > 0 && mVpnGateConnection!!.udpPort > 0) {
                     val connectionUseProtocol =
-                        ConnectionUseProtocol.newInstance(mVpnGateConnection) { useUdp: Boolean ->
-                            this.handleImport(useUdp)
-                        }
+                        ConnectionUseProtocol.newInstance(mVpnGateConnection, object: ConnectionUseProtocol.ClickResult {
+                            override fun onResult(useUdp: Boolean) {
+                                handleImport(useUdp)
+                            }
+                        })
                     if (!isFinishing && !isDestroyed) {
                         connectionUseProtocol.show(
                             supportFragmentManager,
