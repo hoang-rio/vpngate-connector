@@ -1,6 +1,7 @@
 package vn.unlimit.vpngate.activities
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.RelativeLayout
@@ -31,7 +32,6 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
         const val TYPE_PAID = 1
     }
 
-    @Suppress("DEPRECATION")
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +50,12 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 .into(binding.ivStep2)
             val typeServer: Int = intent.getIntExtra(BaseProvider.L2TP_SERVER_TYPE, TYPE_FREE)
             if (typeServer == TYPE_FREE) {
-                mVPNGateConnection =
+                mVPNGateConnection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, VPNGateConnection::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
                     intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)
+                }
                 binding.txtTitle.text =
                     getString(R.string.l2tp_connect_title, mVPNGateConnection?.hostName)
                 binding.txtHint.text = getString(R.string.l2tp_connect_hint, mVPNGateConnection?.hostName)
@@ -62,16 +66,27 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 loadBannerAds()
             } else {
-                window.statusBarColor = resources.getColor(R.color.colorPaidServer)
-                binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+                    binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
+                } else {
+                    @Suppress("DEPRECATION")
+                    window.statusBarColor = resources.getColor(R.color.colorPaidServer)
+                    @Suppress("DEPRECATION")
+                    binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer))
+                }
                 //Hide ad banner
                 val paidServerUtil = App.instance!!.paidServerUtil!!
                 binding.adContainerL2tp.visibility = View.GONE
                 binding.txtVpnShareSecret.text = getString(R.string.vpn_paid_shared_secret)
                 binding.txtVpnUser.text = paidServerUtil.getUserInfo()?.username
                 binding.txtVpnPw.text = getString(R.string.vpn_pw_hint)
-                val paidServer: PaidServer =
+                val paidServer: PaidServer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, PaidServer::class.java)!!
+                } else {
+                    @Suppress("DEPRECATION")
                     intent.getParcelableExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION)!!
+                }
                 binding.txtTitle.text = getString(R.string.l2tp_connect_title, paidServer.serverName)
                 binding.txtHint.text = getString(R.string.l2tp_connect_hint, paidServer.serverName)
                 if (dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
