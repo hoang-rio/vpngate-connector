@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
+    android:background="@color/background"
     android:orientation="vertical"
     android:theme="@style/AppTheme.BottomSheetDialog">
 
@@ -159,7 +159,6 @@
             android:layout_height="35dp"
             android:layout_gravity="end"
             android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
             android:background="@drawable/selector_apply_button"
             android:padding="5dp"
             android:text="@string/apply"
