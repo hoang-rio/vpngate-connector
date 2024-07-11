@@ -24,8 +24,8 @@ build_apk:
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_COMMIT_SHA-free-debug.apk
-      - ./$CI_COMMIT_SHA-pro-debug.apk
+      - ./$CI_COMMIT_SHA-free.apk
+      - ./$CI_COMMIT_SHA-pro.apk
     expire_in: 5 day
 build_aar:
   stage: build
