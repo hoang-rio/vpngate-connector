@@ -989,7 +989,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             } catch (ane: ActivityNotFoundException) {
                 // Shame on you Sony! At least one user reported that
                 // an official Sony Xperia Arc S image triggers this exception
-                VpnStatus.logError(R.string.no_vpn_support_image)
+                VpnStatus.logError(de.blinkt.openvpn.R.string.no_vpn_support_image)
             }
         } else {
             handleActivityResult(START_VPN_PROFILE, RESULT_OK)
