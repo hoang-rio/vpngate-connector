@@ -25,6 +25,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -467,7 +469,12 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
-    @Suppress("DEPRECATION")
+    private val startActivityIntentSSTPVPN: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        handleActivityResult(DetailActivity.START_VPN_SSTP, it.resultCode)
+    }
+
     private fun startSSTPVPN() {
         if (checkStatus()) {
             stopVpn()
@@ -475,12 +482,12 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         val intent = VpnService.prepare(this)
         if (intent != null) {
             try {
-                startActivityForResult(intent, DetailActivity.START_VPN_SSTP)
+                startActivityIntentSSTPVPN.launch(intent)
             } catch (e: ActivityNotFoundException) {
                 Log.e(TAG, "OS does not support VPN")
             }
         } else {
-            onActivityResult(DetailActivity.START_VPN_SSTP, RESULT_OK, null)
+            handleActivityResult(DetailActivity.START_VPN_SSTP, RESULT_OK)
         }
     }
 
@@ -568,9 +575,7 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         return true
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun handleActivityResult(requestCode: Int, resultCode: Int) {
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == DetailActivity.START_VPN_PROFILE) {
@@ -585,8 +590,11 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             e.printStackTrace()
         }
     }
-
-    @Suppress("DEPRECATION")
+    private val startActivityIntentOpenVPN: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        handleActivityResult(DetailActivity.START_VPN_PROFILE, it.resultCode)
+    }
     private fun startVpn() {
         val intent = VpnService.prepare(this)
         if (intent != null) {
@@ -596,14 +604,14 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             )
             // Start the query
             try {
-                startActivityForResult(intent, DetailActivity.START_VPN_PROFILE)
+                startActivityIntentOpenVPN.launch(intent)
             } catch (ane: ActivityNotFoundException) {
                 // Shame on you Sony! At least one user reported that
                 // an official Sony Xperia Arc S image triggers this exception
                 VpnStatus.logError(R.string.no_vpn_support_image)
             }
         } else {
-            onActivityResult(DetailActivity.START_VPN_PROFILE, RESULT_OK, null)
+            handleActivityResult(DetailActivity.START_VPN_PROFILE, RESULT_OK)
         }
     }
 
