@@ -4,44 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <RelativeLayout
+    <LinearLayout
+        android:layout_height="200dp"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/btn_on_off"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:elevation="5dp"
+            android:focusable="true"
+            android:importantForAccessibility="no"
+            android:src="@drawable/selector_button_connection" />
+
+        <TextView
+            android:id="@+id/txt_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/btn_on_off"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:elevation="5dp"
-                android:focusable="true"
-                android:src="@drawable/selector_button_connection" />
-
-            <TextView
-                android:id="@+id/txt_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:gravity="center"
-                android:maxLines="2"
-                android:minLines="2"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="@string/no_network"
-                android:textColor="@color/colorTextSecondary"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-    </RelativeLayout>
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:maxLines="2"
+            android:minLines="2"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/no_network"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <include layout="@layout/item_line" />
 
@@ -71,7 +66,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/uploaded_data" />
+                    android:text="@string/uploaded_data"
+                    tools:ignore="RelativeOverlap" />
 
 
                 <TextView
@@ -79,8 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@+id/txt_separate_upload"
-                    android:layout_toLeftOf="@+id/txt_separate_upload"
-                    android:text="0 kbps" />
+                    android:text="0 kbps"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/txt_separate_upload"
@@ -89,7 +85,6 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_toStartOf="@+id/txt_upload_session"
-                    android:layout_toLeftOf="@+id/txt_upload_session"
                     android:text="|"
                     tools:ignore="HardcodedText" />
 
@@ -98,8 +93,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:text="0 B" />
+                    android:text="0 B"
+                    tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <include layout="@layout/item_line" />
@@ -112,14 +107,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/downloaded_data" />
+                    android:text="@string/downloaded_data"
+                    tools:ignore="RelativeOverlap" />
 
                 <TextView
                     android:id="@+id/txt_download_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@+id/txt_separate_download"
-                    android:layout_toLeftOf="@+id/txt_separate_download"
                     android:text="0 kbps"
                     tools:ignore="HardcodedText" />
 
@@ -130,7 +125,6 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_toStartOf="@+id/txt_download_session"
-                    android:layout_toLeftOf="@+id/txt_download_session"
                     android:text="|"
                     tools:ignore="HardcodedText" />
 
@@ -139,8 +133,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:text="0 B" />
+                    android:text="0 B"
+                    tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <include layout="@layout/item_line" />
@@ -162,14 +156,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/uploaded_data" />
+                    android:text="@string/uploaded_data"
+                    tools:ignore="RelativeOverlap" />
 
                 <TextView
                     android:id="@+id/txt_total_upload"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="0 B" />
+                    android:layout_alignParentEnd="true"
+                    android:text="0 B"
+                    tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <include layout="@layout/item_line" />
@@ -182,14 +178,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/downloaded_data" />
+                    android:text="@string/downloaded_data"
+                    tools:ignore="RelativeOverlap" />
 
                 <TextView
                     android:id="@+id/txt_total_download"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="0 B" />
+                    android:layout_alignParentEnd="true"
+                    android:text="0 B"
+                    tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <include layout="@layout/item_line" />
@@ -203,10 +201,10 @@
                 <Button
                     android:id="@+id/btn_clear_statistics"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:background="@drawable/selector_apply_button"
-                    android:padding="5dp"
+                    android:padding="10dp"
                     android:text="@string/clear_statistics"
                     android:textAllCaps="false"
                     android:textColor="@color/colorWhite" />

@@ -6,9 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.VPNGateApiService
 import vn.unlimit.vpngate.models.VPNGateConnection
@@ -23,7 +20,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
         const val TAG = "VPNGateViewModel"
     }
 
-    var dataUtil: DataUtil = App.getInstance().dataUtil
+    var dataUtil: DataUtil = App.instance!!.dataUtil!!
 
     val vpnGateConnectionList = MutableLiveData<VPNGateConnectionList>()
     private var isRetried = false
@@ -86,7 +83,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                 } else {
                     vpnGateConnectionList.postValue(connectionList)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get connection list", e)
                 isError.postValue(true)
             } finally {

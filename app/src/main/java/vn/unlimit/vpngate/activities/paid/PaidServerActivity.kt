@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -18,6 +18,7 @@ import com.google.common.base.Strings
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.ActivityPaidServerBinding
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
@@ -31,7 +32,7 @@ class PaidServerActivity : AppCompatActivity() {
     private var deviceViewModel: DeviceViewModel? = null
     private var doubleBackToExitPressedOnce = false
     private var isPaused = false
-    private var navController: NavController? = null
+    private lateinit var binding: ActivityPaidServerBinding
 
     companion object {
         const val TAG = "PaidServerActivity"
@@ -40,15 +41,16 @@ class PaidServerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         bindViewModel()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_paid_server)
+        binding = ActivityPaidServerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val paidServerUtil = (application as App).paidServerUtil
-        paidServerUtil.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
+        paidServerUtil?.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnItemSelectedListener {
             return@setOnItemSelectedListener onNavigationItemSelected(it)
         }
-
-        navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
@@ -56,9 +58,9 @@ class PaidServerActivity : AppCompatActivity() {
                 R.id.navigation_home, R.id.navigation_server_list, R.id.navigation_free_server
             )
         )
-        setupActionBarWithNavController(navController!!, appBarConfiguration)
-        navView.setupWithNavController(navController!!)
-        navController!!.addOnDestinationChangedListener { _, destination, _ ->
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.navigation_free_server) {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)

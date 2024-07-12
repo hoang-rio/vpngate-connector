@@ -1,6 +1,8 @@
 package vn.unlimit.vpngate.dialog
 
+import android.annotation.SuppressLint
 import android.app.Dialog
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -15,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.VPNGateConnectionList
 import vn.unlimit.vpngate.utils.SpinnerInit
+import vn.unlimit.vpngate.utils.SpinnerInit.OnItemSelectedIndexListener
 
 
 class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomSheetDialogFragment() {
@@ -73,6 +76,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         this.dismiss()
     }
 
+    @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
         val rootView = View.inflate(context, R.layout.layout_filter_dialog, null)
         rootView.findViewById<Button>(R.id.btn_reset).setOnClickListener {
@@ -82,7 +86,13 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         checkBoxTCP = rootView.findViewById(R.id.chb_filter_tcp)
         checkBoxUDP = rootView.findViewById(R.id.chb_filter_udp)
         checkBoxL2TP = rootView.findViewById(R.id.chb_filter_l2tp)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            checkBoxL2TP?.visibility = View.GONE
+        }
         checkBoxSSTP = rootView.findViewById(R.id.chb_filter_sstp)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            checkBoxSSTP?.visibility = View.GONE
+        }
         spinnerPingOperator = rootView.findViewById(R.id.spinner_ping_operator)
         spinnerSpeedOperator = rootView.findViewById(R.id.spinner_speed_operator)
         spinnerSessionOperator = rootView.findViewById(R.id.spinner_session_operator)
@@ -95,50 +105,46 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     }
 
     private fun bindData() {
-        val spinnerInitPing = SpinnerInit(context, spinnerPingOperator)
+        val spinnerInitPing = SpinnerInit(context, spinnerPingOperator!!)
         val listOperator = resources.getStringArray(R.array.number_filter_operator)
-        val spinnerInitSpeed = SpinnerInit(context, spinnerSpeedOperator)
-        val spinnerInitSession = SpinnerInit(context, spinnerSessionOperator)
-        val listOperatorEnum = VPNGateConnectionList.NumberFilterOperator.values()
-        mFilter.isShowTCP?.let { checkBoxTCP!!.isChecked = mFilter.isShowTCP }
-        mFilter.isShowUDP?.let { checkBoxUDP!!.isChecked = mFilter.isShowUDP }
-        mFilter.isShowL2TP?.let { checkBoxL2TP!!.isChecked = mFilter.isShowL2TP }
-        mFilter.isShowSSTP?.let { checkBoxSSTP!!.isChecked = mFilter.isShowSSTP }
+        val spinnerInitSpeed = SpinnerInit(context, spinnerSpeedOperator!!)
+        val spinnerInitSession = SpinnerInit(context, spinnerSessionOperator!!)
+        val listOperatorEnum = VPNGateConnectionList.NumberFilterOperator.entries.toTypedArray()
+        mFilter.isShowTCP.let { checkBoxTCP!!.isChecked = mFilter.isShowTCP }
+        mFilter.isShowUDP.let { checkBoxUDP!!.isChecked = mFilter.isShowUDP }
+        mFilter.isShowL2TP.let { checkBoxL2TP!!.isChecked = mFilter.isShowL2TP }
+        mFilter.isShowSSTP.let { checkBoxSSTP!!.isChecked = mFilter.isShowSSTP }
         mFilter.ping?.let { txtPing!!.setText(it.toString()) }
         mFilter.speed?.let { txtSpeed!!.setText(it.toString()) }
         mFilter.sessionCount?.let { txtSession!!.setText(it.toString()) }
-        if (mFilter.pingFilterOperator != null) {
-            spinnerInitPing.setStringArray(
-                listOperator,
-                listOperator[listOperatorEnum.indexOf(mFilter.pingFilterOperator)]
-            )
-        } else {
-            spinnerInitPing.setStringArray(listOperator, listOperator[0])
+        spinnerInitPing.setStringArray(
+            listOperator,
+            listOperator[listOperatorEnum.indexOf(mFilter.pingFilterOperator)]
+        )
+        spinnerInitPing.onItemSelectedIndexListener = object : OnItemSelectedIndexListener {
+            override fun onItemSelected(name: String?, index: Int) {
+                mFilter.pingFilterOperator = listOperatorEnum[index]
+            }
+
         }
-        spinnerInitPing.setOnItemSelectedIndexListener { _, index ->
-            mFilter.pingFilterOperator = listOperatorEnum[index]
+        spinnerInitSpeed.setStringArray(
+            listOperator,
+            listOperator[listOperatorEnum.indexOf(mFilter.speedFilterOperator)]
+        )
+        spinnerInitSpeed.onItemSelectedIndexListener = object: OnItemSelectedIndexListener {
+            override fun onItemSelected(name: String?, index: Int) {
+                mFilter.speedFilterOperator = listOperatorEnum[index]
+            }
+
         }
-        if (mFilter.speedFilterOperator != null) {
-            spinnerInitSpeed.setStringArray(
-                listOperator,
-                listOperator[listOperatorEnum.indexOf(mFilter.speedFilterOperator)]
-            )
-        } else {
-            spinnerInitSpeed.setStringArray(listOperator, listOperator[0])
-        }
-        spinnerInitSpeed.setOnItemSelectedIndexListener { _, index ->
-            mFilter.speedFilterOperator = listOperatorEnum[index]
-        }
-        if (mFilter.sessionCountFilterOperator != null) {
-            spinnerInitSession.setStringArray(
-                listOperator,
-                listOperator[listOperatorEnum.indexOf(mFilter.sessionCountFilterOperator)]
-            )
-        } else {
-            spinnerInitSession.setStringArray(listOperator, listOperator[0])
-        }
-        spinnerInitSession.setOnItemSelectedIndexListener { _, index ->
-            mFilter.sessionCountFilterOperator = listOperatorEnum[index]
+        spinnerInitSession.setStringArray(
+            listOperator,
+            listOperator[listOperatorEnum.indexOf(mFilter.sessionCountFilterOperator)]
+        )
+        spinnerInitSession.onItemSelectedIndexListener = object: OnItemSelectedIndexListener {
+            override fun onItemSelected(name: String?, index: Int) {
+                mFilter.sessionCountFilterOperator = listOperatorEnum[index]
+            }
         }
     }
 

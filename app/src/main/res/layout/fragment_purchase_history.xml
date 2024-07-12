@@ -43,7 +43,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <include layout="@layout/layout_loading_paid" />
+    <include android:id="@+id/inc_loading" layout="@layout/layout_loading_paid" />
 
     <RelativeLayout
         android:id="@+id/ln_no_purchase"

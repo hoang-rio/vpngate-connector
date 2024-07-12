@@ -12,19 +12,19 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.ActivityActivateBinding
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class ActivateActivity : AppCompatActivity() {
-    private var lnActivating: View? = null
-    private var lnActivated: View? = null
-    private var lnActivateFailed: View? = null
     private var userViewModel: UserViewModel? = null
     private var isDoingActivate = false
+    private lateinit var binding: ActivityActivateBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_activate)
+        binding = ActivityActivateBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         findViewById<Button>(R.id.btn_login).setOnClickListener {
             val loginIntent = Intent(this, LoginActivity::class.java)
@@ -36,30 +36,27 @@ class ActivateActivity : AppCompatActivity() {
             startActivity(freeIntent)
             finish()
         }
-        lnActivating = findViewById(R.id.ln_activating)
-        lnActivated = findViewById(R.id.ln_activated)
-        lnActivateFailed = findViewById(R.id.ln_activate_failed)
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
-        lnActivateFailed!!.visibility = View.INVISIBLE
-        lnActivated!!.visibility = View.INVISIBLE
-        lnActivating!!.visibility = View.VISIBLE
+        binding.lnActivating.visibility = View.INVISIBLE
+        binding.lnActivated.visibility = View.INVISIBLE
+        binding.lnActivating.visibility = View.VISIBLE
         userViewModel!!.isLoading.observe(this, Observer {
             if (!isDoingActivate) {
                 return@Observer
             }
             if (it) {
-                lnActivateFailed!!.visibility = View.INVISIBLE
-                lnActivated!!.visibility = View.INVISIBLE
-                lnActivating!!.visibility = View.VISIBLE
+                binding.lnActivating.visibility = View.INVISIBLE
+                binding.lnActivated.visibility = View.INVISIBLE
+                binding.lnActivating.visibility = View.VISIBLE
             } else if (userViewModel!!.isUserActivated.value!!) {
-                lnActivateFailed!!.visibility = View.INVISIBLE
-                lnActivating!!.visibility = View.INVISIBLE
-                lnActivated!!.visibility = View.VISIBLE
+                binding.lnActivating.visibility = View.INVISIBLE
+                binding.lnActivating.visibility = View.INVISIBLE
+                binding.lnActivated.visibility = View.VISIBLE
             } else {
                 // Activate failed
-                lnActivating!!.visibility = View.INVISIBLE
-                lnActivated!!.visibility = View.INVISIBLE
-                lnActivateFailed!!.visibility = View.VISIBLE
+                binding.lnActivating.visibility = View.INVISIBLE
+                binding.lnActivated.visibility = View.INVISIBLE
+                binding.lnActivating.visibility = View.VISIBLE
                 var errorDetailResId = R.string.account_activate_failed_invalid_request
                 if (userViewModel!!.errorCode == 104) {
                     errorDetailResId = R.string.account_activate_failed_already_activate
@@ -78,9 +75,9 @@ class ActivateActivity : AppCompatActivity() {
         val activateCode = intent.getStringExtra(PaidServerProvider.ACTIVATE_CODE)
         if (userId == null || activateCode == null) {
             // Activate failed
-            lnActivating!!.visibility = View.INVISIBLE
-            lnActivated!!.visibility = View.INVISIBLE
-            lnActivateFailed!!.visibility = View.VISIBLE
+            binding.lnActivating.visibility = View.INVISIBLE
+            binding.lnActivated.visibility = View.INVISIBLE
+            binding.lnActivating.visibility = View.VISIBLE
             return
         }
         isDoingActivate = true

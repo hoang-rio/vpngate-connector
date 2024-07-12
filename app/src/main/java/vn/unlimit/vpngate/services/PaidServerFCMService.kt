@@ -31,7 +31,7 @@ import vn.unlimit.vpngate.viewmodels.BaseViewModel
 import vn.unlimit.vpngate.viewmodels.DeviceViewModel.Companion.DEVICE_INFO_KEY
 
 class PaidServerFCMService : FirebaseMessagingService() {
-    private val paidServerUtil = App.getInstance().paidServerUtil
+    private val paidServerUtil = App.instance!!.paidServerUtil!!
 
     private val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder().addInterceptor {
         val requestBuilder: Request.Builder = it.request().newBuilder()

@@ -7,9 +7,7 @@ open class ConnectedSession {
     }
 
     class ClientInfo {
-        var productName: String = ""
         var os: String = ""
-        var osVersion: String = ""
         var ip: String = ""
         var hostname: String = ""
     }
@@ -20,7 +18,6 @@ open class ConnectedSession {
     var sessionId: String = ""
     var serverId: Server? = null
     var clientIp: String = ""
-    var connectionName = ""
     var transferBytes: Long = 0
     var _created: Long? = null
     var _updated: Long? = null

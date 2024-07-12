@@ -1,23 +1,20 @@
 package vn.unlimit.vpngate.fragment.paidserver
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -31,10 +28,13 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.activities.paid.ServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SessionAdapter
+import vn.unlimit.vpngate.databinding.FragmentPaidServerHomeBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.ConnectedSession
+import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.viewmodels.ChartViewModel
@@ -43,26 +43,14 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 
 class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
-    private val paidServerUtil = App.getInstance().paidServerUtil
-    private var txtWelcome: TextView? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private lateinit var binding: FragmentPaidServerHomeBinding
+    private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var userViewModel: UserViewModel? = null
     private var paidServerActivity: PaidServerActivity? = null
-    private var txtDataSize: TextView? = null
-    private var lnBuyData: View? = null
-    private var lnPurchaseHistory: View? = null
     private var isObservedRefresh = false
     private var isAttached = false
     private var chartViewModel: ChartViewModel? = null
-    private var lnLoadingChart: View? = null
-    private var lnLoadingSession: View? = null
-    private var lineChart: LineChart? = null
-    private var spinnerChartType: AppCompatSpinner? = null
-    private var lnChartError: View? = null
     private var sessionViewModel: SessionViewModel? = null
-    private var lnSessionError: View? = null
-    private var rcvSession: RecyclerView? = null
-    private var lnSessionEmpty: View? = null
     private var sessionAdapter: SessionAdapter? = null
 
     companion object {
@@ -73,58 +61,58 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_paid_server_home, container, false)
-        txtWelcome = root.findViewById(R.id.text_home)
-        txtDataSize = root.findViewById(R.id.txt_data_size)
+    ): View {
+        binding = FragmentPaidServerHomeBinding.inflate(layoutInflater)
         if (paidServerUtil.getUserInfo() != null) {
-            txtWelcome!!.text = getString(
+            binding.textHome.text = getString(
                 R.string.home_paid_welcome,
                 paidServerUtil.getUserInfo()!!.username
             )
-            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+            binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
                 paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
             )
         }
-        swipeRefreshLayout = root.findViewById(R.id.ln_swipe_refresh)
-        swipeRefreshLayout?.setOnRefreshListener(this)
-        lnBuyData = root.findViewById(R.id.ln_buy_data)
-        lnBuyData?.setOnClickListener(this)
-        lnPurchaseHistory = root.findViewById(R.id.ln_purchase_history)
-        lnPurchaseHistory?.setOnClickListener(this)
-        lnLoadingChart = root.findViewById(R.id.ln_loading_chart)
-        lnLoadingSession = root.findViewById(R.id.ln_loading_session)
-        lineChart = root.findViewById(R.id.line_chart)
-        spinnerChartType = root.findViewById(R.id.spin_chart_type)
+        binding.lnSwipeRefresh.setOnRefreshListener(this)
+        binding.lnBuyData.setOnClickListener(this)
+        binding.lnPurchaseHistory.setOnClickListener(this)
         val chartTypes = resources.getStringArray(R.array.chart_type)
-        val spinnerInit = SpinnerInit(requireContext(), spinnerChartType)
+        val spinnerInit = SpinnerInit(requireContext(), binding.incDataChart.spinChartType)
         spinnerInit.setStringArray(chartTypes, chartTypes[0])
-        spinnerInit.setOnItemSelectedIndexListener { _, index ->
-            when (index) {
-                0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
-                1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
-                2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
+        spinnerInit.onItemSelectedIndexListener = object : SpinnerInit.OnItemSelectedIndexListener {
+            override fun onItemSelected(name: String?, index: Int) {
+                when (index) {
+                    0 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.HOURLY
+                    1 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.DAILY
+                    2 -> chartViewModel?.chartType?.value = ChartViewModel.ChartType.MONTHLY
+                }
+                val params = Bundle()
+                params.putString("username", userViewModel?.userInfo?.value?.username)
+                params.putString("chart_type", chartViewModel?.chartType?.value.toString())
+                FirebaseAnalytics.getInstance(requireContext())
+                    .logEvent("user_change_chart_type", params)
             }
-            val params = Bundle()
-            params.putString("username", userViewModel?.userInfo?.value?.username)
-            params.putString("chart_type", chartViewModel?.chartType?.value.toString())
-            FirebaseAnalytics.getInstance(requireContext())
-                .logEvent("user_change_chart_type", params)
+
         }
-        lnChartError = root.findViewById(R.id.ln_chart_error)
-        lnChartError?.setOnClickListener { chartViewModel?.getChartData() }
-        lnSessionError = root.findViewById(R.id.ln_session_error)
-        lnSessionError?.setOnClickListener { sessionViewModel?.getListSession() }
-        rcvSession = root.findViewById(R.id.rcv_session)
-        rcvSession?.layoutManager = LinearLayoutManager(requireContext())
+        binding.incDataChart.lnChartError.setOnClickListener { chartViewModel?.getChartData() }
+        binding.incSessionList.lnSessionError.setOnClickListener { sessionViewModel?.getListSession() }
+        binding.incSessionList.rcvSession.layoutManager = LinearLayoutManager(requireContext())
         sessionAdapter = SessionAdapter(requireContext())
         sessionAdapter?.onDisconnectListener =
-            OnItemClickListener { o, _ -> disConnectSession(o as ConnectedSession) }
-        rcvSession?.adapter = sessionAdapter
-        lnSessionEmpty = root.findViewById(R.id.ln_session_empty)
-        return root
+            object : OnItemClickListener {
+                override fun onItemClick(o: Any?, position: Int) {
+                    disConnectSession(o as ConnectedSession)
+                }
+            }
+        sessionAdapter?.onOpenDetailServer =
+            object : OnItemClickListener {
+                override fun onItemClick(o: Any?, position: Int) {
+                    openDetailServer()
+                }
+            }
+        binding.incSessionList.rcvSession.adapter = sessionAdapter
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -147,11 +135,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onStart() {
         super.onStart()
         if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
-            txtWelcome!!.text = getString(
+            binding.textHome.text = getString(
                 R.string.home_paid_welcome,
                 paidServerUtil.getUserInfo()!!.fullname
             )
-            txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+            binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
                 paidServerUtil.getUserInfo()!!.dataSize!!,
                 false,
                 resources
@@ -170,9 +158,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
                 if (userInfo != null && isAttached) {
-                    txtWelcome!!.text =
+                    binding.textHome.text =
                         getString(R.string.home_paid_welcome, userInfo.fullname)
-                    txtDataSize!!.text = OpenVPNService.humanReadableByteCount(
+                    binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
                         userInfo.dataSize!!,
                         false,
                         resources
@@ -180,9 +168,9 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 }
             }
         }
-        chartViewModel = ViewModelProvider(this).get(ChartViewModel::class.java)
+        chartViewModel = ViewModelProvider(this)[ChartViewModel::class.java]
         chartViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) lnLoadingChart!!.visibility = View.VISIBLE
+            if (isLoading) binding.incDataChart.incLoadingChart.lnLoading.visibility = View.VISIBLE
         }
         chartViewModel?.chartData?.observe(viewLifecycleOwner) { chartData ->
             if (chartData.size > 0) {
@@ -193,23 +181,33 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
             chartViewModel?.getChartData()
         }
         chartViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
-            lnChartError?.visibility = if (isError) View.VISIBLE else View.GONE
+            binding.incDataChart.lnChartError.visibility = if (isError) View.VISIBLE else View.GONE
         }
-        sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
+        sessionViewModel = ViewModelProvider(this)[SessionViewModel::class.java]
         sessionViewModel?.isLoading?.observe(viewLifecycleOwner) { isLoading ->
             run {
-                lnLoadingSession?.visibility = if (isLoading) View.VISIBLE else View.GONE
+                binding.incSessionList.lnLoadingSession.lnLoading.visibility =
+                    if (isLoading) View.VISIBLE else View.GONE
             }
         }
         sessionViewModel?.isError?.observe(viewLifecycleOwner) { isError ->
-            lnSessionError?.visibility = if (isError) View.VISIBLE else View.GONE
+            binding.incSessionList.lnSessionError.visibility =
+                if (isError) View.VISIBLE else View.GONE
         }
         sessionViewModel?.sessionList?.observe(viewLifecycleOwner) { sessionList ->
             sessionAdapter?.initialize(sessionList)
-            lnSessionEmpty?.visibility = if (sessionList.size == 0) View.VISIBLE else View.GONE
+            binding.incSessionList.lnSessionEmpty.visibility =
+                if (sessionList.size == 0) View.VISIBLE else View.GONE
         }
         chartViewModel?.getChartData()
         sessionViewModel?.getListSession()
+    }
+
+    private fun openDetailServer() {
+        val intentServer = Intent(context, ServerActivity::class.java)
+        val paidServer = paidServerUtil.getLastConnectServer()
+        intentServer.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, paidServer)
+        startActivity(intentServer)
     }
 
     private fun disConnectSession(connectedSession: ConnectedSession) {
@@ -285,21 +283,21 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
         dataSet.valueFormatter = ChartValueFormatter()
         dataSet.setDrawCircles(false)
         val lineData = LineData(dataSet)
-        lineChart?.data = lineData
-        lineChart?.description!!.isEnabled = false
-        lineChart?.legend!!.textColor =
+        binding.incDataChart.lineChart.data = lineData
+        binding.incDataChart.lineChart.description!!.isEnabled = false
+        binding.incDataChart.lineChart.legend!!.textColor =
             ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
-        lineChart?.xAxis?.position = XAxis.XAxisPosition.BOTTOM
-        lineChart?.axisLeft?.axisMinimum = 0F
-        lineChart?.axisRight?.isEnabled = false
-        lineChart?.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
-        lineChart?.xAxis?.textColor =
+        binding.incDataChart.lineChart.xAxis?.position = XAxis.XAxisPosition.BOTTOM
+        binding.incDataChart.lineChart.axisLeft?.axisMinimum = 0F
+        binding.incDataChart.lineChart.axisRight?.isEnabled = false
+        binding.incDataChart.lineChart.xAxis?.valueFormatter = IndexAxisValueFormatter(chartViewModel!!.xLabels)
+        binding.incDataChart.lineChart.xAxis?.textColor =
             ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
-        lineChart?.axisLeft?.valueFormatter = ChartValueFormatter()
-        lineChart?.axisLeft?.textColor =
+        binding.incDataChart.lineChart.axisLeft?.valueFormatter = ChartValueFormatter()
+        binding.incDataChart.lineChart.axisLeft?.textColor =
             ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
-        lineChart?.invalidate()
-        lnLoadingChart?.visibility = View.GONE
+        binding.incDataChart.lineChart.invalidate()
+        binding.incDataChart.incLoadingChart.lnLoading.visibility = View.GONE
     }
 
     override fun onRefresh() {
@@ -309,11 +307,11 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 chartViewModel?.getChartData()
                 sessionViewModel?.getListSession()
             } else {
-                swipeRefreshLayout?.isRefreshing = false
+                binding.lnSwipeRefresh.isRefreshing = false
             }
             if (!isObservedRefresh) {
                 userViewModel?.isLoading?.observe(paidServerActivity!!) {
-                    swipeRefreshLayout?.isRefreshing = it
+                    binding.lnSwipeRefresh.isRefreshing = it
                 }
                 isObservedRefresh = true
             }
@@ -331,8 +329,8 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
 
     override fun onClick(view: View?) {
         when (view) {
-            lnBuyData -> findNavController().navigate(R.id.navigation_buy_data)
-            lnPurchaseHistory -> findNavController().navigate(R.id.navigation_purchase_history)
+            binding.lnBuyData -> findNavController().navigate(R.id.navigation_buy_data)
+            binding.lnPurchaseHistory -> findNavController().navigate(R.id.navigation_purchase_history)
         }
     }
 }

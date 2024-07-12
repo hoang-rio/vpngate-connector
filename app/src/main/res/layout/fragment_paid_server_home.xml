@@ -17,7 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:gravity="start"
@@ -29,9 +28,9 @@
     <ImageView
         android:clickable="true"
         android:focusable="true"
+        android:importantForAccessibility="no"
         android:visibility="gone"
         android:id="@+id/iv_logout"
-        android:layout_alignRight="@id/text_home"
         android:textAllCaps="false"
         android:layout_marginTop="8dp"
         android:src="@android:drawable/ic_lock_power_off"
@@ -113,7 +112,6 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_green"
                             android:clickable="true"
@@ -143,7 +141,6 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_marginStart="15dp"
-                            android:layout_marginLeft="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_blue"
                             android:clickable="true"
@@ -175,7 +172,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@color/colorWhite" />
 
-                <include layout="@layout/layout_data_chart" />
+                <include android:id="@+id/inc_data_chart" layout="@layout/layout_data_chart" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -183,7 +180,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@color/colorWhite" />
 
-                <include layout="@layout/layout_session_list" />
+                <include android:id="@+id/inc_session_list" layout="@layout/layout_session_list" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

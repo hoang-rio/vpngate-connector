@@ -9,11 +9,11 @@ import vn.unlimit.vpngate.utils.DataUtil
 
 class PaidServer(inParcel: Parcel) : Parcelable {
     var _id: String = ""
-    var l2tpSupport: Int = 1
-    var sstpSupport: Int = 1
+    private var l2tpSupport: Int = 1
+    private var sstpSupport: Int = 1
     var serverCountryCode: String = ""
     var isCommunity: Boolean = false
-    var public: Int = 1
+    private var public: Int = 1
     var serverName: String = ""
     var serverLocation = "Singapore"
     var serverDomain = ""
@@ -22,7 +22,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var udpPort = 0
     var maxSession = 0
     var sessionCount = 0
-    var ovpnContent = ""
+    private var ovpnContent = ""
     var serverStatus = ""
 
     companion object CREATOR : Parcelable.Creator<PaidServer?> {
@@ -79,7 +79,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
 
     fun getOpenVpnConfigDataUdp(): String {
         var openVpnConfigDataTmp: String = ovpnContent
-        if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (!App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTmp = openVpnConfigDataTmp.replace(serverDomain, serverIp)
         }
         return openVpnConfigDataTmp
@@ -93,7 +93,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
                 .replace("proto udp", "proto tcp")
                 .replace("remote $serverDomain $tcpPort", "remote $serverDomain $udpPort")
         }
-        if (!App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (!App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             openVpnConfigDataTcp = openVpnConfigDataTcp.replace(serverDomain, serverIp)
         }
         // Current config is udp only
@@ -102,10 +102,10 @@ class PaidServer(inParcel: Parcel) : Parcelable {
 
     fun getName(useUdp: Boolean): String {
         var address: String = serverIp
-        if (App.getInstance().dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
+        if (App.instance!!.dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)) {
             address = serverDomain
         }
-        return if (App.getInstance().dataUtil.getBooleanSetting(
+        return if (App.instance!!.dataUtil!!.getBooleanSetting(
                 DataUtil.INCLUDE_UDP_SERVER,
                 true
             )
@@ -124,5 +124,9 @@ class PaidServer(inParcel: Parcel) : Parcelable {
 
     fun isSSTPSupport(): Boolean {
         return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1
+    }
+
+    fun isL2TPSupport() : Boolean {
+        return Build.VERSION.SDK_INT < VERSION_CODES.TIRAMISU && l2tpSupport == 1
     }
 }

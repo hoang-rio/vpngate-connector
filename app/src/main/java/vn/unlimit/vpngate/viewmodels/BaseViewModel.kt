@@ -3,10 +3,12 @@ package vn.unlimit.vpngate.viewmodels
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
@@ -20,26 +22,40 @@ import java.net.HttpURLConnection
 
 open class BaseViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
+        const val TAG = "BaseViewModel"
         const val ITEM_PER_PAGE = 30
         const val PARAMS_USER_PLATFORM = "Android"
-        const val ERROR_SESSION_EXPIRES = "ERROR_SESSION_EXPIRES"
+        const val MAX_RETRY_COUNT = 3
     }
 
-    val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+    val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
     var isLoggedIn: MutableLiveData<Boolean> = MutableLiveData(paidServerUtil.isLoggedIn())
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder().addInterceptor {
-        val requestBuilder: Request.Builder = it.request().newBuilder()
-        if (paidServerUtil.isLoggedIn()) {
-            val sessionHeaderName = paidServerUtil.getSessionHeaderName()
-            paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
-                ?.let { it1 -> requestBuilder.addHeader(sessionHeaderName, it1) }
+    private fun processRequest(chain: Interceptor.Chain, retryCount: Int = 0) : okhttp3.Response {
+        try {
+            val requestBuilder: Request.Builder = chain.request().newBuilder()
+            if (paidServerUtil.isLoggedIn()) {
+                val sessionHeaderName = paidServerUtil.getSessionHeaderName()
+                paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
+                    ?.let { it1 -> requestBuilder.addHeader(sessionHeaderName, it1) }
+            }
+            return chain.proceed(requestBuilder.build())
+        } catch (th: Throwable) {
+            Log.e(TAG, "Got exception when process interceptor")
+            if (retryCount < MAX_RETRY_COUNT) {
+                return processRequest(chain, retryCount + 1)
+            } else {
+                throw th
+            }
         }
-        return@addInterceptor it.proceed(requestBuilder.build())
     }
 
-    open var retrofit: Retrofit = Retrofit.Builder().baseUrl(
+    private val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder().addInterceptor {
+        return@addInterceptor processRequest(it)
+    }
+
+    var retrofit: Retrofit = Retrofit.Builder().baseUrl(
         FirebaseRemoteConfig.getInstance()
             .getString(App.getResourceString(R.string.cfg_paid_server_api_base_url))
     )
@@ -48,16 +64,14 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private fun baseErrorHandle(error: String?) {
-        if (error === ERROR_SESSION_EXPIRES) {
-            isLoggedIn.value = false
-            paidServerUtil.setIsLoggedIn(false)
-        }
+    private fun handleExpiresError() {
+        isLoggedIn.value = false
+        paidServerUtil.setIsLoggedIn(false)
     }
 
-    fun baseErrorHandle(errorCode: Int?, activity: Activity?) {
+    fun handleExpiresError(errorCode: Int?, activity: Activity?) {
         if (errorCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            baseErrorHandle(ERROR_SESSION_EXPIRES)
+            handleExpiresError()
             activity?.let {
                 // Session expires
                 paidServerUtil.setIsLoggedIn(false)

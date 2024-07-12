@@ -9,7 +9,7 @@ import vn.unlimit.vpngate.api.SessionApiService
 import vn.unlimit.vpngate.models.ConnectedSession
 import vn.unlimit.vpngate.request.RequestListener
 
-open class SessionViewModel(application: Application) : BaseViewModel(application) {
+class SessionViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         const val TAG = "SessionViewModel"
     }
@@ -29,7 +29,7 @@ open class SessionViewModel(application: Application) : BaseViewModel(applicatio
             try {
                 val listSessionResponse = sessionApiService.getList()
                 sessionList.postValue(listSessionResponse.listSession)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get list session", e)
                 isError.postValue(true)
             } finally {
@@ -44,7 +44,7 @@ open class SessionViewModel(application: Application) : BaseViewModel(applicatio
                 sessionApiService.deleteSession(sessionId)
                 Log.d(TAG, "Deleted session with sessionId %s".format(sessionId))
                 requestListener.onSuccess("")
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when delete session", e)
                 requestListener.onError(e.message)
             }

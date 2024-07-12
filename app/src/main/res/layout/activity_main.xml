@@ -30,11 +30,11 @@
             android:layout_above="@id/ad_container_home"
             android:layout_marginTop="?attr/actionBarSize" />
 
-        <include layout="@layout/layout_error" />
+        <include android:id="@+id/inc_error" layout="@layout/layout_error" />
 
-        <include layout="@layout/layout_loading_center" />
+        <include android:id="@+id/inc_loading" layout="@layout/layout_loading_center" />
 
-        <include layout="@layout/layout_no_network" />
+        <include android:id="@+id/inc_no_network" layout="@layout/layout_no_network" />
 
         <RelativeLayout
             android:id="@+id/ad_container_home"

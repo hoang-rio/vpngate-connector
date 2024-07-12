@@ -11,29 +11,23 @@ import androidx.fragment.app.Fragment
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.FragmentPrivacyPolicyBinding
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
-    private var btnAccept: View? = null
-    private var btnDecide: View? = null
     private var mainActivity: MainActivity? = null
-    private var webView: WebView? = null
-    private var progressBar: View? = null
+    private lateinit var binding: FragmentPrivacyPolicyBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return try {
             mainActivity = activity as MainActivity?
-            val rootView = inflater.inflate(R.layout.fragment_privacy_policy, container, false)
-            btnAccept = rootView.findViewById(R.id.btn_accept)
-            btnAccept?.setOnClickListener(this)
-            btnDecide = rootView.findViewById(R.id.btn_decide)
-            btnDecide?.setOnClickListener(this)
-            webView = rootView.findViewById(R.id.web_view)
-            progressBar = rootView.findViewById(R.id.progress_bar)
-            rootView
+            binding = FragmentPrivacyPolicyBinding.inflate(layoutInflater)
+            binding.btnAccept.setOnClickListener(this)
+            binding.btnDecide.setOnClickListener(this)
+            binding.root
         } catch (ex: Exception) {
             if (ex.message != null && ex.message!!.contains("webview")) {
                 Toast.makeText(
@@ -48,15 +42,13 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstance: Bundle?) {
-        if (webView != null) {
-            //Load content to webview
-            webView!!.webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView, url: String) {
-                    progressBar!!.visibility = View.GONE
-                }
+        //Load content to webview
+        binding.webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+                binding.progressBar.visibility = View.GONE
             }
-            webView!!.loadData(readTextFromResource(), "text/html", "utf-8")
         }
+        binding.webView.loadData(readTextFromResource(), "text/html", "utf-8")
     }
 
     private fun readTextFromResource(): String {
@@ -77,12 +69,12 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        if (view == btnDecide) {
+        if (view == binding.btnDecide) {
             //Exit app when user decide
             mainActivity!!.finish()
-        } else if (view == btnAccept) {
+        } else if (view == binding.btnAccept) {
             //Start home fragment
-            App.getInstance().dataUtil.isAcceptedPrivacyPolicy = true
+            App.instance!!.dataUtil!!.isAcceptedPrivacyPolicy = true
             mainActivity!!.restartApp()
         }
     }

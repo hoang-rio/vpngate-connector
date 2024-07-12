@@ -7,16 +7,9 @@ stages:
   - build
 
 before_script:
-#  - export GRADLE_USER_HOME=$(pwd)/.gradle
-  - export DEBUG="debug"
-  - export PROD="release"
   - chmod +x ./gradlew
 
-#cache:
-#  key: ${CI_PROJECT_ID}
-#  paths:
-#    - .gradle/
-build_debug_apk:
+build_apk:
   stage: build
   except:
     - release
@@ -24,20 +17,17 @@ build_debug_apk:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
-    - ./gradlew assembleFreeDebug
-    - cd app/build/outputs/apk/free/$DEBUG
-    - cp app-free-$DEBUG.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free-debug.apk
-    - cd $CI_PROJECT_DIR
-    - ./gradlew assembleProDebug
-    - cd app/build/outputs/apk/pro/$DEBUG
-    - cp app-pro-$DEBUG.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro-debug.apk
+    - ./gradlew assembleFreeRelease
+    - cp app/build/outputs/apk/free/release/app-free-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.apk
+    - ./gradlew assembleProRelease
+    - cp app/build/outputs/apk/pro/release/app-pro-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.apk
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_COMMIT_SHA-free-debug.apk
-      - ./$CI_COMMIT_SHA-pro-debug.apk
+      - ./$CI_COMMIT_SHA-free.apk
+      - ./$CI_COMMIT_SHA-pro.apk
     expire_in: 5 day
-build_release_aar:
+build_aar:
   stage: build
   only:
     - release
@@ -45,12 +35,9 @@ build_release_aar:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
     - ./gradlew :app:bundleFreeRelease
-    - cd app/build/outputs
-    - cp bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.aab
-    - cd $CI_PROJECT_DIR
+    - cp app/build/outputs/bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.aab
     - ./gradlew :app:bundleProRelease
-    - cd app/build/outputs
-    - cp bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.aab
+    - cp app/build/outputs/bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.aab
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:

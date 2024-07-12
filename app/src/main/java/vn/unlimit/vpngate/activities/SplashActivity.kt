@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import vn.unlimit.vpngate.App
@@ -28,7 +30,6 @@ class SplashActivity : AppCompatActivity() {
         private const val TAG = "SplashActivity"
         private const val ACTIVATE_URL_REGEX = "/user/(\\w{24})/activate/(\\w{32})"
         private const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
-        private const val REQUEST_UPDATE_CODE = 100
     }
 
     override fun onDestroy() {
@@ -41,6 +42,22 @@ class SplashActivity : AppCompatActivity() {
         setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
         AppOpenManager.splashActivity = this
         checkDynamicLink()
+    }
+
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        when (val resultCode = result.resultCode) {
+            Activity.RESULT_OK -> {
+                Log.v(TAG, "Update flow completed!")
+            }
+            Activity.RESULT_CANCELED -> {
+                Log.v(TAG, "User cancelled Update flow!")
+                checkAppUpdateAndStartActivity()
+            }
+            else -> {
+                Log.v(TAG, "Update flow failed with resultCode:$resultCode")
+                checkAppUpdateAndStartActivity()
+            }
+        }
     }
 
     private fun checkAppUpdateAndStartActivity() {
@@ -59,9 +76,8 @@ class SplashActivity : AppCompatActivity() {
                 ) {
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
-                        AppUpdateType.IMMEDIATE,
-                        this,
-                        REQUEST_UPDATE_CODE
+                        activityResultLauncher,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     )
                 } else {
                     startStartUpActivity(100)
@@ -83,19 +99,11 @@ class SplashActivity : AppCompatActivity() {
         }, delay)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_UPDATE_CODE && resultCode != Activity.RESULT_OK) {
-            checkAppUpdateAndStartActivity()
-        }
-    }
-
     fun startStartUpActivity(delay: Long = 100) {
         if (AppOpenManager.isShowingAd) {
             return
         }
-        val paidServerUtil: PaidServerUtil = App.getInstance().paidServerUtil
+        val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
         val actIntent: Intent =
             if (paidServerUtil.getStartUpScreen() == PaidServerUtil.StartUpScreen.PAID_SERVER) {
                 if (paidServerUtil.isLoggedIn()) {

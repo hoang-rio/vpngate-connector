@@ -275,6 +275,7 @@
     <string name="session_id">Session ID:</string>
     <string name="view_detail">Chi tiết</string>
     <string name="disconnect_session">Ngắt kết nối</string>
+    <string name="open_detail_server">Mở chi tiêt máy chủ</string>
     <string name="created">Đã tạo:</string>
     <string name="updated">Đã cập nhật:</string>
     <string name="you_have_not_any_connected_session">Bạn không có phiên kết nối nào.</string>

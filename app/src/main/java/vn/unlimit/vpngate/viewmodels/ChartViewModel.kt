@@ -53,7 +53,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                 }
                 isError.postValue(false)
                 chartData.postValue(resChartData)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get hourly chart", e)
                 isError.postValue(true)
             } finally {
@@ -74,7 +74,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                     xLabels.add(item[0] as String)
                 }
                 chartData.postValue(resChartData)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get daily chart", e)
                 isError.postValue(true)
             } finally {
@@ -95,7 +95,7 @@ open class ChartViewModel(application: Application) : BaseViewModel(application)
                     xLabels.add(item[0] as String)
                 }
                 chartData.postValue(resChartData)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get daily chart", e)
                 isError.postValue(true)
             } finally {

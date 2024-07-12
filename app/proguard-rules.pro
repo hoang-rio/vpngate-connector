@@ -35,7 +35,7 @@
     public static final *;
 }
 # VPNGate Connection List enum
--keepclassmembers enum vn.unlimit.vpngate.models.* {*;}
+-keepclassmembers enum vn.unlimit.vpngate.models.** {*;}
 # PaidServer Model
 -keep class vn.unlimit.vpngate.models.PaidServer {*;}
 -keep class vn.unlimit.vpngate.models.PurchaseHistory {*;}

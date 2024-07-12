@@ -54,7 +54,7 @@
             android:layout_height="match_parent"
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
-    <include layout="@layout/layout_loading_paid" />
+    <include android:id="@+id/inc_loading" layout="@layout/layout_loading_paid" />
     <androidx.recyclerview.widget.RecyclerView
         android:visibility="gone"
         android:id="@+id/rcv_sku_details"

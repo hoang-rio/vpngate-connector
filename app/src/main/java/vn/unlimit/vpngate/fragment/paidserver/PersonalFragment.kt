@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.common.base.Strings
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.FragmentPersonalBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.DeviceViewModel
@@ -20,10 +21,10 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class PersonalFragment : Fragment(), View.OnClickListener {
 
-    private var lnNotificationSetting: View? = null
-    var deviceViewModel: DeviceViewModel? = null
+    private lateinit var binding: FragmentPersonalBinding
+    private var deviceViewModel: DeviceViewModel? = null
     val userViewModel by lazy {
-        ViewModelProvider(this).get(UserViewModel::class.java)
+        ViewModelProvider(this)[UserViewModel::class.java]
     }
     val loadingDialog by lazy {
         LoadingDialog.newInstance()
@@ -32,22 +33,21 @@ class PersonalFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_personal, container, false)
-        lnNotificationSetting = rootView.findViewById(R.id.ln_notification_setting)
-        lnNotificationSetting?.setOnClickListener(this)
-        rootView.findViewById<View>(R.id.ln_profile)?.setOnClickListener(this)
-        rootView.findViewById<View>(R.id.ln_change_password)?.setOnClickListener(this)
-        rootView.findViewById<View>(R.id.ln_about)?.setOnClickListener(this)
-        rootView.findViewById<View>(R.id.btn_delete_account).setOnClickListener(this)
-        return rootView
+    ): View {
+        binding = FragmentPersonalBinding.inflate(layoutInflater)
+        binding.lnNotificationSetting.setOnClickListener(this)
+        binding.lnProfile.setOnClickListener(this)
+        binding.lnChangePassword.setOnClickListener(this)
+        binding.lnAbout.setOnClickListener(this)
+        binding.btnDeleteAccount.setOnClickListener(this)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deviceViewModel = ViewModelProvider(this).get(DeviceViewModel::class.java)
+        deviceViewModel = ViewModelProvider(this)[DeviceViewModel::class.java]
         if (deviceViewModel!!.deviceInfo.value == null || Strings.isNullOrEmpty(deviceViewModel!!.deviceInfo.value?._id)) {
-            lnNotificationSetting?.visibility = View.GONE
+            binding.lnNotificationSetting.visibility = View.GONE
             view.findViewById<View>(R.id.line_notification_setting).visibility = View.GONE
         }
         userViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->

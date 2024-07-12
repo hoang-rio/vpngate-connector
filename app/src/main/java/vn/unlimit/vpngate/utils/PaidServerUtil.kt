@@ -106,17 +106,6 @@ class PaidServerUtil(context: Context) {
         sharedPreferencesSetting.getBoolean(key, defVal)
 
     /**
-     * Set boolean setting to storage
-     * @param key Setting key
-     * @param value Setting value
-     */
-    fun setBooleanSetting(key: String, value: Boolean) {
-        val editor = sharedPreferencesSetting.edit()
-        editor.putBoolean(key, value)
-        editor.apply()
-    }
-
-    /**
      * Get string setting
      * @param key Setting key
      * @param defVal Default value if get null from storage
@@ -241,6 +230,6 @@ class PaidServerUtil(context: Context) {
     }
 
     fun isCurrentSession(serverId: String, privateIp: String): Boolean {
-        return "%s:%s".format(serverId, privateIp).equals(getStringSetting(CURRENT_SESSION_KEY))
+        return "%s:%s".format(serverId, privateIp) == getStringSetting(CURRENT_SESSION_KEY)
     }
 }

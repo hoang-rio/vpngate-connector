@@ -7,14 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
@@ -36,21 +33,19 @@ import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.SkuDetailsAdapter
+import vn.unlimit.vpngate.databinding.FragmentBuyDataBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.viewmodels.PurchaseViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.Collections
 
 class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
-    private var btnBack: ImageView? = null
+    private lateinit var binding: FragmentBuyDataBinding
     private var listSkus: Array<String>? = null
-    private var dataUtil = App.getInstance().dataUtil
-    private var paidServerUtil = App.getInstance().paidServerUtil
+    private var dataUtil = App.instance!!.dataUtil!!
+    private var paidServerUtil = App.instance!!.paidServerUtil!!
     private var billingClient: BillingClient? = null
-    private var lnLoading: View? = null
-    private var rcvSkuDetails: RecyclerView? = null
     private var skuDetailsAdapter: SkuDetailsAdapter? = null
-    private var txtDataSize: TextView? = null
     private var isBillingDisconnected = false
     private var userViewModel: UserViewModel? = null
     private var buyingProductDetails: ProductDetails? = null
@@ -115,22 +110,17 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val root = inflater.inflate(R.layout.fragment_buy_data, container, false)
-        txtDataSize = root.findViewById(R.id.txt_data_size)
-        txtDataSize?.text = OpenVPNService.humanReadableByteCount(
+    ): View {
+        binding = FragmentBuyDataBinding.inflate(layoutInflater)
+        binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
             paidServerUtil.getUserInfo()!!.dataSize!!, false, resources
         )
-        btnBack = root.findViewById(R.id.btn_back)
-        btnBack?.setOnClickListener(this)
-        lnLoading = root.findViewById(R.id.ln_loading)
-        rcvSkuDetails = root.findViewById(R.id.rcv_sku_details)
-        rcvSkuDetails!!.layoutManager = LinearLayoutManager(context)
+        binding.btnBack.setOnClickListener(this)
+        binding.rcvSkuDetails.layoutManager = LinearLayoutManager(context)
         skuDetailsAdapter = SkuDetailsAdapter(context)
         skuDetailsAdapter!!.setOnItemClickListener(this)
-        rcvSkuDetails!!.adapter = skuDetailsAdapter
-        return root
+        binding.rcvSkuDetails.adapter = skuDetailsAdapter
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -151,7 +141,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         userViewModel?.userInfo?.observe(viewLifecycleOwner) { userInfo ->
             run {
                 if (isAttached) {
-                    txtDataSize?.text = OpenVPNService.humanReadableByteCount(
+                    binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
                         userInfo!!.dataSize!!,
                         false,
                         resources
@@ -159,7 +149,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
                 }
             }
         }
-        purchaseViewModel = ViewModelProvider(this).get(PurchaseViewModel::class.java)
+        purchaseViewModel = ViewModelProvider(this)[PurchaseViewModel::class.java]
         purchaseViewModel?.isLoggedIn?.observe(viewLifecycleOwner) { isLoggedIn ->
             if (!isLoggedIn) {
                 // Go to login screen if user login status is changed
@@ -221,7 +211,7 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            btnBack -> findNavController().popBackStack()
+            binding.btnBack -> findNavController().popBackStack()
         }
     }
 
@@ -261,14 +251,14 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
             )
         }
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
-        lnLoading?.visibility = View.VISIBLE
-        rcvSkuDetails?.visibility = View.GONE
+        binding.incLoading.lnLoading.visibility = View.VISIBLE
+        binding.rcvSkuDetails.visibility = View.GONE
         billingClient?.queryProductDetailsAsync(params.build()) { result, listProductDetails ->
             if (isAttached) {
                 requireActivity().runOnUiThread {
                     if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                        lnLoading?.visibility = View.GONE
-                        rcvSkuDetails?.visibility = View.VISIBLE
+                        binding.incLoading.lnLoading.visibility = View.GONE
+                        binding.rcvSkuDetails.visibility = View.VISIBLE
                         Collections.sort(
                             listProductDetails,
                             Comparator { productDetails: ProductDetails, productDetails1: ProductDetails ->

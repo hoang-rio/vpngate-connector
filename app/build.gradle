@@ -40,16 +40,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 107
-            versionName "2.0.7"
+            versionCode 108
+            versionName "2.0.8"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 100
-            versionName "2.0.0"
+            versionCode 101
+            versionName "2.0.1"
         }
     }
 
@@ -99,13 +99,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
     implementation 'com.google.guava:guava:33.0.0-android'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
-    implementation 'androidx.annotation:annotation:1.8.0'
     implementation 'com.pixplicity.sharp:sharp:1.1.3@aar'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
@@ -117,7 +114,7 @@ dependencies {
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     ksp "com.github.bumptech.glide:ksp:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:23.1.0'
+    implementation 'com.google.android.gms:play-services-ads:23.2.0'
     // Remove applovin because it can login to check why
 //    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation

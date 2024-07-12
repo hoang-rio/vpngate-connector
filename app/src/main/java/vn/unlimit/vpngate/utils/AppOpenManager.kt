@@ -20,8 +20,8 @@ import java.util.Date
 
 
 class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbacks {
-    private val LOG_TAG = "AppOpenManager"
-    private var AD_UNIT_ID: String? = null
+
+    private var adUnitId: String? = null
     private var appOpenAd: AppOpenAd? = null
 
     private var loadCallback: AppOpenAdLoadCallback? = null
@@ -49,13 +49,14 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     companion object {
         var isShowingAd = false
         var splashActivity: SplashActivity? = null
+        private const val LOG_TAG = "AppOpenManager"
     }
 
 
     /** Constructor  */
     init {
         this.myApplication = myApplication
-        AD_UNIT_ID = this.myApplication?.resources!!.getString(R.string.admob_open_app)
+        adUnitId = this.myApplication?.resources!!.getString(R.string.admob_open_app)
         this.myApplication?.registerActivityLifecycleCallbacks(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifeCycleEventObserver)
     }
@@ -90,7 +91,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
         }
         val request = getAdRequest()
         AppOpenAd.load(
-            myApplication!!, AD_UNIT_ID!!, request, loadCallback!!
+            myApplication!!, adUnitId!!, request, loadCallback!!
         )
 
     }
@@ -101,15 +102,15 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     }
 
     /** Utility method to check if ad was loaded more than n hours ago.  */
-    private fun wasLoadTimeLessThanNHoursAgo(numHours: Long): Boolean {
+    private fun wasLoadTimeLessThanNHoursAgo(): Boolean {
         val dateDifference = Date().time - loadTime
         val numMilliSecondsPerHour: Long = 3600000
-        return dateDifference < numMilliSecondsPerHour * numHours
+        return dateDifference < numMilliSecondsPerHour * 4
     }
 
     /** Utility method that checks if ad exists and can be shown.  */
     private fun isAdAvailable(): Boolean {
-        return appOpenAd != null && wasLoadTimeLessThanNHoursAgo(4)
+        return appOpenAd != null && wasLoadTimeLessThanNHoursAgo()
     }
 
     /** ActivityLifecycleCallback methods  */

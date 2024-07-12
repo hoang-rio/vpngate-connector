@@ -309,6 +309,7 @@
     <string name="session_id">Session ID:</string>
     <string name="view_detail">View detail</string>
     <string name="disconnect_session">Disconnect</string>
+    <string name="open_detail_server">Open detail server</string>
     <string name="created">Created:</string>
     <string name="updated">Updated:</string>
     <string name="you_have_not_any_connected_session">You have not any connected session.</string>

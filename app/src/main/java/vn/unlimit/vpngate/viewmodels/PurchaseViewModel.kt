@@ -28,7 +28,7 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
         errorCode = null
         viewModelScope.launch {
             try {
-                val isPro = !App.getInstance().dataUtil.hasAds()
+                val isPro = !App.instance!!.dataUtil!!.hasAds()
                 val res = purchaseApiService.createPurchase(
                     PurchaseCreateRequest(
                         packageId = purchase.products[0],
@@ -42,7 +42,7 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
                 if (!res.result) {
                     errorCode = res.errorCode
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when create purchase", e)
                 errorCode = 1
             } finally {
@@ -68,7 +68,7 @@ class PurchaseViewModel(application: Application) : BaseViewModel(application) {
                 purchases.addAll(res.listPurchase)
                 purchaseList.postValue(purchases)
                 isOutOfData = res.listPurchase.size < take
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get purchase list", e)
             } finally {
                 isLoading.postValue(false)
