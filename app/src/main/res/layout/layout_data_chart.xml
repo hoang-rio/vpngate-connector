@@ -43,7 +43,7 @@
         android:layout_height="1dp" />
 
     <include
-        android:id="@+id/ln_loading_chart"
+        android:id="@+id/inc_loading_chart"
         layout="@layout/layout_loading_paid" />
 
     <LinearLayout

@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
+import vn.unlimit.vpngate.databinding.FragmentProfileBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
@@ -22,13 +21,7 @@ import java.util.Calendar
 
 class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDateSetListener,
     View.OnFocusChangeListener {
-    private var btnBack: View? = null
-    private var btnSave: View? = null
-    private var txtUserName: EditText? = null
-    private var txtEmail: EditText? = null
-    private var txtFullName: EditText? = null
-    private var txtBirthday: EditText? = null
-    private var txtTimeZone: AutoCompleteTextView? = null
+    private lateinit var binding: FragmentProfileBinding
     private var timeZonesDisplay: Array<out String>? = null
     private var timeZonesValue: Array<out String>? = null
     private var datePickerDialog: DatePickerDialog? = null
@@ -38,21 +31,13 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
-        btnBack = rootView.findViewById(R.id.btn_back)
-        btnBack?.setOnClickListener(this)
-        btnSave = rootView.findViewById(R.id.btn_save)
-        btnSave?.setOnClickListener(this)
-        txtUserName = rootView.findViewById(R.id.txt_username)
-        txtEmail = rootView.findViewById(R.id.txt_email)
-        txtFullName = rootView.findViewById(R.id.txt_full_name)
-        txtBirthday = rootView.findViewById(R.id.txt_birthday)
-        txtBirthday?.onFocusChangeListener = this
-        txtTimeZone = rootView.findViewById(R.id.txt_timezone)
-        txtTimeZone?.onFocusChangeListener = this
-        txtBirthday?.setOnClickListener(this)
+    ): View {
+        binding = FragmentProfileBinding.inflate(layoutInflater)
+        binding.btnBack.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
+        binding.txtBirthday.onFocusChangeListener = this
+        binding.txtTimezone.onFocusChangeListener = this
+        binding.txtBirthday.setOnClickListener(this)
         timeZonesDisplay = resources.getStringArray(R.array.list_time_zone_display)
         timeZonesValue = resources.getStringArray(R.array.list_time_zone_value)
         // Create the adapter and set it to the AutoCompleteTextView
@@ -61,9 +46,9 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
             android.R.layout.simple_list_item_1,
             timeZonesDisplay!!
         ).also { adapter ->
-            txtTimeZone!!.setAdapter(adapter)
+            binding.txtTimezone.setAdapter(adapter)
         }
-        return rootView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,16 +69,16 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                 loadingDialog.dismiss()
             }
         }
-        txtUserName!!.setText(userViewModel?.userInfo?.value?.username)
-        txtEmail!!.setText(userViewModel?.userInfo?.value?.email)
-        txtFullName!!.setText(userViewModel?.userInfo?.value?.fullname)
+        binding.txtUsername.setText(userViewModel?.userInfo?.value?.username)
+        binding.txtEmail.setText(userViewModel?.userInfo?.value?.email)
+        binding.txtFullName.setText(userViewModel?.userInfo?.value?.fullname)
         if (userViewModel?.userInfo?.value?.birthday != null) {
             val birthday = userViewModel?.userInfo?.value?.birthday
             val dateArr = birthday!!.split("/")
             calendar.set(Calendar.YEAR, dateArr[2].toInt())
             calendar.set(Calendar.MONTH, dateArr[1].toInt() - 1)
             calendar.set(Calendar.DATE, dateArr[0].toInt())
-            txtBirthday!!.setText(birthday)
+            binding.txtBirthday.setText(birthday)
         }
         datePickerDialog = DatePickerDialog(
             requireContext(),
@@ -102,43 +87,43 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DATE)
         )
-        txtTimeZone!!.setText(userViewModel?.userInfo?.value?.timeZone)
+        binding.txtTimezone.setText(userViewModel?.userInfo?.value?.timeZone)
     }
 
     override fun onClick(v: View?) {
         when (v) {
-            btnBack -> findNavController().popBackStack()
-            txtBirthday -> datePickerDialog!!.show()
-            btnSave -> {
+            binding.btnBack -> findNavController().popBackStack()
+            binding.txtBirthday -> datePickerDialog!!.show()
+            binding.btnSave -> {
                 var errorMsg: CharSequence? = null
                 normalizeTimeZone()
                 when (true) {
-                    txtFullName!!.text.isNullOrEmpty() -> {
-                        txtFullName!!.requestFocus()
+                    binding.txtFullName.text.isNullOrEmpty() -> {
+                        binding.txtFullName.requestFocus()
                         errorMsg = getString(
                             R.string.validate_field_cannot_empty,
                             getText(R.string.prompt_full_name)
                         )
                     }
 
-                    txtBirthday!!.text.isNullOrEmpty() -> {
-                        txtBirthday!!.requestFocus()
+                    binding.txtBirthday.text.isNullOrEmpty() -> {
+                        binding.txtBirthday.requestFocus()
                         errorMsg = getString(
                             R.string.validate_field_cannot_empty,
                             getText(R.string.prompt_birthday)
                         )
                     }
 
-                    txtTimeZone!!.text.isNullOrEmpty() -> {
-                        txtTimeZone!!.requestFocus()
+                    binding.txtTimezone.text.isNullOrEmpty() -> {
+                        binding.txtTimezone.requestFocus()
                         errorMsg = getString(
                             R.string.validate_field_cannot_empty,
                             getText(R.string.prompt_timezone)
                         )
                     }
 
-                    (timeZonesValue!!.indexOf(txtTimeZone!!.text.toString()) == -1) -> {
-                        txtTimeZone!!.requestFocus()
+                    (timeZonesValue!!.indexOf(binding.txtTimezone.text.toString()) == -1) -> {
+                        binding.txtTimezone.requestFocus()
                         getText(R.string.invalid_timezone)
                     }
 
@@ -148,9 +133,9 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
                     return Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
                 }
                 userViewModel?.updateProfile(
-                    txtFullName!!.text.toString(),
-                    txtBirthday!!.text.toString(),
-                    txtTimeZone!!.text.toString(),
+                    binding.txtFullName.text.toString(),
+                    binding.txtBirthday.text.toString(),
+                    binding.txtTimezone.text.toString(),
                     object : RequestListener {
                         override fun onSuccess(result: Any?) {
                             Toast.makeText(
@@ -187,13 +172,13 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        txtBirthday!!.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
+        binding.txtBirthday.setText("${checkDigit(dayOfMonth)}/${checkDigit(month + 1)}/$year")
     }
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {
         when (v) {
-            txtBirthday -> if (hasFocus) datePickerDialog!!.show()
-            txtTimeZone -> {
+            binding.txtBirthday -> if (hasFocus) datePickerDialog!!.show()
+            binding.txtTimezone -> {
                 if (!hasFocus) {
                     normalizeTimeZone()
                 }
@@ -202,12 +187,12 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
     }
 
     private fun normalizeTimeZone() {
-        if (txtTimeZone?.text == null || txtTimeZone!!.text.isEmpty()) {
+        if (binding.txtTimezone.text == null || binding.txtTimezone.text.isEmpty()) {
             return
         }
-        val tmpArray = txtTimeZone!!.text.split(": ")
+        val tmpArray = binding.txtTimezone.text.split(": ")
         if (tmpArray.size == 2) {
-            txtTimeZone!!.setText(tmpArray[1])
+            binding.txtTimezone.setText(tmpArray[1])
         }
     }
 }

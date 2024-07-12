@@ -14,9 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,6 +41,7 @@ import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.FragmentStatusBinding
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.utils.DataUtil
 import java.io.ByteArrayInputStream
@@ -59,15 +57,6 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         private const val TAG = "StatusFragment"
     }
 
-    private var btnOnOff: ImageView? = null
-    private var txtStatus: TextView? = null
-    private var txtUploadSession: TextView? = null
-    private var txtDownloadSession: TextView? = null
-    private var txtUploadTotal: TextView? = null
-    private var txtDownloadTotal: TextView? = null
-    private var txtUploadSpeed: TextView? = null
-    private var txtDownloadSpeed: TextView? = null
-    private var btnClearStatistics: Button? = null
     private var mVPNService: IOpenVPNServiceInternal? = null
     private val mConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(
@@ -90,30 +79,22 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private var vpnProfile: VpnProfile? = null
     private var mContext: Context? = null
     private var isFullScreenAdsLoaded = false
+    private lateinit var binding: FragmentStatusBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstancesState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_status, container, false)
-        btnOnOff = rootView.findViewById(R.id.btn_on_off)
-        btnOnOff!!.setOnClickListener(this)
-        txtStatus = rootView.findViewById(R.id.txt_status)
-        txtUploadSession = rootView.findViewById(R.id.txt_upload_session)
-        txtDownloadSession = rootView.findViewById(R.id.txt_download_session)
-        txtUploadTotal = rootView.findViewById(R.id.txt_total_upload)
-        txtDownloadTotal = rootView.findViewById(R.id.txt_total_download)
-        txtUploadSpeed = rootView.findViewById(R.id.txt_upload_speed)
-        txtDownloadSpeed = rootView.findViewById(R.id.txt_download_speed)
-        btnClearStatistics = rootView.findViewById(R.id.btn_clear_statistics)
-        btnClearStatistics!!.setOnClickListener(this)
+    ): View {
+        binding = FragmentStatusBinding.inflate(layoutInflater)
+        binding.btnOnOff.setOnClickListener(this)
+        binding.btnClearStatistics.setOnClickListener(this)
         mVpnGateConnection = dataUtil!!.lastVPNConnection
         loadAdMob()
         bindData()
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
-        return rootView
+        return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,27 +114,27 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private fun bindData() {
         try {
-            txtUploadTotal!!.text = OpenVPNService.humanReadableByteCount(
+            binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(
                 PropertiesService.getUploaded(mContext),
                 false,
                 resources
             )
-            txtDownloadTotal!!.text = OpenVPNService.humanReadableByteCount(
+            binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(
                 PropertiesService.getDownloaded(mContext),
                 false,
                 resources
             )
             if (checkStatus()) {
-                btnOnOff!!.isActivated = true
-                txtStatus!!.text =
+                binding.btnOnOff.isActivated = true
+                binding.txtStatus.text =
                     String.format(resources.getString(R.string.tap_to_disconnect), connectionName)
             } else if (mVpnGateConnection != null) {
-                txtStatus!!.text =
+                binding.txtStatus.text =
                     String.format(resources.getString(R.string.tap_to_connect_last), connectionName)
             } else {
-                btnOnOff!!.isActivated = false
-                btnOnOff!!.isEnabled = false
-                txtStatus!!.setText(R.string.no_last_vpn_server)
+                binding.btnOnOff.isActivated = false
+                binding.btnOnOff.isEnabled = false
+                binding.txtStatus.setText(R.string.no_last_vpn_server)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -201,13 +182,13 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     override fun onClick(view: View) {
-        if (view == btnClearStatistics) {
+        if (view == binding.btnClearStatistics) {
             TotalTraffic.clearTotal(mContext)
             Toast.makeText(context, "Statistics clear completed", Toast.LENGTH_SHORT).show()
-            txtUploadTotal!!.text = OpenVPNService.humanReadableByteCount(0, false, resources)
-            txtDownloadTotal!!.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+            binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+            binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
         }
-        if (view == btnOnOff) {
+        if (view == binding.btnOnOff) {
             if (mVpnGateConnection == null) {
                 return
             }
@@ -221,8 +202,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     FirebaseAnalytics.getInstance(mContext!!).logEvent("Disconnect_VPN", params)
                     stopVpn()
                     isConnecting = false
-                    btnOnOff!!.isActivated = false
-                    txtStatus!!.setText(R.string.disconnecting)
+                    binding.btnOnOff.isActivated = false
+                    binding.txtStatus.setText(R.string.disconnecting)
                 } else {
                     showAds()
                     val params = Bundle()
@@ -232,8 +213,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     params.putString("country", mVpnGateConnection!!.countryLong)
                     FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_VPN", params)
                     prepareVpn()
-                    txtStatus!!.text = getString(R.string.connecting)
-                    btnOnOff!!.isActivated = true
+                    binding.txtStatus.text = getString(R.string.connecting)
+                    binding.btnOnOff.isActivated = true
                     isConnecting = true
                 }
             } else {
@@ -244,8 +225,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                 params.putString("country", mVpnGateConnection!!.countryLong)
                 FirebaseAnalytics.getInstance(mContext!!).logEvent("Cancel_VPN", params)
                 stopVpn()
-                btnOnOff!!.isActivated = false
-                txtStatus!!.text = getString(R.string.canceled)
+                binding.btnOnOff.isActivated = false
+                binding.txtStatus.text = getString(R.string.canceled)
                 isConnecting = false
             }
         }
@@ -373,23 +354,23 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
         requireActivity().runOnUiThread {
             if (checkStatus() && !isDetached) {
-                txtDownloadSession!!.text =
+                binding.txtDownloadSession.text =
                     OpenVPNService.humanReadableByteCount(`in`, false, resources)
-                txtDownloadSpeed!!.text = OpenVPNService.humanReadableByteCount(
+                binding.txtDownloadSpeed.text = OpenVPNService.humanReadableByteCount(
                     diffIn / OpenVPNManagement.mBytecountInterval,
                     true,
                     resources
                 )
-                txtUploadSession!!.text =
+                binding.txtUploadSession.text =
                     OpenVPNService.humanReadableByteCount(out, false, resources)
-                txtUploadSpeed!!.text = OpenVPNService.humanReadableByteCount(
+                binding.txtUploadSpeed.text = OpenVPNService.humanReadableByteCount(
                     diffOut / OpenVPNManagement.mBytecountInterval,
                     true,
                     resources
                 )
-                txtDownloadTotal!!.text =
+                binding.txtTotalDownload.text =
                     OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, resources)
-                txtUploadTotal!!.text =
+                binding.txtTotalUpload.text =
                     OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, resources)
             }
         }
@@ -425,11 +406,11 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     ) {
         requireActivity().runOnUiThread {
             try {
-                txtStatus!!.text = VpnStatus.getLastCleanLogMessage(mContext)
+                binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(mContext)
                 dataUtil!!.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
                 when (status) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
-                        btnOnOff!!.isActivated = true
+                        binding.btnOnOff.isActivated = true
                         isConnecting = false
                         isAuthFailed = false
                         val isStartUpDetail =
@@ -444,20 +425,20 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     )
 
                     ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
-                        btnOnOff!!.isActivated = false
-                        txtStatus!!.text =
+                        binding.btnOnOff.isActivated = false
+                        binding.txtStatus.text =
                             String.format(getString(R.string.tap_to_connect_last), connectionName)
                     }
 
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
                         isAuthFailed = true
-                        btnOnOff!!.isActivated = false
+                        binding.btnOnOff.isActivated = false
                         val params = Bundle()
                         params.putString("ip", mVpnGateConnection!!.ip)
                         params.putString("hostname", mVpnGateConnection!!.calculateHostName)
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_Error", params)
-                        txtStatus!!.text = resources.getString(R.string.vpn_auth_failure)
+                        binding.txtStatus.text = resources.getString(R.string.vpn_auth_failure)
                         isConnecting = false
                     }
 

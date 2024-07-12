@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.net.InetAddresses.isNumericAddress
 import android.os.Build
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.text.InputFilter
 import android.text.Spanned
 import android.util.Patterns
@@ -16,14 +15,10 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.CompoundButton
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatSpinner
-import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.core.OpenVPNService
@@ -33,6 +28,7 @@ import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.databinding.FragmentSettingBinding
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.SpinnerInit
@@ -44,55 +40,29 @@ import java.text.DateFormat
  */
 class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener,
     CompoundButton.OnCheckedChangeListener, OnFocusChangeListener {
-    private lateinit var btnClearCache: Button
-    private lateinit var lnClearCache: View
     private lateinit var dataUtil: DataUtil
-    private lateinit var swBlockAds: SwitchCompat
-    private lateinit var lnBlockAds: View
-    private lateinit var lnBlockAdsWrap: View
-    private lateinit var swUdp: SwitchCompat
-    private lateinit var lnUdp: View
     private lateinit var mContext: Context
-    private lateinit var lnDns: View
-    private lateinit var lnDnsWrap: View
-    private lateinit var swDns: SwitchCompat
-    private lateinit var lnDnsIP: View
-    private lateinit var txtDns1: EditText
-    private lateinit var txtDns2: EditText
-    private lateinit var lnDomain: View
-    private lateinit var swDomain: SwitchCompat
-    private lateinit var lnProtocol: View
-    private lateinit var lnNotifySpeed: View
-    private lateinit var swNotifySpeed: SwitchCompat
     private lateinit var prefs: SharedPreferences
+
+    private lateinit var binding: FragmentSettingBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_setting, container, false)
+    ): View {
+        binding = FragmentSettingBinding.inflate(layoutInflater)
         dataUtil = instance!!.dataUtil!!
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val spinnerCacheTime = rootView.findViewById<AppCompatSpinner>(R.id.spin_cache_time)
-        spinnerCacheTime.onItemSelectedListener = this
-        btnClearCache = rootView.findViewById(R.id.btn_clear_cache)
-        btnClearCache.setOnClickListener(this)
-        lnBlockAds = rootView.findViewById(R.id.ln_block_ads)
-        lnBlockAdsWrap = rootView.findViewById(R.id.ln_block_ads_wrap)
-        lnDnsWrap = rootView.findViewById(R.id.ln_dns_wrap)
-        lnBlockAds.setOnClickListener(this)
-        swBlockAds = rootView.findViewById(R.id.sw_block_ads)
-        swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false))
-        swBlockAds.setOnCheckedChangeListener(this)
-        lnUdp = rootView.findViewById(R.id.ln_udp)
-        lnUdp.setOnClickListener(this)
-        swUdp = rootView.findViewById(R.id.sw_udp)
-        swUdp.setChecked(dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true))
-        swUdp.setOnCheckedChangeListener(this)
-        lnClearCache = rootView.findViewById(R.id.ln_clear_cache)
-        val txtCacheExpires = rootView.findViewById<TextView>(R.id.txt_cache_expire)
-        val spinnerInit = SpinnerInit(context, spinnerCacheTime)
+        binding.spinCacheTime.onItemSelectedListener = this
+        binding.btnClearCache.setOnClickListener(this)
+        binding.lnBlockAds.setOnClickListener(this)
+        binding.swBlockAds.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false))
+        binding.swBlockAds.setOnCheckedChangeListener(this)
+        binding.lnUdp.setOnClickListener(this)
+        binding.swUdp.setChecked(dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true))
+        binding.swUdp.setOnCheckedChangeListener(this)
+        val spinnerInit = SpinnerInit(context, binding.spinCacheTime)
         val listCacheTime = resources.getStringArray(R.array.setting_cache_time)
         spinnerInit.setStringArray(
             listCacheTime,
@@ -107,47 +77,38 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
             }
         }
         if (dataUtil.connectionCacheExpires == null) {
-            lnClearCache.visibility = View.GONE
+            binding.lnClearCache.visibility = View.GONE
         } else {
-            lnClearCache.visibility = View.VISIBLE
-            txtCacheExpires.text =
+            binding.lnClearCache.visibility = View.VISIBLE
+            binding.txtCacheExpire.text =
                 dataUtil.connectionCacheExpires?.let {
                     DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(
                         it
                     )
                 }
         }
-        lnDns = rootView.findViewById(R.id.ln_dns)
-        lnDns.setOnClickListener(this)
-        lnDnsIP = rootView.findViewById(R.id.ln_dns_ip)
-        swDns = rootView.findViewById(R.id.sw_dns)
+        binding.lnDns.setOnClickListener(this)
         if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
-            swDns.setChecked(true)
-            lnDnsIP.visibility = View.VISIBLE
+            binding.swDns.setChecked(true)
+            binding.lnDnsIp.visibility = View.VISIBLE
         } else {
-            swDns.setChecked(false)
-            lnDnsIP.visibility = View.GONE
+            binding.swDns.setChecked(false)
+            binding.lnDnsIp.visibility = View.GONE
         }
-        swDns.setOnCheckedChangeListener(this)
+        binding.swDns.setOnCheckedChangeListener(this)
         val inputFilters = this.ipInputFilters
-        txtDns1 = rootView.findViewById(R.id.txt_dns_1)
-        txtDns1.setFilters(inputFilters)
-        txtDns1.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8"))
-        txtDns1.onFocusChangeListener = this
-        txtDns2 = rootView.findViewById(R.id.txt_dns_2)
-        txtDns2.setFilters(inputFilters)
-        txtDns2.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, ""))
-        txtDns2.onFocusChangeListener = this
-        lnDomain = rootView.findViewById(R.id.ln_domain)
-        lnDomain.setOnClickListener(this)
-        swDomain = rootView.findViewById(R.id.sw_domain)
-        swDomain.setChecked(dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false))
-        swDomain.setOnCheckedChangeListener(this)
-        lnProtocol = rootView.findViewById(R.id.ln_default_protocol)
-        val spinnerProto = rootView.findViewById<AppCompatSpinner>(R.id.spin_proto)
-        spinnerProto.onItemSelectedListener = this
+        binding.txtDns1.setFilters(inputFilters)
+        binding.txtDns1.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8"))
+        binding.txtDns1.onFocusChangeListener = this
+        binding.txtDns2.setFilters(inputFilters)
+        binding.txtDns2.setText(dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, ""))
+        binding.txtDns2.onFocusChangeListener = this
+        binding.lnDomain.setOnClickListener(this)
+        binding.swDomain.setChecked(dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false))
+        binding.swDomain.setOnCheckedChangeListener(this)
+        binding.spinProto.onItemSelectedListener = this
         val listProtocol = resources.getStringArray(R.array.list_protocol)
-        val spinnerInitProto = SpinnerInit(context, spinnerProto)
+        val spinnerInitProto = SpinnerInit(context, binding.spinProto)
         spinnerInitProto.setStringArray(
             listProtocol,
             listProtocol[dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0)]
@@ -162,17 +123,13 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
             }
 
         }
-        lnNotifySpeed = rootView.findViewById(R.id.ln_notify_speed)
-        lnNotifySpeed.setOnClickListener(this)
-        swNotifySpeed = rootView.findViewById(R.id.sw_notify_speed)
-        swNotifySpeed.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true))
-        swNotifySpeed.setOnCheckedChangeListener(this)
-        val lnStartUpScreen = rootView.findViewById<View>(R.id.ln_startup_screen)
+        binding.lnNotifySpeed.setOnClickListener(this)
+        binding.swNotifySpeed.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true))
+        binding.swNotifySpeed.setOnCheckedChangeListener(this)
         if (dataUtil.lastVPNConnection != null) {
-            lnStartUpScreen.visibility = View.VISIBLE
-            val spinnerStartupScreen = rootView.findViewById<AppCompatSpinner>(R.id.spin_screen)
+            binding.lnStartupScreen.visibility = View.VISIBLE
             val listScreen = resources.getStringArray(R.array.startup_screen)
-            val spinnerInitScreen = SpinnerInit(context, spinnerStartupScreen)
+            val spinnerInitScreen = SpinnerInit(context, binding.spinScreen)
             spinnerInitScreen.setStringArray(
                 listScreen,
                 listScreen[dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0)]
@@ -189,10 +146,10 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
 
             }
         } else {
-            lnStartUpScreen.visibility = View.GONE
+            binding.lnStartupScreen.visibility = View.GONE
         }
 
-        return rootView
+        return binding.root
     }
 
     private val ipInputFilters: Array<InputFilter?>
@@ -228,11 +185,11 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
         if (!isFocus) {
             val dnsIP: String
             val settingKey: String
-            if (view == txtDns1) {
-                dnsIP = txtDns1.text.toString()
+            if (view == binding.txtDns1) {
+                dnsIP = binding.txtDns1.text.toString()
                 settingKey = DataUtil.CUSTOM_DNS_IP_1
             } else {
-                dnsIP = txtDns2.text.toString()
+                dnsIP = binding.txtDns2.text.toString()
                 settingKey = DataUtil.CUSTOM_DNS_IP_2
             }
             val isValidIp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -260,11 +217,11 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
     override fun onResume() {
         super.onResume()
         if (App.isImportToOpenVPN) {
-            lnBlockAdsWrap.visibility = View.GONE
-            lnDnsWrap.visibility = View.GONE
+            binding.lnBlockAdsWrap.visibility = View.GONE
+            binding.lnDnsWrap.visibility = View.GONE
         } else {
-            lnBlockAdsWrap.visibility = View.VISIBLE
-            lnDnsWrap.visibility = View.VISIBLE
+            binding.lnBlockAdsWrap.visibility = View.VISIBLE
+            binding.lnDnsWrap.visibility = View.VISIBLE
         }
     }
 
@@ -278,7 +235,7 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            lnClearCache.visibility = View.GONE
+            binding.lnClearCache.visibility = View.GONE
             sendClearCache()
         } else if (showToast) {
             Toast.makeText(
@@ -291,19 +248,19 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
 
     override fun onClick(view: View) {
         when(view) {
-            btnClearCache -> clearListServerCache(true)
-            lnBlockAds -> swBlockAds.isChecked = !swBlockAds.isChecked
-            lnUdp ->  swUdp.isChecked = !swUdp.isChecked
-            lnDns -> swDns.isChecked = !swDns.isChecked
-            lnDomain -> swDomain.isChecked = !swDomain.isChecked
-            lnNotifySpeed -> swNotifySpeed.isChecked = !swNotifySpeed.isChecked
+            binding.btnClearCache -> clearListServerCache(true)
+            binding.lnBlockAds -> binding.swBlockAds.isChecked = !binding.swBlockAds.isChecked
+            binding.lnUdp ->  binding.swUdp.isChecked = !binding.swUdp.isChecked
+            binding.lnDns -> binding.swDns.isChecked = !binding.swDns.isChecked
+            binding.lnDomain -> binding.swDomain.isChecked = !binding.swDomain.isChecked
+            binding.lnNotifySpeed -> binding.swNotifySpeed.isChecked = !binding.swNotifySpeed.isChecked
         }
     }
 
     private fun hideKeyBroad() {
         val imm = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(
-            txtDns1.windowToken,
+            binding.txtDns1.windowToken,
             InputMethodManager.HIDE_IMPLICIT_ONLY
         )
     }
@@ -311,31 +268,31 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
     override fun onCheckedChanged(switchCompat: CompoundButton, isChecked: Boolean) {
         val params = Bundle()
         params.putString("enabled", isChecked.toString() + "")
-        if (switchCompat == swUdp) {
+        if (switchCompat == binding.swUdp) {
             dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked)
-            lnProtocol.visibility = if (isChecked) View.VISIBLE else View.GONE
+            binding.lnDefaultProtocol.visibility = if (isChecked) View.VISIBLE else View.GONE
             clearListServerCache(false)
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Include_UDP_Setting", params)
             return
         }
         val editor = prefs.edit()
-        if (switchCompat == swDns) {
+        if (switchCompat == binding.swDns) {
             dataUtil.setBooleanSetting(DataUtil.USE_CUSTOM_DNS, isChecked)
             if (isChecked) {
-                if (swBlockAds.isChecked) {
+                if (binding.swBlockAds.isChecked) {
                     // Turn off Block Ads if custom DNS is enabled
-                    swBlockAds.isChecked = false
+                    binding.swBlockAds.isChecked = false
                     dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)
                 }
-                lnDnsIP.visibility = View.VISIBLE
-                txtDns1.requestFocus()
+                binding.lnDnsIp.visibility = View.VISIBLE
+                binding.txtDns1.requestFocus()
                 val imm =
                     mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(txtDns1, InputMethodManager.SHOW_IMPLICIT)
+                imm.showSoftInput(binding.txtDns1, InputMethodManager.SHOW_IMPLICIT)
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), true)
             } else {
                 hideKeyBroad()
-                lnDnsIP.visibility = View.GONE
+                binding.lnDnsIp.visibility = View.GONE
                 editor.remove(OscPrefKey.DNS_CUSTOM_ADDRESS.toString())
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), false)
             }
@@ -343,13 +300,13 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Custom_DNS_Setting", params)
             return
         }
-        if (switchCompat == swDomain) {
+        if (switchCompat == binding.swDomain) {
             dataUtil.setBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, isChecked)
             FirebaseAnalytics.getInstance(mContext)
                 .logEvent("Change_Use_Domain_To_Connect_Setting", params)
             return
         }
-        if (switchCompat == swNotifySpeed) {
+        if (switchCompat == binding.swNotifySpeed) {
             Toast.makeText(
                 context,
                 getText(R.string.setting_apply_on_next_connection_time),
@@ -367,14 +324,14 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
             return
         }
         //Only save setting in pro version
-        if (switchCompat == swBlockAds) {
+        if (switchCompat == binding.swBlockAds) {
             Toast.makeText(
                 context,
                 getText(R.string.setting_apply_on_next_connection_time),
                 Toast.LENGTH_SHORT
             ).show()
             dataUtil.setBooleanSetting(DataUtil.SETTING_BLOCK_ADS, isChecked)
-            if (isChecked && swDns.isChecked) swDns.isChecked = false
+            if (isChecked && binding.swDns.isChecked) binding.swDns.isChecked = false
             if (isChecked) {
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), true)
                 editor.putString(

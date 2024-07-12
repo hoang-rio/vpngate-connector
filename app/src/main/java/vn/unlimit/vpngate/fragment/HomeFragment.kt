@@ -9,12 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -31,6 +28,7 @@ import vn.unlimit.vpngate.adapter.OnItemClickListener
 import vn.unlimit.vpngate.adapter.OnItemLongClickListener
 import vn.unlimit.vpngate.adapter.OnScrollListener
 import vn.unlimit.vpngate.adapter.VPNGateListAdapter
+import vn.unlimit.vpngate.databinding.FragmentHomeBinding
 import vn.unlimit.vpngate.dialog.CopyBottomSheetDialog
 import vn.unlimit.vpngate.dialog.CopyBottomSheetDialog.Companion.newInstance
 import vn.unlimit.vpngate.models.VPNGateConnection
@@ -47,22 +45,19 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     companion object {
         private const val TAG = "HOME_FREE"
     }
-    private var lnSwipeRefresh: SwipeRefreshLayout? = null
     private var mContext: Context? = null
-    private var recyclerViewVPN: RecyclerView? = null
     private var vpnGateListAdapter: VPNGateListAdapter? = null
     private var connectionListViewModel: ConnectionListViewModel? = null
     private var dataUtil: DataUtil? = null
-    private var btnToTop: View? = null
     private var isSearching = false
     private var mKeyword = ""
     private var handler: Handler? = null
     private var mActivity: MainActivity? = null
     private var interstitialAd: InterstitialAd? = null
-    private var txtEmpty: TextView? = null
 
     //Flag ads is showed need request new ad
     private var isShowedAd = true
+    private lateinit var binding: FragmentHomeBinding
 
     override fun onResume() {
         super.onResume()
@@ -151,15 +146,13 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mActivity = activity as MainActivity?
-        val rootView = inflater.inflate(R.layout.fragment_home, container, false)
-        lnSwipeRefresh = rootView.findViewById(R.id.ln_swipe_refresh)
-        lnSwipeRefresh!!.setColorSchemeResources(R.color.colorAccent)
-        lnSwipeRefresh!!.setOnRefreshListener(this)
-        recyclerViewVPN = rootView.findViewById(R.id.rcv_connection)
-        recyclerViewVPN!!.setAdapter(vpnGateListAdapter)
-        recyclerViewVPN!!.setLayoutManager(LinearLayoutManager(mContext))
+        binding = FragmentHomeBinding.inflate(layoutInflater)
+        binding.lnSwipeRefresh.setColorSchemeResources(R.color.colorAccent)
+        binding.lnSwipeRefresh.setOnRefreshListener(this)
+        binding.rcvConnection.setAdapter(vpnGateListAdapter)
+        binding.rcvConnection.setLayoutManager(LinearLayoutManager(mContext))
         vpnGateListAdapter!!.setOnItemClickListener(this)
         vpnGateListAdapter!!.setOnItemLongClickListener(this)
         vpnGateListAdapter!!.setOnScrollListener(this)
@@ -168,10 +161,8 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         } else {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
         }
-        btnToTop = rootView.findViewById(R.id.btn_to_top)
-        btnToTop!!.setOnClickListener(this)
-        txtEmpty = rootView.findViewById(R.id.txt_empty)
-        return rootView
+        binding.btnToTop.setOnClickListener(this)
+        return binding.root
     }
 
     fun advanceFilter(filter: VPNGateConnectionList.Filter?) {
@@ -182,10 +173,10 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             vpnGateListAdapter!!.initialize(vpnGateConnectionList)
         }
         if (vpnGateConnectionList.size() == 0) {
-            txtEmpty!!.setText(R.string.empty_filter_result)
-            txtEmpty!!.visibility = View.VISIBLE
+            binding.txtEmpty.setText(R.string.empty_filter_result)
+            binding.txtEmpty.visibility = View.VISIBLE
         } else {
-            txtEmpty!!.visibility = View.GONE
+            binding.txtEmpty.visibility = View.GONE
         }
         vpnGateListAdapter!!.initialize(vpnGateConnectionList)
     }
@@ -205,17 +196,17 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             isSearching = true
             val filterResult = mActivity!!.vpnGateConnectionList!!.filter(keyword)
             if (filterResult.size() == 0) {
-                txtEmpty!!.text = getString(R.string.empty_search_result, keyword)
-                txtEmpty!!.visibility = View.VISIBLE
-                recyclerViewVPN!!.visibility = View.GONE
+                binding.txtEmpty.text = getString(R.string.empty_search_result, keyword)
+                binding.txtEmpty.visibility = View.VISIBLE
+                binding.rcvConnection.visibility = View.GONE
             } else {
-                txtEmpty!!.visibility = View.GONE
-                recyclerViewVPN!!.visibility = View.VISIBLE
+                binding.txtEmpty.visibility = View.GONE
+                binding.rcvConnection.visibility = View.VISIBLE
             }
             vpnGateListAdapter!!.initialize(filterResult)
         } else {
-            recyclerViewVPN!!.visibility = View.VISIBLE
-            txtEmpty!!.visibility = View.GONE
+            binding.rcvConnection.visibility = View.VISIBLE
+            binding.txtEmpty.visibility = View.GONE
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList!!.advancedFilter())
         }
     }
@@ -240,8 +231,8 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     }
 
     private fun stopTask() {
-        lnSwipeRefresh!!.isEnabled = false
-        lnSwipeRefresh!!.isRefreshing = false
+        binding.lnSwipeRefresh.isEnabled = false
+        binding.lnSwipeRefresh.isRefreshing = false
     }
 
     /**
@@ -249,22 +240,22 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
      */
     fun closeSearch() {
         isSearching = false
-        txtEmpty!!.visibility = View.GONE
-        recyclerViewVPN!!.visibility = View.VISIBLE
+        binding.txtEmpty.visibility = View.GONE
+        binding.rcvConnection.visibility = View.VISIBLE
         if (mActivity!!.vpnGateConnectionList != null) {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList!!.advancedFilter())
         } else {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
         }
         handler!!.postDelayed({
-            lnSwipeRefresh!!.isEnabled = true
-            lnSwipeRefresh!!.isRefreshing = false
+            binding.lnSwipeRefresh.isEnabled = true
+            binding.lnSwipeRefresh.isRefreshing = false
         }, 300)
     }
 
     override fun onClick(view: View) {
-        if (view == btnToTop) {
-            recyclerViewVPN!!.smoothScrollToPosition(0)
+        if (view == binding.btnToTop) {
+            binding.rcvConnection.smoothScrollToPosition(0)
         }
     }
 
@@ -299,11 +290,11 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     }
 
     override fun onScrollUp() {
-        btnToTop!!.visibility = View.VISIBLE
+        binding.btnToTop.visibility = View.VISIBLE
     }
 
     override fun onScrollDown() {
-        btnToTop!!.visibility = View.GONE
+        binding.btnToTop.visibility = View.GONE
     }
 
     override fun onRefresh() {
@@ -315,16 +306,16 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         if ("" != mActivity!!.sortProperty) {
             mActivity!!.vpnGateConnectionList!!.sort(mActivity!!.sortProperty, mActivity!!.sortType)
         }
-        txtEmpty!!.visibility = View.GONE
-        recyclerViewVPN!!.visibility = View.VISIBLE
+        binding.txtEmpty.visibility = View.GONE
+        binding.rcvConnection.visibility = View.VISIBLE
         vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
         dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
-        lnSwipeRefresh!!.isRefreshing = false
+        binding.lnSwipeRefresh.isRefreshing = false
     }
 
     fun onError(error: String?) {
         try {
-            lnSwipeRefresh!!.isRefreshing = false
+            binding.lnSwipeRefresh.isRefreshing = false
             val mainActivity = activity as MainActivity?
             mainActivity?.onError(error)
         } catch (e: Exception) {

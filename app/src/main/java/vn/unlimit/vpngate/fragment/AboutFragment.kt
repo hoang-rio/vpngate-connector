@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.FragmentAboutBinding
 
 /**
  * Created by hoangnd on 2/6/2018.
@@ -19,25 +20,19 @@ class AboutFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_about, container, false)
-        val txtVersion = rootView.findViewById<TextView>(R.id.txt_version_name)
-        txtVersion.text = BuildConfig.VERSION_NAME
-        val txtAboutHtml = rootView.findViewById<TextView>(R.id.txt_about_html)
-        txtAboutHtml.text =
+    ): View {
+        val binding = FragmentAboutBinding.inflate(layoutInflater)
+        binding.txtVersionName.text = BuildConfig.VERSION_NAME
+        binding.txtAboutHtml.text =
             String.format(getString(R.string.about_html), getString(R.string.app_name))
-        val txtVPNGateLink = rootView.findViewById<TextView>(R.id.txt_vpn_gate_link)
-        txtVPNGateLink.text = getString(R.string.vpn_gate_link)
-        txtVPNGateLink.setOnClickListener(this)
-        val txtLicense = rootView.findViewById<TextView>(R.id.txt_license_html)
-        txtLicense.text =
+        binding.txtVpnGateLink.text = getString(R.string.vpn_gate_link)
+        binding.txtVpnGateLink.setOnClickListener(this)
+        binding.txtLicenseHtml.text =
             String.format(getString(R.string.license_html), getString(R.string.app_name))
-        val txtLicenseLink = rootView.findViewById<TextView>(R.id.txt_github_link)
-        txtLicenseLink.text = getString(R.string.license_link)
-        txtLicenseLink.setOnClickListener(this)
-        val txtLicenseLinkSStp = rootView.findViewById<TextView>(R.id.txt_github_link_sstp)
-        txtLicenseLinkSStp.setOnClickListener(this)
-        return rootView
+        binding.txtGithubLink.text = getString(R.string.license_link)
+        binding.txtGithubLink.setOnClickListener(this)
+        binding.txtGithubLinkSstp.setOnClickListener(this)
+        return binding.root
     }
 
     override fun onClick(view: View) {
