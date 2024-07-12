@@ -3,3 +3,6 @@
 	path = sstpClient
 	url = https://github.com/hoang-rio/Open-SSTP-Client.git
 	branch = vpngate-connector
+[submodule "vpnLib"]
+	path = vpnLib
+	url = https://github.com/hoang-rio/vpnLib.git
