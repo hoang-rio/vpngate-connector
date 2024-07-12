@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
 
-        Assert.assertEquals("vn.unlimit.vpngateclient", appContext.packageName)
+        Assert.assertEquals("vn.unlimit.vpngate", appContext.packageName)
     }
 }
