@@ -124,11 +124,11 @@ class PaidServerActivity : AppCompatActivity() {
     }
 
     fun handleBackPress() {
-        val currentFragmentId =
-            findNavController(R.id.nav_host_fragment).currentDestination?.id
-        if (currentFragmentId == R.id.navigation_home) {
+        val navController =
+            findNavController(R.id.nav_host_fragment)
+        if (navController.currentDestination?.id == R.id.navigation_home) {
             if (doubleBackToExitPressedOnce) {
-                onBackPressedDispatcher.onBackPressed()
+                finish()
                 return
             }
             doubleBackToExitPressedOnce = true
@@ -139,7 +139,7 @@ class PaidServerActivity : AppCompatActivity() {
             ).show()
             Handler(mainLooper).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         } else {
-            onBackPressedDispatcher.onBackPressed()
+            navController.popBackStack()
         }
     }
 }
