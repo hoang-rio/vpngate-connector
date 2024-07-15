@@ -126,14 +126,20 @@ class PaidServerFCMService : FirebaseMessagingService() {
             val sessionId = paidServerUtil.getStringSetting(PaidServerUtil.SESSION_ID_KEY)
             if (sessionId != null) {
                 val json = paidServerUtil.getStringSetting(DEVICE_INFO_KEY)
-                val notificationSetting: DeviceInfo.NotificationSetting
-                if (Strings.isNullOrEmpty(json)) {
-                    notificationSetting = DeviceInfo.NotificationSetting()
-                    notificationSetting.data = true
-                    notificationSetting.ticket = true
-                } else {
-                    notificationSetting =
-                        paidServerUtil.gson.fromJson(json, object : TypeToken<DeviceInfo>() {}.type)
+                var notificationSetting: DeviceInfo.NotificationSetting =
+                    DeviceInfo.NotificationSetting()
+                notificationSetting.data = true
+                notificationSetting.ticket = true
+                try {
+                    if (!Strings.isNullOrEmpty(json)) {
+                        val deviceInfo: DeviceInfo = paidServerUtil.gson.fromJson(
+                            json,
+                            object : TypeToken<DeviceInfo>() {}.type
+                        )
+                        notificationSetting = deviceInfo.notificationSetting!!
+                    }
+                } catch (th: Throwable) {
+                    Log.e(TAG, "Got exception when get device info from memory", th)
                 }
                 GlobalScope.launch {
                     try {
