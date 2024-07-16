@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -65,7 +66,11 @@ class ConnectionUseProtocol : BottomSheetDialogFragment(), View.OnClickListener 
         if (clickResult != null) {
             clickResult!!.onResult(btnUseTCP != view)
         }
-        this.dismiss()
+        try {
+            this.dismiss()
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Got exception when handle on click ", e)
+        }
     }
 
     interface ClickResult {
@@ -73,6 +78,7 @@ class ConnectionUseProtocol : BottomSheetDialogFragment(), View.OnClickListener 
     }
 
     companion object {
+        const val TAG = "ConnectionUseProtocol"
         fun newInstance(
             vpnGateConnection: VPNGateConnection?,
             clickResult: ClickResult?
