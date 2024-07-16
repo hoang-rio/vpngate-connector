@@ -136,10 +136,15 @@ class DeviceViewModel(application: Application) : BaseViewModel(application) {
     }
 
     private fun getDeviceInfo(): DeviceInfo? {
-        val json = paidServerUtil.getStringSetting(DEVICE_INFO_KEY)
-        if (Strings.isNullOrEmpty(json)) {
-            return null
+        try {
+            val json = paidServerUtil.getStringSetting(DEVICE_INFO_KEY)
+            if (Strings.isNullOrEmpty(json)) {
+                return null
+            }
+            return paidServerUtil.gson.fromJson(json, object : TypeToken<DeviceInfo>() {}.type)
+        } catch (th: Throwable) {
+            Log.d(TAG, "Got exception on getDeviceInfo", th)
         }
-        return paidServerUtil.gson.fromJson(json, object : TypeToken<DeviceInfo>() {}.type)
+        return null
     }
 }
