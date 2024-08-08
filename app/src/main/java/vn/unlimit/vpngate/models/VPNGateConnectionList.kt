@@ -227,6 +227,24 @@ class VPNGateConnectionList : Parcelable {
         out.writeTypedList(data)
     }
 
+    fun toVPNGateItems(): List<VPNGateItem> {
+        val vpnGateItems = ArrayList<VPNGateItem>()
+        data?.forEach {
+            vpnGateItems.add(
+                it.toVPNGateItem()
+            )
+        }
+        return vpnGateItems
+    }
+
+    fun fromVPNGateItems(vpnGateItems: List<VPNGateItem>): VPNGateConnectionList {
+        data?.clear()
+        vpnGateItems.forEach {
+            data?.add(VPNGateConnection().fromVPNGateItem(it))
+        }
+        return this
+    }
+
     enum class NumberFilterOperator {
         EQUAL,
         GREATER,

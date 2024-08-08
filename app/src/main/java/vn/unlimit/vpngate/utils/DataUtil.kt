@@ -14,6 +14,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.Cache
@@ -78,7 +79,8 @@ class DataUtil(context: Context?) {
                         return null
                     } else {
                         reader.close()
-                        return cache.cacheData
+                        val items = App.instance!!.vpnGateItemDao.getAllASC()
+                        return VPNGateConnectionList().fromVPNGateItems(items)
                     }
                 }
             } catch (e: Exception) {
@@ -89,9 +91,8 @@ class DataUtil(context: Context?) {
         /**
          * Set connection cache
          *
-         * @param vpnGateConnectionList input VpnGateConnectionList
          */
-        set(vpnGateConnectionList) {
+        set(_) {
             try {
                 val cache = Cache()
                 val calendar = Calendar.getInstance()
@@ -100,8 +101,6 @@ class DataUtil(context: Context?) {
                 val minute = cacheTime[getIntSetting(SETTING_CACHE_TIME_KEY, 0)]
                 calendar.add(Calendar.MINUTE, minute)
                 cache.expires = calendar.time
-                vpnGateConnectionList!!.filter = null
-                cache.cacheData = vpnGateConnectionList
                 val outFile = File(mContext!!.filesDir, CONNECTION_CACHE_KEY)
                 val out = FileOutputStream(outFile)
                 val writer = JsonWriter(OutputStreamWriter(out, StandardCharsets.UTF_8))

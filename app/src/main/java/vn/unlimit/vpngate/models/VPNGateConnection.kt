@@ -58,7 +58,7 @@ class VPNGateConnection : Parcelable {
     }
 
     //Empty constructor
-    private constructor()
+    constructor()
 
     override fun writeToParcel(out: Parcel, flags: Int) {
         out.writeString(hostName)
@@ -180,6 +180,51 @@ class VPNGateConnection : Parcelable {
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    fun toVPNGateItem(): VPNGateItem {
+        return VPNGateItem(
+            hostName = this.hostName!!,
+            ip = this.ip,
+            score = this.score,
+            ping = this.ping,
+            speed = this.speed,
+            countryLong = this.countryLong,
+            countryShort = this.countryShort,
+            numVpnSession = this.numVpnSession,
+            uptime = this.uptime,
+            totalUser = this.totalUser,
+            totalTraffic = this.totalTraffic,
+            logType = this.logType,
+            operator = this.operator,
+            message = this.message,
+            openVpnConfigData = this.openVpnConfigData,
+            tcpPort = this.tcpPort,
+            isL2TPSupport = this.isL2TPSupport(),
+            isSSTPSupport = this.isSSTPSupport(),
+        )
+    }
+
+    fun fromVPNGateItem(vpnGateItem: VPNGateItem): VPNGateConnection {
+        hostName = vpnGateItem.hostName
+        ip = vpnGateItem.ip
+        score = vpnGateItem.score
+        ping = vpnGateItem.ping
+        speed = vpnGateItem.speed
+        countryLong = vpnGateItem.countryLong
+        countryShort = vpnGateItem.countryShort
+        numVpnSession = vpnGateItem.numVpnSession
+        uptime = vpnGateItem.uptime
+        totalUser = vpnGateItem.totalUser
+        totalTraffic = vpnGateItem.totalTraffic
+        logType = vpnGateItem.logType
+        operator = vpnGateItem.operator
+        message = vpnGateItem.message
+        openVpnConfigData = vpnGateItem.openVpnConfigData
+        tcpPort = vpnGateItem.tcpPort
+        isL2TPSupport = if (vpnGateItem.isL2TPSupport) 1 else 0
+        isSSTPSupport = if (vpnGateItem.isSSTPSupport) 1 else 0
+        return this
     }
 
     val name: String

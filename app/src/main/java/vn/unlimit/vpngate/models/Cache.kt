@@ -10,9 +10,6 @@ class Cache : Type {
     @JvmField
     var expires: Date? = null
 
-    @JvmField
-    var cacheData: VPNGateConnectionList? = null
-
     /**
      * Check cache is expires or not
      *

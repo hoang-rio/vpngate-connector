@@ -3,6 +3,7 @@ package vn.unlimit.vpngate
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
+import androidx.room.Room
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.gms.tasks.Task
@@ -11,6 +12,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
+import vn.unlimit.vpngate.db.AppDatabase
+import vn.unlimit.vpngate.db.VPNGateItemDao
 import vn.unlimit.vpngate.utils.AppOpenManager
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
@@ -20,9 +23,13 @@ class App : Application() {
         private set
     @JvmField
     var paidServerUtil: PaidServerUtil? = null
+    private lateinit var appDatabase: AppDatabase
+    lateinit var vpnGateItemDao: VPNGateItemDao
 
     override fun onCreate() {
         super.onCreate()
+        appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "vpn_gate_connector").build()
+        vpnGateItemDao = appDatabase.vpnGateItemDao()
         if (!BuildConfig.DEBUG) {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)

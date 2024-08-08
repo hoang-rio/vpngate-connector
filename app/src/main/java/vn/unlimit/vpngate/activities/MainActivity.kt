@@ -29,6 +29,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -42,6 +43,8 @@ import com.google.android.ump.UserMessagingPlatform
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.BuildConfig
@@ -143,10 +146,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             isLoading = false
             currentUrl = savedInstanceState.getString("currentUrl")
             currentTitle = savedInstanceState.getString("currentTitle")
-            vpnGateConnectionList = dataUtil!!.connectionsCache
-            disallowLoadHome =
-                connectionListViewModel!!.vpnGateConnectionList.value != null && connectionListViewModel!!.vpnGateConnectionList.value!!
-                    .size() > 0
+            lifecycleScope.launch(Dispatchers.IO) {
+                vpnGateConnectionList = dataUtil!!.connectionsCache
+                disallowLoadHome =
+                    connectionListViewModel!!.vpnGateConnectionList.value != null && connectionListViewModel!!.vpnGateConnectionList.value!!
+                        .size() > 0
+            }
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -319,46 +324,59 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun loadData() {
-        if (!disallowLoadHome) {
-            if (isOnline(applicationContext)) {
-                binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
-                val vpnGateConnectionList = dataUtil!!.connectionsCache
-                this.vpnGateConnectionList = vpnGateConnectionList
-                if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
-                    callDataServer()
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (!disallowLoadHome) {
+                if (isOnline(applicationContext)) {
+                    runOnUiThread {
+                        binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
+                    }
+                    val vpnGateConnectionList = dataUtil!!.connectionsCache
+                    this@MainActivity.vpnGateConnectionList = vpnGateConnectionList
+                    if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
+                        callDataServer()
+                    } else {
+                        connectionListViewModel!!.isLoading.postValue(false)
+                    }
+                    if (FirebaseRemoteConfig.getInstance()
+                            .getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil!!.getBooleanSetting(
+                            DataUtil.INVITED_USE_PAID_SERVER,
+                            false
+                        )
+                    ) {
+                        runOnUiThread {
+                            val alertDialogBuilder = alertDialogBuilder
+                            alertDialogBuilder.setNegativeButton(
+                                android.R.string.cancel,
+                                (DialogInterface.OnClickListener { dialogInterface: DialogInterface, _: Int ->
+                                    dataUtil!!.setBooleanSetting(
+                                        DataUtil.INVITED_USE_PAID_SERVER,
+                                        true
+                                    )
+                                    dialogInterface.dismiss()
+                                })
+                            )
+                            alertDialogBuilder.setCancelable(false)
+                            val alertDialog = alertDialogBuilder.create()
+                            alertDialog.setTitle(R.string.invite_paid_server_title)
+                            alertDialog.setMessage(getString(R.string.invite_paid_server_message))
+                            alertDialog.show()
+                        }
+                    }
                 } else {
-                    connectionListViewModel!!.isLoading.postValue(false)
-                }
-                if (FirebaseRemoteConfig.getInstance()
-                        .getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil!!.getBooleanSetting(
-                        DataUtil.INVITED_USE_PAID_SERVER,
-                        false
-                    )
-                ) {
-                    val alertDialogBuilder = alertDialogBuilder
-                    alertDialogBuilder.setNegativeButton(
-                        android.R.string.cancel,
-                        (DialogInterface.OnClickListener { dialogInterface: DialogInterface, _: Int ->
-                            dataUtil!!.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true)
-                            dialogInterface.dismiss()
-                        })
-                    )
-                    alertDialogBuilder.setCancelable(false)
-                    val alertDialog = alertDialogBuilder.create()
-                    alertDialog.setTitle(R.string.invite_paid_server_title)
-                    alertDialog.setMessage(getString(R.string.invite_paid_server_message))
-                    alertDialog.show()
+                    runOnUiThread {
+                        binding.incNoNetwork.lnNoNetwork.visibility = View.VISIBLE
+                        binding.incError.lnError.visibility = View.GONE
+                        binding.incLoading.lnLoading.visibility = View.GONE
+                        binding.frameContent.visibility = View.GONE
+                    }
                 }
             } else {
-                binding.incNoNetwork.lnNoNetwork.visibility = View.VISIBLE
-                binding.incError.lnError.visibility = View.GONE
-                binding.incLoading.lnLoading.visibility = View.GONE
-                binding.frameContent.visibility = View.GONE
+                runOnUiThread {
+                    setTitleActionbar(currentTitle)
+                    binding.incError.lnError.visibility = View.GONE
+                    binding.incLoading.lnLoading.visibility = View.GONE
+                }
             }
-        } else {
-            setTitleActionbar(currentTitle)
-            binding.incError.lnError.visibility = View.GONE
-            binding.incLoading.lnLoading.visibility = View.GONE
         }
     }
 
