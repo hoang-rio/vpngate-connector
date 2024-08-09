@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.fragment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,9 @@ import vn.unlimit.vpngate.databinding.FragmentAboutBinding
  * Created by hoangnd on 2/6/2018.
  */
 class AboutFragment : Fragment(), View.OnClickListener {
+    companion object {
+        const val TAG = "AboutFragment"
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,7 +46,11 @@ class AboutFragment : Fragment(), View.OnClickListener {
     }
 
     private fun openUrl(url: String) {
-        val browserItent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(browserItent)
+        try {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(browserIntent)
+        } catch (th: Throwable) {
+            Log.e(TAG, "Got error when open url", th)
+        }
     }
 }
