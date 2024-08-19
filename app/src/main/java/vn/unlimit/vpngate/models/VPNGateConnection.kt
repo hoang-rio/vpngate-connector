@@ -200,6 +200,7 @@ class VPNGateConnection : Parcelable {
             message = this.message,
             openVpnConfigData = this.openVpnConfigData,
             tcpPort = this.tcpPort,
+            udpPort = this.udpPort,
             isL2TPSupport = this.isL2TPSupport(),
             isSSTPSupport = this.isSSTPSupport(),
         )
@@ -222,6 +223,7 @@ class VPNGateConnection : Parcelable {
         message = vpnGateItem.message
         openVpnConfigData = vpnGateItem.openVpnConfigData
         tcpPort = vpnGateItem.tcpPort
+        udpPort = vpnGateItem.udpPort
         isL2TPSupport = if (vpnGateItem.isL2TPSupport) 1 else 0
         isSSTPSupport = if (vpnGateItem.isSSTPSupport) 1 else 0
         return this

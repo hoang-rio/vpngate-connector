@@ -1,7 +1,11 @@
 package vn.unlimit.vpngate.models
 
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.sqlite.db.SimpleSQLiteQuery
+import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.db.VPNGateItemDao
 import java.util.Locale
 
 /**
@@ -11,9 +15,13 @@ class VPNGateConnectionList : Parcelable {
     @JvmField
     var filter: Filter? = null
     private var data: MutableList<VPNGateConnection>?
+    private var vpnGateItemDao: VPNGateItemDao? = null
+    private var sortField: String? = null
+    private var sortType: Int? = null
 
     constructor() {
         data = ArrayList()
+        vpnGateItemDao = App.instance!!.vpnGateItemDao
     }
 
     private constructor(`in`: Parcel) {
@@ -29,23 +37,15 @@ class VPNGateConnectionList : Parcelable {
     fun filter(inKeyword: String): VPNGateConnectionList {
         var keyword = inKeyword
         keyword = keyword.lowercase(Locale.getDefault())
-        val result = VPNGateConnectionList()
-        for (vpnGateConnection in data!!) {
-            if (vpnGateConnection.countryLong!!.lowercase(Locale.getDefault())
-                    .contains(keyword) ||
-                vpnGateConnection.hostName!!.lowercase(Locale.getDefault())
-                    .contains(keyword) ||
-                vpnGateConnection.operator!!.lowercase(Locale.getDefault())
-                    .contains(keyword) ||
-                vpnGateConnection.ip!!.contains(keyword)
-            ) {
-                result.add(vpnGateConnection)
-            }
-        }
-        if (filter != null) {
-            return result.advancedFilter(filter)
-        }
+        val result = VPNGateConnectionList().fromVPNGateItems(vpnGateItemDao!!.search("%$keyword%"))
         return result
+    }
+
+    private fun getOrderQuery(): String {
+        if (sortType == ORDER.ASC) {
+            return " ORDER BY $sortField ASC"
+        }
+        return " ORDER BY $sortField DESC"
     }
 
     /**
@@ -55,43 +55,20 @@ class VPNGateConnectionList : Parcelable {
      * @param type     order type 0 = ASC, 1 = DESC
      * @return
      */
-    fun sort(property: String?, type: Int) {
-        data!!.sortWith(Comparator { o1: VPNGateConnection, o2: VPNGateConnection ->
-            if (type == ORDER.ASC) {
-                when (property) {
-                    SortProperty.COUNTRY -> return@Comparator o1.countryLong!!
-                        .compareTo(o2.countryLong!!)
-
-                    SortProperty.SPEED -> return@Comparator o1.speed.compareTo(o2.speed)
-                    SortProperty.PING -> return@Comparator o1.ping.compareTo(o2.ping)
-                    SortProperty.SCORE -> return@Comparator o1.score.compareTo(o2.score)
-                    SortProperty.UPTIME -> return@Comparator o1.uptime
-                        .compareTo(o2.uptime)
-
-                    SortProperty.SESSION -> return@Comparator o1.numVpnSession
-                        .compareTo(o2.numVpnSession)
-
-                    else -> return@Comparator 0
-                }
-            } else if (type == ORDER.DESC) {
-                when (property) {
-                    SortProperty.COUNTRY -> return@Comparator o2.countryLong!!
-                        .compareTo(o1.countryLong!!)
-
-                    SortProperty.SPEED -> return@Comparator o2.speed.compareTo(o1.speed)
-                    SortProperty.PING -> return@Comparator o2.ping.compareTo(o1.ping)
-                    SortProperty.SCORE -> return@Comparator o2.score.compareTo(o1.score)
-                    SortProperty.UPTIME -> return@Comparator o2.uptime
-                        .compareTo(o1.uptime)
-
-                    SortProperty.SESSION -> return@Comparator o2.numVpnSession
-                        .compareTo(o1.numVpnSession)
-
-                    else -> return@Comparator 0
-                }
+    fun sort(property: String?, type: Int, skipProcessSort: Boolean = false) {
+        property.let {
+            sortField = property
+            sortType = type
+            if (skipProcessSort) {
+                return
             }
-            0
-        })
+            val whereQuery = getWhereQuery()
+            val query = "SELECT * FROM vpngateitem${if(whereQuery.isNotEmpty()) "WHERE $whereQuery " else ""}${getOrderQuery()}"
+            val sortedData: List<VPNGateItem>? =
+                vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery(query))
+            this.clear()
+            sortedData!!.forEach { data!!.add(VPNGateConnection().fromVPNGateItem(it)) }
+        }
     }
 
     fun add(vpnGateConnection: VPNGateConnection) {
@@ -119,104 +96,73 @@ class VPNGateConnectionList : Parcelable {
         return advancedFilter()
     }
 
+    private fun getOperator(numberFilterOperator: NumberFilterOperator): String {
+        return when (numberFilterOperator) {
+            NumberFilterOperator.EQUAL -> "="
+            NumberFilterOperator.GREATER -> ">"
+            NumberFilterOperator.GREATER_OR_EQUAL -> ">="
+            NumberFilterOperator.LESS -> "<"
+            NumberFilterOperator.LESS_OR_EQUAL -> "<="
+        }
+    }
+
+    private fun appendQuery(
+        currentQuery: String,
+        queryToAppend: String
+    ): String {
+        var query = currentQuery
+        query += "${if (query.isEmpty()) "" else " AND "}$queryToAppend"
+        return query
+    }
+
+    private fun getWhereQuery(): String {
+        var whereQuery = ""
+        if (filter?.ping != null) {
+            whereQuery = "ping ${getOperator(filter!!.pingFilterOperator)} ${filter!!.ping}"
+        }
+        if (filter?.speed != null) {
+            val speedInMb = filter!!.speed!! * 1024 * 1024
+            whereQuery = appendQuery(
+                whereQuery,
+                "speed ${getOperator(filter!!.speedFilterOperator)} $speedInMb"
+            )
+        }
+        if (filter?.sessionCount != null) {
+            whereQuery = appendQuery(
+                whereQuery,
+                "numVpnSession ${getOperator(filter!!.sessionCountFilterOperator)} ${filter!!.sessionCount}"
+            )
+        }
+        if (filter?.isShowTCP == true) {
+            whereQuery = appendQuery(
+                whereQuery, "tcpPort > 0"
+            )
+        }
+        if (filter?.isShowUDP == true) {
+            whereQuery = appendQuery(whereQuery, "udpPort > 0")
+        }
+        if (filter?.isShowL2TP == true && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            whereQuery = appendQuery(whereQuery, "isL2TPSupport = 1")
+        }
+        if (filter?.isShowSSTP == true) {
+            whereQuery = appendQuery(whereQuery, "isSSTPSupport = 1")
+        }
+        return whereQuery
+    }
+
     fun advancedFilter(): VPNGateConnectionList {
-        if (filter == null) {
-            return this
+        val selectQuery = "SELECT * FROM vpngateitem"
+        val whereQuery = getWhereQuery()
+        clear()
+        val filteredResult: List<VPNGateItem>? = if (whereQuery.isNotEmpty()) {
+            vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery("$selectQuery WHERE $whereQuery${getOrderQuery()}"))
+        } else {
+            vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery("$selectQuery${getOrderQuery()}"))
         }
-        val dataWithFilter = VPNGateConnectionList()
-        // Apply or filter conditional
-        for (vpnGateConnection in data!!) {
-            if (filter!!.ping != null) {
-                when (filter!!.pingFilterOperator) {
-                    NumberFilterOperator.EQUAL -> if (vpnGateConnection.ping != filter!!.ping) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER -> if (vpnGateConnection.ping <= filter!!.ping!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER_OR_EQUAL -> if (vpnGateConnection.ping < filter!!.ping!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS -> if (vpnGateConnection.ping >= filter!!.ping!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS_OR_EQUAL -> if (vpnGateConnection.ping > filter!!.ping!!) {
-                        continue
-                    }
-
-                }
-            }
-            if (filter!!.speed != null) {
-                val speedInMb = filter!!.speed!! * 1024 * 1024
-                when (filter!!.speedFilterOperator) {
-                    NumberFilterOperator.EQUAL -> if (vpnGateConnection.speed != speedInMb) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER -> if (vpnGateConnection.speed <= speedInMb) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER_OR_EQUAL -> if (vpnGateConnection.speed < speedInMb) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS -> if (vpnGateConnection.speed >= speedInMb) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS_OR_EQUAL -> if (vpnGateConnection.speed > speedInMb) {
-                        continue
-                    }
-
-                }
-            }
-            if (filter!!.sessionCount != null) {
-                when (filter!!.sessionCountFilterOperator) {
-                    NumberFilterOperator.EQUAL -> if (vpnGateConnection.numVpnSession != filter!!.sessionCount) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER -> if (vpnGateConnection.numVpnSession <= filter!!.sessionCount!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.GREATER_OR_EQUAL -> if (vpnGateConnection.numVpnSession < filter!!.sessionCount!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS -> if (vpnGateConnection.numVpnSession >= filter!!.sessionCount!!) {
-                        continue
-                    }
-
-                    NumberFilterOperator.LESS_OR_EQUAL -> if (vpnGateConnection.numVpnSession > filter!!.sessionCount!!) {
-                        continue
-                    }
-
-                }
-            }
-            if (filter!!.isShowTCP && vpnGateConnection.tcpPort > 0) {
-                dataWithFilter.add(vpnGateConnection)
-                continue
-            }
-            if (filter!!.isShowUDP && vpnGateConnection.udpPort > 0) {
-                dataWithFilter.add(vpnGateConnection)
-                continue
-            }
-            if (filter!!.isShowL2TP && vpnGateConnection.isL2TPSupport()) {
-                dataWithFilter.add(vpnGateConnection)
-                continue
-            }
-            if (filter!!.isShowSSTP && vpnGateConnection.isSSTPSupport()) {
-                dataWithFilter.add(vpnGateConnection)
-                continue
-            }
+        filteredResult?.forEach {
+            data!!.add(VPNGateConnection().fromVPNGateItem(it))
         }
-        return dataWithFilter
+        return this
     }
 
     override fun describeContents(): Int {
@@ -272,13 +218,14 @@ class VPNGateConnectionList : Parcelable {
     }
 
     object SortProperty {
-        const val COUNTRY: String = "COUNTRY"
-        const val SPEED: String = "SPEED"
-        const val PING: String = "PING"
-        const val SCORE: String = "SCORE"
-        const val UPTIME: String = "UPTIME"
-        const val SESSION: String = "SESSION"
+        const val COUNTRY: String = "countryShort"
+        const val SPEED: String = "speed"
+        const val PING: String = "ping"
+        const val SCORE: String = "score"
+        const val UPTIME: String = "uptime"
+        const val SESSION: String = "numVpnSession"
     }
+
 
     companion object CREATOR : Parcelable.Creator<VPNGateConnectionList> {
         override fun createFromParcel(`in`: Parcel): VPNGateConnectionList {

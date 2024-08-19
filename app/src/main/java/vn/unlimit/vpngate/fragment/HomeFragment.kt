@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.gms.ads.AdError
@@ -20,6 +21,9 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
@@ -45,6 +49,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     companion object {
         private const val TAG = "HOME_FREE"
     }
+
     private var mContext: Context? = null
     private var vpnGateListAdapter: VPNGateListAdapter? = null
     private var connectionListViewModel: ConnectionListViewModel? = null
@@ -157,7 +162,11 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         vpnGateListAdapter!!.setOnItemLongClickListener(this)
         vpnGateListAdapter!!.setOnScrollListener(this)
         if (mActivity!!.vpnGateConnectionList != null) {
-            vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList!!.advancedFilter())
+            lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                }
+            }
         } else {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
         }
@@ -166,19 +175,21 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     }
 
     fun advanceFilter(filter: VPNGateConnectionList.Filter?) {
-        var vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter(filter)
-        if (isSearching && "" != mKeyword) {
-            vpnGateConnectionList = vpnGateConnectionList.filter(mKeyword)
-        } else {
-            vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+        lifecycleScope.launch(Dispatchers.IO) {
+            var vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter(filter)
+            if (isSearching && "" != mKeyword) {
+                vpnGateConnectionList = vpnGateConnectionList.filter(mKeyword)
+            }
+            withContext(Dispatchers.Main) {
+                if (vpnGateConnectionList.size() == 0) {
+                    binding.txtEmpty.setText(R.string.empty_filter_result)
+                    binding.txtEmpty.visibility = View.VISIBLE
+                } else {
+                    binding.txtEmpty.visibility = View.GONE
+                }
+                vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+            }
         }
-        if (vpnGateConnectionList.size() == 0) {
-            binding.txtEmpty.setText(R.string.empty_filter_result)
-            binding.txtEmpty.visibility = View.VISIBLE
-        } else {
-            binding.txtEmpty.visibility = View.GONE
-        }
-        vpnGateListAdapter!!.initialize(vpnGateConnectionList)
     }
 
     /**
@@ -194,34 +205,49 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         if ("" != keyword) {
             mKeyword = keyword
             isSearching = true
-            val filterResult = mActivity!!.vpnGateConnectionList!!.filter(keyword)
-            if (filterResult.size() == 0) {
-                binding.txtEmpty.text = getString(R.string.empty_search_result, keyword)
-                binding.txtEmpty.visibility = View.VISIBLE
-                binding.rcvConnection.visibility = View.GONE
-            } else {
-                binding.txtEmpty.visibility = View.GONE
-                binding.rcvConnection.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val filterResult = mActivity!!.vpnGateConnectionList!!.filter(keyword)
+                withContext(Dispatchers.Main) {
+                    if (filterResult.size() == 0) {
+                        binding.txtEmpty.text = getString(R.string.empty_search_result, keyword)
+                        binding.txtEmpty.visibility = View.VISIBLE
+                        binding.rcvConnection.visibility = View.GONE
+                    } else {
+                        binding.txtEmpty.visibility = View.GONE
+                        binding.rcvConnection.visibility = View.VISIBLE
+                    }
+                    vpnGateListAdapter!!.initialize(filterResult)
+                }
             }
-            vpnGateListAdapter!!.initialize(filterResult)
         } else {
             binding.rcvConnection.visibility = View.VISIBLE
             binding.txtEmpty.visibility = View.GONE
-            vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList!!.advancedFilter())
+            lifecycleScope.launch(Dispatchers.IO) {
+                val vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter()
+                withContext(Dispatchers.Main) {
+                    vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+                }
+            }
         }
     }
 
     fun sort(property: String?, type: Int) {
         try {
             stopTask()
-            if (mActivity!!.vpnGateConnectionList != null) {
-                mActivity!!.vpnGateConnectionList!!.sort(property, type)
-                dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
-                if (isSearching) {
-                    val filterResult = mActivity!!.vpnGateConnectionList!!.filter(mKeyword)
-                    vpnGateListAdapter!!.initialize(filterResult)
-                } else {
-                    closeSearch()
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (mActivity!!.vpnGateConnectionList != null) {
+                    mActivity!!.vpnGateConnectionList!!.sort(property, type)
+                    dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
+                    if (isSearching) {
+                        val filterResult = mActivity!!.vpnGateConnectionList!!.filter(mKeyword)
+                        withContext(Dispatchers.Main) {
+                            vpnGateListAdapter!!.initialize(filterResult)
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                        }
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -243,7 +269,12 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         binding.txtEmpty.visibility = View.GONE
         binding.rcvConnection.visibility = View.VISIBLE
         if (mActivity!!.vpnGateConnectionList != null) {
-            vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList!!.advancedFilter())
+            lifecycleScope.launch(Dispatchers.IO) {
+                val vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter()
+                withContext(Dispatchers.Main) {
+                    vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+                }
+            }
         } else {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
         }
@@ -303,14 +334,21 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
 
     fun onSuccess(o: Any?) {
         mActivity!!.vpnGateConnectionList = o as VPNGateConnectionList?
-        if ("" != mActivity!!.sortProperty) {
-            mActivity!!.vpnGateConnectionList!!.sort(mActivity!!.sortProperty, mActivity!!.sortType)
+        lifecycleScope.launch(Dispatchers.IO) {
+            if ("" != mActivity!!.sortProperty) {
+                mActivity!!.vpnGateConnectionList?.sort(
+                    mActivity!!.sortProperty,
+                    mActivity!!.sortType
+                )
+            }
+            withContext(Dispatchers.Main) {
+                binding.txtEmpty.visibility = View.GONE
+                binding.rcvConnection.visibility = View.VISIBLE
+                vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
+                binding.lnSwipeRefresh.isRefreshing = false
+            }
         }
-        binding.txtEmpty.visibility = View.GONE
-        binding.rcvConnection.visibility = View.VISIBLE
-        vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
-        dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
-        binding.lnSwipeRefresh.isRefreshing = false
     }
 
     fun onError(error: String?) {

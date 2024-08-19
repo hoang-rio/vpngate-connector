@@ -79,7 +79,7 @@ class DataUtil(context: Context?) {
                         return null
                     } else {
                         reader.close()
-                        val items = App.instance!!.vpnGateItemDao.getAllASC()
+                        val items = App.instance!!.vpnGateItemDao.getAll()
                         return VPNGateConnectionList().fromVPNGateItems(items)
                     }
                 }

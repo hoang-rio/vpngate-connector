@@ -5,16 +5,13 @@ import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatSpinner
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.LayoutFilterDialogBinding
 import vn.unlimit.vpngate.models.VPNGateConnectionList
 import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.utils.SpinnerInit.OnItemSelectedIndexListener
@@ -29,6 +26,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
     }
 
     private var mFilter = filter ?: VPNGateConnectionList.Filter()
+    private lateinit var binding: LayoutFilterDialogBinding
 
     var onButtonClickListener: OnButtonClickListener? = null
 
@@ -46,18 +44,8 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         return dialog
     }
 
-    private var checkBoxTCP: CheckBox? = null
-    private var checkBoxUDP: CheckBox? = null
-    private var checkBoxL2TP: CheckBox? = null
-    private var checkBoxSSTP: CheckBox? = null
-    private var spinnerPingOperator: AppCompatSpinner? = null
-    private var spinnerSpeedOperator: AppCompatSpinner? = null
-    private var spinnerSessionOperator: AppCompatSpinner? = null
-    private var txtPing: EditText? = null
-    private var txtSpeed: EditText? = null
-    private var txtSession: EditText? = null
     private val applyButtonClickListener = View.OnClickListener {
-        if (!checkBoxTCP!!.isChecked && !checkBoxUDP!!.isChecked && !checkBoxL2TP!!.isChecked && !checkBoxSSTP!!.isChecked) {
+        if (!binding.chbFilterTcp.isChecked && !binding.chbFilterUdp.isChecked && !binding.chbFilterL2tp.isChecked && !binding.chbFilterSstp.isChecked) {
             Toast.makeText(
                 context,
                 resources.getString(R.string.must_check_at_least_1_protocol),
@@ -65,58 +53,48 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
             ).show()
             return@OnClickListener
         }
-        mFilter.isShowTCP = checkBoxTCP!!.isChecked
-        mFilter.isShowUDP = checkBoxUDP!!.isChecked
-        mFilter.isShowL2TP = checkBoxL2TP!!.isChecked
-        mFilter.isShowSSTP = checkBoxSSTP!!.isChecked
-        mFilter.ping = txtPing!!.text.toString().toIntOrNull()
-        mFilter.speed = txtSpeed!!.text.toString().toIntOrNull()
-        mFilter.sessionCount = txtSession!!.text.toString().toIntOrNull()
+        mFilter.isShowTCP = binding.chbFilterTcp.isChecked
+        mFilter.isShowUDP = binding.chbFilterUdp.isChecked
+        mFilter.isShowL2TP = binding.chbFilterL2tp.isChecked
+        mFilter.isShowSSTP = binding.chbFilterSstp.isChecked
+        mFilter.ping = binding.txtPing.text.toString().toIntOrNull()
+        mFilter.speed = binding.txtSpeed.text.toString().toIntOrNull()
+        mFilter.sessionCount = binding.txtSession.text.toString().toIntOrNull()
         onButtonClickListener!!.onButtonClick(mFilter)
         this.dismiss()
     }
 
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
-        val rootView = View.inflate(context, R.layout.layout_filter_dialog, null)
-        rootView.findViewById<Button>(R.id.btn_reset).setOnClickListener {
+        binding = LayoutFilterDialogBinding.inflate(layoutInflater)
+        binding.btnReset.setOnClickListener {
             onButtonClickListener?.onButtonClick(null)
             this.dismiss()
         }
-        checkBoxTCP = rootView.findViewById(R.id.chb_filter_tcp)
-        checkBoxUDP = rootView.findViewById(R.id.chb_filter_udp)
-        checkBoxL2TP = rootView.findViewById(R.id.chb_filter_l2tp)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            checkBoxL2TP?.visibility = View.GONE
+            binding.chbFilterL2tp.visibility = View.GONE
         }
-        checkBoxSSTP = rootView.findViewById(R.id.chb_filter_sstp)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            checkBoxSSTP?.visibility = View.GONE
+            binding.chbFilterSstp.visibility = View.GONE
         }
-        spinnerPingOperator = rootView.findViewById(R.id.spinner_ping_operator)
-        spinnerSpeedOperator = rootView.findViewById(R.id.spinner_speed_operator)
-        spinnerSessionOperator = rootView.findViewById(R.id.spinner_session_operator)
-        txtPing = rootView.findViewById(R.id.txt_ping)
-        txtSpeed = rootView.findViewById(R.id.txt_speed)
-        txtSession = rootView.findViewById(R.id.txt_session)
-        rootView.findViewById<Button>(R.id.btn_apply).setOnClickListener(applyButtonClickListener)
+        binding.btnApply.setOnClickListener(applyButtonClickListener)
         bindData()
-        dialog.setContentView(rootView)
+        dialog.setContentView(binding.root)
     }
 
     private fun bindData() {
-        val spinnerInitPing = SpinnerInit(context, spinnerPingOperator!!)
+        val spinnerInitPing = SpinnerInit(context, binding.spinnerPingOperator)
         val listOperator = resources.getStringArray(R.array.number_filter_operator)
-        val spinnerInitSpeed = SpinnerInit(context, spinnerSpeedOperator!!)
-        val spinnerInitSession = SpinnerInit(context, spinnerSessionOperator!!)
+        val spinnerInitSpeed = SpinnerInit(context, binding.spinnerSpeedOperator)
+        val spinnerInitSession = SpinnerInit(context, binding.spinnerSessionOperator)
         val listOperatorEnum = VPNGateConnectionList.NumberFilterOperator.entries.toTypedArray()
-        mFilter.isShowTCP.let { checkBoxTCP!!.isChecked = mFilter.isShowTCP }
-        mFilter.isShowUDP.let { checkBoxUDP!!.isChecked = mFilter.isShowUDP }
-        mFilter.isShowL2TP.let { checkBoxL2TP!!.isChecked = mFilter.isShowL2TP }
-        mFilter.isShowSSTP.let { checkBoxSSTP!!.isChecked = mFilter.isShowSSTP }
-        mFilter.ping?.let { txtPing!!.setText(it.toString()) }
-        mFilter.speed?.let { txtSpeed!!.setText(it.toString()) }
-        mFilter.sessionCount?.let { txtSession!!.setText(it.toString()) }
+        mFilter.isShowTCP.let { binding.chbFilterTcp.isChecked = mFilter.isShowTCP }
+        mFilter.isShowUDP.let { binding.chbFilterUdp.isChecked = mFilter.isShowUDP }
+        mFilter.isShowL2TP.let { binding.chbFilterL2tp.isChecked = mFilter.isShowL2TP && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU }
+        mFilter.isShowSSTP.let { binding.chbFilterSstp.isChecked = mFilter.isShowSSTP }
+        mFilter.ping?.let { binding.txtPing.setText(it.toString()) }
+        mFilter.speed?.let { binding.txtSpeed.setText(it.toString()) }
+        mFilter.sessionCount?.let { binding.txtSession.setText(it.toString()) }
         spinnerInitPing.setStringArray(
             listOperator,
             listOperator[listOperatorEnum.indexOf(mFilter.pingFilterOperator)]

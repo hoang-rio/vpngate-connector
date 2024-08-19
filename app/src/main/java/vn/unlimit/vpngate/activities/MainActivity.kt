@@ -5,7 +5,6 @@ import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
@@ -23,7 +22,6 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
@@ -41,10 +39,10 @@ import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.BuildConfig
@@ -99,7 +97,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     }
                 }
 
-                BaseProvider.ACTION.ACTION_CLEAR_CACHE -> connectionListViewModel?.vpnGateConnectionList?.postValue(null)
+                BaseProvider.ACTION.ACTION_CLEAR_CACHE -> connectionListViewModel?.vpnGateConnectionList?.postValue(
+                    null
+                )
+
                 BaseProvider.ACTION.ACTION_CONNECT_VPN -> {
                     if (dataUtil != null && dataUtil!!.lastVPNConnection != null) {
                         try {
@@ -334,33 +335,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     this@MainActivity.vpnGateConnectionList = vpnGateConnectionList
                     if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
                         callDataServer()
-                    } else {
-                        connectionListViewModel!!.isLoading.postValue(false)
-                    }
-                    if (FirebaseRemoteConfig.getInstance()
-                            .getBoolean(getString(R.string.cfg_invite_paid_server)) && !dataUtil!!.getBooleanSetting(
-                            DataUtil.INVITED_USE_PAID_SERVER,
-                            false
-                        )
-                    ) {
-                        runOnUiThread {
-                            val alertDialogBuilder = alertDialogBuilder
-                            alertDialogBuilder.setNegativeButton(
-                                android.R.string.cancel,
-                                (DialogInterface.OnClickListener { dialogInterface: DialogInterface, _: Int ->
-                                    dataUtil!!.setBooleanSetting(
-                                        DataUtil.INVITED_USE_PAID_SERVER,
-                                        true
-                                    )
-                                    dialogInterface.dismiss()
-                                })
-                            )
-                            alertDialogBuilder.setCancelable(false)
-                            val alertDialog = alertDialogBuilder.create()
-                            alertDialog.setTitle(R.string.invite_paid_server_title)
-                            alertDialog.setMessage(getString(R.string.invite_paid_server_message))
-                            alertDialog.show()
-                        }
                     }
                 } else {
                     runOnUiThread {
@@ -379,19 +353,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
         }
     }
-
-    private val alertDialogBuilder: AlertDialog.Builder
-        get() {
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                // Allow invite => Redirect to paid screen
-                dataUtil!!.setBooleanSetting(DataUtil.INVITED_USE_PAID_SERVER, true)
-                val intentPaidServer = Intent(this, LoginActivity::class.java)
-                startActivity(intentPaidServer)
-                finish()
-            }
-            return alertDialogBuilder
-        }
 
     override fun onClick(view: View) {
         if (view == binding.incError.lnError) {
@@ -467,7 +428,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
         })
         try {
-            val searchView = menuSearch.actionView as SearchView? ?: return super.onCreateOptionsMenu(menu)
+            val searchView =
+                menuSearch.actionView as SearchView? ?: return super.onCreateOptionsMenu(menu)
             searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
             searchView.maxWidth = Int.MAX_VALUE
             val editText =
@@ -517,6 +479,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return super.onCreateOptionsMenu(menu)
     }
 
+    fun onSuccess() {
+        val vpnGateConnectionList = connectionListViewModel!!.vpnGateConnectionList.value
+        isLoading = false
+        binding.frameContent.visibility = View.VISIBLE
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (vpnGateConnectionList != null && "" != sortProperty) {
+                vpnGateConnectionList.sort(sortProperty, sortType, true)
+            }
+            if (dataUtil!!.isAcceptedPrivacyPolicy) {
+                withContext(Dispatchers.Main) {
+                    updateData()
+                }
+            }
+            dataUtil!!.connectionsCache = vpnGateConnectionList
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (drawerToggle!!.onOptionsItemSelected(item)) {
             return true
@@ -534,7 +513,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val sortBottomSheetDialog = SortBottomSheetDialog.newInstance(
                 sortProperty, sortType
             )
-            sortBottomSheetDialog.setOnApplyClickListener(object : SortBottomSheetDialog.OnApplyClickListener {
+            sortBottomSheetDialog.setOnApplyClickListener(object :
+                SortBottomSheetDialog.OnApplyClickListener {
                 override fun onApplyClick(sortProperty: String?, sortType: Int) {
                     if (dataUtil!!.hasAds()) {
                         Toast.makeText(
@@ -559,7 +539,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                             if (this@MainActivity.sortType == VPNGateConnectionList.ORDER.ASC) "ASC" else "DESC"
                         )
                         FirebaseAnalytics.getInstance(applicationContext).logEvent("Sort", params)
-                        currentFragment.sort(this@MainActivity.sortProperty,
+                        currentFragment.sort(
+                            this@MainActivity.sortProperty,
                             this@MainActivity.sortType
                         )
                     }
@@ -579,7 +560,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 connectionListViewModel!!.vpnGateConnectionList.value!!.filter
             )
             filterBottomSheetDialog.onButtonClickListener =
-                object: OnButtonClickListener {
+                object : OnButtonClickListener {
                     override fun onButtonClick(filter: VPNGateConnectionList.Filter?) {
                         mMenu!!.findItem(R.id.action_filter)
                             .setIcon(if (filter == null) R.drawable.ic_filter_white else R.drawable.ic_filter_active_white)
@@ -589,7 +570,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         if (homeFragment != null && connectionListViewModel!!.vpnGateConnectionList.value != null) {
                             val params = Bundle()
                             params.putString("filterObj", Gson().toJson(filter))
-                            FirebaseAnalytics.getInstance(applicationContext).logEvent("Filter", params)
+                            FirebaseAnalytics.getInstance(applicationContext)
+                                .logEvent("Filter", params)
                             connectionListViewModel!!.vpnGateConnectionList.value!!.filter = filter
                             homeFragment.advanceFilter(filter)
                         }
@@ -603,18 +585,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    fun onSuccess() {
-        val vpnGateConnectionList = connectionListViewModel!!.vpnGateConnectionList.value
-        isLoading = false
-        binding.incLoading.lnLoading.visibility = View.GONE
-        binding.frameContent.visibility = View.VISIBLE
-        if (vpnGateConnectionList != null && "" != sortProperty) {
-            vpnGateConnectionList.sort(sortProperty, sortType)
-        }
-        updateData()
-        dataUtil!!.connectionsCache = vpnGateConnectionList
     }
 
     private fun updateData() {
