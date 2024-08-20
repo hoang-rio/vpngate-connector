@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->
             if (aBoolean) {
                 binding.incLoading.lnLoading.visibility = View.VISIBLE
-            } else {
+            } else if (intent.getStringExtra(TARGET_FRAGMENT) == null) {
                 onSuccess()
             }
         }
@@ -316,8 +316,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             binding.navMain.menu.findItem(R.id.nav_status).setChecked(true)
             return
         }
-        val targetFragment = this.intent.getStringExtra(TARGET_FRAGMENT)
+        val targetFragment = intent.getStringExtra(TARGET_FRAGMENT)
         if (targetFragment != null) {
+            intent.removeExtra(TARGET_FRAGMENT)
             replaceFragment(targetFragment)
             return
         }
