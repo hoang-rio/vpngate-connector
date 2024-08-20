@@ -1,10 +1,11 @@
 package vn.unlimit.vpngate.dialog
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -64,8 +65,11 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         this.dismiss()
     }
 
-    @SuppressLint("RestrictedApi")
-    override fun setupDialog(dialog: Dialog, style: Int) {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = LayoutFilterDialogBinding.inflate(layoutInflater)
         binding.btnReset.setOnClickListener {
             onButtonClickListener?.onButtonClick(null)
@@ -79,7 +83,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         }
         binding.btnApply.setOnClickListener(applyButtonClickListener)
         bindData()
-        dialog.setContentView(binding.root)
+        return binding.root
     }
 
     private fun bindData() {

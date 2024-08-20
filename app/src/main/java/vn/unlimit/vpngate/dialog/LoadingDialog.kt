@@ -10,10 +10,11 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.LayoutLoadingDialogBinding
 
 class LoadingDialog : DialogFragment() {
     private var loadingText: String? = null
-    private var txtLoadingText: TextView? = null
+    private lateinit var binding: LayoutLoadingDialogBinding
 
     companion object {
         fun newInstance(loadingText: String): LoadingDialog {
@@ -33,11 +34,10 @@ class LoadingDialog : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = layoutInflater.inflate(R.layout.layout_loading_dialog, container, false)
-        txtLoadingText = rootView.findViewById(R.id.txt_loading_text)
-        txtLoadingText!!.text = this.loadingText
-        return rootView
+    ): View {
+        binding = LayoutLoadingDialogBinding.inflate(layoutInflater)
+        binding.txtLoadingText.text = loadingText
+        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

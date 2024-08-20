@@ -113,12 +113,12 @@ dependencies {
     implementation project(path: ':vpnLib')
     implementation project(path: ':sstpClient')
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.6.1'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
     def billing_version = '7.0.0'
     implementation "com.android.billingclient:billing-ktx:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     ksp "com.github.bumptech.glide:ksp:$glideVersion"
-    implementation 'com.google.android.gms:play-services-ads:23.2.0'
+    implementation 'com.google.android.gms:play-services-ads:23.3.0'
     // Remove applovin because it can login to check why
 //    implementation 'com.google.ads.mediation:applovin:11.7.1.0'
     // Comment these line to stop FAN mediation

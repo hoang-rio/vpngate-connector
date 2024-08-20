@@ -1,16 +1,17 @@
 package vn.unlimit.vpngate.dialog
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RadioGroup
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.LayoutSortBottomDialogBinding
 import vn.unlimit.vpngate.models.VPNGateConnectionList
 
 /**
@@ -18,24 +19,10 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList
  */
 class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedChangeListener,
     View.OnClickListener {
-    private var btnApply: View? = null
     private var mSortProperty: String? = null
     private var mSortType = VPNGateConnectionList.ORDER.ASC
-    private var rdgSortProperty: RadioGroup? = null
-    private var rdgSortProperty2: RadioGroup? = null
-    private var rdgSortType: RadioGroup? = null
-    private val mBottomSheetBehaviorCallback: BottomSheetBehavior.BottomSheetCallback =
-        object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    dismiss()
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-            }
-        }
     private var onApplyClickListener: OnApplyClickListener? = null
+    private lateinit var binding: LayoutSortBottomDialogBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,48 +47,41 @@ class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedC
         return dialog
     }
 
-    @SuppressLint("RestrictedApi")
-    override fun setupDialog(dialog: Dialog, style: Int) {
-        val contentView = View.inflate(context, R.layout.layout_sort_bottom_dialog, null)
-        rdgSortProperty = contentView.findViewById(R.id.rdg_sort_property)
-        rdgSortProperty2 = contentView.findViewById(R.id.rdg_sort_property2)
-        rdgSortType = contentView.findViewById(R.id.rdg_sort_type)
-        btnApply = contentView.findViewById(R.id.btn_apply)
-        btnApply!!.setOnClickListener(this)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = LayoutSortBottomDialogBinding.inflate(layoutInflater)
+        binding.btnApply.setOnClickListener(this)
         fillRadioGroup()
-        rdgSortProperty!!.setOnCheckedChangeListener(this)
-        rdgSortProperty2!!.setOnCheckedChangeListener(this)
-        rdgSortType!!.setOnCheckedChangeListener(this)
-        dialog.setContentView(contentView)
-        val layoutParams =
-            (contentView.parent as View).layoutParams as CoordinatorLayout.LayoutParams
-        val behavior = layoutParams.behavior
-        if (behavior != null && behavior is BottomSheetBehavior<*>) {
-            behavior.addBottomSheetCallback(mBottomSheetBehaviorCallback)
-        }
+        binding.rdgSortProperty.setOnCheckedChangeListener(this)
+        binding.rdgSortProperty2.setOnCheckedChangeListener(this)
+        binding.rdgSortType.setOnCheckedChangeListener(this)
+        return binding.root
     }
 
     private fun fillRadioGroup() {
         //Fill property radio group
         when (mSortProperty) {
-            VPNGateConnectionList.SortProperty.SESSION -> rdgSortProperty!!.check(R.id.radio_session)
-            VPNGateConnectionList.SortProperty.COUNTRY -> rdgSortProperty!!.check(R.id.radio_country)
-            VPNGateConnectionList.SortProperty.SPEED -> rdgSortProperty!!.check(R.id.radio_speed)
-            VPNGateConnectionList.SortProperty.PING -> rdgSortProperty2!!.check(R.id.radio_ping)
-            VPNGateConnectionList.SortProperty.SCORE -> rdgSortProperty2!!.check(R.id.radio_score)
-            VPNGateConnectionList.SortProperty.UPTIME -> rdgSortProperty2!!.check(R.id.radio_uptime)
+            VPNGateConnectionList.SortProperty.SESSION -> binding.rdgSortProperty.check(R.id.radio_session)
+            VPNGateConnectionList.SortProperty.COUNTRY -> binding.rdgSortProperty.check(R.id.radio_country)
+            VPNGateConnectionList.SortProperty.SPEED -> binding.rdgSortProperty.check(R.id.radio_speed)
+            VPNGateConnectionList.SortProperty.PING -> binding.rdgSortProperty2.check(R.id.radio_ping)
+            VPNGateConnectionList.SortProperty.SCORE -> binding.rdgSortProperty2.check(R.id.radio_score)
+            VPNGateConnectionList.SortProperty.UPTIME -> binding.rdgSortProperty2.check(R.id.radio_uptime)
             else -> {}
         }
         //Fill type radio group
         if (mSortType == VPNGateConnectionList.ORDER.DESC) {
-            rdgSortType!!.check(R.id.radio_sort_type_desc)
+            binding.rdgSortType.check(R.id.radio_sort_type_desc)
         } else {
-            rdgSortType!!.check(R.id.radio_sort_type_asc)
+            binding.rdgSortType.check(R.id.radio_sort_type_asc)
         }
     }
 
     override fun onCheckedChanged(radioGroup: RadioGroup, checkedId: Int) {
-        if (radioGroup == rdgSortProperty || radioGroup == rdgSortProperty2) {
+        if (radioGroup == binding.rdgSortProperty || radioGroup == binding.rdgSortProperty2) {
             when (checkedId) {
                 R.id.radio_session -> mSortProperty = VPNGateConnectionList.SortProperty.SESSION
                 R.id.radio_country -> mSortProperty = VPNGateConnectionList.SortProperty.COUNTRY
@@ -111,16 +91,16 @@ class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedC
                 R.id.radio_score -> mSortProperty = VPNGateConnectionList.SortProperty.SCORE
                 else -> {}
             }
-            rdgSortProperty!!.setOnCheckedChangeListener(null)
-            rdgSortProperty2!!.setOnCheckedChangeListener(null)
-            if (radioGroup == rdgSortProperty) {
-                rdgSortProperty2!!.clearCheck()
+            binding.rdgSortProperty.setOnCheckedChangeListener(null)
+            binding.rdgSortProperty2.setOnCheckedChangeListener(null)
+            if (radioGroup == binding.rdgSortProperty) {
+                binding.rdgSortProperty2.clearCheck()
             } else {
-                rdgSortProperty!!.clearCheck()
+                binding.rdgSortProperty.clearCheck()
             }
-            rdgSortProperty!!.setOnCheckedChangeListener(this)
-            rdgSortProperty2!!.setOnCheckedChangeListener(this)
-        } else if (radioGroup == rdgSortType) {
+            binding.rdgSortProperty.setOnCheckedChangeListener(this)
+            binding.rdgSortProperty2.setOnCheckedChangeListener(this)
+        } else if (radioGroup == binding.rdgSortType) {
             mSortType = if (checkedId == R.id.radio_sort_type_asc) {
                 VPNGateConnectionList.ORDER.ASC
             } else {
@@ -136,7 +116,7 @@ class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedC
     }
 
     override fun onClick(view: View) {
-        if (view == btnApply && onApplyClickListener != null) {
+        if (view == binding.btnApply && onApplyClickListener != null) {
             onApplyClickListener!!.onApplyClick(mSortProperty, mSortType)
         }
         dismiss()

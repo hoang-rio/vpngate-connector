@@ -6,12 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
 import android.widget.CompoundButton
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.fragment.app.DialogFragment
-import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.LayoutMessageDialogBinding
 import vn.unlimit.vpngate.utils.DataUtil
 
 /**
@@ -20,35 +17,30 @@ import vn.unlimit.vpngate.utils.DataUtil
 class MessageDialog : DialogFragment(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener {
     private var operatorMessage: String? = null
-    private var txtOpMessage: TextView? = null
-    private var chbHideAllMessage: AppCompatCheckBox? = null
-    private var btnClose: Button? = null
     private var dataUtil: DataUtil? = null
+    private lateinit var binding: LayoutMessageDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.layout_message_dialog, container, false)
-        txtOpMessage = rootView.findViewById(R.id.txt_message)
-        txtOpMessage!!.text = operatorMessage
-        chbHideAllMessage = rootView.findViewById(R.id.cbh_hide_5time)
-        chbHideAllMessage!!.setOnCheckedChangeListener(this)
-        btnClose = rootView.findViewById(R.id.btn_close)
-        btnClose!!.setOnClickListener(this)
-        return rootView
+    ): View {
+        binding = LayoutMessageDialogBinding.inflate(layoutInflater)
+        binding.txtMessage.text = operatorMessage
+        binding.cbhHide5time.setOnCheckedChangeListener(this)
+        binding.btnClose.setOnClickListener(this)
+        return binding.root
     }
 
     override fun onClick(view: View) {
-        if (view == btnClose) {
+        if (view == binding.btnClose) {
             dismiss()
         }
     }
 
     override fun onCheckedChanged(checkBox: CompoundButton, isChecked: Boolean) {
         try {
-            if (checkBox == chbHideAllMessage && isChecked) {
+            if (checkBox == binding.cbhHide5time && isChecked) {
                 dataUtil!!.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 5)
             } else {
                 dataUtil!!.setIntSetting(DataUtil.SETTING_HIDE_OPERATOR_MESSAGE_COUNT, 0)
