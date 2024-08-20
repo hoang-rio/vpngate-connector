@@ -84,7 +84,7 @@ class DataUtil(context: Context?) {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Got exception when get connection cache", e)
             }
             return null
         }

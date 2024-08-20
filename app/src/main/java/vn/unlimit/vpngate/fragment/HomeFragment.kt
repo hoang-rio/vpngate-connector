@@ -237,7 +237,6 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             lifecycleScope.launch(Dispatchers.IO) {
                 if (mActivity!!.vpnGateConnectionList != null) {
                     mActivity!!.vpnGateConnectionList!!.sort(property, type)
-                    dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
                     if (isSearching) {
                         val filterResult = mActivity!!.vpnGateConnectionList!!.filter(mKeyword)
                         withContext(Dispatchers.Main) {
@@ -346,7 +345,6 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
                 binding.txtEmpty.visibility = View.GONE
                 binding.rcvConnection.visibility = View.VISIBLE
                 vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
-                dataUtil!!.connectionsCache = mActivity!!.vpnGateConnectionList
                 binding.lnSwipeRefresh.isRefreshing = false
             }
         }

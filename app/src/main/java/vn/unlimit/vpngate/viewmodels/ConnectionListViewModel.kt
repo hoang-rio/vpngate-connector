@@ -90,6 +90,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                         App.instance!!.vpnGateItemDao.insertAll(*items.toTypedArray())
                         val itemCount = App.instance!!.vpnGateItemDao.count()
                         Log.i(TAG, "Total item: ${items.size}. Total in database: $itemCount")
+                        dataUtil.connectionsCache = connectionList
                     }
                 }
             } catch (e: Throwable) {

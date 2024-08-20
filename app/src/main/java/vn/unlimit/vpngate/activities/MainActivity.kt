@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if (aBoolean) {
                 binding.incLoading.lnLoading.visibility = View.VISIBLE
             } else if (intent.getStringExtra(TARGET_FRAGMENT) == null) {
-                onSuccess()
+                showVPNServers()
             }
         }
         connectionListViewModel!!.isError.observe(this) { isError: Boolean ->
@@ -336,6 +336,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     this@MainActivity.vpnGateConnectionList = vpnGateConnectionList
                     if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
                         callDataServer()
+                    } else {
+                        showVPNServers()
                     }
                 } else {
                     runOnUiThread {
@@ -480,7 +482,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun onSuccess() {
+    private fun showVPNServers() {
         val vpnGateConnectionList = connectionListViewModel!!.vpnGateConnectionList.value
         isLoading = false
         binding.frameContent.visibility = View.VISIBLE
@@ -493,7 +495,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     updateData()
                 }
             }
-            dataUtil!!.connectionsCache = vpnGateConnectionList
         }
     }
 
