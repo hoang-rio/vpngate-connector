@@ -12,9 +12,6 @@ interface VPNGateItemDao {
     @Query("SELECT * FROM vpngateitem")
     fun getAll(): List<VPNGateItem>
 
-    @Query("SELECT * FROM vpngateitem WHERE countryLong LIKE :keyword OR hostName LIKE :keyword OR operator LIKE :keyword OR ip LIKE :keyword")
-    fun search(keyword: String): List<VPNGateItem>
-
     @RawQuery
     fun filterAndSort(query: SupportSQLiteQuery): List<VPNGateItem>
 

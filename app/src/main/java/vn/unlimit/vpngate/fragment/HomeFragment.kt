@@ -269,6 +269,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         binding.txtEmpty.visibility = View.GONE
         binding.rcvConnection.visibility = View.VISIBLE
         if (mActivity!!.vpnGateConnectionList != null) {
+            mActivity!!.vpnGateConnectionList!!.mKeyword = null
             lifecycleScope.launch(Dispatchers.IO) {
                 val vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter()
                 withContext(Dispatchers.Main) {

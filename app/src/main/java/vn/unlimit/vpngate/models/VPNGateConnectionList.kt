@@ -14,6 +14,7 @@ import java.util.Locale
 class VPNGateConnectionList : Parcelable {
     @JvmField
     var filter: Filter? = null
+    var mKeyword: String? = null
     private var data: MutableList<VPNGateConnection>?
     private var vpnGateItemDao: VPNGateItemDao? = null
     private var sortField: String? = null
@@ -35,10 +36,19 @@ class VPNGateConnectionList : Parcelable {
      * @return
      */
     fun filter(inKeyword: String): VPNGateConnectionList {
-        var keyword = inKeyword
-        keyword = keyword.lowercase(Locale.getDefault())
-        val result = VPNGateConnectionList().fromVPNGateItems(vpnGateItemDao!!.search("%$keyword%"))
-        return result
+        mKeyword = inKeyword
+        val result = vpnGateItemDao!!.filterAndSort(buildQuery())
+        clear()
+        result.forEach { data!!.add(VPNGateConnection().fromVPNGateItem(it)) }
+        return this
+    }
+
+    private fun getFilterQuery(): String {
+        if (mKeyword != null) {
+            val keyword = mKeyword!!.lowercase(Locale.getDefault())
+            return "countryLong LIKE '%$keyword%' OR hostName LIKE '%$keyword%' OR operator LIKE '%$keyword%' OR ip LIKE '%$keyword%'"
+        }
+        return ""
     }
 
     private fun getOrderQuery(): String {
@@ -62,10 +72,8 @@ class VPNGateConnectionList : Parcelable {
             if (skipProcessSort) {
                 return
             }
-            val whereQuery = getWhereQuery()
-            val query = "SELECT * FROM vpngateitem${if(whereQuery.isNotEmpty()) "WHERE $whereQuery " else ""}${getOrderQuery()}"
             val sortedData: List<VPNGateItem>? =
-                vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery(query))
+                vpnGateItemDao?.filterAndSort(buildQuery())
             this.clear()
             sortedData!!.forEach { data!!.add(VPNGateConnection().fromVPNGateItem(it)) }
         }
@@ -150,15 +158,27 @@ class VPNGateConnectionList : Parcelable {
         return whereQuery
     }
 
-    fun advancedFilter(): VPNGateConnectionList {
+    private fun buildQuery(): SimpleSQLiteQuery {
         val selectQuery = "SELECT * FROM vpngateitem"
-        val whereQuery = getWhereQuery()
-        clear()
-        val filteredResult: List<VPNGateItem>? = if (whereQuery.isNotEmpty()) {
-            vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery("$selectQuery WHERE $whereQuery${getOrderQuery()}"))
-        } else {
-            vpnGateItemDao?.filterAndSort(SimpleSQLiteQuery("$selectQuery${getOrderQuery()}"))
+        var whereQuery = getWhereQuery()
+        val filterQuery = getFilterQuery()
+        if (filterQuery.isNotEmpty()) {
+            whereQuery = if (whereQuery.isNotEmpty()) {
+                appendQuery(whereQuery, "($filterQuery)")
+            } else {
+                filterQuery
+            }
         }
+        val orderQuery = getOrderQuery()
+        if (whereQuery.isNotEmpty()) {
+            return SimpleSQLiteQuery("$selectQuery WHERE $whereQuery$orderQuery")
+        }
+        return SimpleSQLiteQuery("$selectQuery$orderQuery")
+    }
+
+    fun advancedFilter(): VPNGateConnectionList {
+        clear()
+        val filteredResult: List<VPNGateItem>? = vpnGateItemDao?.filterAndSort(buildQuery())
         filteredResult?.forEach {
             data!!.add(VPNGateConnection().fromVPNGateItem(it))
         }
