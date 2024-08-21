@@ -658,6 +658,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 } else {
                     val intentLogin = Intent(this, LoginActivity::class.java)
                     startActivity(intentLogin)
+                    finish()
                 }
             }
 
