@@ -76,17 +76,7 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                 dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index)
             }
         }
-        if (dataUtil.connectionCacheExpires == null) {
-            binding.lnClearCache.visibility = View.GONE
-        } else {
-            binding.lnClearCache.visibility = View.VISIBLE
-            binding.txtCacheExpire.text =
-                dataUtil.connectionCacheExpires?.let {
-                    DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(
-                        it
-                    )
-                }
-        }
+        onHiddenChanged(true)
         binding.lnDns.setOnClickListener(this)
         if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
             binding.swDns.setChecked(true)
@@ -212,6 +202,22 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if (!hidden) {
+            if (dataUtil.connectionCacheExpires == null) {
+                binding.lnClearCache.visibility = View.GONE
+            } else {
+                binding.lnClearCache.visibility = View.VISIBLE
+                binding.txtCacheExpire.text =
+                    dataUtil.connectionCacheExpires?.let {
+                        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(
+                            it
+                        )
+                    }
+            }
+        }
     }
 
     override fun onResume() {

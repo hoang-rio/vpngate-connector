@@ -31,6 +31,7 @@ class VPNGateListAdapter(private val mContext: Context) :
     @SuppressLint("NotifyDataSetChanged")
     fun initialize(vpnGateConnectionList: VPNGateConnectionList?) {
         try {
+            Log.d(TAG, "initialize with: ${vpnGateConnectionList?.size()} items")
             _list.clear()
             if (vpnGateConnectionList != null) {
                 _list.addAll(vpnGateConnectionList)

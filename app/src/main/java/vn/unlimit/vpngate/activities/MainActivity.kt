@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdListener
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private var dataUtil: DataUtil? = null
     private var drawerToggle: ActionBarDrawerToggle? = null
     private var currentUrl: String? = ""
+    private var currentFragmentTag: String? = null
     var sortProperty: String? = ""
         private set
     private var currentTitle: String? = ""
@@ -339,7 +341,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         callDataServer()
                     } else {
                         withContext(Dispatchers.Main) {
-                            displayHome(true)
+                            displayHome()
                         }
                     }
                 } else {
@@ -381,6 +383,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         isLoading = true
         binding.incError.lnError.visibility = View.GONE
         binding.frameContent.visibility = View.GONE
+        supportFragmentManager.findFragmentByTag(HomeFragment::class.java.name)?.let {
+            supportFragmentManager.commit { hide(it) }
+        }
         binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
         connectionListViewModel!!.getAPIData()
     }
@@ -578,11 +583,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return super.onOptionsItemSelected(item)
     }
 
-    private fun displayHome(loadFromCache: Boolean = false) {
+    private fun displayHome() {
         isLoading = false
         binding.incLoading.lnLoading.visibility = View.GONE
-        if (currentUrl != "home" || !loadFromCache) {
-            Log.d(TAG, "replaceFragment in updateData")
+        if (vpnGateConnectionList != null) {
             replaceFragment("home")
         }
     }
@@ -718,49 +722,70 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 var title = resources.getString(R.string.app_name)
                 when (url) {
                     "privacy-policy" -> {
-                        fragment = PrivacyPolicyFragment()
                         tag = PrivacyPolicyFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: PrivacyPolicyFragment()
                         title = getString(R.string.privacy_policy_title)
                     }
 
                     "home" -> {
-                        fragment = HomeFragment()
                         tag = HomeFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: HomeFragment()
                     }
 
                     "status" -> {
-                        fragment = StatusFragment()
                         tag = StatusFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: StatusFragment()
                         title = resources.getString(R.string.status)
                     }
 
                     "setting" -> {
-                        fragment = SettingFragment()
                         tag = SettingFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: SettingFragment()
                         title = resources.getString(R.string.setting)
                     }
 
                     "help" -> {
-                        fragment = HelpFragment()
                         tag = HelpFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: HelpFragment()
                         title = resources.getString(R.string.help)
                     }
 
                     "about" -> {
-                        fragment = AboutFragment()
                         tag = AboutFragment::class.java.name
+                        fragment = supportFragmentManager.findFragmentByTag(
+                            tag
+                        ) ?: AboutFragment()
                         title = resources.getString(R.string.about)
                         binding.navMain.setCheckedItem(R.id.nav_about)
                     }
 
                     else -> {}
                 }
-                if (fragment != null && !fragment.isAdded) {
+                if (fragment != null) {
                     binding.frameContent.visibility = View.VISIBLE
                     setTitleActionbar(title)
                     val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.frame_content, fragment, tag)
-                    transaction.commitAllowingStateLoss()
+                    if (!fragment.isAdded) {
+                        transaction.add(binding.frameContent.id, fragment, tag)
+                    }
+                    if (currentFragmentTag != null && currentFragmentTag != tag) {
+                        supportFragmentManager.findFragmentByTag(currentFragmentTag)?.let {
+                            transaction.hide(it)
+                        }
+                    }
+                    transaction.show(fragment)
+                    transaction.commitNow()
+                    currentFragmentTag = tag
                 }
             }
         } catch (e: Exception) {
