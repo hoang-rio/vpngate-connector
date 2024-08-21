@@ -161,14 +161,16 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         vpnGateListAdapter!!.setOnItemClickListener(this)
         vpnGateListAdapter!!.setOnItemLongClickListener(this)
         vpnGateListAdapter!!.setOnScrollListener(this)
-        if (mActivity!!.vpnGateConnectionList != null) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                withContext(Dispatchers.Main) {
-                    vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
-                }
+        lifecycleScope.launch(Dispatchers.IO) {
+            if ("" != mActivity!!.sortProperty) {
+                mActivity!!.vpnGateConnectionList?.sort(
+                    mActivity!!.sortProperty,
+                    mActivity!!.sortType
+                )
             }
-        } else {
-            vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+            withContext(Dispatchers.Main) {
+                vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+            }
         }
         binding.btnToTop.setOnClickListener(this)
         return binding.root
@@ -233,7 +235,6 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
 
     fun sort(property: String?, type: Int) {
         try {
-            stopTask()
             lifecycleScope.launch(Dispatchers.IO) {
                 if (mActivity!!.vpnGateConnectionList != null) {
                     mActivity!!.vpnGateConnectionList!!.sort(property, type)
@@ -332,16 +333,17 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         connectionListViewModel!!.getAPIData()
     }
 
-    fun onSuccess(o: Any?) {
-        mActivity!!.vpnGateConnectionList = o as VPNGateConnectionList?
+    private fun onSuccess(o: Any?) {
         lifecycleScope.launch(Dispatchers.IO) {
+            val vpnGateConnectionList = o as VPNGateConnectionList?
             if ("" != mActivity!!.sortProperty) {
-                mActivity!!.vpnGateConnectionList?.sort(
+                vpnGateConnectionList?.sort(
                     mActivity!!.sortProperty,
                     mActivity!!.sortType
                 )
             }
             withContext(Dispatchers.Main) {
+                mActivity!!.vpnGateConnectionList = vpnGateConnectionList
                 binding.txtEmpty.visibility = View.GONE
                 binding.rcvConnection.visibility = View.VISIBLE
                 vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)

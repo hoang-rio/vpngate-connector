@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if (aBoolean) {
                 binding.incLoading.lnLoading.visibility = View.VISIBLE
             } else if (intent.getStringExtra(TARGET_FRAGMENT) == null) {
-                showVPNServers()
+                postVPNGateAPI()
             }
         }
         connectionListViewModel!!.isError.observe(this) { isError: Boolean ->
@@ -337,7 +337,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
                         callDataServer()
                     } else {
-                        showVPNServers()
+                        withContext(Dispatchers.Main) {
+                            displayHome(true)
+                        }
                     }
                 } else {
                     runOnUiThread {
@@ -372,8 +374,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         try {
-            if (currentUrl == "home" && (connectionListViewModel!!.vpnGateConnectionList.value == null || connectionListViewModel!!.vpnGateConnectionList.value!!
-                    .size() == 0)
+            if (
+                currentUrl == "home" &&
+                (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0)
             ) {
                 initState()
             }
@@ -482,7 +485,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun showVPNServers() {
+    private fun postVPNGateAPI() {
         val vpnGateConnectionList = connectionListViewModel!!.vpnGateConnectionList.value
         isLoading = false
         binding.frameContent.visibility = View.VISIBLE
@@ -492,7 +495,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
             if (dataUtil!!.isAcceptedPrivacyPolicy) {
                 withContext(Dispatchers.Main) {
-                    updateData()
+                    displayHome()
                 }
             }
         }
@@ -589,10 +592,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return super.onOptionsItemSelected(item)
     }
 
-    private fun updateData() {
+    private fun displayHome(loadFromCache: Boolean = false) {
         isLoading = false
         binding.incLoading.lnLoading.visibility = View.GONE
-        replaceFragment("home")
+        if (currentUrl != "home" || !loadFromCache) {
+            Log.d(TAG, "replaceFragment in updateData")
+            replaceFragment("home")
+        }
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -646,9 +652,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             R.id.nav_home -> {
-                if (connectionListViewModel!!.vpnGateConnectionList.value == null) {
+                if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
                     callDataServer()
                 }
+                Log.d(TAG, "replaceFragment when click menu")
                 replaceFragment("home")
                 disallowLoadHome = false
             }
@@ -711,6 +718,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun replaceFragment(url: String?) {
         try {
+            Log.d(TAG, "replaceFragment: $url")
             if (url != null && (url != currentUrl || url == "home")) {
                 toggleAction(url == "home" && connectionListViewModel!!.vpnGateConnectionList.value != null)
                 if (url != "home") {
@@ -776,6 +784,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun startHome() {
         this.loadData()
+        Log.d(TAG, "replaceFragment startHome")
         replaceFragment("home")
     }
 
