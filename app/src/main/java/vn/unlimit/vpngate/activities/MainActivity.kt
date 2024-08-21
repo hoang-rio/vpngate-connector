@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
     private val isMobileAdsInitializeCalled = AtomicBoolean(false)
     var connectionListViewModel: ConnectionListViewModel? = null
-    var isLoading: Boolean = true
+    var isLoading: Boolean = false
     var doubleBackToExitPressedOnce: Boolean = false
     private var selectedMenuItem: MenuItem? = null
     private var dataUtil: DataUtil? = null
@@ -147,12 +147,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             isLoading = false
             currentUrl = savedInstanceState.getString("currentUrl")
             currentTitle = savedInstanceState.getString("currentTitle")
-            lifecycleScope.launch(Dispatchers.IO) {
-                vpnGateConnectionList = dataUtil!!.connectionsCache
-                disallowLoadHome =
-                    connectionListViewModel!!.vpnGateConnectionList.value != null && connectionListViewModel!!.vpnGateConnectionList.value!!
-                        .size() > 0
-            }
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -201,6 +195,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             hideAdContainer()
         }
         addBackPressedHandler()
+        lifecycleScope.launch(Dispatchers.IO) {
+            vpnGateConnectionList = dataUtil!!.connectionsCache
+            disallowLoadHome =
+                vpnGateConnectionList != null && vpnGateConnectionList!!
+                    .size() > 0
+            withContext(Dispatchers.Main) {
+                initState()
+            }
+        }
     }
 
     private fun checkStatusMenu() {
@@ -332,9 +335,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     runOnUiThread {
                         binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
                     }
-                    val vpnGateConnectionList = dataUtil!!.connectionsCache
-                    this@MainActivity.vpnGateConnectionList = vpnGateConnectionList
-                    if (vpnGateConnectionList == null || vpnGateConnectionList.size() == 0) {
+                    if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
                         callDataServer()
                     } else {
                         withContext(Dispatchers.Main) {
@@ -369,21 +370,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onPause() {
         super.onPause()
         isInFront = false
-    }
-
-    override fun onResume() {
-        super.onResume()
-        try {
-            if (
-                currentUrl == "home" &&
-                (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0)
-            ) {
-                initState()
-            }
-            isInFront = true
-        } catch (e: Exception) {
-            Log.e(TAG, "Got exception when handle onResume", e)
-        }
     }
 
     override fun onDestroy() {
@@ -476,7 +462,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     return false
                 }
             })
-            if (connectionListViewModel!!.vpnGateConnectionList.value != null && connectionListViewModel!!.vpnGateConnectionList.value!!.filter != null) {
+            if (vpnGateConnectionList != null && vpnGateConnectionList!!.filter != null) {
                 menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_active_white)
             }
         } catch (e: Exception) {
@@ -560,9 +546,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             return true
         }
 
-        if (itemId == R.id.action_filter && connectionListViewModel!!.vpnGateConnectionList.value != null) {
+        if (itemId == R.id.action_filter && vpnGateConnectionList != null) {
             val filterBottomSheetDialog = newInstance(
-                connectionListViewModel!!.vpnGateConnectionList.value!!.filter
+                vpnGateConnectionList!!.filter
             )
             filterBottomSheetDialog.onButtonClickListener =
                 object : OnButtonClickListener {
@@ -572,12 +558,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         val homeFragment = supportFragmentManager.findFragmentByTag(
                             HomeFragment::class.java.name
                         ) as HomeFragment?
-                        if (homeFragment != null && connectionListViewModel!!.vpnGateConnectionList.value != null) {
+                        if (homeFragment != null && vpnGateConnectionList != null) {
                             val params = Bundle()
                             params.putString("filterObj", Gson().toJson(filter))
                             FirebaseAnalytics.getInstance(applicationContext)
                                 .logEvent("Filter", params)
-                            connectionListViewModel!!.vpnGateConnectionList.value!!.filter = filter
+                            vpnGateConnectionList!!.filter = filter
                             homeFragment.advanceFilter(filter)
                         }
                     }
@@ -720,7 +706,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         try {
             Log.d(TAG, "replaceFragment: $url")
             if (url != null && (url != currentUrl || url == "home")) {
-                toggleAction(url == "home" && connectionListViewModel!!.vpnGateConnectionList.value != null)
+                toggleAction(url == "home" && vpnGateConnectionList != null)
                 if (url != "home") {
                     binding.incLoading.lnLoading.visibility = View.GONE
                     binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
@@ -832,7 +818,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     ).show()
                     Handler(mainLooper).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
                 } else {
-                    if (connectionListViewModel!!.vpnGateConnectionList.value == null) {
+                    if (vpnGateConnectionList == null) {
                         callDataServer()
                     }
                     binding.navMain.setCheckedItem(R.id.nav_home)
@@ -865,9 +851,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         get() = connectionListViewModel!!.vpnGateConnectionList.value
         set(inVpnGateConnectionList) {
             connectionListViewModel!!.vpnGateConnectionList.postValue(inVpnGateConnectionList)
-            if (mMenu != null) {
-                mMenu!!.findItem(R.id.action_filter)
-                    .setIcon(if (inVpnGateConnectionList?.filter != null) R.drawable.ic_filter_active_white else R.drawable.ic_filter_white)
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    if (mMenu != null) {
+                        mMenu!!.findItem(R.id.action_filter)
+                            .setIcon(if (inVpnGateConnectionList?.filter != null) R.drawable.ic_filter_active_white else R.drawable.ic_filter_white)
+                    }
+                }
             }
         }
 

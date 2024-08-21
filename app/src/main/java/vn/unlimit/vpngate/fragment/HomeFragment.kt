@@ -161,19 +161,24 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         vpnGateListAdapter!!.setOnItemClickListener(this)
         vpnGateListAdapter!!.setOnItemLongClickListener(this)
         vpnGateListAdapter!!.setOnScrollListener(this)
+        binding.btnToTop.setOnClickListener(this)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         lifecycleScope.launch(Dispatchers.IO) {
             if ("" != mActivity!!.sortProperty) {
                 mActivity!!.vpnGateConnectionList?.sort(
                     mActivity!!.sortProperty,
                     mActivity!!.sortType
                 )
+            } else {
+                mActivity!!.vpnGateConnectionList?.advancedFilter()
             }
             withContext(Dispatchers.Main) {
                 vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
             }
         }
-        binding.btnToTop.setOnClickListener(this)
-        return binding.root
     }
 
     fun advanceFilter(filter: VPNGateConnectionList.Filter?) {

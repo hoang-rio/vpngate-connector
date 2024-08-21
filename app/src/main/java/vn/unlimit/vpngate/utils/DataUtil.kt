@@ -80,6 +80,7 @@ class DataUtil(context: Context?) {
                     } else {
                         reader.close()
                         val items = App.instance!!.vpnGateItemDao.getAll()
+                        Log.d(TAG, "Get ${items.size} from cache")
                         return VPNGateConnectionList().fromVPNGateItems(items)
                     }
                 }
