@@ -134,7 +134,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
             connectionListViewModel!!.isLoading.observe(this) { isLoading: Boolean? ->
                 if (!isLoading!! && connectionListViewModel!!.vpnGateConnectionList.value != null) {
-                    onSuccess(connectionListViewModel!!.vpnGateConnectionList.value)
+                    onAPISuccess(connectionListViewModel!!.vpnGateConnectionList.value)
                 }
             }
             connectionListViewModel!!.isError.observe(this) { isError: Boolean ->
@@ -338,7 +338,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         connectionListViewModel!!.getAPIData()
     }
 
-    private fun onSuccess(o: Any?) {
+    private fun onAPISuccess(o: Any?) {
         lifecycleScope.launch(Dispatchers.IO) {
             val vpnGateConnectionList = o as VPNGateConnectionList?
             if ("" != mActivity!!.sortProperty) {
@@ -351,7 +351,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
                 mActivity!!.vpnGateConnectionList = vpnGateConnectionList
                 binding.txtEmpty.visibility = View.GONE
                 binding.rcvConnection.visibility = View.VISIBLE
-                vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                vpnGateListAdapter!!.initialize(vpnGateConnectionList)
                 binding.lnSwipeRefresh.isRefreshing = false
             }
         }
