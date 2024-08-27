@@ -76,7 +76,7 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                 dataUtil.setIntSetting(DataUtil.SETTING_CACHE_TIME_KEY, index)
             }
         }
-        onHiddenChanged(true)
+        onHiddenChanged(false)
         binding.lnDns.setOnClickListener(this)
         if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
             binding.swDns.setChecked(true)
