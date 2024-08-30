@@ -32,19 +32,9 @@ class SplashActivity : AppCompatActivity() {
         private const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        AppOpenManager.splashActivity = null
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
-        AppOpenManager.splashActivity = this
-        checkDynamicLink()
-    }
-
-    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+    private val activityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
         when (val resultCode = result.resultCode) {
             Activity.RESULT_OK -> {
                 Log.v(TAG, "Update flow completed!")
@@ -58,6 +48,18 @@ class SplashActivity : AppCompatActivity() {
                 checkAppUpdateAndStartActivity()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AppOpenManager.splashActivity = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
+        AppOpenManager.splashActivity = this
+        checkDynamicLink()
     }
 
     private fun checkAppUpdateAndStartActivity() {

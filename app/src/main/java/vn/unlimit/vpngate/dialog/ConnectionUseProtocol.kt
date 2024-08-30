@@ -4,21 +4,25 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.databinding.LayoutConnectUseProtocolDialogBinding
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.models.VPNGateConnection
 
 class ConnectionUseProtocol : BottomSheetDialogFragment(), View.OnClickListener {
     private var mVpnGateConnection: VPNGateConnection? = null
     private var paidServer: PaidServer? = null
-    private var btnUseTCP: Button? = null
     private var clickResult: ClickResult? = null
+    private lateinit var binding: LayoutConnectUseProtocolDialogBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog =
@@ -38,34 +42,35 @@ class ConnectionUseProtocol : BottomSheetDialogFragment(), View.OnClickListener 
         return dialog
     }
 
-    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "RestrictedApi")
-    override fun setupDialog(dialog: Dialog, style: Int) {
-        try {
-            val contentView =
-                View.inflate(context, R.layout.layout_connect_use_protocol_dialog, null)
-            btnUseTCP = contentView.findViewById(R.id.btn_use_tcp)
-            btnUseTCP!!.setOnClickListener(this)
-            val btnUseUDP = contentView.findViewById<Button>(R.id.btn_use_udp)
-            btnUseUDP.setOnClickListener(this)
-            if (mVpnGateConnection != null) {
-                btnUseTCP!!.text = "TCP " + mVpnGateConnection!!.tcpPort
-                btnUseUDP.text = "UDP " + mVpnGateConnection!!.udpPort
-            } else if (paidServer != null) {
-                btnUseTCP!!.background = requireContext().resources.getDrawable(R.drawable.selector_paid_button, requireActivity().theme)
-                btnUseTCP!!.text = "TCP " + paidServer!!.tcpPort
-                btnUseUDP.text = "UDP " + paidServer!!.udpPort
-            }
-            dialog.setContentView(contentView)
-        } catch (e: Exception) {
-            e.printStackTrace()
+    @SuppressLint("SetTextI18n")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = LayoutConnectUseProtocolDialogBinding.inflate(layoutInflater)
+        binding.btnUseTcp.setOnClickListener(this)
+        binding.btnUseUdp.setOnClickListener(this)
+        if (mVpnGateConnection != null) {
+            binding.btnUseTcp.text = "TCP " + mVpnGateConnection!!.tcpPort
+            binding.btnUseUdp.text = "UDP " + mVpnGateConnection!!.udpPort
+        } else if (paidServer != null) {
+            binding.btnUseTcp.background = ResourcesCompat.getDrawable(requireContext().resources, R.drawable.selector_paid_button, requireActivity().theme)
+            binding.btnUseTcp.text = "TCP " + paidServer!!.tcpPort
+            binding.btnUseUdp.text = "UDP " + paidServer!!.udpPort
         }
+        return binding.root
     }
 
     override fun onClick(view: View) {
         if (clickResult != null) {
-            clickResult!!.onResult(btnUseTCP != view)
+            clickResult!!.onResult(binding.btnUseTcp != view)
         }
-        this.dismiss()
+        try {
+            this.dismiss()
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Got exception when handle on click ", e)
+        }
     }
 
     interface ClickResult {
@@ -73,6 +78,7 @@ class ConnectionUseProtocol : BottomSheetDialogFragment(), View.OnClickListener 
     }
 
     companion object {
+        const val TAG = "ConnectionUseProtocol"
         fun newInstance(
             vpnGateConnection: VPNGateConnection?,
             clickResult: ClickResult?

@@ -89,12 +89,18 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         binding = FragmentStatusBinding.inflate(layoutInflater)
         binding.btnOnOff.setOnClickListener(this)
         binding.btnClearStatistics.setOnClickListener(this)
-        mVpnGateConnection = dataUtil!!.lastVPNConnection
         loadAdMob()
         bindData()
+        onHiddenChanged(true)
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         return binding.root
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if (!hidden) {
+            bindData()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +120,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private fun bindData() {
         try {
+            mVpnGateConnection = dataUtil!!.lastVPNConnection
             binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(
                 PropertiesService.getUploaded(mContext),
                 false,

@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.api.VPNGateApiService
 import vn.unlimit.vpngate.models.VPNGateConnection
@@ -43,7 +45,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            Log.e(TAG, e.message, e)
+            Log.e(TAG, "Error when get connection list from csv", e)
         } finally {
             if (br != null) {
                 try {
@@ -61,8 +63,8 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
         if (isLoading.value == true) {
             return
         }
-        isLoading.value = true
-        isError.value = false
+        isLoading.postValue(true)
+        isError.postValue(false)
         viewModelScope.launch {
             try {
                 val connectionList: VPNGateConnectionList
@@ -82,6 +84,14 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                     getAPIData()
                 } else {
                     vpnGateConnectionList.postValue(connectionList)
+                    val items = connectionList.toVPNGateItems()
+                    withContext(Dispatchers.IO) {
+                        App.instance!!.vpnGateItemDao.deleteAll()
+                        App.instance!!.vpnGateItemDao.insertAll(*items.toTypedArray())
+                        val itemCount = App.instance!!.vpnGateItemDao.count()
+                        Log.i(TAG, "Total item: ${items.size}. Total in database: $itemCount")
+                        dataUtil.connectionsCache = connectionList
+                    }
                 }
             } catch (e: Throwable) {
                 Log.e(TAG, "Got exception when get connection list", e)
