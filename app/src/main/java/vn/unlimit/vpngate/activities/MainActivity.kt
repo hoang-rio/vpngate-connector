@@ -338,7 +338,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
                     }
                     if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
-                        callDataServer()
+                        withContext(Dispatchers.Main) {
+                            callDataServer()
+                        }
                     } else {
                         withContext(Dispatchers.Main) {
                             displayHome()

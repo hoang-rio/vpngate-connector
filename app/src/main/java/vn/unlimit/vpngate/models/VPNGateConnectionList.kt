@@ -52,6 +52,18 @@ class VPNGateConnectionList : Parcelable {
     }
 
     private fun getOrderQuery(): String {
+        if (sortField == null || sortField!!.isEmpty()) {
+            return ""
+        }
+        sortField = when (sortField) {
+            "COUNTRY" -> SortProperty.COUNTRY
+            "SPEED" -> SortProperty.SPEED
+            "PING" -> SortProperty.PING
+            "SCORE" -> SortProperty.SCORE
+            "UPTIME" -> SortProperty.UPTIME
+            "SESSION" -> SortProperty.SESSION
+            else -> sortField
+        }
         if (sortType == ORDER.ASC) {
             return " ORDER BY $sortField ASC"
         }

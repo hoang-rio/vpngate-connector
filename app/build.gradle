@@ -44,16 +44,16 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 110
-            versionName "2.1.0"
+            versionCode 111
+            versionName "2.1.1"
         }
 
         pro {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 103
-            versionName "2.0.3"
+            versionCode 104
+            versionName "2.0.4"
         }
     }
 
@@ -91,20 +91,20 @@ dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.browser:browser:1.8.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation("com.github.bumptech.glide:glide:$glideVersion@aar") {
         exclude group: "com.android.support"
         transitive = true
     }
-    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    implementation platform('com.google.firebase:firebase-bom:33.2.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
-    implementation 'com.google.guava:guava:33.0.0-android'
+    implementation 'com.google.guava:guava:33.3.0-android'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
     implementation 'com.pixplicity.sharp:sharp:1.1.3@aar'
@@ -128,8 +128,8 @@ dependencies {
     implementation 'com.google.android.ump:user-messaging-platform:3.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.11.0'
     def room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
