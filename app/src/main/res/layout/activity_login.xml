@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.paid.LoginActivity">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -151,6 +151,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/btn_forgot_pass"
                 app:layout_constraintVertical_bias="0.2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
