@@ -14,3 +14,4 @@ app/release/
 /.blackbox/secring.gpg
 /keyStore/release.jks
 /app/google-services.json
+.kotlin/
