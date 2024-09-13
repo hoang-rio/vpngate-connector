@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:theme="@style/AppTheme.Setting">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/ln_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -513,5 +513,5 @@
             </LinearLayout>
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

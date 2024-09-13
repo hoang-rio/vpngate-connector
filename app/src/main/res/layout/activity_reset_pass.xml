@@ -57,7 +57,7 @@
             android:theme="@style/AppTheme.Button" />
     </LinearLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/ln_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -122,5 +122,5 @@
                 android:textAllCaps="false"
                 android:theme="@style/AppTheme.Button" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

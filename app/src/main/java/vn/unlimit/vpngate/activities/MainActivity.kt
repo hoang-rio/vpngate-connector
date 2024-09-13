@@ -339,7 +339,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     }
                     if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
                         withContext(Dispatchers.Main) {
-                            callDataServer()
+                            if (supportFragmentManager.isStateSaved.not()) {
+                                callDataServer()
+                            }
                         }
                     } else {
                         withContext(Dispatchers.Main) {

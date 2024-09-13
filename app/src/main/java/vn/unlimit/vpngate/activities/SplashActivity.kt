@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -32,33 +34,36 @@ class SplashActivity : AppCompatActivity() {
         private const val PASS_RESET_URL_REGEX = "/user/password-reset/(\\w{20})"
     }
 
-    private val activityResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        when (val resultCode = result.resultCode) {
-            Activity.RESULT_OK -> {
-                Log.v(TAG, "Update flow completed!")
-            }
-            Activity.RESULT_CANCELED -> {
-                Log.v(TAG, "User cancelled Update flow!")
-                checkAppUpdateAndStartActivity()
-            }
-            else -> {
-                Log.v(TAG, "Update flow failed with resultCode:$resultCode")
-                checkAppUpdateAndStartActivity()
-            }
-        }
-    }
+    private var activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
 
     override fun onDestroy() {
         super.onDestroy()
         AppOpenManager.splashActivity = null
+        activityResultLauncher?.unregister()
+        activityResultLauncher = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
         AppOpenManager.splashActivity = this
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
+            when (val resultCode = result.resultCode) {
+                Activity.RESULT_OK -> {
+                    Log.v(TAG, "Update flow completed!")
+                }
+                Activity.RESULT_CANCELED -> {
+                    Log.v(TAG, "User cancelled Update flow!")
+                    checkAppUpdateAndStartActivity()
+                }
+                else -> {
+                    Log.v(TAG, "Update flow failed with resultCode:$resultCode")
+                    checkAppUpdateAndStartActivity()
+                }
+            }
+        }
         checkDynamicLink()
     }
 
@@ -75,10 +80,11 @@ class SplashActivity : AppCompatActivity() {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // For a flexible update, use AppUpdateType.FLEXIBLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                    && activityResultLauncher != null
                 ) {
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
-                        activityResultLauncher,
+                        activityResultLauncher!!,
                         AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     )
                 } else {

@@ -47,7 +47,7 @@
         android:foregroundTint="@color/colorPaidServer"
         tools:ignore="UnusedAttribute">
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent">
@@ -182,6 +182,6 @@
 
                 <include android:id="@+id/inc_session_list" layout="@layout/layout_session_list" />
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

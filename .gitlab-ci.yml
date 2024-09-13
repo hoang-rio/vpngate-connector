@@ -11,6 +11,7 @@ before_script:
 
 build_apk:
   stage: build
+  interruptible: true
   except:
     - release
     - tags
@@ -29,6 +30,7 @@ build_apk:
     expire_in: 5 day
 build_aar:
   stage: build
+  interruptible: true
   only:
     - release
   script:
