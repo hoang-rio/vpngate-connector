@@ -31,6 +31,7 @@ class NotificationSettingFragment : Fragment(), CompoundButton.OnCheckedChangeLi
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
         binding.swNotifySetting.setOnCheckedChangeListener(this)
+        binding.btnBack.setOnClickListener(this)
     }
 
     private fun bindViewModel() {
