@@ -70,8 +70,12 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 }
             } catch (e: HttpException) {
                 Log.e(TAG, "Login error with HttpException", e)
-                val responseError = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
-                errorList.postValue(responseError)
+                try {
+                    val responseError = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
+                    errorList.postValue(responseError)
+                } catch (th: Throwable) {
+                    Log.e(TAG, "Parse json error in login error with Exception", th)
+                }
                 isLoggedIn.postValue(false)
                 isLoading.postValue(false)
             } catch (th: Throwable) {
