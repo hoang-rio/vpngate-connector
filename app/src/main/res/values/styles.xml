@@ -63,7 +63,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AppTheme.VPNItem" parent="Theme.AppCompat.DayNight">
+    <style name="AppTheme.DayNight" parent="Theme.AppCompat.DayNight">
     </style>
 
     <style name="AppTheme.BottomSheetDialog">
