@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background"
+    android:theme="@style/AppTheme.BottomSheetDialog"
     android:paddingBottom="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorOverlay"
-        android:paddingLeft="10dp">
+        android:paddingStart="10dp">
 
         <ImageView
             android:id="@+id/img_flag"
@@ -46,7 +47,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:text="@string/copy_ip"
             android:textSize="16sp" />
@@ -72,7 +72,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:text="@string/copy_hostname"
             android:textSize="16sp" />

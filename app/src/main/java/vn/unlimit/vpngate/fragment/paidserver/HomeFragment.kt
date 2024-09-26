@@ -69,7 +69,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                 paidServerUtil.getUserInfo()!!.username
             )
             binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.dataSize!!,
+                paidServerUtil.getUserInfo()!!.dataSize ?: 0,
                 false,
                 resources
             )

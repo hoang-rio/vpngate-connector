@@ -22,6 +22,6 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:padding="5dp"
-        android:text="@string/prompt_password"
+        android:text="@string/default_loading_text"
         android:textAlignment="center" />
 </LinearLayout>

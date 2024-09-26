@@ -5,7 +5,7 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
-    android:theme="@style/AppTheme.VPNItem">
+    android:theme="@style/AppTheme.DayNight">
 
     <LinearLayout
         android:layout_width="match_parent"
