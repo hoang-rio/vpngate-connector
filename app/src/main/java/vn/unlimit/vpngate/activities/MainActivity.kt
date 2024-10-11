@@ -184,6 +184,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         } catch (ex: Exception) {
             Log.e(TAG, "Got exception handle support action bar", ex)
         }
+        if (!dataUtil!!.hasAds()) {
+            hideAdContainer()
+            binding.navMain.menu.setGroupVisible(R.id.menu_top, false)
+        }
 
         checkUMP()
         if (consentInformation != null) {
@@ -286,9 +290,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }
                 (findViewById<View>(R.id.ad_container_home) as RelativeLayout).addView(adView)
                 adView!!.loadAd(AdRequest.Builder().build())
-            } else {
-                hideAdContainer()
-                binding.navMain.menu.setGroupVisible(R.id.menu_top, false)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when initAdMob", e)
@@ -880,8 +881,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     var vpnGateConnectionList: VPNGateConnectionList?
         get() = connectionListViewModel!!.vpnGateConnectionList.value
         set(inVpnGateConnectionList) {
-            connectionListViewModel!!.vpnGateConnectionList.postValue(inVpnGateConnectionList)
             lifecycleScope.launch {
+                connectionListViewModel!!.vpnGateConnectionList.value = inVpnGateConnectionList
                 withContext(Dispatchers.Main) {
                     if (mMenu != null) {
                         mMenu!!.findItem(R.id.action_filter)
