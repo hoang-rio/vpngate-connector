@@ -32,7 +32,7 @@ build_aar:
   stage: build
   interruptible: true
   only:
-    - release
+    - tags
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
