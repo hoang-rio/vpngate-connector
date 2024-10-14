@@ -8,7 +8,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.common.reflect.TypeToken
+import com.google.gson.reflect.TypeToken
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
@@ -65,6 +65,7 @@ class DataUtil(context: Context?) {
          */
         get() {
             try {
+                Log.d(TAG, "get connectionsCache")
                 val inFile = File(mContext!!.filesDir, CONNECTION_CACHE_KEY)
                 if (!inFile.isFile) {
                     return null

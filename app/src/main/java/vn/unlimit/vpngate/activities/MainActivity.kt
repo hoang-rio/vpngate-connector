@@ -202,7 +202,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         addBackPressedHandler()
         lifecycleScope.launch(Dispatchers.IO) {
-            vpnGateConnectionList = dataUtil!!.connectionsCache
             disallowLoadHome =
                 vpnGateConnectionList != null && vpnGateConnectionList!!
                     .size() > 0
@@ -338,7 +337,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     runOnUiThread {
                         binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
                     }
-                    if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
+                    if (dataUtil?.connectionsCache == null) {
                         withContext(Dispatchers.Main) {
                             if (supportFragmentManager.isStateSaved.not()) {
                                 callDataServer()
