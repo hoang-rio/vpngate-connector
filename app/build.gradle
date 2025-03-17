@@ -45,7 +45,7 @@ android {
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
             versionCode 116
-            versionName "2.1.7"
+            versionName "2.1.6"
         }
 
         pro {
