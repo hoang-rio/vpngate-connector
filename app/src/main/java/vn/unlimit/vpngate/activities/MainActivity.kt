@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -24,6 +23,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -621,7 +621,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=vn.unlimit.vpngatepro")
+                                "market://details?id=vn.unlimit.vpngatepro".toUri()
                             )
                         )
                     } catch (ex: ActivityNotFoundException) {
@@ -629,7 +629,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                             startActivity(
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")
+                                    "https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro".toUri()
                                 )
                             )
                         } catch (exception: ActivityNotFoundException) {

@@ -220,28 +220,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this)
-                adView = AdView(applicationContext)
-                adView.setAdSize(AdSize.LARGE_BANNER)
-                adView.adUnitId = resources.getString(R.string.admob_banner_bottom_detail)
-                adView.adListener = object : AdListener() {
-                    override fun onAdFailedToLoad(error: LoadAdError) {
-                        hideAdContainer()
-                        Log.e(TAG, error.toString())
-                    }
-                }
-                val params = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                )
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE)
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                adView.layoutParams = params
-                (findViewById<View>(R.id.ad_container_detail) as RelativeLayout).addView(adView)
-                adView.loadAd(AdRequest.Builder().build())
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
                 adViewBellow.adUnitId = getString(R.string.admob_banner_bellow_detail)
-                adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE)
+                adViewBellow.setAdSize(AdSize.LARGE_BANNER)
                 adViewBellow.adListener = object : AdListener() {
                     override fun onAdFailedToLoad(error: LoadAdError) {
                         adViewBellow.visibility = View.GONE
@@ -249,20 +231,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 }
                 binding.lnContentDetail.addView(adViewBellow)
                 adViewBellow.loadAd(AdRequest.Builder().build())
-            } else {
-                hideAdContainer()
             }
         } catch (e: Exception) {
             Log.e(TAG, "initAdMob error", e)
-        }
-    }
-
-    private fun hideAdContainer() {
-        try {
-            findViewById<View>(R.id.ad_container_detail).visibility = View.GONE
-            adView.visibility = View.GONE
-        } catch (e: Exception) {
-            Log.e(TAG, "hideAdContainer error", e)
         }
     }
 
@@ -794,7 +765,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val adRequest = AdRequest.Builder().build()
                 InterstitialAd.load(
                     applicationContext,
-                    getString(R.string.admob_full_screen),
+                    getString(R.string.admob_full_screen_connect),
                     adRequest,
                     object : InterstitialAdLoadCallback() {
                         override fun onAdLoaded(interstitialAd: InterstitialAd) {
