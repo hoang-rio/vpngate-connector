@@ -176,10 +176,9 @@
     <string name="empty_search_result">No sever found with keyword \"%1$s\"</string>
     <string name="empty_filter_result">No sever found current filter</string>
     <!-- Admob -->
-    <string name="admob_full_screen" translatable="false">ca-app-pub-3085232976681422/9962495406</string>
+    <string name="admob_full_screen_connect" translatable="false">ca-app-pub-3085232976681422/3982443196</string>
     <string name="admob_banner_bottom_detail" translatable="false">ca-app-pub-3085232976681422/3173725771</string>
     <string name="admob_banner_bottom_home" translatable="false">ca-app-pub-3085232976681422/5804237477</string>
-    <string name="admob_banner_inside_list" translatable="false">ca-app-pub-3085232976681422/4795952720</string>
     <string name="admob_full_screen_status" translatable="false">ca-app-pub-3085232976681422/1038355322</string>
     <string name="admob_banner_bellow_detail" translatable="false">ca-app-pub-3085232976681422/9538848174</string>
     <string name="admob_full_screen_detail" translatable="false">ca-app-pub-3085232976681422/4760681369</string>

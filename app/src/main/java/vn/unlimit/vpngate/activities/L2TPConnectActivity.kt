@@ -66,15 +66,9 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 loadBannerAds()
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
-                    binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
-                } else {
-                    @Suppress("DEPRECATION")
-                    window.statusBarColor = resources.getColor(R.color.colorPaidServer)
-                    @Suppress("DEPRECATION")
-                    binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer))
-                }
+                @Suppress("DEPRECATION")
+                window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+                binding.navDetail.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
                 //Hide ad banner
                 val paidServerUtil = App.instance!!.paidServerUtil!!
                 binding.adContainerL2tp.visibility = View.GONE
