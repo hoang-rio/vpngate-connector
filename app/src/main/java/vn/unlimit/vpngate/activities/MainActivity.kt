@@ -436,15 +436,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val editText =
                 searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
             editText.imeOptions = EditorInfo.IME_ACTION_DONE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                editText.setTextColor(resources.getColor(R.color.colorWhite, theme))
-                editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent, theme))
-            } else {
-                @Suppress("DEPRECATION")
-                editText.setTextColor(resources.getColor(R.color.colorWhite))
-                @Suppress("DEPRECATION")
-                editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent))
-            }
+            editText.setTextColor(resources.getColor(R.color.colorWhite, theme))
+            editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent, theme))
             searchView.queryHint = getString(R.string.search_hint)
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
