@@ -30,6 +30,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -120,6 +122,15 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         binding.txtStatus.text = ""
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+            binding.navDetail.setPadding(5, insets.top, 5, 5)
+            binding.navDetail.layoutParams.height += insets.top
+
+            // Return CONSUMED if you don't want the window insets to keep passing
+            // down to descendant views.
+            WindowInsetsCompat.CONSUMED
+        }
         initSSTP()
     }
 
