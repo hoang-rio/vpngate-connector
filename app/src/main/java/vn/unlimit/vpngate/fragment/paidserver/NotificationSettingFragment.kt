@@ -56,7 +56,7 @@ class NotificationSettingFragment : Fragment(), CompoundButton.OnCheckedChangeLi
         deviceViewModel!!.getNotificationSetting()
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         deviceViewModel!!.setNotificationSetting(isChecked)
     }
 
