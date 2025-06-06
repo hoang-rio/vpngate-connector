@@ -283,6 +283,9 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         } catch (e: ConfigParseError) {
             e.printStackTrace()
             return false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
 
         return true
