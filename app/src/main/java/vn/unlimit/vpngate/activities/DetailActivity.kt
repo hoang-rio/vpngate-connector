@@ -90,7 +90,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var mVpnGateConnection: VPNGateConnection? = null
     private lateinit var vpnProfile: VpnProfile
     private var mInterstitialAd: InterstitialAd? = null
-    private lateinit var adView: AdView
     private lateinit var adViewBellow: AdView
     private lateinit var prefs: SharedPreferences
     private lateinit var listener: OnSharedPreferenceChangeListener
