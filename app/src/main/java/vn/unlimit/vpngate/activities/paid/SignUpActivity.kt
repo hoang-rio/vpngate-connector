@@ -12,7 +12,6 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -25,7 +24,7 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.Calendar
 import java.util.regex.Pattern
 
-class SignUpActivity : AppCompatActivity(), View.OnClickListener,
+class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
     DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
     private val calendar = Calendar.getInstance()
     private var datePickerDialog: DatePickerDialog? = null
@@ -44,8 +43,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
+        this.viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         binding.btnSignUp.setOnClickListener(this)

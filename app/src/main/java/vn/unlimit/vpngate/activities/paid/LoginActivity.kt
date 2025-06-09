@@ -6,7 +6,6 @@ import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -19,7 +18,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class LoginActivity : AppCompatActivity(), View.OnClickListener {
+class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var loadingDialog: LoadingDialog? = null
@@ -28,8 +27,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
+        viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnBackToFree.setOnClickListener(this)
         binding.ivHidePassword.setOnClickListener(this)

@@ -26,7 +26,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -65,7 +64,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.util.regex.Pattern
 
-class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.StateListener,
+class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.StateListener,
     VpnStatus.ByteCountListener {
     @Keep
     companion object {
@@ -103,8 +102,9 @@ class ServerActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityServerBinding.inflate(layoutInflater)
+        this.viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar!!.hide()
         binding.btnBack.setOnClickListener(this)

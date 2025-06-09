@@ -9,7 +9,6 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -20,7 +19,7 @@ import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
+class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private var loadingDialog: LoadingDialog? = null
     private var captchaSecret: String? = null
     private var userViewModel: UserViewModel? = null
@@ -28,8 +27,9 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityForgotPassBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityForgotPassBinding.inflate(layoutInflater)
+        this.viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         loadingDialog = LoadingDialog.newInstance()

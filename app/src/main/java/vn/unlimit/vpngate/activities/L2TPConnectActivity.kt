@@ -48,6 +48,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 .placeholder(R.color.colorOverlay)
                 .error(R.color.colorOverlay)
                 .into(binding.ivStep2)
+            binding.btnBack.setOnClickListener(this)
             val typeServer: Int = intent.getIntExtra(BaseProvider.L2TP_SERVER_TYPE, TYPE_FREE)
             if (typeServer == TYPE_FREE) {
                 mVPNGateConnection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

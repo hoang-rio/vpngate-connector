@@ -257,7 +257,7 @@ class VPNGateConnection : Parcelable {
     }
 
     fun isSSTPSupport(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isSSTPSupport == 1
+        return isSSTPSupport == 1
     }
 
     companion object {

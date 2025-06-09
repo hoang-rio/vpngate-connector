@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="vn.unlimit.vpngate.activities.paid.ResetPassActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".activities.paid.ResetPassActivity">
 
     <LinearLayout
         android:id="@+id/ln_checking_token"
