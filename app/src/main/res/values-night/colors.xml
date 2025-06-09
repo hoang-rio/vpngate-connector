@@ -17,7 +17,7 @@
     <color name="colorTransparent">#00000000</color>
     <color name="colorLink">#13589C</color>
     <color name="colorPaidServer">#248758</color>
-    <color name="colorGoodStatus">#188E57</color>
+    <color name="colorGoodStatus">#23CC79</color>
     <color name="colorPaidServerTransparent">#994EDA99</color>
     <color name="colorPaidServerDisabled">#234737</color>
     <color name="colorBuyButton">#3E9543</color>

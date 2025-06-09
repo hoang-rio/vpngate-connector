@@ -4,9 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -43,6 +47,21 @@ class PaidServerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPaidServerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            window.decorView.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val statusBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = statusBarInsets.top
+                leftMargin = insets.left
+                rightMargin = insets.right
+            }
+            v.setPadding(0, 0, 0, insets.bottom)
+
+            // Return CONSUMED if you don't want the window insets to keep passing
+            // down to descendant views.
+            WindowInsetsCompat.CONSUMED
+        }
         val paidServerUtil = (application as App).paidServerUtil
         paidServerUtil?.setStartupScreen(PaidServerUtil.StartUpScreen.PAID_SERVER)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)

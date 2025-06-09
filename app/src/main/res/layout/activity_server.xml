@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="false"
     tools:context=".activities.paid.ServerActivity"
+    android:background="?android:attr/windowBackground"
     android:orientation="vertical">
 
     <LinearLayout
