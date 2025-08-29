@@ -18,6 +18,7 @@ build_apk:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
+    - java --version
     - ./gradlew assembleFreeRelease
     - cp app/build/outputs/apk/free/release/app-free-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.apk
     - ./gradlew assembleProRelease
@@ -36,6 +37,7 @@ build_aar:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
+    - java --version
     - ./gradlew :app:bundleFreeRelease
     - cp app/build/outputs/bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.aab
     - ./gradlew :app:bundleProRelease
