@@ -94,6 +94,8 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.LENGTH_LONG
             ).show()
             onBackPressedDispatcher.onBackPressed()
+            finish()
+            return
         }
         isCheckingToken = true
         userViewModel!!.checkResetPassToken(resetPassToken!!)
