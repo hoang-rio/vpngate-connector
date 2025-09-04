@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 android {
-    compileSdk project.ext.compileSdkVersion
+    compileSdk = project.ext.compileSdkVersion
     defaultConfig {
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
@@ -77,9 +77,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
     namespace 'vn.unlimit.vpngate'
     buildFeatures {
         viewBinding true
@@ -130,4 +127,10 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
     ksp "androidx.room:room-compiler:$room_version"
 
+}
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
 }
