@@ -907,7 +907,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == START_VPN_PROFILE) {
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext)
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext, null, true)
                 }
                 if (requestCode == START_VPN_SSTP) {
                     connectSSTPVPN()

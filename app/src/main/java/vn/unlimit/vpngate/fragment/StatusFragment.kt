@@ -296,7 +296,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
-                VPNLaunchHelper.startOpenVpn(vpnProfile, mContext)
+                VPNLaunchHelper.startOpenVpn(vpnProfile, mContext, null, true)
             }
         }
 
@@ -317,7 +317,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                 VpnStatus.logError(de.blinkt.openvpn.R.string.no_vpn_support_image)
             }
         } else {
-            VPNLaunchHelper.startOpenVpn(vpnProfile, mContext)
+            VPNLaunchHelper.startOpenVpn(vpnProfile, mContext, null, true)
         }
     }
 

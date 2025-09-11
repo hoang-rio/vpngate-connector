@@ -534,7 +534,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == DetailActivity.START_VPN_PROFILE) {
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext)
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext, null, true)
                 }
                 if (requestCode == DetailActivity.START_VPN_SSTP) {
                     connectSSTPVPN()
