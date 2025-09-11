@@ -120,6 +120,10 @@
             </intent-filter>
         </service>
         <service
+            android:name="de.blinkt.openvpn.core.keepVPNAlive"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+        <service
             android:name=".services.PaidServerFCMService"
             android:exported="false">
             <intent-filter>
