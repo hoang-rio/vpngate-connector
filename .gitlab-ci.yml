@@ -9,7 +9,7 @@ stages:
 before_script:
   - chmod +x ./gradlew
 
-build_apk:
+build_apk_free:
   stage: build
   interruptible: true
   except:
@@ -21,15 +21,30 @@ build_apk:
     - java --version
     - ./gradlew assembleFreeRelease
     - cp app/build/outputs/apk/free/release/app-free-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.apk
+    - ls -alh $CI_PROJECT_DIR
+  artifacts:
+    paths:
+      - ./$CI_COMMIT_SHA-free.apk
+    expire_in: 5 day
+
+build_apk_pro:
+  stage: build
+  interruptible: true
+  except:
+    - release
+    - tags
+  script:
+    - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+    - GPG=gpg2 blackbox_postdeploy
     - ./gradlew assembleProRelease
     - cp app/build/outputs/apk/pro/release/app-pro-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.apk
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_COMMIT_SHA-free.apk
       - ./$CI_COMMIT_SHA-pro.apk
     expire_in: 5 day
-build_aar:
+
+build_aab_free:
   stage: build
   interruptible: true
   only:
@@ -40,11 +55,25 @@ build_aar:
     - java --version
     - ./gradlew :app:bundleFreeRelease
     - cp app/build/outputs/bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.aab
+    - ls -alh $CI_PROJECT_DIR
+  artifacts:
+    paths:
+      - ./$CI_COMMIT_SHA-free.aab
+    expire_in: 5 day
+
+build_aab_pro:
+  stage: build
+  interruptible: true
+  only:
+    - tags
+  script:
+    - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+    - GPG=gpg2 blackbox_postdeploy
+    - java --version
     - ./gradlew :app:bundleProRelease
     - cp app/build/outputs/bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.aab
     - ls -alh $CI_PROJECT_DIR
   artifacts:
     paths:
-      - ./$CI_COMMIT_SHA-free.aab
       - ./$CI_COMMIT_SHA-pro.aab
     expire_in: 5 day
