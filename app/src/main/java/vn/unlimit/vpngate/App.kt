@@ -85,5 +85,7 @@ class App : Application() {
         fun getResourceString(resId: Int): String {
             return instance!!.getString(resId)
         }
+        // Default VpnProfileCompat mode for openvpn2.4.x compatibility with softether vpn server
+        const val VPN_PROFILE_COMPAT_MODE_24X = 20400
     }
 }

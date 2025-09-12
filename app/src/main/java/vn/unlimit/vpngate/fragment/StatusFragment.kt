@@ -37,6 +37,7 @@ import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
 import de.blinkt.openvpn.utils.PropertiesService
 import de.blinkt.openvpn.utils.TotalTraffic
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
@@ -261,6 +262,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             cp.parseConfig(isr)
             vpnProfile = cp.convertProfile()
             vpnProfile!!.mName = connectionName
+            vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
             if (dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile!!.mOverrideDNS = true
                 vpnProfile!!.mDNS1 = FirebaseRemoteConfig.getInstance()

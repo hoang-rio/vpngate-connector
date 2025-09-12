@@ -503,6 +503,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             cp.parseConfig(isr)
             vpnProfile = cp.convertProfile()
             vpnProfile?.mName = mPaidServer!!.getName(useUDP)
+            vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile?.mOverrideDNS = true
                 vpnProfile?.mDNS1 = FirebaseRemoteConfig.getInstance()
