@@ -828,6 +828,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             cp.parseConfig(isr)
             vpnProfile = cp.convertProfile()
             vpnProfile.mName = mVpnGateConnection!!.getName(useUDP)
+            vpnProfile.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile.mOverrideDNS = true
                 vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance()
@@ -907,7 +908,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == START_VPN_PROFILE) {
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext)
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext, null, true)
                 }
                 if (requestCode == START_VPN_SSTP) {
                     connectSSTPVPN()
