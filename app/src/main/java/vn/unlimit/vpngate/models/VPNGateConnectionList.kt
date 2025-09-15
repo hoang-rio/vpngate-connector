@@ -45,7 +45,7 @@ class VPNGateConnectionList : Parcelable {
 
     private fun getFilterQuery(): String {
         if (mKeyword != null) {
-            val keyword = mKeyword!!.lowercase(Locale.getDefault())
+            val keyword = mKeyword!!.lowercase(Locale.getDefault()).replace("'", "''")
             return "countryLong LIKE '%$keyword%' OR hostName LIKE '%$keyword%' OR operator LIKE '%$keyword%' OR ip LIKE '%$keyword%'"
         }
         return ""
