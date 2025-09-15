@@ -86,6 +86,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onResume() {
+        super.onResume()
         resetPassToken = intent.getStringExtra(PaidServerProvider.RESET_PASS_TOKEN)
         if (resetPassToken == null) {
             Toast.makeText(
@@ -99,7 +100,6 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
         }
         isCheckingToken = true
         userViewModel!!.checkResetPassToken(resetPassToken!!)
-        super.onResume()
     }
 
     private fun doResetPass() {
