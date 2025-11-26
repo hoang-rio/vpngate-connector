@@ -9,7 +9,6 @@ import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.net.VpnService
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -28,7 +27,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -227,17 +229,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         mPaidServer = if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             paidServerUtil.getLastConnectServer()
         } else {
-            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(
-                    BaseProvider.PASS_DETAIL_VPN_CONNECTION,
-                    PaidServer::class.java
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(
-                    BaseProvider.PASS_DETAIL_VPN_CONNECTION
-                )
-            }
+            IntentCompat.getParcelableExtra(
+                intent, BaseProvider.PASS_DETAIL_VPN_CONNECTION,
+                PaidServer::class.java
+            )
         }
         try {
             Glide.with(this)
@@ -385,25 +380,25 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     }
 
     private fun connectSSTPVPN() {
-        val editor: SharedPreferences.Editor = prefs.edit()
-        editor.putString(
-            OscPrefKey.HOME_HOSTNAME.toString(),
-            mPaidServer!!.serverDomain
-        )
-        editor.putString(
-            OscPrefKey.HOME_COUNTRY.toString(),
-            mPaidServer!!.serverCountryCode.uppercase()
-        )
-        editor.putString(
-            OscPrefKey.HOME_USERNAME.toString(),
-            paidServerUtil.getUserInfo()!!.username
-        )
-        editor.putString(
-            OscPrefKey.HOME_PASSWORD.toString(),
-            paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
-        )
-        editor.putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
-        editor.apply()
+        prefs.edit {
+            putString(
+                OscPrefKey.HOME_HOSTNAME.toString(),
+                mPaidServer!!.serverDomain
+            )
+            putString(
+                OscPrefKey.HOME_COUNTRY.toString(),
+                mPaidServer!!.serverCountryCode.uppercase()
+            )
+            putString(
+                OscPrefKey.HOME_USERNAME.toString(),
+                paidServerUtil.getUserInfo()!!.username
+            )
+            putString(
+                OscPrefKey.HOME_PASSWORD.toString(),
+                paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
+            )
+            putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
+        }
         binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,
             R.drawable.selector_apply_button,
@@ -437,7 +432,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         if (intent != null) {
             try {
                 startActivityIntentSSTPVPN.launch(intent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 Log.e(TAG, "OS does not support VPN")
             }
         } else {
@@ -561,7 +556,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             // Start the query
             try {
                 startActivityIntentOpenVPN.launch(intent)
-            } catch (ane: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 // Shame on you Sony! At least one user reported that
                 // an official Sony Xperia Arc S image triggers this exception
                 VpnStatus.logError(de.blinkt.openvpn.R.string.no_vpn_support_image)
@@ -661,7 +656,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     .logEvent("Paid_Click_Check_IP", params)
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url"))
+                    FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url").toUri()
                 )
                 startActivity(browserIntent)
             }
@@ -671,14 +666,14 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=net.openvpn.openvpn")
+                            "market://details?id=net.openvpn.openvpn".toUri()
                         )
                     )
-                } catch (ex: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")
+                            "https://play.google.com/store/apps/details?id=net.openvpn.openvpn".toUri()
                         )
                     )
                 }

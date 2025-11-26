@@ -9,7 +9,6 @@ import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -20,14 +19,16 @@ import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import android.view.View
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdListener
@@ -186,15 +187,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 Log.e(TAG, "onCreate error", ex)
             }
         } else {
-            mVpnGateConnection = (if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(
-                    BaseProvider.PASS_DETAIL_VPN_CONNECTION
-                )
-            } else intent.getParcelableExtra(
-                BaseProvider.PASS_DETAIL_VPN_CONNECTION,
+            mVpnGateConnection = IntentCompat.getParcelableExtra(
+                intent, BaseProvider.PASS_DETAIL_VPN_CONNECTION,
                 VPNGateConnection::class.java
-            ))
+            )
         }
         checkConnectionData()
         binding = ActivityDetailBinding.inflate(layoutInflater)
@@ -415,7 +411,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val intent = Intent(this, OpenVPNService::class.java)
                 OpenVPNService.mDisplaySpeed =
                     dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
-                intent.setAction(OpenVPNService.START_SERVICE)
+                intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
             }, 300)
             if (!App.isImportToOpenVPN) {
@@ -483,7 +479,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val packageManager = packageManager
                 val intent = packageManager.getLaunchIntentForPackage("net.openvpn.openvpn")
                 if (intent != null) {
-                    intent.setAction(Intent.ACTION_VIEW)
+                    intent.action = Intent.ACTION_VIEW
                     startActivity(intent)
                 }
             }, 500)
@@ -614,7 +610,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 FirebaseAnalytics.getInstance(applicationContext).logEvent("Click_Check_IP", params)
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url"))
+                    FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url").toUri()
                 )
                 startActivity(browserIntent)
             } else if (view == binding.btnL2tpConnect) {
@@ -638,14 +634,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=net.openvpn.openvpn")
+                            "market://details?id=net.openvpn.openvpn".toUri()
                         )
                     )
-                } catch (ex: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")
+                            "https://play.google.com/store/apps/details?id=net.openvpn.openvpn".toUri()
                         )
                     )
                 }
@@ -679,19 +675,19 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun connectSSTPVPN() {
-        val editor = prefs.edit()
-        editor.putString(
-            OscPrefKey.HOME_HOSTNAME.toString(),
-            mVpnGateConnection!!.calculateHostName
-        )
-        editor.putString(
-            OscPrefKey.HOME_COUNTRY.toString(),
-            mVpnGateConnection!!.countryShort!!.uppercase()
-        )
-        editor.putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
-        editor.putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
-        editor.putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
-        editor.apply()
+        prefs.edit {
+            putString(
+                OscPrefKey.HOME_HOSTNAME.toString(),
+                mVpnGateConnection!!.calculateHostName
+            )
+            putString(
+                OscPrefKey.HOME_COUNTRY.toString(),
+                mVpnGateConnection!!.countryShort!!.uppercase()
+            )
+            putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
+            putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
+            putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
+        }
         binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,
             R.drawable.selector_apply_button,
@@ -718,7 +714,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         if (intent != null) {
             try {
                 startActivityIntentSSTPVPN.launch(intent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 Log.e(TAG, "OS does not support VPN")
             }
         } else {
@@ -894,7 +890,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             // Start the query
             try {
                 startActivityIntentOpenVPN.launch(intent)
-            } catch (ane: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 // Shame on you Sony! At least one user reported that
                 // an official Sony Xperia Arc S image triggers this exception
                 VpnStatus.logError(de.blinkt.openvpn.R.string.no_vpn_support_image)
