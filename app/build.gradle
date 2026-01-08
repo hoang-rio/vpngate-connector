@@ -94,7 +94,7 @@ dependencies {
         exclude group: "com.android.support"
         transitive = true
     }
-    implementation platform('com.google.firebase:firebase-bom:34.6.0')
+    implementation platform('com.google.firebase:firebase-bom:34.7.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
@@ -111,10 +111,9 @@ dependencies {
     implementation project(path: ':sstpClient')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.7.0'
-    def billing_version = '8.1.0'
-    implementation "com.android.billingclient:billing-ktx:$billing_version"
+    implementation "com.android.billingclient:billing-ktx:8.3.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.android.gms:play-services-ads:24.7.0'
+    implementation 'com.google.android.gms:play-services-ads:24.9.0'
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
