@@ -30,6 +30,7 @@ class AppSelectionDialog : DialogFragment() {
     private var excludedApps: List<ExcludedApp> = emptyList()
     private var allApps: List<ExcludedApp> = emptyList()
     private var originalExcludedApps: List<ExcludedApp> = emptyList()
+    private var isLoadingCancelled = false
 
     interface AppSelectionListener {
         fun onAppsSelected(apps: List<ExcludedApp>)
@@ -95,7 +96,10 @@ class AppSelectionDialog : DialogFragment() {
     }
 
     private fun setupButtons() {
-        btnCancel.setOnClickListener { dismiss() }
+        btnCancel.setOnClickListener {
+            isLoadingCancelled = true
+            dismiss()
+        }
         btnAdd.setOnClickListener {
             val selectedApps = appSelectionAdapter.getSelectedApps()
             listener?.onAppsSelected(selectedApps)
@@ -116,29 +120,43 @@ class AppSelectionDialog : DialogFragment() {
     private fun loadApps() {
         // Show loading state
         showLoading(true)
+        isLoadingCancelled = false
 
         // Load apps on background thread
         Thread {
             try {
                 val apps = getInstalledApps()
-                requireActivity().runOnUiThread {
-                    allApps = apps
-                    originalExcludedApps = excludedApps.toList() // Store original state
-                    // Initialize adapter with all apps and pre-selected excluded apps
-                    appSelectionAdapter.initializeWithPreSelectedApps(apps, excludedApps)
-                    updateCountLabel()
-                    updateApplyButtonState()
-                    showLoading(false)
-                    // Force layout refresh to fix checkbox positioning
-                    recyclerView.post {
-                        appSelectionAdapter.notifyDataSetChanged()
+
+                // Check if fragment is still attached and loading hasn't been cancelled
+                if (!isLoadingCancelled && isAdded && activity != null) {
+                    requireActivity().runOnUiThread {
+                        // Double-check after getting to main thread
+                        if (!isLoadingCancelled && isAdded && activity != null) {
+                            allApps = apps
+                            originalExcludedApps = excludedApps.toList() // Store original state
+                            // Initialize adapter with all apps and pre-selected excluded apps
+                            appSelectionAdapter.initializeWithPreSelectedApps(apps, excludedApps)
+                            updateCountLabel()
+                            updateApplyButtonState()
+                            showLoading(false)
+                            // Force layout refresh to fix checkbox positioning
+                            recyclerView.post {
+                                appSelectionAdapter.notifyDataSetChanged()
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                requireActivity().runOnUiThread {
-                    showLoading(false)
-                    Toast.makeText(context, "Error loading apps", Toast.LENGTH_SHORT).show()
+                // Check if fragment is still attached before showing error
+                if (!isLoadingCancelled && isAdded && activity != null) {
+                    requireActivity().runOnUiThread {
+                        // Double-check after getting to main thread
+                        if (!isLoadingCancelled && isAdded && activity != null) {
+                            showLoading(false)
+                            Toast.makeText(context, "Error loading apps", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
         }.start()
@@ -160,15 +178,18 @@ class AppSelectionDialog : DialogFragment() {
         if (show) {
             loadingProgress.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
+            searchInput.visibility = View.GONE
             searchInput.isEnabled = false
-            btnCancel.isEnabled = false
-            btnAdd.isEnabled = false
+            btnCancel.isEnabled = true  // Keep cancel enabled during loading
+            btnAdd.visibility = View.GONE  // Hide apply button during loading
         } else {
             loadingProgress.visibility = View.GONE
             recyclerView.visibility = View.VISIBLE
+            searchInput.visibility = View.VISIBLE
             searchInput.isEnabled = true
             btnCancel.isEnabled = true
-            // Don't enable Apply button here - it will be set by updateApplyButtonState()
+            btnAdd.visibility = View.VISIBLE  // Show apply button after loading
+            // Apply button state will be set by updateApplyButtonState()
         }
     }
 

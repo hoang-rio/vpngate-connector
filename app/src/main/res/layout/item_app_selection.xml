@@ -23,7 +23,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
-        android:buttonTint="@color/colorPrimary"
+        android:buttonTint="@color/colorPrimaryAdaptive"
         android:clickable="false"
         android:focusable="false"
         tools:checked="false" />

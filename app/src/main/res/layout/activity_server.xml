@@ -420,7 +420,7 @@
                 android:focusable="true"
                 android:padding="8dp"
                     android:text="@string/exclude_apps_text"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryAdaptive"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/search_apps_hint"
-        android:drawableStart="@drawable/ic_search_gray"
+        android:drawableStart="@drawable/ic_search_white"
         android:drawablePadding="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
