@@ -60,6 +60,7 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.dialog.MessageDialog
+import vn.unlimit.vpngate.models.ExcludedApp
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
@@ -101,19 +102,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var isSSTPConnected = false
     private var isFullScreenAdLoaded = false
     private lateinit var binding: ActivityDetailBinding
-
-    private fun checkConnectionData() {
-        if (mVpnGateConnection == null) {
-            //Start main
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
 
     private fun startVpnSSTPService(action: String) {
         val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
-
         if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             applicationContext.startForegroundService(intent)
         } else {
@@ -192,9 +184,16 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 VPNGateConnection::class.java
             )
         }
-        checkConnectionData()
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Initialize exclude apps manager
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText() {
+                binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+            }
+        })
+
         binding.btnSaveConfigFile.setOnClickListener(this)
         binding.btnInstallOpenvpn.setOnClickListener(this)
         binding.btnBack.setOnClickListener(this)
@@ -202,6 +201,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         binding.txtCheckIp.setOnClickListener(this)
         binding.btnL2tpConnect.setOnClickListener(this)
         binding.btnSstpConnect.setOnClickListener(this)
+        binding.btnExcludeApps.setOnClickListener(this)
+        binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
         bindData()
         initAdMob()
         initInterstitialAd()
@@ -669,6 +670,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     handleImport(false)
                 }
             }
+            if (view == binding.btnExcludeApps) {
+                excludeAppsManager.openExcludeAppsManager(supportFragmentManager)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "onClick error", e)
         }
@@ -839,6 +843,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     vpnProfile.mDNS2 = dns2
                 }
             }
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             ProfileManager.setTemporaryProfile(applicationContext, vpnProfile)
         } catch (e: IOException) {
             Log.e(TAG, "loadVpnProfile error", e)

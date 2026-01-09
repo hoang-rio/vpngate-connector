@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -48,6 +49,7 @@ import vn.unlimit.vpngate.utils.DataUtil
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.HashSet
 
 /**
  * Created by hoangnd on 2/9/2018.
@@ -81,17 +83,29 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private var mContext: Context? = null
     private var isFullScreenAdsLoaded = false
     private lateinit var binding: FragmentStatusBinding
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstancesState: Bundle?
+        savedInstanceState: Bundle?
     ): View {
         binding = FragmentStatusBinding.inflate(layoutInflater)
         binding.btnOnOff.setOnClickListener(this)
+        binding.btnExcludeApps?.setOnClickListener(this)
         binding.btnClearStatistics.setOnClickListener(this)
+
+        // Initialize exclude apps manager
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(requireContext())
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText() {
+                binding.btnExcludeApps?.text = excludeAppsManager.updateExcludeAppsButtonText()
+            }
+        })
+
         loadAdMob()
         bindData()
+        binding.btnExcludeApps?.text = excludeAppsManager.updateExcludeAppsButtonText()
         onHiddenChanged(true)
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
@@ -189,7 +203,13 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
     }
 
+
+
     override fun onClick(view: View) {
+        if (view == binding.btnExcludeApps) {
+            // Open exclude apps manager
+            excludeAppsManager.openExcludeAppsManager(parentFragmentManager)
+        }
         if (view == binding.btnClearStatistics) {
             TotalTraffic.clearTotal(mContext)
             Toast.makeText(context, "Statistics clear completed", Toast.LENGTH_SHORT).show()
@@ -263,6 +283,9 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             vpnProfile = cp.convertProfile()
             vpnProfile!!.mName = connectionName
             vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
+
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             if (dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile!!.mOverrideDNS = true
                 vpnProfile!!.mDNS1 = FirebaseRemoteConfig.getInstance()

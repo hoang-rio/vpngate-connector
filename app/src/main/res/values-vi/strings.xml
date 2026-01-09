@@ -331,4 +331,13 @@
     <string name="install_source_error_message">Bạn đang sử dụng phiên bản app được cài đặt trái phép. Vui lòng cài đặt phiên bản hợp lệ từ CH Play</string>
     <string name="install_source_error_open_play_store">Mở CH Play</string>
     <string name="notification_channel_name">Hết dung lượng</string>
+    <!-- Exclude Apps -->
+    <string name="app_icon">Biểu tượng ứng dụng</string>
+    <string name="add_apps_to_exclude">Thêm ứng dụng cần loại trừ</string>
+    <string name="exclude_app_description">Các ứng dụng đã chọn sẽ bỏ qua tunnel VPN và sử dụng kết nối internet thông thường</string>
+    <string name="search_apps_hint">Tìm kiếm ứng dụng...</string>
+    <string name="exclude_apps_text">Đang loại trừ %d ứng dụng khỏi VPN</string>
+    <string name="apps_updated_successfully">Đã cập nhật ứng dụng thành công</string>
+    <string name="error_saving_apps">Lỗi khi lưu ứng dụng</string>
+    <string name="error_opening_app_selection">Lỗi khi mở danh sách ứng dụng</string>
 </resources>

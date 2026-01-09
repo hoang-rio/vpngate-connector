@@ -13,7 +13,9 @@ import de.blinkt.openvpn.core.OpenVPNService
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.db.AppDatabase
+import vn.unlimit.vpngate.db.ExcludedAppDao
 import vn.unlimit.vpngate.db.VPNGateItemDao
+import vn.unlimit.vpngate.models.ExcludedApp
 import vn.unlimit.vpngate.utils.AppOpenManager
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
@@ -25,11 +27,29 @@ class App : Application() {
     var paidServerUtil: PaidServerUtil? = null
     private lateinit var appDatabase: AppDatabase
     lateinit var vpnGateItemDao: VPNGateItemDao
+    lateinit var excludedAppDao: ExcludedAppDao
 
     override fun onCreate() {
         super.onCreate()
-        appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "vpn_gate_connector").build()
+        appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "vpn_gate_connector")
+            .addMigrations(object : androidx.room.migration.Migration(1, 2) {
+                override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                    // Migration from version 1 to 2: create excluded_apps table
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `excluded_apps` (" +
+                                "`packageName` TEXT NOT NULL, " +
+                                "`appName` TEXT NOT NULL, " +
+                                "`isEnabled` INTEGER NOT NULL, " +
+                                "PRIMARY KEY(`packageName`))"
+                    )
+                }
+            })
+            .build()
         vpnGateItemDao = appDatabase.vpnGateItemDao()
+        excludedAppDao = appDatabase.excludedAppDao()
+
+        // Initialize default excluded apps
+        initializeDefaultExcludedApps()
         if (!BuildConfig.DEBUG) {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
@@ -68,6 +88,38 @@ class App : Application() {
             ProviderInstaller.installIfNeeded(applicationContext)
         } catch (ex: Exception) {
             ex.printStackTrace()
+        }
+    }
+
+    private fun initializeDefaultExcludedApps() {
+        // Add Android Auto as default excluded app
+        val androidAuto = ExcludedApp(
+            packageName = "com.google.android.projection.gearhead",
+            appName = "Android Auto"
+        )
+
+        // Check if Android Auto is already added
+        try {
+            val existing = excludedAppDao.isAppExcluded(androidAuto.packageName)
+            if (existing == 0) {
+                // First time - add synchronously to ensure it's available immediately
+                excludedAppDao.insertExcludedApp(androidAuto)
+                Log.d(TAG, "Added Android Auto as default excluded app")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing default excluded apps", e)
+            // Try to add on background thread as fallback
+            Thread {
+                try {
+                    val existing = excludedAppDao.isAppExcluded(androidAuto.packageName)
+                    if (existing == 0) {
+                        excludedAppDao.insertExcludedApp(androidAuto)
+                        Log.d(TAG, "Added Android Auto as default excluded app (fallback)")
+                    }
+                } catch (e2: Exception) {
+                    Log.e(TAG, "Error in fallback initialization", e2)
+                }
+            }.start()
         }
     }
 

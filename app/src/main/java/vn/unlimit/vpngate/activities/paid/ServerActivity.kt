@@ -89,6 +89,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     private var isSSTPConnectOrDisconnecting = false
     private var isSSTPConnected = false
     private lateinit var binding: ActivityServerBinding
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
     private val mConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(
             className: ComponentName,
@@ -109,11 +110,22 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar!!.hide()
+
+        // Initialize exclude apps manager
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText() {
+                binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+            }
+        })
+
         binding.btnBack.setOnClickListener(this)
         binding.btnL2tpConnect.setOnClickListener(this)
         binding.btnSstpConnect.setOnClickListener(this)
         binding.btnConnect.setOnClickListener(this)
         binding.txtCheckIp.setOnClickListener(this)
+        binding.btnExcludeApps.setOnClickListener(this)
+        binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
         btnSaveConfigFile = findViewById(R.id.btn_save_config_file)
         btnSaveConfigFile?.setOnClickListener(this)
         btnInstallOpenVpn = findViewById(R.id.btn_install_openvpn)
@@ -515,6 +527,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             }
             vpnProfile?.mUsername = paidServerUtil.getUserInfo()!!.username
             vpnProfile?.mPassword = paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             ProfileManager.setTemporaryProfile(applicationContext, vpnProfile)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -703,6 +717,9 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     handleImport(false)
                 }
             }
+            binding.btnExcludeApps -> {
+                excludeAppsManager.openExcludeAppsManager(supportFragmentManager)
+            }
         }
     }
 
@@ -859,6 +876,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 )
             )
             binding.txtNetStats.text = netstat
+
         }
     }
 }
