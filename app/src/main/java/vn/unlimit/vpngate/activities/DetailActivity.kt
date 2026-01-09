@@ -165,6 +165,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataUtil = (application as App).dataUtil!!
+        // Initialize exclude apps manager early to prevent crashes when loading VPN profile
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
         if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             mVpnGateConnection = dataUtil.lastVPNConnection
             loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
@@ -186,8 +188,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        // Initialize exclude apps manager
-        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
             override fun updateButtonText(count: Int) {
                 binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
