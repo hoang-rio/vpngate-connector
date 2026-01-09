@@ -14,6 +14,7 @@ class ExcludeAppsManager(private val context: Context) {
 
     interface ExcludeAppsCallback {
         fun updateButtonText(count: Int)
+        fun restartVpnIfRunning()
     }
 
     private var callback: ExcludeAppsCallback? = null
@@ -52,6 +53,10 @@ class ExcludeAppsManager(private val context: Context) {
     private fun saveSelectedApps(selectedApps: List<ExcludedApp>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val wasVpnRunning = withContext(Dispatchers.Main) {
+                    de.blinkt.openvpn.core.VpnStatus.isVPNActive()
+                }
+
                 App.instance?.excludedAppDao?.let { dao ->
                     // Simple approach: delete all and insert selected
                     dao.getAllExcludedApps().forEach { dao.deleteExcludedApp(it) }
@@ -60,10 +65,18 @@ class ExcludeAppsManager(private val context: Context) {
                     // Add small delay to ensure database operations are complete
                     kotlinx.coroutines.delay(100)
                 }
-                // Update button text on main thread
+                // Update button text and restart VPN if needed
                 withContext(Dispatchers.Main) {
                     callback?.updateButtonText(selectedApps.size)
-                    Toast.makeText(context, context.getString(R.string.apps_updated_successfully), Toast.LENGTH_SHORT).show()
+
+                    if (wasVpnRunning) {
+                        // Restart VPN to apply new exclude app settings
+                        callback?.restartVpnIfRunning()
+                        Toast.makeText(context, context.getString(R.string.apps_updated_successfully) +
+                            " " + context.getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.apps_updated_successfully), Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -71,6 +84,19 @@ class ExcludeAppsManager(private val context: Context) {
                     Toast.makeText(context, context.getString(R.string.error_saving_apps), Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    private fun restartVpnForNewSettings() {
+        try {
+            // Stop current VPN connection
+            de.blinkt.openvpn.core.ProfileManager.setConntectedVpnProfileDisconnected(context)
+
+            // Note: We don't automatically restart VPN here as it requires user interaction
+            // The next manual connect will use the updated settings
+            android.util.Log.d("ExcludeAppsManager", "VPN will use updated exclude app settings on next connect")
+        } catch (e: Exception) {
+            android.util.Log.e("ExcludeAppsManager", "Error handling VPN restart for new settings", e)
         }
     }
 
@@ -106,6 +132,8 @@ class ExcludeAppsManager(private val context: Context) {
             // Get all excluded apps from database (presence indicates exclusion)
             val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
 
+            android.util.Log.d("ExcludeAppsManager", "Found ${excludedApps.size} excluded apps in database")
+
             if (excludedApps.isNotEmpty()) {
                 // Initialize the allowed apps set if not already done
                 if (vpnProfile?.mAllowedAppsVpn == null) {
@@ -118,6 +146,7 @@ class ExcludeAppsManager(private val context: Context) {
                 // Add excluded apps as disallowed (they bypass VPN)
                 for (excludedApp in excludedApps) {
                     vpnProfile?.mAllowedAppsVpn?.add(excludedApp.packageName)
+                    android.util.Log.d("ExcludeAppsManager", "Excluding app: ${excludedApp.packageName}")
                 }
 
                 // Set as disallowed - meaning these apps are excluded from VPN
@@ -129,9 +158,13 @@ class ExcludeAppsManager(private val context: Context) {
                 // No excluded apps, ensure default behavior
                 vpnProfile?.mAllowedAppsVpnAreDisallowed = true
                 vpnProfile?.mAllowAppVpnBypass = false
+                android.util.Log.d("ExcludeAppsManager", "No excluded apps, using default VPN behavior")
             }
         } catch (e: Exception) {
             android.util.Log.e("ExcludeAppsManager", "Error configuring split tunneling", e)
+            // Ensure default behavior on error
+            vpnProfile?.mAllowedAppsVpnAreDisallowed = true
+            vpnProfile?.mAllowAppVpnBypass = false
         }
     }
 }

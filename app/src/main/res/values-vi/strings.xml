@@ -338,6 +338,7 @@
     <string name="search_apps_hint">Tìm kiếm ứng dụng...</string>
     <string name="exclude_apps_text">Đang loại trừ %d ứng dụng khỏi VPN</string>
     <string name="apps_updated_successfully">Đã cập nhật ứng dụng thành công</string>
+    <string name="vpn_restarted_for_settings">VPN khởi động lại cho cài đặt mới.</string>
     <string name="error_saving_apps">Lỗi khi lưu ứng dụng</string>
     <string name="error_opening_app_selection">Lỗi khi mở danh sách ứng dụng</string>
 </resources>

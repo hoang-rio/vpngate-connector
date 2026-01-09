@@ -373,6 +373,7 @@
     <string name="search_apps_hint">Search apps...</string>
     <string name="exclude_apps_text">Excluding %d app(s) from VPN</string>
     <string name="apps_updated_successfully">Apps updated successfully</string>
+    <string name="vpn_restarted_for_settings">VPN restarted for new settings.</string>
     <string name="error_saving_apps">Error saving apps</string>
     <string name="error_opening_app_selection">Error opening app selection</string>
 </resources>

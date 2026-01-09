@@ -44,6 +44,7 @@ class App : Application() {
                     )
                 }
             })
+            .allowMainThreadQueries() // Allow main thread queries for VPN profile configuration
             .build()
         vpnGateItemDao = appDatabase.vpnGateItemDao()
         excludedAppDao = appDatabase.excludedAppDao()

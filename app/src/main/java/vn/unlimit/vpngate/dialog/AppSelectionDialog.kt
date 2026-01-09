@@ -29,6 +29,7 @@ class AppSelectionDialog : DialogFragment() {
     private var listener: AppSelectionListener? = null
     private var excludedApps: List<ExcludedApp> = emptyList()
     private var allApps: List<ExcludedApp> = emptyList()
+    private var originalExcludedApps: List<ExcludedApp> = emptyList()
 
     interface AppSelectionListener {
         fun onAppsSelected(apps: List<ExcludedApp>)
@@ -86,6 +87,7 @@ class AppSelectionDialog : DialogFragment() {
         appSelectionAdapter.setSelectionChangeListener(object : AppSelectionAdapter.SelectionChangeListener {
             override fun onSelectionChanged() {
                 updateCountLabel()
+                updateApplyButtonState()
             }
         })
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -121,9 +123,11 @@ class AppSelectionDialog : DialogFragment() {
                 val apps = getInstalledApps()
                 requireActivity().runOnUiThread {
                     allApps = apps
+                    originalExcludedApps = excludedApps.toList() // Store original state
                     // Initialize adapter with all apps and pre-selected excluded apps
                     appSelectionAdapter.initializeWithPreSelectedApps(apps, excludedApps)
                     updateCountLabel()
+                    updateApplyButtonState()
                     showLoading(false)
                     // Force layout refresh to fix checkbox positioning
                     recyclerView.post {
@@ -164,7 +168,7 @@ class AppSelectionDialog : DialogFragment() {
             recyclerView.visibility = View.VISIBLE
             searchInput.isEnabled = true
             btnCancel.isEnabled = true
-            btnAdd.isEnabled = true
+            // Don't enable Apply button here - it will be set by updateApplyButtonState()
         }
     }
 
@@ -186,5 +190,17 @@ class AppSelectionDialog : DialogFragment() {
     private fun updateCountLabel() {
         val selectedCount = appSelectionAdapter.getSelectedApps().size
         excludedCountLabel.text = getString(R.string.exclude_apps_text, selectedCount)
+    }
+
+    private fun updateApplyButtonState() {
+        val currentSelectedApps = appSelectionAdapter.getSelectedApps()
+
+        // Compare current selections with original selections
+        val originalPackageNames = originalExcludedApps.map { it.packageName }.toSet()
+        val currentPackageNames = currentSelectedApps.map { it.packageName }.toSet()
+
+        val hasChanges = originalPackageNames != currentPackageNames
+        btnAdd.isEnabled = hasChanges
+        btnAdd.alpha = if (hasChanges) 1.0f else 0.5f
     }
 }

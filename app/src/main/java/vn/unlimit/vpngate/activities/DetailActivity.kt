@@ -192,6 +192,18 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             override fun updateButtonText(count: Int) {
                 binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
             }
+
+            override fun restartVpnIfRunning() {
+                // Check if VPN is currently running and restart it
+                if (isCurrent && checkStatus()) {
+                    // Disconnect first
+                    stopVpn()
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        handleConnection(false) // Default to TCP, or could check current protocol
+                    }, 500)
+                }
+            }
         })
 
         binding.btnSaveConfigFile.setOnClickListener(this)

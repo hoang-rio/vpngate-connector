@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.net.VpnService
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import android.view.LayoutInflater
@@ -100,6 +102,18 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
             override fun updateButtonText(count: Int) {
                 binding.btnExcludeApps?.text = context?.getString(R.string.exclude_apps_text, count) ?: "Excluding $count app(s) from VPN"
+            }
+
+            override fun restartVpnIfRunning() {
+                // Check if VPN is currently running and restart it
+                if (checkStatus()) {
+                    // Disconnect first
+                    stopVpn()
+                    // Wait a bit then reconnect
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        prepareVpn()
+                    }, 500)
+                }
             }
         })
 
