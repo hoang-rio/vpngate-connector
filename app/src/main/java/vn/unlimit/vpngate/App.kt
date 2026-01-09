@@ -33,13 +33,12 @@ class App : Application() {
         super.onCreate()
         appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "vpn_gate_connector")
             .addMigrations(object : androidx.room.migration.Migration(1, 2) {
-                override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                     // Migration from version 1 to 2: create excluded_apps table
-                    database.execSQL(
+                    db.execSQL(
                         "CREATE TABLE IF NOT EXISTS `excluded_apps` (" +
                                 "`packageName` TEXT NOT NULL, " +
                                 "`appName` TEXT NOT NULL, " +
-                                "`isEnabled` INTEGER NOT NULL, " +
                                 "PRIMARY KEY(`packageName`))"
                     )
                 }
