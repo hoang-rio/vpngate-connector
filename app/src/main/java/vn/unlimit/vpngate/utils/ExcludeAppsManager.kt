@@ -13,7 +13,7 @@ import vn.unlimit.vpngate.models.ExcludedApp
 class ExcludeAppsManager(private val context: Context) {
 
     interface ExcludeAppsCallback {
-        fun updateButtonText()
+        fun updateButtonText(count: Int)
     }
 
     private var callback: ExcludeAppsCallback? = null
@@ -56,10 +56,13 @@ class ExcludeAppsManager(private val context: Context) {
                     // Simple approach: delete all and insert selected
                     dao.getAllExcludedApps().forEach { dao.deleteExcludedApp(it) }
                     selectedApps.forEach { dao.insertExcludedApp(it) }
+
+                    // Add small delay to ensure database operations are complete
+                    kotlinx.coroutines.delay(100)
                 }
                 // Update button text on main thread
                 withContext(Dispatchers.Main) {
-                    callback?.updateButtonText()
+                    callback?.updateButtonText(selectedApps.size)
                     Toast.makeText(context, context.getString(R.string.apps_updated_successfully), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
@@ -71,13 +74,30 @@ class ExcludeAppsManager(private val context: Context) {
         }
     }
 
-    fun updateExcludeAppsButtonText(): String {
+    fun updateExcludeAppsButtonText(callback: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val excludedAppsCount = App.instance?.excludedAppDao?.getAllExcludedApps()?.size ?: 0
+                val text = context.getString(R.string.exclude_apps_text, excludedAppsCount)
+                withContext(Dispatchers.Main) {
+                    callback(text)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val text = context.getString(R.string.exclude_apps_text, 0)
+                withContext(Dispatchers.Main) {
+                    callback(text)
+                }
+            }
+        }
+    }
+
+    fun getExcludedAppsCount(): Int {
         return try {
-            val excludedAppsCount = App.instance?.excludedAppDao?.getAllExcludedApps()?.size ?: 0
-            context.getString(R.string.exclude_apps_text, excludedAppsCount)
+            App.instance?.excludedAppDao?.getAllExcludedApps()?.size ?: 0
         } catch (e: Exception) {
             e.printStackTrace()
-            context.getString(R.string.exclude_apps_text, 0)
+            0
         }
     }
 

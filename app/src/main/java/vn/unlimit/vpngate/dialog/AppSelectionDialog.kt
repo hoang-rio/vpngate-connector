@@ -121,7 +121,8 @@ class AppSelectionDialog : DialogFragment() {
                 val apps = getInstalledApps()
                 requireActivity().runOnUiThread {
                     allApps = apps
-                    appSelectionAdapter.updateApps(apps)
+                    // Initialize adapter with all apps and pre-selected excluded apps
+                    appSelectionAdapter.initializeWithPreSelectedApps(apps, excludedApps)
                     updateCountLabel()
                     showLoading(false)
                     // Force layout refresh to fix checkbox positioning

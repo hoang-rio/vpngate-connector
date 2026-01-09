@@ -114,8 +114,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         // Initialize exclude apps manager
         excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
-            override fun updateButtonText() {
-                binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
             }
         })
 
@@ -125,7 +125,9 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         binding.btnConnect.setOnClickListener(this)
         binding.txtCheckIp.setOnClickListener(this)
         binding.btnExcludeApps.setOnClickListener(this)
-        binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps.text = text
+        }
         btnSaveConfigFile = findViewById(R.id.btn_save_config_file)
         btnSaveConfigFile?.setOnClickListener(this)
         btnInstallOpenVpn = findViewById(R.id.btn_install_openvpn)

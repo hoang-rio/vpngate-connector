@@ -19,6 +19,7 @@ class AppSelectionAdapter(initialApps: List<ExcludedApp>) :
     }
 
     private var apps: List<ExcludedApp> = initialApps
+    private var allApps: List<ExcludedApp> = initialApps
     private val selectedApps = mutableSetOf<String>()
     private var selectionListener: SelectionChangeListener? = null
 
@@ -28,15 +29,20 @@ class AppSelectionAdapter(initialApps: List<ExcludedApp>) :
     }
 
     fun updateApps(newApps: List<ExcludedApp>) {
-        // Preserve selections when updating the app list
-        val previouslySelected = selectedApps.toSet()
+        // For filtering, just update the displayed apps but keep all selections
         apps = newApps
-        // Re-apply selections for apps that are still in the list
-        selectedApps.clear()
-        apps.filter { previouslySelected.contains(it.packageName) }
-            .forEach { selectedApps.add(it.packageName) }
         notifyDataSetChanged()
     }
+
+    fun initializeWithPreSelectedApps(allApps: List<ExcludedApp>, preSelectedApps: List<ExcludedApp>) {
+        this.allApps = allApps
+        apps = allApps
+        selectedApps.clear()
+        preSelectedApps.forEach { selectedApps.add(it.packageName) }
+        notifyDataSetChanged()
+    }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -52,7 +58,7 @@ class AppSelectionAdapter(initialApps: List<ExcludedApp>) :
     override fun getItemCount(): Int = apps.size
 
     fun getSelectedApps(): List<ExcludedApp> {
-        return apps.filter { selectedApps.contains(it.packageName) }
+        return allApps.filter { selectedApps.contains(it.packageName) }
     }
 
     fun setSelectionChangeListener(listener: SelectionChangeListener?) {
@@ -86,15 +92,6 @@ class AppSelectionAdapter(initialApps: List<ExcludedApp>) :
                     selectedApps.add(app.packageName)
                 }
                 checkBox.isChecked = selectedApps.contains(app.packageName)
-                selectionListener?.onSelectionChanged()
-            }
-
-            checkBox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    selectedApps.add(app.packageName)
-                } else {
-                    selectedApps.remove(app.packageName)
-                }
                 selectionListener?.onSelectionChanged()
             }
         }

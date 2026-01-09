@@ -189,8 +189,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         // Initialize exclude apps manager
         excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
-            override fun updateButtonText() {
-                binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
             }
         })
 
@@ -202,7 +202,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         binding.btnL2tpConnect.setOnClickListener(this)
         binding.btnSstpConnect.setOnClickListener(this)
         binding.btnExcludeApps.setOnClickListener(this)
-        binding.btnExcludeApps.text = excludeAppsManager.updateExcludeAppsButtonText()
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps.text = text
+        }
         bindData()
         initAdMob()
         initInterstitialAd()

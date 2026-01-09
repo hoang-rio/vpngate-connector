@@ -88,8 +88,8 @@ class ExcludeAppsTest {
         app.excludedAppDao.getAllExcludedApps().forEach {
             app.excludedAppDao.deleteExcludedApp(it)
         }
-        val initialText = manager.updateExcludeAppsButtonText()
-        assertTrue("Initial text should show 0 apps", initialText.contains("0"))
+        val initialCount = manager.getExcludedAppsCount()
+        assertEquals("Initial count should be 0", 0, initialCount)
 
         // Test with some apps excluded
         val testApps = listOf(
@@ -99,8 +99,8 @@ class ExcludeAppsTest {
         testApps.forEach { app.excludedAppDao.insertExcludedApp(it) }
 
         // Test updated button text
-        val updatedText = manager.updateExcludeAppsButtonText()
-        assertTrue("Updated text should show 2 apps", updatedText.contains("2"))
+        val updatedCount = manager.getExcludedAppsCount()
+        assertEquals("Updated count should be 2", 2, updatedCount)
 
         // Clean up
         testApps.forEach { app.excludedAppDao.deleteExcludedApp(it) }

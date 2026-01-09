@@ -98,14 +98,16 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         // Initialize exclude apps manager
         excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(requireContext())
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
-            override fun updateButtonText() {
-                binding.btnExcludeApps?.text = excludeAppsManager.updateExcludeAppsButtonText()
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps?.text = context?.getString(R.string.exclude_apps_text, count) ?: "Excluding $count app(s) from VPN"
             }
         })
 
         loadAdMob()
         bindData()
-        binding.btnExcludeApps?.text = excludeAppsManager.updateExcludeAppsButtonText()
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps?.text = text
+        }
         onHiddenChanged(true)
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
