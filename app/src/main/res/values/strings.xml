@@ -156,6 +156,7 @@
     <string name="status">Status</string>
     <string name="tap_to_disconnect">Tap button to disconnect from %1$s</string>
     <string name="tap_to_connect_last">Tap button to connect to %1$s</string>
+    <string name="connected_to">Connected to %1$s</string>
     <string name="no_last_vpn_server">Please select a VPN Server from home to connect first</string>
     <string name="connect_one_warning">You need connect to at least one VPN Server before access this function</string>
     <string name="disconnected">Disconnected</string>

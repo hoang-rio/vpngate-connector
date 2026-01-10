@@ -146,6 +146,7 @@
     <string name="status">Trạng thái</string>
     <string name="tap_to_disconnect">Bấm nút để ngắt kết nối với %1$s</string>
     <string name="tap_to_connect_last">Bấm nút để kết nối đến %1$s</string>
+    <string name="connected_to">Đã kết nối đến %1$s</string>
     <string name="no_last_vpn_server">Vui lòng chọn VPN Server từ home để kết nối trước</string>
     <string name="connect_one_warning">Bạn cần kết nối tới ít nhất một máy chủ VPN để có thể truy cập chức năng này</string>
     <string name="disconnected">Đã ngắt kết nối</string>

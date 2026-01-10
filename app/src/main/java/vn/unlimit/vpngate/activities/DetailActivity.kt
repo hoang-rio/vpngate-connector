@@ -709,6 +709,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun connectSSTPVPN() {
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "sstp")
         val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
         val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
 
@@ -856,6 +857,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             mVpnGateConnection!!.getOpenVpnConfigDataString()!!.toByteArray()
         }
         dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
         val cp = ConfigParser()
         val isr = InputStreamReader(ByteArrayInputStream(data))
         try {
