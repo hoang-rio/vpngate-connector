@@ -402,6 +402,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                         binding.btnSstpConnect.setText(R.string.disconnect_sstp)
                         binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
                         paidServerUtil.setCurrentSession(mPaidServer!!._id, connectedIp!!)
+                        dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
                         isSSTPConnected = true
                         binding.txtCheckIp.visibility = View.VISIBLE
                     }

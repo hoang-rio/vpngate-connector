@@ -142,6 +142,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         )
                         binding.btnSstpConnect.setText(R.string.disconnect_sstp)
                         binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                        dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
                         isSSTPConnected = true
                         binding.txtCheckIp.visibility = View.VISIBLE
                     }
