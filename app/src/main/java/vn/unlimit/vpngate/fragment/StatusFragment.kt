@@ -135,7 +135,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     vpnRestarted = true
                 }
                 // Check if SSTP is currently running and restart it
-                else if (isSSTPConnected) {
+                else if (isSSTPConnected && mVpnGateConnection != null) {
                     // Disconnect SSTP first
                     startVpnSSTPService(ACTION_VPN_DISCONNECT)
                     // Wait a bit then reconnect
@@ -698,6 +698,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     private fun connectSSTPVPN() {
+        if (mVpnGateConnection == null) return
         val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
         val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
         prefs.edit {
@@ -707,7 +708,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             )
             putString(
                 OscPrefKey.HOME_COUNTRY.toString(),
-                mVpnGateConnection!!.countryShort!!.uppercase()
+                mVpnGateConnection!!.countryShort?.uppercase() ?: ""
             )
             putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
             putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
