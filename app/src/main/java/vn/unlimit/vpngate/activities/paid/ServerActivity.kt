@@ -119,7 +119,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             }
 
             override fun restartVpnIfRunning() {
-                // Check if VPN is currently running and restart it
+                var vpnRestarted = false
+                // Check if OpenVPN is currently running and restart it
                 if (checkStatus()) {
                     // Disconnect first
                     stopVpn()
@@ -127,6 +128,21 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     Handler(mainLooper).postDelayed({
                         handleConnection(false) // Default to TCP, or could check current protocol
                     }, 500)
+                    vpnRestarted = true
+                }
+                // Check if SSTP is currently running and restart it
+                else if (isSSTPConnected) {
+                    // Disconnect SSTP first
+                    startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        connectSSTPVPN()
+                    }, 500)
+                    vpnRestarted = true
+                }
+
+                if (vpnRestarted) {
+                    Toast.makeText(this@ServerActivity, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
                 }
             }
         })

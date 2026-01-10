@@ -53,10 +53,6 @@ class ExcludeAppsManager(private val context: Context) {
     private fun saveSelectedApps(selectedApps: List<ExcludedApp>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val wasVpnRunning = withContext(Dispatchers.Main) {
-                    de.blinkt.openvpn.core.VpnStatus.isVPNActive()
-                }
-
                 App.instance?.excludedAppDao?.let { dao ->
                     // Simple approach: delete all and insert selected
                     dao.getAllExcludedApps().forEach { dao.deleteExcludedApp(it) }
@@ -69,14 +65,10 @@ class ExcludeAppsManager(private val context: Context) {
                 withContext(Dispatchers.Main) {
                     callback?.updateButtonText(selectedApps.size)
 
-                    if (wasVpnRunning) {
-                        // Restart VPN to apply new exclude app settings
-                        callback?.restartVpnIfRunning()
-                        Toast.makeText(context, context.getString(R.string.apps_updated_successfully) +
-                            " " + context.getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.apps_updated_successfully), Toast.LENGTH_SHORT).show()
-                    }
+                    // Always call restart callback - it will check if any VPN is running
+                    callback?.restartVpnIfRunning()
+
+                    Toast.makeText(context, context.getString(R.string.apps_updated_successfully), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

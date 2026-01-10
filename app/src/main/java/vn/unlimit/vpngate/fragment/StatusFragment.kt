@@ -113,6 +113,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     Handler(Looper.getMainLooper()).postDelayed({
                         prepareVpn()
                     }, 500)
+                    Toast.makeText(context, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
                 }
             }
         })
