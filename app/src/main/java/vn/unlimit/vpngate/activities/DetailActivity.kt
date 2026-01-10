@@ -693,6 +693,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun connectSSTPVPN() {
+        val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+        val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
+
         prefs.edit {
             putString(
                 OscPrefKey.HOME_HOSTNAME.toString(),
@@ -705,6 +708,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
             putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
             putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
+            putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
         }
         binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,

@@ -406,6 +406,9 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     }
 
     private fun connectSSTPVPN() {
+        val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+        val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
+
         prefs.edit {
             putString(
                 OscPrefKey.HOME_HOSTNAME.toString(),
@@ -424,6 +427,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
             )
             putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
+            putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
         }
         binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,
