@@ -145,6 +145,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
                         isSSTPConnected = true
                         binding.txtCheckIp.visibility = View.VISIBLE
+                        // Send broadcast to show status menu
+                        val intent = Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN)
+                        sendBroadcast(intent)
                     }
                 }
             }
