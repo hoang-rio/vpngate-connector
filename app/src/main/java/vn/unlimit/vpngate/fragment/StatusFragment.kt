@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.gms.ads.AdRequest
@@ -114,6 +115,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         binding.btnOnOff.setOnClickListener(this)
         binding.btnExcludeApps?.setOnClickListener(this)
         binding.btnClearStatistics.setOnClickListener(this)
+        binding.txtCheckIp?.setOnClickListener(this)
 
         // Initialize exclude apps manager
         excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(requireContext())
@@ -265,6 +267,19 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             Toast.makeText(context, "Statistics clear completed", Toast.LENGTH_SHORT).show()
             binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
             binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+        }
+        if (view == binding.txtCheckIp) {
+            val params = Bundle()
+            params.putString("type", "check ip click")
+            params.putString("hostname", mVpnGateConnection?.calculateHostName ?: "")
+            params.putString("ip", mVpnGateConnection?.ip ?: "")
+            params.putString("country", mVpnGateConnection?.countryLong ?: "")
+            mContext?.let { FirebaseAnalytics.getInstance(it).logEvent("Click_Check_IP", params) }
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url").toUri()
+            )
+            startActivity(browserIntent)
         }
         if (view == binding.btnOnOff) {
             if (mVpnGateConnection == null) {
@@ -554,11 +569,13 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                             binding.btnOnOff.isActivated = false
                             binding.txtStatus.text =
                                 String.format(getString(R.string.tap_to_connect_last), connectionName)
+                            binding.txtCheckIp?.visibility = View.INVISIBLE
                         } else {
                             binding.btnOnOff.isActivated = true
                             isConnecting = false
                             isAuthFailed = false
                             binding.txtStatus.text = getString(R.string.connected_to, connectionName)
+                            binding.txtCheckIp?.visibility = View.VISIBLE
                             val isStartUpDetail =
                                 dataUtil!!.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
                             OpenVPNService.setNotificationActivityClass(if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java)
@@ -574,6 +591,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         binding.btnOnOff.isActivated = false
                         binding.txtStatus.text =
                             String.format(getString(R.string.tap_to_connect_last), connectionName)
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
                     }
 
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
@@ -585,10 +603,11 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_Error", params)
                         binding.txtStatus.text = resources.getString(R.string.vpn_auth_failure)
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
                         isConnecting = false
                     }
 
-                    else -> {}
+                    else -> binding.txtCheckIp?.visibility = View.INVISIBLE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Status update error", e)
@@ -609,6 +628,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                             binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
                         bindData()
                     }
                     isSSTPConnectOrDisconnecting = false
@@ -622,10 +642,12 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                             binding.txtStatus.text =
                                 String.format(getString(R.string.tap_to_connect_last), connectionName)
                             binding.btnOnOff.isActivated = false
+                            binding.txtCheckIp?.visibility = View.INVISIBLE
                         } else {
                             binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
                             isSSTPConnected = true
                             binding.btnOnOff.isActivated = true
+                            binding.txtCheckIp?.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -642,10 +664,12 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     // Paid SSTP was already connected, treat as disconnected
                     binding.txtStatus.text = String.format(getString(R.string.tap_to_connect_last), connectionName)
                     binding.btnOnOff.isActivated = false
+                    binding.txtCheckIp?.visibility = View.INVISIBLE
                     isSSTPConnected = false  // Treat as not connected
                 } else {
                     binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
                     binding.btnOnOff.isActivated = true
+                    binding.txtCheckIp?.visibility = View.VISIBLE
                 }
             }
         }
