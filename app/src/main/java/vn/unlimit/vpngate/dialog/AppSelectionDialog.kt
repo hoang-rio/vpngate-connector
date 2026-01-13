@@ -1,5 +1,6 @@
 package vn.unlimit.vpngate.dialog
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -193,6 +194,7 @@ class AppSelectionDialog : DialogFragment() {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun getInstalledApps(): List<ExcludedApp> {
         val pm = requireContext().packageManager
         val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
