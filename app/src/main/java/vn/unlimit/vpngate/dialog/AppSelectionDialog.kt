@@ -2,18 +2,19 @@ package vn.unlimit.vpngate.dialog
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.adapter.AppSelectionAdapter
 import vn.unlimit.vpngate.models.ExcludedApp
@@ -118,6 +119,7 @@ class AppSelectionDialog : DialogFragment() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun loadApps() {
         // Show loading state
         showLoading(true)
