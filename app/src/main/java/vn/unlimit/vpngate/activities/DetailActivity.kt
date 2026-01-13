@@ -60,6 +60,7 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.dialog.MessageDialog
+import vn.unlimit.vpngate.models.ExcludedApp
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
@@ -101,19 +102,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var isSSTPConnected = false
     private var isFullScreenAdLoaded = false
     private lateinit var binding: ActivityDetailBinding
-
-    private fun checkConnectionData() {
-        if (mVpnGateConnection == null) {
-            //Start main
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
 
     private fun startVpnSSTPService(action: String) {
         val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
-
         if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             applicationContext.startForegroundService(intent)
         } else {
@@ -150,8 +142,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         )
                         binding.btnSstpConnect.setText(R.string.disconnect_sstp)
                         binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                        dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
                         isSSTPConnected = true
                         binding.txtCheckIp.visibility = View.VISIBLE
+                        // Send broadcast to show status menu
+                        val intent = Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN)
+                        sendBroadcast(intent)
                     }
                 }
             }
@@ -173,6 +169,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataUtil = (application as App).dataUtil!!
+        // Initialize exclude apps manager early to prevent crashes when loading VPN profile
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
         if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
             mVpnGateConnection = dataUtil.lastVPNConnection
             loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
@@ -192,9 +190,42 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 VPNGateConnection::class.java
             )
         }
-        checkConnectionData()
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
+            }
+
+            override fun restartVpnIfRunning() {
+                var vpnRestarted = false
+                // Check if OpenVPN is currently running and restart it
+                if (isCurrent && checkStatus()) {
+                    // Disconnect first
+                    stopVpn()
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        handleConnection(false) // Default to TCP, or could check current protocol
+                    }, 500)
+                    vpnRestarted = true
+                }
+                // Check if SSTP is currently running and restart it
+                else if (isSSTPConnected) {
+                    // Disconnect SSTP first
+                    startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        connectSSTPVPN()
+                    }, 500)
+                    vpnRestarted = true
+                }
+
+                if (vpnRestarted) {
+                    Toast.makeText(this@DetailActivity, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
         binding.btnSaveConfigFile.setOnClickListener(this)
         binding.btnInstallOpenvpn.setOnClickListener(this)
         binding.btnBack.setOnClickListener(this)
@@ -202,6 +233,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         binding.txtCheckIp.setOnClickListener(this)
         binding.btnL2tpConnect.setOnClickListener(this)
         binding.btnSstpConnect.setOnClickListener(this)
+        binding.btnExcludeApps.setOnClickListener(this)
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps.text = text
+        }
         bindData()
         initAdMob()
         initInterstitialAd()
@@ -669,12 +704,19 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     handleImport(false)
                 }
             }
+            if (view == binding.btnExcludeApps) {
+                excludeAppsManager.openExcludeAppsManager(supportFragmentManager)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "onClick error", e)
         }
     }
 
     private fun connectSSTPVPN() {
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "sstp")
+        val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+        val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
+
         prefs.edit {
             putString(
                 OscPrefKey.HOME_HOSTNAME.toString(),
@@ -687,6 +729,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
             putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
             putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
+            putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
         }
         binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
             resources,
@@ -818,6 +861,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             mVpnGateConnection!!.getOpenVpnConfigDataString()!!.toByteArray()
         }
         dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
         val cp = ConfigParser()
         val isr = InputStreamReader(ByteArrayInputStream(data))
         try {
@@ -839,6 +883,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     vpnProfile.mDNS2 = dns2
                 }
             }
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             ProfileManager.setTemporaryProfile(applicationContext, vpnProfile)
         } catch (e: IOException) {
             Log.e(TAG, "loadVpnProfile error", e)

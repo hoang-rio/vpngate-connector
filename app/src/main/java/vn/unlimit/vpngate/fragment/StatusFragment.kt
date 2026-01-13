@@ -6,9 +6,13 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,7 +21,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -37,6 +44,8 @@ import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
 import de.blinkt.openvpn.utils.PropertiesService
 import de.blinkt.openvpn.utils.TotalTraffic
+import kittoku.osc.preference.OscPrefKey
+import kittoku.osc.service.SstpVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
@@ -44,6 +53,7 @@ import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.FragmentStatusBinding
 import vn.unlimit.vpngate.models.VPNGateConnection
+import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import java.io.ByteArrayInputStream
 import java.io.IOException
@@ -56,6 +66,9 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     ByteCountListener {
     companion object {
         private const val TAG = "StatusFragment"
+        const val START_VPN_SSTP: Int = 80
+        const val ACTION_VPN_CONNECT: String = "kittoku.osc.connect"
+        const val ACTION_VPN_DISCONNECT: String = "kittoku.osc.disconnect"
     }
 
     private var mVPNService: IOpenVPNServiceInternal? = null
@@ -81,17 +94,70 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private var mContext: Context? = null
     private var isFullScreenAdsLoaded = false
     private lateinit var binding: FragmentStatusBinding
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
+    private lateinit var prefs: SharedPreferences
+    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+    private var isSSTPConnected = false
+    private var isSSTPConnectOrDisconnecting = false
+
+    private val isFreeConnected: Boolean
+        get() = (checkStatus() && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) || isSSTPConnected
+
+    private val isAnyConnected: Boolean
+        get() = checkStatus() || isSSTPConnected
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstancesState: Bundle?
+        savedInstanceState: Bundle?
     ): View {
         binding = FragmentStatusBinding.inflate(layoutInflater)
         binding.btnOnOff.setOnClickListener(this)
+        binding.btnExcludeApps?.setOnClickListener(this)
         binding.btnClearStatistics.setOnClickListener(this)
+        binding.txtCheckIp?.setOnClickListener(this)
+
+        // Initialize exclude apps manager
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(requireContext())
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps?.text = context?.getString(R.string.exclude_apps_text, count) ?: "Excluding $count app(s) from VPN"
+            }
+
+            override fun restartVpnIfRunning() {
+                var vpnRestarted = false
+                // Check if OpenVPN is currently running and restart it
+                if (checkStatus()) {
+                    // Disconnect first
+                    stopVpn()
+                    // Wait a bit then reconnect
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        prepareVpn()
+                    }, 500)
+                    vpnRestarted = true
+                }
+                // Check if SSTP is currently running and restart it
+                else if (isSSTPConnected && mVpnGateConnection != null) {
+                    // Disconnect SSTP first
+                    startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                    // Wait a bit then reconnect
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        connectSSTPVPN()
+                    }, 500)
+                    vpnRestarted = true
+                }
+                if (vpnRestarted) {
+                    Toast.makeText(context, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
         loadAdMob()
         bindData()
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps?.text = text
+        }
+        initSSTP()
         onHiddenChanged(true)
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
@@ -132,7 +198,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                 false,
                 resources
             )
-            if (checkStatus()) {
+            if (isFreeConnected) {
                 binding.btnOnOff.isActivated = true
                 binding.txtStatus.text =
                     String.format(resources.getString(R.string.tap_to_disconnect), connectionName)
@@ -189,53 +255,110 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
     }
 
+
+
     override fun onClick(view: View) {
+        if (view == binding.btnExcludeApps) {
+            // Open exclude apps manager
+            excludeAppsManager.openExcludeAppsManager(parentFragmentManager)
+        }
         if (view == binding.btnClearStatistics) {
             TotalTraffic.clearTotal(mContext)
             Toast.makeText(context, "Statistics clear completed", Toast.LENGTH_SHORT).show()
             binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
             binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
         }
+        if (view == binding.txtCheckIp) {
+            val params = Bundle()
+            params.putString("type", "check ip click")
+            params.putString("hostname", mVpnGateConnection?.calculateHostName ?: "")
+            params.putString("ip", mVpnGateConnection?.ip ?: "")
+            params.putString("country", mVpnGateConnection?.countryLong ?: "")
+            mContext?.let { FirebaseAnalytics.getInstance(it).logEvent("Click_Check_IP", params) }
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url").toUri()
+            )
+            startActivity(browserIntent)
+        }
         if (view == binding.btnOnOff) {
             if (mVpnGateConnection == null) {
                 return
             }
-            if (!isConnecting) {
-                if (checkStatus()) {
+
+            if (isAnyConnected) {
+                if (isFreeConnected) {
+                    // Free connected: just disconnect
                     val params = Bundle()
                     params.putString("type", "disconnect current")
                     params.putString("ip", mVpnGateConnection!!.ip)
                     params.putString("hostname", mVpnGateConnection!!.calculateHostName)
                     params.putString("country", mVpnGateConnection!!.countryLong)
                     FirebaseAnalytics.getInstance(mContext!!).logEvent("Disconnect_VPN", params)
-                    stopVpn()
-                    isConnecting = false
-                    binding.btnOnOff.isActivated = false
-                    binding.txtStatus.setText(R.string.disconnecting)
+
+                    if (checkStatus()) {
+                        stopVpn()
+                        isConnecting = false
+                        binding.btnOnOff.isActivated = false
+                        binding.txtStatus.setText(R.string.disconnecting)
+                    } else {
+                        startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                        binding.btnOnOff.isActivated = false
+                        binding.txtStatus.setText(R.string.sstp_disconnecting)
+                    }
                 } else {
-                    showAds()
+                    // Paid connected: disconnect paid and connect free
                     val params = Bundle()
-                    params.putString("type", "connect from status")
+                    params.putString("type", "disconnect paid and connect free")
                     params.putString("ip", mVpnGateConnection!!.ip)
                     params.putString("hostname", mVpnGateConnection!!.calculateHostName)
                     params.putString("country", mVpnGateConnection!!.countryLong)
-                    FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_VPN", params)
-                    prepareVpn()
-                    binding.txtStatus.text = getString(R.string.connecting)
-                    binding.btnOnOff.isActivated = true
-                    isConnecting = true
+                    FirebaseAnalytics.getInstance(mContext!!).logEvent("Disconnect_Paid_Connect_Free", params)
+
+                    // Determine current connection type and disconnect
+                    val currentMethod = if (checkStatus()) "openvpn" else "sstp"
+                    if (currentMethod == "openvpn") {
+                        stopVpn()
+                    } else {
+                        startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                    }
+
+                    // Determine target connection method and connect
+                    val targetMethod = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
+                    dataUtil!!.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (targetMethod == "sstp") {
+                            connectSSTPVPN()
+                        } else {
+                            showAds()
+                            prepareVpn()
+                        }
+                        binding.txtStatus.text = getString(R.string.connecting)
+                        binding.btnOnOff.isActivated = true
+                        isConnecting = true
+                    }, 1000) // Wait 1 second for disconnection to complete
                 }
             } else {
-                val params = Bundle()
-                params.putString("type", "cancel connect to vpn")
-                params.putString("ip", mVpnGateConnection!!.ip)
-                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
-                params.putString("country", mVpnGateConnection!!.countryLong)
-                FirebaseAnalytics.getInstance(mContext!!).logEvent("Cancel_VPN", params)
-                stopVpn()
-                binding.btnOnOff.isActivated = false
-                binding.txtStatus.text = getString(R.string.canceled)
-                isConnecting = false
+                // No connected: create a new connect
+                val method = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
+                if (method == "sstp") {
+                    handleSSTPBtn()
+                } else {
+                    if (!isConnecting) {
+                        dataUtil!!.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                        showAds()
+                        val params = Bundle()
+                        params.putString("type", "connect from status")
+                        params.putString("ip", mVpnGateConnection!!.ip)
+                        params.putString("hostname", mVpnGateConnection!!.calculateHostName)
+                        params.putString("country", mVpnGateConnection!!.countryLong)
+                        FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_VPN", params)
+                        prepareVpn()
+                        binding.txtStatus.text = getString(R.string.connecting)
+                        binding.btnOnOff.isActivated = true
+                        isConnecting = true
+                    }
+                }
             }
         }
     }
@@ -252,6 +375,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private fun loadVpnProfile(): Boolean {
         try {
             val useUdp = dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
+            dataUtil!!.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUdp)
             val data = if (useUdp) {
                 mVpnGateConnection!!.openVpnConfigDataUdp!!.toByteArray()
             } else {
@@ -263,6 +387,9 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             vpnProfile = cp.convertProfile()
             vpnProfile!!.mName = connectionName
             vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
+
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             if (dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
                 vpnProfile!!.mOverrideDNS = true
                 vpnProfile!!.mDNS1 = FirebaseRemoteConfig.getInstance()
@@ -351,6 +478,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         try {
             VpnStatus.removeStateListener(this)
             VpnStatus.removeByteCountListener(this)
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -365,7 +493,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             return
         }
         requireActivity().runOnUiThread {
-            if (checkStatus() && !isDetached) {
+            if (isFreeConnected && !isDetached) {
                 binding.txtDownloadSession.text =
                     OpenVPNService.humanReadableByteCount(`in`, false, resources)
                 binding.txtDownloadSpeed.text = OpenVPNService.humanReadableByteCount(
@@ -405,8 +533,19 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private val connectionName: String
         get() {
-            val useUdp = dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
-            return mVpnGateConnection!!.getName(useUdp)
+            val method = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
+            val useUdp = if (method == "sstp") {
+                // SSTP only supports TCP
+                false
+            } else {
+                dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
+            }
+            val baseName = mVpnGateConnection!!.getName(useUdp)
+            return if (method == "sstp") {
+                "MS-SSTP:$baseName"
+            } else {
+                baseName
+            }
         }
 
     override fun updateState(
@@ -418,17 +557,29 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     ) {
         requireActivity().runOnUiThread {
             try {
-                binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(mContext)
+                // Don't override status text if SSTP is connected or if it's a paid connection
+                if (!isSSTPConnected && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+                    binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(mContext)
+                }
                 dataUtil!!.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
                 when (status) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
-                        binding.btnOnOff.isActivated = true
-                        isConnecting = false
-                        isAuthFailed = false
-                        val isStartUpDetail =
-                            dataUtil!!.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
-                        OpenVPNService.setNotificationActivityClass(if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java)
-                        dataUtil!!.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                        if (dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+                            // Connected via paid server, treat as disconnected state
+                            binding.btnOnOff.isActivated = false
+                            binding.txtStatus.text =
+                                String.format(getString(R.string.tap_to_connect_last), connectionName)
+                            binding.txtCheckIp?.visibility = View.INVISIBLE
+                        } else {
+                            binding.btnOnOff.isActivated = true
+                            isConnecting = false
+                            isAuthFailed = false
+                            binding.txtStatus.text = getString(R.string.connected_to, connectionName)
+                            binding.txtCheckIp?.visibility = View.VISIBLE
+                            val isStartUpDetail =
+                                dataUtil!!.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+                            OpenVPNService.setNotificationActivityClass(if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java)
+                        }
                     }
 
                     ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT -> dataUtil!!.setBooleanSetting(
@@ -436,10 +587,11 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         false
                     )
 
-                    ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed) {
+                    ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed && !isSSTPConnected) {
                         binding.btnOnOff.isActivated = false
                         binding.txtStatus.text =
                             String.format(getString(R.string.tap_to_connect_last), connectionName)
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
                     }
 
                     ConnectionStatus.LEVEL_AUTH_FAILED -> {
@@ -451,14 +603,188 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_Error", params)
                         binding.txtStatus.text = resources.getString(R.string.vpn_auth_failure)
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
                         isConnecting = false
                     }
 
-                    else -> {}
+                    else -> binding.txtCheckIp?.visibility = View.INVISIBLE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Status update error", e)
             }
+        }
+    }
+
+    private fun initSSTP() {
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        listener = SharedPreferences.OnSharedPreferenceChangeListener { _: SharedPreferences?, key: String? ->
+            requireActivity().runOnUiThread {
+                if (OscPrefKey.ROOT_STATE.toString() == key) {
+                    val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
+                    if (!newState) {
+                        if (isSSTPConnectOrDisconnecting) {
+                            binding.txtStatus.setText(R.string.sstp_disconnected)
+                        } else {
+                            binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
+                        }
+                        isSSTPConnected = false
+                        binding.txtCheckIp?.visibility = View.INVISIBLE
+                        bindData()
+                    }
+                    isSSTPConnectOrDisconnecting = false
+                }
+                if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
+                    val connectedIp =
+                        prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
+                    if ("" != connectedIp) {
+                        if (dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+                            // Paid SSTP connected, treat as disconnected state
+                            binding.txtStatus.text =
+                                String.format(getString(R.string.tap_to_connect_last), connectionName)
+                            binding.btnOnOff.isActivated = false
+                            binding.txtCheckIp?.visibility = View.INVISIBLE
+                        } else {
+                            binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                            isSSTPConnected = true
+                            binding.btnOnOff.isActivated = true
+                            binding.txtCheckIp?.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+
+        // Check initial SSTP state and update UI
+        isSSTPConnected = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
+        if (isSSTPConnected) {
+            val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
+            if (connectedIp!!.isNotEmpty()) {
+                if (dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+                    // Paid SSTP was already connected, treat as disconnected
+                    binding.txtStatus.text = String.format(getString(R.string.tap_to_connect_last), connectionName)
+                    binding.btnOnOff.isActivated = false
+                    binding.txtCheckIp?.visibility = View.INVISIBLE
+                    isSSTPConnected = false  // Treat as not connected
+                } else {
+                    binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                    binding.btnOnOff.isActivated = true
+                    binding.txtCheckIp?.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun startVpnSSTPService(action: String) {
+        val intent = Intent(requireContext(), SstpVpnService::class.java).setAction(action)
+        if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireContext().startForegroundService(intent)
+        } else {
+            requireContext().startService(intent)
+        }
+    }
+
+    private val startActivityIntentSSTPVPN: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        handleActivityResult(START_VPN_SSTP, it.resultCode)
+    }
+
+    private fun handleActivityResult(requestCode: Int, resultCode: Int) {
+        try {
+            if (resultCode == Activity.RESULT_OK) {
+                if (requestCode == START_VPN_SSTP) {
+                    connectSSTPVPN()
+                }
+                dataUtil!!.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
+            } else {
+                dataUtil!!.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "handleActivityResult error", e)
+        }
+    }
+
+    private fun startSSTPVPN() {
+        if (checkStatus()) {
+            stopVpn()
+        }
+        val intent = VpnService.prepare(requireContext())
+        if (intent != null) {
+            try {
+                startActivityIntentSSTPVPN.launch(intent)
+            } catch (_: ActivityNotFoundException) {
+                Log.e(TAG, "OS does not support VPN")
+            }
+        } else {
+            handleActivityResult(START_VPN_SSTP, Activity.RESULT_OK)
+        }
+    }
+
+    private fun connectSSTPVPN() {
+        if (mVpnGateConnection == null) return
+        val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+        val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
+        prefs.edit {
+            putString(
+                OscPrefKey.HOME_HOSTNAME.toString(),
+                mVpnGateConnection!!.calculateHostName
+            )
+            putString(
+                OscPrefKey.HOME_COUNTRY.toString(),
+                mVpnGateConnection!!.countryShort?.uppercase() ?: ""
+            )
+            putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
+            putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
+            putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
+            putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
+        }
+        binding.btnOnOff.isActivated = true
+        binding.txtStatus.setText(R.string.sstp_connecting)
+        startVpnSSTPService(ACTION_VPN_CONNECT)
+    }
+
+    private fun handleSSTPBtn() {
+        isSSTPConnectOrDisconnecting = true
+        val params = Bundle()
+        params.putString("hostname", mVpnGateConnection!!.calculateHostName)
+        params.putString("ip", mVpnGateConnection!!.ip)
+        params.putString("country", mVpnGateConnection!!.countryLong)
+        val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
+        if (isSSTPConnected && sstpHostName != mVpnGateConnection!!.calculateHostName) {
+            // Connected but not must disconnect old first
+            startVpnSSTPService(ACTION_VPN_DISCONNECT)
+            params.putString("type", "replace connect via MS-SSTP")
+            Handler(Looper.getMainLooper()).postDelayed({ connectSSTPVPN() }, 100)
+        } else if (!isSSTPConnected) {
+            // Check if SSTP is actually running (paid SSTP case)
+            if (prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)) {
+                // Paid SSTP running, disconnect it first
+                startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    dataUtil!!.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                    val connectParams = Bundle()
+                    connectParams.putString("hostname", mVpnGateConnection!!.calculateHostName)
+                    connectParams.putString("ip", mVpnGateConnection!!.ip)
+                    connectParams.putString("country", mVpnGateConnection!!.countryLong)
+                    connectParams.putString("type", "connect via MS-SSTP")
+                    FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_Via_SSTP", connectParams)
+                    dataUtil!!.lastVPNConnection = mVpnGateConnection
+                    startSSTPVPN()
+                }, 500)
+            } else {
+                dataUtil!!.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                params.putString("type", "connect via MS-SSTP")
+                FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_Via_SSTP", params)
+                dataUtil!!.lastVPNConnection = mVpnGateConnection
+                startSSTPVPN()
+            }
+        } else {
+            params.putString("type", "cancel MS-SSTP")
+            FirebaseAnalytics.getInstance(mContext!!).logEvent("Cancel_Via_SSTP", params)
+            startVpnSSTPService(ACTION_VPN_DISCONNECT)
+            binding.btnOnOff.isActivated = false
+            binding.txtStatus.setText(R.string.sstp_disconnecting)
         }
     }
 }

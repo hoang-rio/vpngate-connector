@@ -410,6 +410,21 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/btn_exclude_apps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                    android:text="@string/exclude_apps_text"
+                android:textColor="@color/colorPrimaryAdaptive"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/txt_net_stats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

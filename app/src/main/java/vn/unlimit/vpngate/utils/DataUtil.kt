@@ -304,6 +304,7 @@ class DataUtil(context: Context?) {
         const val SETTING_BLOCK_ADS: String = "SETTING_BLOCK_ADS"
         const val INCLUDE_UDP_SERVER: String = "INCLUDE_UDP_SERVER"
         const val LAST_CONNECT_USE_UDP: String = "LAST_CONNECT_USE_UDP"
+        const val LAST_CONNECT_METHOD: String = "LAST_CONNECT_METHOD"
         const val USE_CUSTOM_DNS: String = "USE_CUSTOM_DNS"
         const val CUSTOM_DNS_IP_1: String = "CUSTOM_DNS_IP_1"
         const val CUSTOM_DNS_IP_2: String = "CUSTOM_DNS_IP_2"

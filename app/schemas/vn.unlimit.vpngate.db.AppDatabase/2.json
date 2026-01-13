@@ -1,0 +1,156 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "c43a7a98a4abc3a6ec415bfb5223ff04",
+    "entities": [
+      {
+        "tableName": "VPNGateItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`hostName` TEXT NOT NULL, `ip` TEXT, `score` INTEGER NOT NULL, `ping` INTEGER NOT NULL, `speed` INTEGER NOT NULL, `countryLong` TEXT, `countryShort` TEXT, `numVpnSession` INTEGER NOT NULL, `uptime` INTEGER NOT NULL, `totalUser` INTEGER NOT NULL, `totalTraffic` INTEGER NOT NULL, `logType` TEXT, `operator` TEXT, `message` TEXT, `openVpnConfigData` TEXT, `tcpPort` INTEGER NOT NULL, `udpPort` INTEGER NOT NULL, `isL2TPSupport` INTEGER NOT NULL, `isSSTPSupport` INTEGER NOT NULL, PRIMARY KEY(`hostName`))",
+        "fields": [
+          {
+            "fieldPath": "hostName",
+            "columnName": "hostName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ip",
+            "columnName": "ip",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "score",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ping",
+            "columnName": "ping",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "speed",
+            "columnName": "speed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryLong",
+            "columnName": "countryLong",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "countryShort",
+            "columnName": "countryShort",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "numVpnSession",
+            "columnName": "numVpnSession",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uptime",
+            "columnName": "uptime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalUser",
+            "columnName": "totalUser",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalTraffic",
+            "columnName": "totalTraffic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logType",
+            "columnName": "logType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "operator",
+            "columnName": "operator",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "openVpnConfigData",
+            "columnName": "openVpnConfigData",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tcpPort",
+            "columnName": "tcpPort",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "udpPort",
+            "columnName": "udpPort",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isL2TPSupport",
+            "columnName": "isL2TPSupport",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSSTPSupport",
+            "columnName": "isSSTPSupport",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "hostName"
+          ]
+        }
+      },
+      {
+        "tableName": "excluded_apps",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, PRIMARY KEY(`packageName`))",
+        "fields": [
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appName",
+            "columnName": "appName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "packageName"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c43a7a98a4abc3a6ec415bfb5223ff04')"
+    ]
+  }
+}

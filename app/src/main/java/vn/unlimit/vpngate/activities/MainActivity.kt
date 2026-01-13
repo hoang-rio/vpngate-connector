@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -65,6 +66,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.DataUtil.Companion.isOnline
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import kittoku.osc.preference.OscPrefKey
 import vn.unlimit.vpngate.viewmodels.ConnectionListViewModel
 import java.util.Objects
 import java.util.concurrent.atomic.AtomicBoolean
@@ -104,12 +106,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 )
 
                 BaseProvider.ACTION.ACTION_CONNECT_VPN -> {
-                    if (dataUtil != null && dataUtil!!.lastVPNConnection != null) {
-                        try {
-                            binding.navMain.menu.findItem(R.id.nav_status).setVisible(true)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Got exception when handle broadcast receive", e)
-                        }
+                    try {
+                        checkStatusMenu()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Got exception when handle broadcast receive", e)
                     }
                 }
 
@@ -212,8 +212,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun checkStatusMenu() {
-        binding.navMain.menu.findItem(R.id.nav_status)
-            .setVisible(dataUtil!!.lastVPNConnection != null)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
+        val isOpenVPNFreeConnected = dataUtil!!.lastVPNConnection != null
+        val isSSTPFreeConnected = !sstpHostName.isNullOrEmpty() && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+        binding.navMain.menu.findItem(R.id.nav_status).isVisible = isOpenVPNFreeConnected || isSSTPFreeConnected
     }
 
     private fun checkUMP() {
@@ -660,7 +663,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             R.id.nav_status -> {
-                if (dataUtil!!.lastVPNConnection == null) {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+                val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
+                val isOpenVPNFreeConnected = dataUtil!!.lastVPNConnection != null
+                val isSSTPFreeConnected = !sstpHostName.isNullOrEmpty() && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                if (!isOpenVPNFreeConnected && !isSSTPFreeConnected) {
                     Toast.makeText(
                         applicationContext,
                         getString(R.string.connect_one_warning),

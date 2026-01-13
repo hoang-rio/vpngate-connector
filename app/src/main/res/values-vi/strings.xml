@@ -146,6 +146,7 @@
     <string name="status">Trạng thái</string>
     <string name="tap_to_disconnect">Bấm nút để ngắt kết nối với %1$s</string>
     <string name="tap_to_connect_last">Bấm nút để kết nối đến %1$s</string>
+    <string name="connected_to">Đã kết nối đến %1$s</string>
     <string name="no_last_vpn_server">Vui lòng chọn VPN Server từ home để kết nối trước</string>
     <string name="connect_one_warning">Bạn cần kết nối tới ít nhất một máy chủ VPN để có thể truy cập chức năng này</string>
     <string name="disconnected">Đã ngắt kết nối</string>
@@ -331,4 +332,14 @@
     <string name="install_source_error_message">Bạn đang sử dụng phiên bản app được cài đặt trái phép. Vui lòng cài đặt phiên bản hợp lệ từ CH Play</string>
     <string name="install_source_error_open_play_store">Mở CH Play</string>
     <string name="notification_channel_name">Hết dung lượng</string>
+    <!-- Exclude Apps -->
+    <string name="app_icon">Biểu tượng ứng dụng</string>
+    <string name="add_apps_to_exclude">Thêm ứng dụng cần loại trừ</string>
+    <string name="exclude_app_description">Các ứng dụng đã chọn sẽ bỏ qua tunnel VPN và sử dụng kết nối internet thông thường</string>
+    <string name="search_apps_hint">Tìm kiếm ứng dụng...</string>
+    <string name="exclude_apps_text">Đang loại trừ %d ứng dụng khỏi VPN</string>
+    <string name="apps_updated_successfully">Đã cập nhật ứng dụng thành công</string>
+    <string name="vpn_restarted_for_settings">VPN khởi động lại cho cài đặt mới.</string>
+    <string name="error_saving_apps">Lỗi khi lưu ứng dụng</string>
+    <string name="error_opening_app_selection">Lỗi khi mở danh sách ứng dụng</string>
 </resources>
