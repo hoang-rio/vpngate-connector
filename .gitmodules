@@ -6,3 +6,6 @@
 [submodule "vpnLib"]
 	path = vpnLib
 	url = https://github.com/hoang-rio/vpnLib.git
+[submodule "SoftEtherClient"]
+	path = SoftEtherClient
+	url = git@github.com:hoang-rio/SoftEther-Android-Module.git
