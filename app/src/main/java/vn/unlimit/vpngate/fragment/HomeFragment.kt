@@ -21,6 +21,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,6 +131,10 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         try {
             dataUtil = instance!!.dataUtil
             vpnGateListAdapter = VPNGateListAdapter(mContext!!)
+            val showNativeAd = dataUtil!!.hasAds() && 
+                FirebaseRemoteConfig.getInstance().getBoolean(getString(R.string.cfg_show_native_ad))
+            vpnGateListAdapter!!.setHasAds(showNativeAd)
+            vpnGateListAdapter!!.setAdUnitId(getString(R.string.admob_native_unit_id))
             handler = Handler(Looper.getMainLooper())
             connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
             connectionListViewModel!!.isLoading.observe(this) { isLoading: Boolean? ->
