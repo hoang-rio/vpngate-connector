@@ -353,7 +353,7 @@ class VPNGateListAdapter(private val mContext: Context) :
         val adStars: RatingBar = itemView.findViewById(R.id.ad_stars)
         val adStore: TextView = itemView.findViewById(R.id.ad_store)
         val adAdvertiser: TextView = itemView.findViewById(R.id.ad_advertiser)
-        val adLoadingContainer: android.widget.FrameLayout = itemView.findViewById(R.id.ad_loading_container)
+        val adLoadingContainer: com.facebook.shimmer.ShimmerFrameLayout = itemView.findViewById(R.id.ad_loading_container)
     }
 
     companion object {

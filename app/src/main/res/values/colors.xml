@@ -27,4 +27,5 @@
     <color name="colorHistoryButtonFocus">#49AEFF</color>
     <color name="colorPrimaryAdaptive">#124097</color>
     <color name="background">#fafafa</color>
+    <color name="colorSkeleton">#E0E0E0</color>
 </resources>

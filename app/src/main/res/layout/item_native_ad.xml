@@ -7,20 +7,109 @@
     android:background="@drawable/selector_vpn_item"
     android:theme="@style/AppTheme.DayNight">
 
-    <!-- Loading Container - shown while ad is loading -->
-    <FrameLayout
+    <!-- Skeleton Loading Container - shown while ad is loading -->
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/ad_loading_container"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:padding="8dp">
+        android:layout_height="240dp"
+        android:padding="8dp"
+        app:shimmer_auto_start="true"
+        app:shimmer_duration="1500"
+        app:shimmer_repeat_count="-1"
+        app:shimmer_direction="left_to_right">
 
-        <ProgressBar
-            android:id="@+id/ad_loading_indicator"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center"
-            android:indeterminate="true" />
-    </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Skeleton Media View -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/skeleton_background" />
+
+            <!-- Skeleton Headline and Icon Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Skeleton Icon -->
+                <View
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/skeleton_background_circle" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <!-- Skeleton Headline -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="6dp"
+                        android:background="@drawable/skeleton_background" />
+
+                    <!-- Skeleton Advertiser -->
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="14dp"
+                        android:background="@drawable/skeleton_background" />
+
+                </LinearLayout>
+
+                <!-- Skeleton Call to Action Button -->
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/skeleton_background" />
+
+            </LinearLayout>
+
+            <!-- Skeleton Body Text -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="14dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/skeleton_background" />
+
+            <View
+                android:layout_width="200dp"
+                android:layout_height="14dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/skeleton_background" />
+
+            <!-- Skeleton Price and Store Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="12dp"
+                    android:background="@drawable/skeleton_background" />
+
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/skeleton_background" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <com.google.android.gms.ads.nativead.NativeAdView
         android:id="@+id/native_ad_view"
