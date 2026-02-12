@@ -342,4 +342,24 @@
     <string name="vpn_restarted_for_settings">VPN khởi động lại cho cài đặt mới.</string>
     <string name="error_saving_apps">Lỗi khi lưu ứng dụng</string>
     <string name="error_opening_app_selection">Lỗi khi mở danh sách ứng dụng</string>
+    <!-- VPN Protocol Selection Dialog -->
+    <string name="select_vpn_protocol">Chọn giao thức VPN</string>
+    <string name="available_protocols">Giao thức khả dụng</string>
+    <string name="openvpn_tcp">OpenVPN (TCP)</string>
+    <string name="openvpn_udp">OpenVPN (UDP)</string>
+    <string name="softether_vpn">SoftEther VPN</string>
+    <string name="protocol_available_port">Khả dụng trên cổng %1$d</string>
+    <string name="protocol_not_available">Không khả dụng</string>
+    <string name="softether_available">Giao thức SSL-VPN</string>
+    <string name="softether_not_available">Không khả dụng</string>
+    <string name="openvpn_tcp_not_available">OpenVPN TCP không khả dụng cho máy chủ này</string>
+    <string name="openvpn_udp_not_available">OpenVPN UDP không khả dụng cho máy chủ này</string>
+    <string name="softether_not_available_toast">SoftEther không khả dụng cho máy chủ này</string>
+    <string name="connecting_softether">Đang kết nối SoftEther…</string>
+    <string name="disconnect_softether">Ngắt kết nối SoftEther</string>
+    <string name="cancel_softether">Huỷ kết nối SoftEther</string>
+    <string name="softether_connected">Đã kết nối SoftEther với IP: %1$s</string>
+    <string name="softether_disconnected">Đã ngắt kết nối SoftEther</string>
+    <string name="softether_disconnected_by_error">Đã ngắt kết nối SoftEther do gặp lỗi</string>
+    <string name="vpn_permission_denied">Quyền VPN bị từ chối</string>
 </resources>

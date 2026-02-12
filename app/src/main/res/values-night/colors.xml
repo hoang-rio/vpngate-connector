@@ -6,7 +6,6 @@
     <color name="colorAccent">#AA5035</color>
     <color name="colorRed">#850000</color>
     <color name="colorAccentTransparent">#96fd754c</color>
-    <color name="lineColor">#bdbdbd</color>
     <color name="colorOverlay">#30a4a4a4</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorTextPrimary">#FFFFFF</color>
@@ -28,4 +27,5 @@
     <color name="colorPrimaryAdaptive">#4A90E2</color>
     <color name="background">#303030</color>
     <color name="colorSkeleton">#424242</color>
+    <color name="lineColor">#666666</color>
 </resources>

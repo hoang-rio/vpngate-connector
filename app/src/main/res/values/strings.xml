@@ -379,4 +379,25 @@
     <string name="vpn_restarted_for_settings">VPN restarted for new settings.</string>
     <string name="error_saving_apps">Error saving apps</string>
     <string name="error_opening_app_selection">Error opening app selection</string>
+    <!-- VPN Protocol Selection Dialog -->
+    <string name="select_vpn_protocol">Select VPN Protocol</string>
+    <string name="available_protocols">Available Protocols</string>
+    <string name="openvpn_tcp">OpenVPN (TCP)</string>
+    <string name="openvpn_udp">OpenVPN (UDP)</string>
+    <string name="softether_vpn">SoftEther VPN (TCP)</string>
+    <string name="protocol_available_port">Available on port %1$d</string>
+    <string name="protocol_not_available">Not available</string>
+    <string name="softether_available">SSL-VPN Protocol</string>
+    <string name="softether_not_available">Not available</string>
+    <string name="openvpn_tcp_not_available">OpenVPN TCP is not available for this server</string>
+    <string name="openvpn_udp_not_available">OpenVPN UDP is not available for this server</string>
+    <string name="softether_not_available_toast">SoftEther is not available for this server</string>
+    <string name="connecting_softether">Connecting SoftEther…</string>
+    <string name="disconnect_softether">Disconnect SoftEther</string>
+    <string name="cancel_softether">Cancel SoftEther</string>
+    <string name="softether_connected">Connected SoftEther with IP: %1$s</string>
+    <string name="softether_disconnected">Disconnected SoftEther</string>
+    <string name="softether_disconnected_by_error">Disconnected SoftEther because of error</string>
+    <string name="vpn_permission_denied">VPN permission denied</string>
+    <string name="softether_connecting">Connecting SoftEther…</string>
 </resources>
