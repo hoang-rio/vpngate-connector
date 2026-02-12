@@ -318,7 +318,7 @@ class VPNGateListAdapter(private val mContext: Context) :
         override fun onLongClick(view: View): Boolean {
             try {
                 if (onItemLongClickListener != null) {
-                    val clickedPost = adapterPosition
+                    val clickedPost = getRealPosition(adapterPosition)
                     val item = _list.get(clickedPost)
                     onItemLongClickListener!!.onItemLongClick(item, clickedPost)
                     return true
@@ -332,7 +332,7 @@ class VPNGateListAdapter(private val mContext: Context) :
         override fun onClick(view: View) {
             try {
                 if (onItemClickListener != null) {
-                    val clickedPost = adapterPosition
+                    val clickedPost = getRealPosition(adapterPosition)
                     val item = _list.get(clickedPost)
                     onItemClickListener!!.onItemClick(item, clickedPost)
                 }
