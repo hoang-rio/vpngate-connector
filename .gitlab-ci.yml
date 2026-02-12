@@ -2,7 +2,6 @@ image: ghcr.io/hoang-rio/docker-linux-android-sdk:jdk21
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  GIT_SUBMODULE_FORCE_HTTPS: "true"
 
 stages:
   - build
