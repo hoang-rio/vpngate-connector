@@ -362,4 +362,5 @@
     <string name="softether_disconnected">Đã ngắt kết nối SoftEther</string>
     <string name="softether_disconnected_by_error">Đã ngắt kết nối SoftEther do gặp lỗi</string>
     <string name="vpn_permission_denied">Quyền VPN bị từ chối</string>
+    <string name="error_unknown">Có lỗi xảy ra. Vui lòng thử lại.</string>
 </resources>
