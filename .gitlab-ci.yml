@@ -20,6 +20,8 @@ build_apk_free:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
     - java --version
+    - cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+    - cd $CI_PROJECT_DIR
     - ./gradlew assembleFreeRelease
     - cp app/build/outputs/apk/free/release/app-free-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-free.apk
     - ls -alh $CI_PROJECT_DIR
@@ -38,6 +40,8 @@ build_apk_pro:
   script:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
+    - cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+    - cd $CI_PROJECT_DIR
     - ./gradlew assembleProRelease
     - cp app/build/outputs/apk/pro/release/app-pro-release.apk $CI_PROJECT_DIR/$CI_COMMIT_SHA-pro.apk
     - ls -alh $CI_PROJECT_DIR
@@ -55,6 +59,8 @@ build_aab_free:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
     - java --version
+    - cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+    - cd $CI_PROJECT_DIR
     - ./gradlew :app:bundleFreeRelease
     - cp app/build/outputs/bundle/freeRelease/app-free-release.aab $CI_PROJECT_DIR/$CI_COMMIT_TAG-free.aab
     - ls -alh $CI_PROJECT_DIR
@@ -72,6 +78,8 @@ build_aab_pro:
     - gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
     - GPG=gpg2 blackbox_postdeploy
     - java --version
+    - cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+    - cd $CI_PROJECT_DIR
     - ./gradlew :app:bundleProRelease
     - cp app/build/outputs/bundle/proRelease/app-pro-release.aab $CI_PROJECT_DIR/$CI_COMMIT_TAG-pro.aab
     - ls -alh $CI_PROJECT_DIR
