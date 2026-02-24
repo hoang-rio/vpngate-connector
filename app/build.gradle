@@ -45,8 +45,8 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 127
-            versionName "2.2.7"
+            versionCode 128
+            versionName "2.2.8"
         }
 
         pro {
@@ -127,6 +127,8 @@ dependencies {
     implementation 'com.android.billingclient:billing-ktx:8.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.android.gms:play-services-ads:25.0.0'
+    // Start.io Ads
+    implementation 'io.start:admob-mediation:3.+'
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
