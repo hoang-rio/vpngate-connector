@@ -1177,6 +1177,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 serverPort = mVpnGateConnection!!.tcpPort,
                 username = "vpn",
                 password = "vpn",
+                virtualHub = "VPN",
                 sessionName = mVpnGateConnection!!.calculateHostName,
                 localAddress = "10.0.0.2",
                 prefixLength = 24,
