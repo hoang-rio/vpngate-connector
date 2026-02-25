@@ -800,6 +800,15 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         handleActivityResult(START_VPN_SSTP, it.resultCode)
     }
 
+    private val startActivityIntentSoftEther: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        // When VPN permission is granted, proceed with SoftEther connection
+        if (it.resultCode == RESULT_OK) {
+            startSoftEtherConnection()
+        }
+    }
+
     private fun startSSTPVPN() {
         if (checkStatus()) {
             stopVpn()
@@ -1131,7 +1140,20 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             Toast.makeText(this, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
             return
         }
-        
+
+        // Check and request VPN permission
+        val vpnIntent = VpnService.prepare(this)
+        if (vpnIntent != null) {
+            // Need to request permission - launch activity
+            try {
+                startActivityIntentSoftEther.launch(vpnIntent)
+            } catch (e: ActivityNotFoundException) {
+                Log.e(TAG, "OS does not support VPN")
+                Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show()
+            }
+            return
+        }
+
         // Check cooldown period after disconnect
         val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
         if (timeSinceDisconnect < DISCONNECT_COOLDOWN_MS) {
