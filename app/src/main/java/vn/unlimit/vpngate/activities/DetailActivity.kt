@@ -1154,6 +1154,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return
         }
 
+        // Request notification permission (required for Android 13+)
+        NotificationUtil(this).requestPermission()
+
         // Check cooldown period after disconnect
         val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
         if (timeSinceDisconnect < DISCONNECT_COOLDOWN_MS) {
