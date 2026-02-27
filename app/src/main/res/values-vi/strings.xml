@@ -361,6 +361,12 @@
     <string name="softether_connected">Đã kết nối SoftEther với IP: %1$s</string>
     <string name="softether_disconnected">Đã ngắt kết nối SoftEther</string>
     <string name="softether_disconnected_by_error">Đã ngắt kết nối SoftEther do gặp lỗi</string>
+    <string name="softether_connecting">Đang kết nối SoftEther…</string>
+    <string name="softether_tls_handshake">Đang thiết lập bắt tay TLS SoftEther…</string>
+    <string name="softether_protocol_handshake">Đang thương lượng giao thức SoftEther…</string>
+    <string name="softether_authenticating">Đang xác thực phiên SoftEther…</string>
+    <string name="softether_session_setup">Đang thiết lập phiên VPN SoftEther…</string>
+    <string name="softether_disconnecting">Đang ngắt kết nối SoftEther…</string>
     <string name="vpn_permission_denied">Quyền VPN bị từ chối</string>
     <string name="error_unknown">Có lỗi xảy ra. Vui lòng thử lại.</string>
 </resources>

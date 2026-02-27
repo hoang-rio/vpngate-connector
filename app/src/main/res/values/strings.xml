@@ -400,5 +400,10 @@
     <string name="softether_disconnected_by_error">Disconnected SoftEther because of error</string>
     <string name="vpn_permission_denied">VPN permission denied</string>
     <string name="softether_connecting">Connecting SoftEther…</string>
+    <string name="softether_tls_handshake">Establishing SoftEther TLS handshake…</string>
+    <string name="softether_protocol_handshake">Negotiating SoftEther protocol…</string>
+    <string name="softether_authenticating">Authenticating SoftEther session…</string>
+    <string name="softether_session_setup">Establishing SoftEther VPN session…</string>
+    <string name="softether_disconnecting">Disconnecting SoftEther…</string>
     <string name="error_unknown">An unknown error occurred. Please try again.</string>
 </resources>
