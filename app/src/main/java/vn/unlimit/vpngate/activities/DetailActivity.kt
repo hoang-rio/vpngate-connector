@@ -119,9 +119,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 SoftEtherVpnService.ACTION_CONNECTION_STATE -> {
                     val state = intent.getStringExtra(SoftEtherVpnService.EXTRA_STATE)
                     val hostname = intent.getStringExtra(SoftEtherVpnService.EXTRA_HOSTNAME) ?: ""
-                    Log.d(TAG, "SoftEther state received: $state")
+                    Log.d(TAG, "SoftEther state received: $state, hostname: $hostname")
                     
                     runOnUiThread {
+                        Log.d(TAG, "Updating UI with state: $state")
                         when (state) {
                             SoftEtherVpnService.STATE_CONNECTING -> {
                                 isSoftEtherConnected = false
@@ -229,6 +230,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                                 binding.txtStatus.text = getString(R.string.softether_disconnected_by_error)
                                 binding.txtNetStats.visibility = View.GONE
                                 binding.txtCheckIp.visibility = View.GONE
+                            }
+                            else -> {
+                                Log.w(TAG, "Unknown SoftEther state: $state")
                             }
                         }
                     }
@@ -583,13 +587,22 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     public override fun onResume() {
         super.onResume()
-        // Register SoftEther state receiver
+        
+        // Register SoftEther state receiver FIRST, before any connection attempts
         val filter = IntentFilter(SoftEtherVpnService.ACTION_CONNECTION_STATE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(softEtherStateReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(softEtherStateReceiver, filter)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(softEtherStateReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(softEtherStateReceiver, filter)
+            }
+            Log.d(TAG, "SoftEther receiver registered successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to register SoftEther receiver", e)
         }
+        
+        // Check if connection is already in progress and update UI accordingly
+        updateConnectionStateFromService()
         
         try {
             Handler(Looper.getMainLooper()).postDelayed({
@@ -615,6 +628,37 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
         } catch (e: Exception) {
             Log.e(TAG, "onResume error", e)
+        }
+    }
+
+    /**
+     * Check current connection state from service and update UI
+     * This ensures UI reflects current state even if broadcasts were missed
+     */
+    private fun updateConnectionStateFromService() {
+        // Query SoftEtherVpnService for current state
+        // For now, we'll check if we're already connected and update UI accordingly
+        if (isSoftEtherConnected || isSoftEtherConnecting) {
+            // Update UI based on current state
+            when {
+                isSoftEtherConnecting -> {
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_connecting)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                isSoftEtherConnected -> {
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_red_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.disconnect)
+                    binding.txtStatus.text = getString(R.string.softether_connected, mVpnGateConnection?.calculateHostName ?: "")
+                    binding.txtCheckIp.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
@@ -1269,14 +1313,24 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 Log.e(TAG, "Error logging analytics", e)
             }
 
-            // Create ConnectionConfig for SoftEther
+            // Create ConnectionConfig for SoftEther using the same mName format as OpenVPN
+            val serverName = mVpnGateConnection!!.getName(false) // Use TCP protocol for mName format
+            
+            // Determine serverHost based on user preference for IP or domain (same logic as OpenVPN)
+            val useDomainToConnect = dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
+            val serverHost = if (useDomainToConnect) {
+                mVpnGateConnection!!.calculateHostName
+            } else {
+                mVpnGateConnection!!.ip!!
+            }
+            
             val config = vn.unlimit.softether.model.ConnectionConfig(
-                serverHost = mVpnGateConnection!!.calculateHostName,
+                serverHost = serverHost,
                 serverPort = mVpnGateConnection!!.tcpPort,
                 username = "vpn",
                 password = "vpn",
                 virtualHub = "VPN",
-                sessionName = mVpnGateConnection!!.calculateHostName,
+                sessionName = serverName,
                 localAddress = "10.0.0.2",
                 prefixLength = 24,
                 dnsServer = "8.8.8.8",
