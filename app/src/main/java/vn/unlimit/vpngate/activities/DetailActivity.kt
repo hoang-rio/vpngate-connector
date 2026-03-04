@@ -585,6 +585,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return vpnGateConnection != null && mVpnGateConnection != null && vpnGateConnection.name == mVpnGateConnection!!.name
         }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public override fun onResume() {
         super.onResume()
         
