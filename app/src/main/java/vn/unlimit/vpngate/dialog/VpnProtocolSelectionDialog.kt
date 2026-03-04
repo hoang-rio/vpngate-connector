@@ -30,7 +30,8 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
     enum class VpnProtocol {
         OPENVPN_TCP,
         OPENVPN_UDP,
-        SOFTEther
+        SOFTEther_TCP,
+        SOFTEther_UDP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,13 +80,22 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
                 binding.cardOpenVpnUdp.visibility = View.GONE
             }
 
-            // Configure SoftEther option - hide if not available
-            // SoftEther VPN uses the same TCP port as OpenVPN TCP
-            if (isSoftEtherAvailable) {
-                binding.cardSoftEther.visibility = View.VISIBLE
-                binding.txtSoftEtherStatus.text = getString(R.string.protocol_available_port, connection.tcpPort)
+            // Configure SoftEther TCP option - hide if not available
+            val hasSoftEtherTcp = isSoftEtherAvailable && connection.seTcpPort > 0
+            if (hasSoftEtherTcp) {
+                binding.cardSoftEtherTcp.visibility = View.VISIBLE
+                binding.txtSoftEtherTcpStatus.text = getString(R.string.protocol_available_port, connection.seTcpPort)
             } else {
-                binding.cardSoftEther.visibility = View.GONE
+                binding.cardSoftEtherTcp.visibility = View.GONE
+            }
+
+            // Configure SoftEther UDP option - hide if not available
+            val hasSoftEtherUdp = isSoftEtherAvailable && connection.seUdpPort > 0
+            if (hasSoftEtherUdp) {
+                binding.cardSoftEtherUdp.visibility = View.VISIBLE
+                binding.txtSoftEtherUdpStatus.text = getString(R.string.protocol_available_port, connection.seUdpPort)
+            } else {
+                binding.cardSoftEtherUdp.visibility = View.GONE
             }
         }
     }
@@ -109,15 +119,25 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
             }
         }
 
-        binding.cardSoftEther.setOnClickListener {
-            if (isSoftEtherAvailable) {
-                listener?.onProtocolSelected(VpnProtocol.SOFTEther)
+        binding.cardSoftEtherTcp.setOnClickListener {
+            if (isSoftEtherAvailable && vpnGateConnection?.seTcpPort ?: 0 > 0) {
+                listener?.onProtocolSelected(VpnProtocol.SOFTEther_TCP)
+                dismiss()
+            } else {
+                Toast.makeText(context, R.string.softether_not_available, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.cardSoftEtherUdp.setOnClickListener {
+            if (isSoftEtherAvailable && vpnGateConnection?.seUdpPort ?: 0 > 0) {
+                listener?.onProtocolSelected(VpnProtocol.SOFTEther_UDP)
                 dismiss()
             } else {
                 Toast.makeText(context, R.string.softether_not_available, Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     fun setVPNGateConnection(connection: VPNGateConnection?) {
         this.vpnGateConnection = connection

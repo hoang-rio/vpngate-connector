@@ -347,7 +347,8 @@
     <string name="available_protocols">Giao thức khả dụng</string>
     <string name="openvpn_tcp">OpenVPN (TCP)</string>
     <string name="openvpn_udp">OpenVPN (UDP)</string>
-    <string name="softether_vpn">SoftEther VPN</string>
+    <string name="softether_vpn_tcp">SoftEther VPN (TCP)</string>
+    <string name="softether_vpn_udp">SoftEther VPN (UDP)</string>
     <string name="protocol_available_port">Khả dụng trên cổng %1$d</string>
     <string name="protocol_not_available">Không khả dụng</string>
     <string name="softether_available">Giao thức SSL-VPN</string>

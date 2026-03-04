@@ -1200,9 +1200,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         VpnProtocolSelectionDialog.VpnProtocol.OPENVPN_UDP -> {
                             handleConnection(true) // UDP
                         }
-                        VpnProtocolSelectionDialog.VpnProtocol.SOFTEther -> {
-                            // Start SoftEther VPN connection
-                            startSoftEtherConnection()
+                        VpnProtocolSelectionDialog.VpnProtocol.SOFTEther_TCP -> {
+                            // Start SoftEther VPN connection with TCP
+                            startSoftEtherConnection(true)
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.SOFTEther_UDP -> {
+                            // Start SoftEther VPN connection with UDP
+                            startSoftEtherConnection(false)
                         }
                     }
                 }
@@ -1249,8 +1253,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     /**
      * Start SoftEther VPN connection
+     * @param useTcp true for TCP, false for UDP
      */
-    private fun startSoftEtherConnection() {
+    private fun startSoftEtherConnection(useTcp: Boolean = true) {
         // Safety checks
         if (mVpnGateConnection == null) {
             Log.e(TAG, "Cannot start SoftEther connection: VPN connection is null")
@@ -1280,7 +1285,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             Log.d(TAG, "Waiting for cooldown period: ${DISCONNECT_COOLDOWN_MS - timeSinceDisconnect}ms remaining")
             Handler(mainLooper).postDelayed({
                 if (!isFinishing && !isDestroyed) {
-                    startSoftEtherConnection()
+                    startSoftEtherConnection(useTcp)
                 }
             }, DISCONNECT_COOLDOWN_MS - timeSinceDisconnect)
             return
@@ -1324,9 +1329,16 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 mVpnGateConnection!!.ip!!
             }
             
+            // Use appropriate port based on protocol selection
+            val serverPort = if (useTcp) {
+                mVpnGateConnection!!.seTcpPort
+            } else {
+                mVpnGateConnection!!.seUdpPort
+            }
+            
             val config = vn.unlimit.softether.model.ConnectionConfig(
                 serverHost = serverHost,
-                serverPort = mVpnGateConnection!!.tcpPort,
+                serverPort = serverPort,
                 username = "vpn",
                 password = "vpn",
                 virtualHub = "VPN",

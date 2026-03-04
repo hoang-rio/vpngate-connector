@@ -384,7 +384,8 @@
     <string name="available_protocols">Available Protocols</string>
     <string name="openvpn_tcp">OpenVPN (TCP)</string>
     <string name="openvpn_udp">OpenVPN (UDP)</string>
-    <string name="softether_vpn">SoftEther VPN (TCP)</string>
+    <string name="softether_vpn_tcp">SoftEther VPN (TCP)</string>
+    <string name="softether_vpn_udp">SoftEther VPN (UDP)</string>
     <string name="protocol_available_port">Available on port %1$d</string>
     <string name="protocol_not_available">Not available</string>
     <string name="softether_available">SSL-VPN Protocol</string>
