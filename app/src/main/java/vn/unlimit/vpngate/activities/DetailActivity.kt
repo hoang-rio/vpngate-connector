@@ -112,7 +112,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var isSoftEtherConnecting = false
     private var lastDisconnectTime: Long = 0
     private val DISCONNECT_COOLDOWN_MS = 1000L // 1 second cooldown after disconnect
-    
+    private var pendingSoftEtherUseTcp: Boolean = true // Track pending SoftEther connection protocol
+    private var notificationPermissionRequested = false // Track if we've already requested notification permission
     private val softEtherStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: android.content.Context?, intent: Intent?) {
             when (intent?.action) {
@@ -1264,10 +1265,39 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return
         }
 
+        // Request notification permission FIRST (required for Android 13+)
+        // This ensures notifications can be displayed when VPN connects
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "Requesting POST_NOTIFICATIONS permission before VPN permission")
+                // Store the useTcp value for later use in permission callback
+                pendingSoftEtherUseTcp = useTcp
+                notificationPermissionRequested = true
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+                // Return here and wait for permission result callback
+                return
+            }
+        }
+
+        // After notification permission is granted (or skipped on older Android), 
+        // continue with VPN permission check and connection
+        continueSoftEtherConnection(useTcp)
+    }
+
+    private fun continueSoftEtherConnection(useTcp: Boolean) {
         // Check and request VPN permission
         val vpnIntent = VpnService.prepare(this)
         if (vpnIntent != null) {
             // Need to request permission - launch activity
+            Log.d(TAG, "VPN permission required, launching VPN permission dialog")
             try {
                 startActivityIntentSoftEther.launch(vpnIntent)
             } catch (e: ActivityNotFoundException) {
@@ -1277,16 +1307,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return
         }
 
-        // Request notification permission (required for Android 13+)
-        NotificationUtil(this).requestPermission()
-
         // Check cooldown period after disconnect
         val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
         if (timeSinceDisconnect < DISCONNECT_COOLDOWN_MS) {
             Log.d(TAG, "Waiting for cooldown period: ${DISCONNECT_COOLDOWN_MS - timeSinceDisconnect}ms remaining")
             Handler(mainLooper).postDelayed({
                 if (!isFinishing && !isDestroyed) {
-                    startSoftEtherConnection(useTcp)
+                    continueSoftEtherConnection(useTcp)
                 }
             }, DISCONNECT_COOLDOWN_MS - timeSinceDisconnect)
             return
@@ -1342,7 +1369,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 serverPort = serverPort,
                 username = "vpn",
                 password = "vpn",
-                virtualHub = "VPN",
+                virtualHub = "vpngate",
                 sessionName = serverName,
                 localAddress = "10.0.0.2",
                 prefixLength = 24,
@@ -1406,12 +1433,37 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        when (requestCode) {
+            REQUEST_NOTIFICATION_PERMISSION -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d(TAG, "POST_NOTIFICATIONS permission granted")
+                } else {
+                    Log.d(TAG, "POST_NOTIFICATIONS permission denied, but continuing with connection")
+                }
+                // Permission granted or denied, continue with VPN connection anyway
+                // Notifications will display on Android 13+ if permission granted
+                // Connection will proceed regardless of notification permission
+                notificationPermissionRequested = false
+                continueSoftEtherConnection(pendingSoftEtherUseTcp)
+                return
+            }
+        }
+    }
+
     companion object {
         const val TYPE_FROM_NOTIFY: Int = 1001
         const val TYPE_NORMAL: Int = 1000
         const val TYPE_START: String = "vn.ulimit.vpngate.TYPE_START"
         const val START_VPN_PROFILE: Int = 70
         const val START_VPN_SSTP: Int = 80
+        const val REQUEST_NOTIFICATION_PERMISSION: Int = 90
         const val ACTION_VPN_CONNECT: String = "kittoku.osc.connect"
         const val ACTION_VPN_DISCONNECT: String = "kittoku.osc.disconnect"
         private const val TAG = "DetailActivity"
