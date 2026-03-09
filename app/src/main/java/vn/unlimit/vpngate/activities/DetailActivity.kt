@@ -3,10 +3,8 @@ package vn.unlimit.vpngate.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
-import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -114,130 +112,131 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private val DISCONNECT_COOLDOWN_MS = 1000L // 1 second cooldown after disconnect
     private var pendingSoftEtherUseTcp: Boolean = true // Track pending SoftEther connection protocol
     private var notificationPermissionRequested = false // Track if we've already requested notification permission
-    private val softEtherStateReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: android.content.Context?, intent: Intent?) {
-            when (intent?.action) {
-                SoftEtherVpnService.ACTION_CONNECTION_STATE -> {
-                    val state = intent.getStringExtra(SoftEtherVpnService.EXTRA_STATE)
-                    val hostname = intent.getStringExtra(SoftEtherVpnService.EXTRA_HOSTNAME) ?: ""
-                    Log.d(TAG, "SoftEther state received: $state, hostname: $hostname")
-                    
-                    runOnUiThread {
-                        Log.d(TAG, "Updating UI with state: $state")
-                        when (state) {
-                            SoftEtherVpnService.STATE_CONNECTING -> {
-                                isSoftEtherConnected = false
-                                isConnecting = true
-                                isSoftEtherConnecting = true
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_apply_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.cancel)
-                                binding.txtStatus.text = getString(R.string.softether_connecting)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_TLS_HANDSHAKE -> {
-                                isSoftEtherConnected = false
-                                isConnecting = true
-                                isSoftEtherConnecting = true
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_apply_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.cancel)
-                                binding.txtStatus.text = getString(R.string.softether_tls_handshake)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_PROTOCOL_HANDSHAKE -> {
-                                isSoftEtherConnected = false
-                                isConnecting = true
-                                isSoftEtherConnecting = true
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_apply_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.cancel)
-                                binding.txtStatus.text = getString(R.string.softether_protocol_handshake)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_AUTHENTICATING -> {
-                                isSoftEtherConnected = false
-                                isConnecting = true
-                                isSoftEtherConnecting = true
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_apply_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.cancel)
-                                binding.txtStatus.text = getString(R.string.softether_authenticating)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_SESSION_SETUP -> {
-                                isSoftEtherConnected = false
-                                isConnecting = true
-                                isSoftEtherConnecting = true
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_apply_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.cancel)
-                                binding.txtStatus.text = getString(R.string.softether_session_setup)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_CONNECTED -> {
-                                isSoftEtherConnected = true
-                                isConnecting = false
-                                isSoftEtherConnecting = false
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_red_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.disconnect)
-                                binding.txtStatus.text = getString(R.string.softether_connected, hostname)
-                                binding.txtCheckIp.visibility = View.VISIBLE
-                            }
-                            SoftEtherVpnService.STATE_DISCONNECTING -> {
-                                isSoftEtherConnected = false
-                                isConnecting = false
-                                isSoftEtherConnecting = false
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_primary_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.connect_to_this_server)
-                                binding.txtStatus.text = getString(R.string.softether_disconnecting)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_DISCONNECTED -> {
-                                isSoftEtherConnected = false
-                                isConnecting = false
-                                isSoftEtherConnecting = false
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_primary_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.connect_to_this_server)
-                                binding.txtStatus.text = getString(R.string.softether_disconnected)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            SoftEtherVpnService.STATE_ERROR -> {
-                                isSoftEtherConnected = false
-                                isConnecting = false
-                                isSoftEtherConnecting = false
-                                binding.btnConnect.background = ResourcesCompat.getDrawable(
-                                    resources, R.drawable.selector_primary_button, null
-                                )
-                                binding.btnConnect.text = getString(R.string.retry_connect)
-                                binding.txtStatus.text = getString(R.string.softether_disconnected_by_error)
-                                binding.txtNetStats.visibility = View.GONE
-                                binding.txtCheckIp.visibility = View.GONE
-                            }
-                            else -> {
-                                Log.w(TAG, "Unknown SoftEther state: $state")
-                            }
-                        }
-                    }
+
+    private val softEtherStateListener = object : SoftEtherVpnService.StateListener {
+        override fun onSoftEtherStateChanged(state: String, assignedIp: String) {
+            // Already delivered on main thread by SoftEtherVpnService
+            Log.d(TAG, "SoftEther state received: $state ip=$assignedIp")
+
+            // Don't show terminal states (DISCONNECTED/ERROR) unless we were
+            // already in an active SoftEther session — prevents "SoftEther Disconnected"
+            // showing on fresh screen open when no SoftEther session ever ran.
+            if ((state == SoftEtherVpnService.STATE_DISCONNECTED || state == SoftEtherVpnService.STATE_ERROR)
+                && !isSoftEtherConnected && !isSoftEtherConnecting) {
+                return
+            }
+
+            when (state) {
+                SoftEtherVpnService.STATE_CONNECTING -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_connecting)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
                 }
+                SoftEtherVpnService.STATE_TLS_HANDSHAKE -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_tls_handshake)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_PROTOCOL_HANDSHAKE -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_protocol_handshake)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_AUTHENTICATING -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_authenticating)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_SESSION_SETUP -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_session_setup)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_CONNECTED -> {
+                    isSoftEtherConnected = true
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_red_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.disconnect)
+                    binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.VISIBLE
+                }
+                SoftEtherVpnService.STATE_DISCONNECTING -> {
+                    // Keep isSoftEtherConnected=true so the guard allows STATE_DISCONNECTED through next
+                    isSoftEtherConnected = true
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.connect_to_this_server)
+                    binding.txtStatus.text = getString(R.string.softether_disconnecting)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_DISCONNECTED -> {
+                    isSoftEtherConnected = false
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.connect_to_this_server)
+                    binding.txtStatus.text = getString(R.string.softether_disconnected)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_ERROR -> {
+                    isSoftEtherConnected = false
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.retry_connect)
+                    binding.txtStatus.text = getString(R.string.softether_disconnected_by_error)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                else -> Log.w(TAG, "Unknown SoftEther state: $state")
             }
         }
     }
@@ -434,6 +433,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     ) {
         runOnUiThread {
             try {
+                // Don't let OpenVPN state override an active SoftEther connection
+                if (isSoftEtherConnected || isSoftEtherConnecting) return@runOnUiThread
+
                 binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
                 when (status) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
@@ -586,26 +588,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             return vpnGateConnection != null && mVpnGateConnection != null && vpnGateConnection.name == mVpnGateConnection!!.name
         }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public override fun onResume() {
         super.onResume()
-        
-        // Register SoftEther state receiver FIRST, before any connection attempts
-        val filter = IntentFilter(SoftEtherVpnService.ACTION_CONNECTION_STATE)
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(softEtherStateReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
-            } else {
-                registerReceiver(softEtherStateReceiver, filter)
-            }
-            Log.d(TAG, "SoftEther receiver registered successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to register SoftEther receiver", e)
-        }
-        
-        // Check if connection is already in progress and update UI accordingly
-        updateConnectionStateFromService()
-        
+
+        // Register SoftEther state listener — same pattern as OpenVPN's VpnStatus.addStateListener.
+        // addStateListener() immediately replays currentState, so we always get the right UI.
+        SoftEtherVpnService.addStateListener(softEtherStateListener)
+
         try {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, OpenVPNService::class.java)
@@ -633,46 +622,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
-    /**
-     * Check current connection state from service and update UI
-     * This ensures UI reflects current state even if broadcasts were missed
-     */
-    private fun updateConnectionStateFromService() {
-        // Query SoftEtherVpnService for current state
-        // For now, we'll check if we're already connected and update UI accordingly
-        if (isSoftEtherConnected || isSoftEtherConnecting) {
-            // Update UI based on current state
-            when {
-                isSoftEtherConnecting -> {
-                    binding.btnConnect.background = ResourcesCompat.getDrawable(
-                        resources, R.drawable.selector_apply_button, null
-                    )
-                    binding.btnConnect.text = getString(R.string.cancel)
-                    binding.txtStatus.text = getString(R.string.softether_connecting)
-                    binding.txtNetStats.visibility = View.GONE
-                    binding.txtCheckIp.visibility = View.GONE
-                }
-                isSoftEtherConnected -> {
-                    binding.btnConnect.background = ResourcesCompat.getDrawable(
-                        resources, R.drawable.selector_red_button, null
-                    )
-                    binding.btnConnect.text = getString(R.string.disconnect)
-                    binding.txtStatus.text = getString(R.string.softether_connected, mVpnGateConnection?.calculateHostName ?: "")
-                    binding.txtCheckIp.visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
     public override fun onPause() {
         try {
             super.onPause()
-            // Unregister SoftEther state receiver
-            try {
-                unregisterReceiver(softEtherStateReceiver)
-            } catch (e: IllegalArgumentException) {
-                // Receiver was not registered
-            }
+            // Unregister SoftEther state listener
+            SoftEtherVpnService.removeStateListener(softEtherStateListener)
             TotalTraffic.saveTotal(this)
             unbindService(mConnection)
         } catch (e: Exception) {
@@ -770,7 +724,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
             if (view == binding.btnConnect) {
                 if (!isConnecting) {
-                    if (checkStatus() && isCurrent) {
+                    if (isSoftEtherConnected) {
+                        // Disconnect active SoftEther connection
+                        disconnectSoftEther()
+                    } else if (checkStatus() && isCurrent) {
                         val params = Bundle()
                         params.putString("type", "disconnect current")
                         params.putString("hostname", mVpnGateConnection!!.calculateHostName)
