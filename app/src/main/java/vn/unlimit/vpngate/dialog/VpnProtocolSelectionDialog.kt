@@ -91,12 +91,11 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
 
             // Configure SoftEther UDP option - hide if not available
             val hasSoftEtherUdp = isSoftEtherAvailable && connection.seUdpPort > 0
-            if (hasSoftEtherUdp) {
-                binding.cardSoftEtherUdp.visibility = View.VISIBLE
-                binding.txtSoftEtherUdpStatus.text = getString(R.string.protocol_available_port, connection.seUdpPort)
-            } else {
-                binding.cardSoftEtherUdp.visibility = View.GONE
-            }
+            // TODO: SoftEther UDP (RUDP) is not yet implemented. RUDP requires a full reliable
+            //       UDP transport layer (~5000+ lines in reference implementation) including
+            //       NAT traversal, sequence numbers, ACKs, retransmission, and HMAC signatures.
+            //       Hide this option until RUDP support is added to the native layer.
+            binding.cardSoftEtherUdp.visibility = View.GONE
         }
     }
 
@@ -128,6 +127,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
             }
         }
 
+        // TODO: Enable SoftEther UDP when RUDP is implemented in native layer
         binding.cardSoftEtherUdp.setOnClickListener {
             if (isSoftEtherAvailable && vpnGateConnection?.seUdpPort ?: 0 > 0) {
                 listener?.onProtocolSelected(VpnProtocol.SOFTEther_UDP)
