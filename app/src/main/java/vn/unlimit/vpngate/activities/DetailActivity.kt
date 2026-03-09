@@ -116,7 +116,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private val softEtherStateListener = object : SoftEtherVpnService.StateListener {
         override fun onSoftEtherStateChanged(state: String, assignedIp: String) {
             // Already delivered on main thread by SoftEtherVpnService
-            Log.d(TAG, "SoftEther state received: $state ip=$assignedIp")
+            Log.d(TAG, if (assignedIp.isNotEmpty()) "SoftEther state: $state ip=$assignedIp" else "SoftEther state: $state")
 
             // Don't show terminal states (DISCONNECTED/ERROR) unless we were
             // already in an active SoftEther session — prevents "SoftEther Disconnected"
