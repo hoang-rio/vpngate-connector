@@ -363,6 +363,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     }, 500)
                     vpnRestarted = true
                 }
+                // Check if SoftEther is currently running and restart it
+                else if (isSoftEtherConnected || isSoftEtherConnecting) {
+                    disconnectSoftEther()
+                    Handler(mainLooper).postDelayed({
+                        startSoftEtherConnection(true)
+                    }, 500)
+                    vpnRestarted = true
+                }
 
                 if (vpnRestarted) {
                     Toast.makeText(this@DetailActivity, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
@@ -1331,7 +1339,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 dnsServer = "8.8.8.8",
                 routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
                 mtu = 1500,
-                allowedApps = emptyList(),
+                excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
+                    .map { it.packageName },
                 isMetered = false
             )
 
