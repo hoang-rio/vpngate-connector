@@ -257,32 +257,33 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 if (OscPrefKey.ROOT_STATE.toString() == key) {
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
-                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                            resources, R.drawable.selector_paid_button, null
-                        )
-                        binding.btnSstpConnect.setText(R.string.connect_via_sstp)
                         if (isSSTPConnectOrDisconnecting) {
                             binding.txtStatus.setText(R.string.sstp_disconnected)
                         } else {
                             binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
+                        isConnecting = false
                         binding.txtCheckIp.visibility = View.GONE
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
+                            resources, R.drawable.selector_primary_button, null
+                        )
+                        binding.btnConnect.setText(R.string.connect_to_this_server)
                     }
                     isSSTPConnectOrDisconnecting = false
                 }
                 if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
                     val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
                     if (connectedIp!!.isNotEmpty()) {
-                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                            resources, R.drawable.selector_red_button, null
-                        )
-                        binding.btnSstpConnect.setText(R.string.disconnect_sstp)
                         binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
                         dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
                         isSSTPConnected = true
+                        isConnecting = false
                         binding.txtCheckIp.visibility = View.VISIBLE
-                        // Send broadcast to show status menu
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
+                            resources, R.drawable.selector_red_button, null
+                        )
+                        binding.btnConnect.setText(R.string.disconnect)
                         val intent = Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN)
                         sendBroadcast(intent)
                     }
@@ -290,15 +291,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         isSSTPConnected = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
-        val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
         if (isSSTPConnected) {
             binding.txtCheckIp.visibility = View.VISIBLE
-            if (sstpHostName == mVpnGateConnection!!.calculateHostName) {
-                binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                    resources, R.drawable.selector_red_button, null
-                )
-                binding.btnSstpConnect.setText(R.string.disconnect_sstp)
-            }
+            binding.btnConnect.background = ResourcesCompat.getDrawable(
+                resources, R.drawable.selector_red_button, null
+            )
+            binding.btnConnect.setText(R.string.disconnect)
         }
     }
 
@@ -378,7 +376,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         binding.btnConnect.setOnClickListener(this)
         binding.txtCheckIp.setOnClickListener(this)
         binding.btnL2tpConnect.setOnClickListener(this)
-        binding.btnSstpConnect.setOnClickListener(this)
         binding.btnExcludeApps.setOnClickListener(this)
         excludeAppsManager.updateExcludeAppsButtonText { text ->
             binding.btnExcludeApps.text = text
@@ -558,10 +555,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
                 if (mVpnGateConnection!!.isSSTPSupport()) {
                     binding.lnSstp.visibility = View.VISIBLE
-                    binding.lnSstpBtn.visibility = View.VISIBLE
                 } else {
                     binding.lnSstp.visibility = View.GONE
-                    binding.lnSstpBtn.visibility = View.GONE
                 }
 
                 if (isCurrent && checkStatus()) {
@@ -727,6 +722,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     if (isSoftEtherConnected) {
                         // Disconnect active SoftEther connection
                         disconnectSoftEther()
+                    } else if (isSSTPConnected) {
+                        // Disconnect active MS-SSTP connection
+                        handleSSTPBtn()
                     } else if (checkStatus() && isCurrent) {
                         val params = Bundle()
                         params.putString("type", "disconnect current")
@@ -754,6 +752,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     // Check if it's a SoftEther connection being cancelled
                     if (isSoftEtherConnecting) {
                         disconnectSoftEther()
+                    } else if (isSSTPConnectOrDisconnecting) {
+                        startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                        isSSTPConnectOrDisconnecting = false
                     } else {
                         stopVpn()
                     }
@@ -788,9 +789,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val l2tpIntent = Intent(this, L2TPConnectActivity::class.java)
                 l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection)
                 startActivity(l2tpIntent)
-            }
-            if (view == binding.btnSstpConnect) {
-                handleSSTPBtn()
             }
             if (view == binding.btnInstallOpenvpn) {
                 try {
@@ -859,12 +857,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
             putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
         }
-        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.selector_apply_button,
-            null
+        isConnecting = true
+        binding.btnConnect.background = ResourcesCompat.getDrawable(
+            resources, R.drawable.selector_apply_button, null
         )
-        binding.btnSstpConnect.setText(R.string.cancel_sstp)
+        binding.btnConnect.setText(R.string.cancel)
         binding.txtStatus.setText(R.string.sstp_connecting)
         loadAds()
         startVpnSSTPService(ACTION_VPN_CONNECT)
@@ -910,7 +907,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         params.putString("country", mVpnGateConnection!!.countryLong)
         val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
         if (isSSTPConnected && sstpHostName != mVpnGateConnection!!.calculateHostName) {
-            // Connected but not must disconnect old first
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
             params.putString("type", "replace connect via MS-SSTP")
             binding.txtCheckIp.visibility = View.GONE
@@ -924,12 +920,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("type", "cancel MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_Via_SSTP", params)
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
-            binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.selector_paid_button,
-                null
+            isConnecting = false
+            binding.btnConnect.background = ResourcesCompat.getDrawable(
+                resources, R.drawable.selector_primary_button, null
             )
-            binding.btnSstpConnect.setText(R.string.connect_via_sstp)
+            binding.btnConnect.setText(R.string.connect_to_this_server)
             binding.txtStatus.setText(R.string.sstp_disconnecting)
         }
     }
@@ -1166,6 +1161,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         VpnProtocolSelectionDialog.VpnProtocol.SOFTEther_UDP -> {
                             // Start SoftEther VPN connection with UDP
                             startSoftEtherConnection(false)
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.MS_SSTP -> {
+                            handleSSTPBtn()
                         }
                     }
                 }

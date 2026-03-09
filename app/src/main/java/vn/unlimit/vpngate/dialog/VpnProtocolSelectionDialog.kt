@@ -31,7 +31,8 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
         OPENVPN_TCP,
         OPENVPN_UDP,
         SOFTEther_TCP,
-        SOFTEther_UDP
+        SOFTEther_UDP,
+        MS_SSTP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +97,15 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
             //       NAT traversal, sequence numbers, ACKs, retransmission, and HMAC signatures.
             //       Hide this option until RUDP support is added to the native layer.
             binding.cardSoftEtherUdp.visibility = View.GONE
+
+            // Configure MS-SSTP option
+            val hasSstp = connection.isSSTPSupport() && connection.tcpPort > 0
+            if (hasSstp) {
+                binding.cardMsSstp.visibility = View.VISIBLE
+                binding.txtMsSstpStatus.text = getString(R.string.protocol_available_port, connection.tcpPort)
+            } else {
+                binding.cardMsSstp.visibility = View.GONE
+            }
         }
     }
 
@@ -134,6 +144,15 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
                 dismiss()
             } else {
                 Toast.makeText(context, R.string.softether_not_available, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.cardMsSstp.setOnClickListener {
+            if (vpnGateConnection?.isSSTPSupport() == true) {
+                listener?.onProtocolSelected(VpnProtocol.MS_SSTP)
+                dismiss()
+            } else {
+                Toast.makeText(context, R.string.sstp_support, Toast.LENGTH_SHORT).show()
             }
         }
     }

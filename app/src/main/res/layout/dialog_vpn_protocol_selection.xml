@@ -74,6 +74,122 @@
         android:textColor="?attr/android:textColorSecondary"
         android:layout_marginBottom="12dp" />
 
+    <!-- SoftEther TCP Option -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSoftEtherTcp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="14dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/softether_vpn_tcp"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/android:textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/txtSoftEtherTcpStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorPrimary" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:contentDescription="@null"
+                app:tint="?attr/android:textColorSecondary" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- SoftEther UDP Option -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSoftEtherUdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="14dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/softether_vpn_udp"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/android:textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/txtSoftEtherUdpStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorPrimary" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chevron_right"
+                android:contentDescription="@null"
+                app:tint="?attr/android:textColorSecondary" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <!-- OpenVPN TCP Option -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardOpenVpnTcp"
@@ -190,9 +306,9 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- SoftEther TCP Option -->
+    <!-- MS-SSTP Option -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardSoftEtherTcp"
+        android:id="@+id/cardMsSstp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -226,71 +342,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/softether_vpn_tcp"
+                    android:text="@string/ms_sstp"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="?attr/android:textColorPrimary" />
 
                 <TextView
-                    android:id="@+id/txtSoftEtherTcpStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorPrimary" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                android:contentDescription="@null"
-                app:tint="?attr/android:textColorSecondary" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- SoftEther UDP Option -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardSoftEtherUdp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="?attr/colorSurface"
-        android:foreground="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="14dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@mipmap/ic_launcher"
-                android:contentDescription="@null" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="14dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/softether_vpn_udp"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/android:textColorPrimary" />
-
-                <TextView
-                    android:id="@+id/txtSoftEtherUdpStatus"
+                    android:id="@+id/txtMsSstpStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
