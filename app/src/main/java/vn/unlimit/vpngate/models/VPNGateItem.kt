@@ -24,5 +24,7 @@ data class VPNGateItem(
     @ColumnInfo val tcpPort: Int = 0,
     @ColumnInfo val udpPort: Int = 0,
     @ColumnInfo val isL2TPSupport: Boolean = false,
-    @ColumnInfo val isSSTPSupport: Boolean = false
+    @ColumnInfo val isSSTPSupport: Boolean = false,
+    @ColumnInfo val seTcpPort: Int = 0,
+    @ColumnInfo val seUdpPort: Int = 0
 )

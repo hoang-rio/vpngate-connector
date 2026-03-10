@@ -194,6 +194,10 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                     val editor = prefs.edit()
                     editor.putString(OscPrefKey.DNS_CUSTOM_ADDRESS.toString(), dnsIP)
                     editor.apply()
+                } else if (settingKey == DataUtil.CUSTOM_DNS_IP_2) {
+                    val editor = prefs.edit()
+                    editor.putString(OscPrefKey.DNS_CUSTOM_ADDRESS_SECONDARY.toString(), dnsIP)
+                    editor.apply()
                 }
             }
         }
@@ -296,10 +300,13 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                     mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(binding.txtDns1, InputMethodManager.SHOW_IMPLICIT)
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), true)
+                editor.putString(OscPrefKey.DNS_CUSTOM_ADDRESS.toString(), dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8"))
+                editor.putString(OscPrefKey.DNS_CUSTOM_ADDRESS_SECONDARY.toString(), dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, "8.8.4.4"))
             } else {
                 hideKeyBroad()
                 binding.lnDnsIp.visibility = View.GONE
                 editor.remove(OscPrefKey.DNS_CUSTOM_ADDRESS.toString())
+                editor.remove(OscPrefKey.DNS_CUSTOM_ADDRESS_SECONDARY.toString())
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), false)
             }
             editor.apply()
@@ -345,8 +352,15 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
                     FirebaseRemoteConfig.getInstance()
                         .getString(getString(R.string.dns_block_ads_primary_cfg_key))
                 )
+                editor.putString(
+                    OscPrefKey.DNS_CUSTOM_ADDRESS_SECONDARY.toString(),
+                    FirebaseRemoteConfig.getInstance()
+                        .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
+                )
             } else {
                 editor.putBoolean(OscPrefKey.DNS_DO_USE_CUSTOM_SERVER.toString(), false)
+                editor.remove(OscPrefKey.DNS_CUSTOM_ADDRESS.toString())
+                editor.remove(OscPrefKey.DNS_CUSTOM_ADDRESS_SECONDARY.toString())
             }
             editor.apply()
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Block_Ads_Setting", params)

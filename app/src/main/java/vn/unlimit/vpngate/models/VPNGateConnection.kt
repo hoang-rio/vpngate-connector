@@ -34,6 +34,8 @@ class VPNGateConnection : Parcelable {
     var udpPort = 0
     private var isL2TPSupport = 0
     private var isSSTPSupport = 0
+    var seTcpPort = 0
+    var seUdpPort = 0
 
     private constructor(`in`: Parcel) {
         hostName = `in`.readString()
@@ -55,6 +57,8 @@ class VPNGateConnection : Parcelable {
         udpPort = `in`.readInt()
         isL2TPSupport = `in`.readInt()
         isSSTPSupport = `in`.readInt()
+        seTcpPort = `in`.readInt()
+        seUdpPort = `in`.readInt()
     }
 
     //Empty constructor
@@ -80,6 +84,8 @@ class VPNGateConnection : Parcelable {
         out.writeInt(udpPort)
         out.writeInt(isL2TPSupport)
         out.writeInt(isSSTPSupport)
+        out.writeInt(seTcpPort)
+        out.writeInt(seUdpPort)
     }
 
     private fun decodeBase64(base64str: String): String? {
@@ -203,6 +209,8 @@ class VPNGateConnection : Parcelable {
             udpPort = this.udpPort,
             isL2TPSupport = this.isL2TPSupport(),
             isSSTPSupport = this.isSSTPSupport(),
+            seTcpPort = this.seTcpPort,
+            seUdpPort = this.seUdpPort
         )
     }
 
@@ -226,6 +234,8 @@ class VPNGateConnection : Parcelable {
         udpPort = vpnGateItem.udpPort
         isL2TPSupport = if (vpnGateItem.isL2TPSupport) 1 else 0
         isSSTPSupport = if (vpnGateItem.isSSTPSupport) 1 else 0
+        seTcpPort = vpnGateItem.seTcpPort
+        seUdpPort = vpnGateItem.seUdpPort
         return this
     }
 
@@ -308,11 +318,19 @@ class VPNGateConnection : Parcelable {
                     if (properties.size > index + 1) {
                         vpnGateConnection.isSSTPSupport = properties[++index].toInt()
                     }
+                    if (properties.size > index + 1) {
+                        vpnGateConnection.seTcpPort = properties[++index].toInt()
+                    }
+                    if (properties.size > index + 1) {
+                        vpnGateConnection.seUdpPort = properties[++index].toInt()
+                    }
                 } else {
                     vpnGateConnection.tcpPort = 0
                     vpnGateConnection.udpPort = 0
                     vpnGateConnection.isL2TPSupport = 0
                     vpnGateConnection.isSSTPSupport = 0
+                    vpnGateConnection.seTcpPort = 0
+                    vpnGateConnection.seUdpPort = 0
                 }
                 return vpnGateConnection
             } catch (e: Exception) {

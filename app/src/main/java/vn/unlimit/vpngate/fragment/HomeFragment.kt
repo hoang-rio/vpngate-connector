@@ -136,7 +136,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             vpnGateListAdapter!!.setHasAds(showNativeAd)
             vpnGateListAdapter!!.setAdUnitId(getString(R.string.admob_native_unit_id))
             handler = Handler(Looper.getMainLooper())
-            connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
+            connectionListViewModel = (this.activity as MainActivity).connectionListViewModel
             connectionListViewModel!!.isLoading.observe(this) { isLoading: Boolean? ->
                 if (!isLoading!! && connectionListViewModel!!.vpnGateConnectionList.value != null) {
                     onAPISuccess(connectionListViewModel!!.vpnGateConnectionList.value)
