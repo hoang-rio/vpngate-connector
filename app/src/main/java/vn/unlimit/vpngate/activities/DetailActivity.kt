@@ -1148,6 +1148,30 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             Toast.makeText(this, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
             return
         }
+
+        // Count available protocols using same visibility logic as the dialog
+        val conn = mVpnGateConnection!!
+        val hasOpenVpnTcp = conn.tcpPort > 0 && conn.openVpnConfigData != null
+        val hasOpenVpnUdp = conn.udpPort > 0
+        val hasSoftEtherTcp = conn.seTcpPort > 0
+        val hasSstp = conn.isSSTPSupport() && conn.tcpPort > 0
+        // Config with no explicit port info — port is embedded in the .ovpn file itself
+        val hasOpenVpnConfigOnly = conn.openVpnConfigData != null && !hasOpenVpnTcp && !hasOpenVpnUdp
+
+        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSstp, hasOpenVpnConfigOnly).count { it }
+
+        // Skip the dialog and connect directly when only one protocol is available
+        if (availableCount == 1) {
+            Log.d(TAG, "Only one protocol available, connecting directly")
+            when {
+                hasOpenVpnConfigOnly -> handleConnection(false) // config-only: port embedded in .ovpn
+                hasOpenVpnTcp -> handleConnection(false)
+                hasOpenVpnUdp -> handleConnection(true)
+                hasSoftEtherTcp -> startSoftEtherConnection(true)
+                hasSstp -> handleSSTPBtn()
+            }
+            return
+        }
         
         try {
             val dialog = VpnProtocolSelectionDialog.newInstance(mVpnGateConnection, true)
