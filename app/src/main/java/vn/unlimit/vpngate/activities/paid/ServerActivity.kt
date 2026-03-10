@@ -655,12 +655,13 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             if (checkStatus()) stopVpn()
 
             val serverPort = if (useTcp) mPaidServer!!.tcpPort else mPaidServer!!.udpPort
+            val virtualHub = mPaidServer!!.hubName.ifEmpty { "VPNGatePaid" }
             val config = vn.unlimit.softether.model.ConnectionConfig(
                 serverHost = mPaidServer!!.serverDomain,
                 serverPort = serverPort,
                 username = userInfo.username,
                 password = savedPassword,
-                virtualHub = "VPNGatePaid",
+                virtualHub = virtualHub,
                 sessionName = mPaidServer!!.getName(false),
                 localAddress = "10.0.0.2",
                 prefixLength = 24,

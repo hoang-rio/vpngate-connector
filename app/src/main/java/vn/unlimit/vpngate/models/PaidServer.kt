@@ -26,6 +26,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var sessionCount = 0
     private var ovpnContent = ""
     var serverStatus = ""
+    var hubName = ""
 
     companion object CREATOR : Parcelable.Creator<PaidServer?> {
         override fun createFromParcel(inParcel: Parcel): PaidServer {
@@ -56,6 +57,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         sessionCount = inParcel.readInt()
         ovpnContent = inParcel.readString()!!
         serverStatus = inParcel.readString()!!
+        hubName = inParcel.readString()!!
     }
 
     override fun describeContents(): Int {
@@ -81,6 +83,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         out.writeInt(sessionCount)
         out.writeString(ovpnContent)
         out.writeString(serverStatus)
+        out.writeString(hubName)
     }
 
     fun getOpenVpnConfigDataUdp(): String {
@@ -129,7 +132,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     }
 
     fun isSSTPSupport(): Boolean {
-        return Build.VERSION.SDK_INT >= VERSION_CODES.M && sstpSupport == 1
+        return sstpSupport == 1
     }
 
     fun isL2TPSupport() : Boolean {

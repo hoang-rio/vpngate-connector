@@ -9,6 +9,7 @@ import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.utils.DataUtil
 import java.text.DecimalFormat
+import kotlin.math.roundToInt
 
 /**
  * Created by dongh on 14/01/2018.
@@ -169,7 +170,7 @@ class VPNGateConnection : Parcelable {
         }
         //Display as minute
         if (uptime < 3600000) {
-            return Math.round(uptime.toDouble() / 60000)
+            return (uptime.toDouble() / 60000).roundToInt()
                 .toString() + " " + context.resources.getString(R.string.minutes)
         }
         //Display as hours
@@ -333,7 +334,7 @@ class VPNGateConnection : Parcelable {
                     vpnGateConnection.seUdpPort = 0
                 }
                 return vpnGateConnection
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return null
             }
         }
