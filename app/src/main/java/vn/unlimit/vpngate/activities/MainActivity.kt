@@ -133,7 +133,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->
             if (aBoolean) {
-                binding.incLoading.lnLoading.visibility = View.VISIBLE
+                if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
+                    binding.incLoading.lnLoading.visibility = View.VISIBLE
+                }
             } else if (intent.getStringExtra(TARGET_FRAGMENT) == null) {
                 postVPNGateAPI()
             }
