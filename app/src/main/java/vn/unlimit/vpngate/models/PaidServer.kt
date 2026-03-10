@@ -20,6 +20,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var serverIp = ""
     var tcpPort = 0
     var udpPort = 0
+    var seTcpPort = 0
+    var seUdpPort = 0
     var maxSession = 0
     var sessionCount = 0
     private var ovpnContent = ""
@@ -48,6 +50,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         serverIp = inParcel.readString()!!
         tcpPort = inParcel.readInt()
         udpPort = inParcel.readInt()
+        seTcpPort = inParcel.readInt()
+        seUdpPort = inParcel.readInt()
         maxSession = inParcel.readInt()
         sessionCount = inParcel.readInt()
         ovpnContent = inParcel.readString()!!
@@ -71,6 +75,8 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         out.writeString(serverIp)
         out.writeInt(tcpPort)
         out.writeInt(udpPort)
+        out.writeInt(seTcpPort)
+        out.writeInt(seUdpPort)
         out.writeInt(maxSession)
         out.writeInt(sessionCount)
         out.writeString(ovpnContent)
