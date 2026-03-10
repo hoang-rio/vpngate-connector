@@ -530,6 +530,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
             )
             putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
+            putString(OscPrefKey.HOME_SERVER_NAME.toString(), mPaidServer!!.getName(false))
             putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
         }
         isConnecting = true

@@ -860,6 +860,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 OscPrefKey.HOME_COUNTRY.toString(),
                 mVpnGateConnection!!.countryShort!!.uppercase()
             )
+            putString(
+                OscPrefKey.HOME_SERVER_NAME.toString(),
+                mVpnGateConnection!!.getName(false)
+            )
             putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
             putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
             putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
