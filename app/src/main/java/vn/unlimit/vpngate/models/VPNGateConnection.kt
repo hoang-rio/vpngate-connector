@@ -100,7 +100,10 @@ class VPNGateConnection : Parcelable {
     }
 
     val calculateHostName: String
-        get() = "$hostName.opengw.net"
+        get() {
+            val name = hostName ?: ""
+            return "$name.opengw.net"
+        }
 
     val scoreAsString: String
         get() = score.toString()

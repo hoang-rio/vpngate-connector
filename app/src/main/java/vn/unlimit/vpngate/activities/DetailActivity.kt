@@ -55,14 +55,13 @@ import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
+import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.dialog.MessageDialog
 import vn.unlimit.vpngate.dialog.VpnProtocolSelectionDialog
-import vn.unlimit.softether.SoftEtherVpnService
-import vn.unlimit.vpngate.models.ExcludedApp
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
@@ -109,7 +108,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     @Volatile
     private var isSoftEtherConnecting = false
     private var lastDisconnectTime: Long = 0
-    private val DISCONNECT_COOLDOWN_MS = 1000L // 1 second cooldown after disconnect
+    private val disconnectCooldownMS = 1000L // 1 second cooldown after disconnect
     private var pendingSoftEtherUseTcp: Boolean = true // Track pending SoftEther connection protocol
     private var notificationPermissionRequested = false // Track if we've already requested notification permission
 
@@ -316,14 +315,17 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
         
         if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
+            val lastMethod = dataUtil.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
             mVpnGateConnection = dataUtil.lastVPNConnection
-            loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
+            if (lastMethod != "softether" && mVpnGateConnection != null) {
+                loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
+            }
             try {
                 val params = Bundle()
                 params.putString("from", "Notification")
-                params.putString("ip", mVpnGateConnection!!.ip)
-                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
-                params.putString("country", mVpnGateConnection!!.countryLong)
+                params.putString("ip", mVpnGateConnection?.ip)
+                params.putString("hostname", mVpnGateConnection?.calculateHostName)
+                params.putString("country", mVpnGateConnection?.countryLong)
                 FirebaseAnalytics.getInstance(applicationContext).logEvent("Open_Detail", params)
             } catch (ex: NullPointerException) {
                 Log.e(TAG, "onCreate error", ex)
@@ -1321,7 +1323,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             Log.d(TAG, "VPN permission required, launching VPN permission dialog")
             try {
                 startActivityIntentSoftEther.launch(vpnIntent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 Log.e(TAG, "OS does not support VPN")
                 Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show()
             }
@@ -1330,13 +1332,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
         // Check cooldown period after disconnect
         val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
-        if (timeSinceDisconnect < DISCONNECT_COOLDOWN_MS) {
-            Log.d(TAG, "Waiting for cooldown period: ${DISCONNECT_COOLDOWN_MS - timeSinceDisconnect}ms remaining")
+        if (timeSinceDisconnect < disconnectCooldownMS) {
+            Log.d(TAG, "Waiting for cooldown period: ${disconnectCooldownMS - timeSinceDisconnect}ms remaining")
             Handler(mainLooper).postDelayed({
                 if (!isFinishing && !isDestroyed) {
                     continueSoftEtherConnection(useTcp)
                 }
-            }, DISCONNECT_COOLDOWN_MS - timeSinceDisconnect)
+            }, disconnectCooldownMS - timeSinceDisconnect)
             return
         }
         
@@ -1403,6 +1405,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 isMetered = false
             )
 
+            // Set the target activity for SoftEther notifications
+            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+            val targetClass = if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java
+            SoftEtherVpnService.notificationTargetActivity = targetClass
+
             // Create intent to start SoftEther VPN service
             val intent = Intent(this, SoftEtherVpnService::class.java).apply {
                 action = SoftEtherVpnService.ACTION_CONNECT
@@ -1438,24 +1445,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
-    /**
-     * Stop any active VPN connection (OpenVPN, SSTP, or SoftEther)
-     */
-    private fun stopAllVpnConnections() {
-        // Stop OpenVPN if connected
-        if (checkStatus()) {
-            stopVpn()
-        }
-        // Stop SSTP if connected
-        if (isSSTPConnected) {
-            startVpnSSTPService(ACTION_VPN_DISCONNECT)
-        }
-        // Stop SoftEther if connected or connecting
-        if (isSoftEtherConnected || isSoftEtherConnecting) {
-            disconnectSoftEther()
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -1483,7 +1472,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     companion object {
         const val TYPE_FROM_NOTIFY: Int = 1001
         const val TYPE_NORMAL: Int = 1000
-        const val TYPE_START: String = "vn.ulimit.vpngate.TYPE_START"
+        const val TYPE_START: String = "vn.unlimit.vpngate.TYPE_START"
         const val START_VPN_PROFILE: Int = 70
         const val START_VPN_SSTP: Int = 80
         const val REQUEST_NOTIFICATION_PERMISSION: Int = 90

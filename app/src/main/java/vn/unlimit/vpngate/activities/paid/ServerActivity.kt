@@ -76,7 +76,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         private var mVPNService: IOpenVPNServiceInternal? = null
         const val TYPE_FROM_NOTIFY = 1001
         const val TYPE_NORMAL = 1000
-        const val TYPE_START = "vn.ulimit.vpngate.TYPE_START"
+        const val TYPE_START = "vn.unlimit.vpngate.TYPE_START"
     }
     private var mPaidServer: PaidServer? = null
     private val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
@@ -673,6 +673,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 isMetered = false,
                 authMethod = vn.unlimit.softether.model.AuthMethod.PLAIN_PASSWORD
             )
+            SoftEtherVpnService.notificationTargetActivity = ServerActivity::class.java
             val intent = Intent(this, SoftEtherVpnService::class.java).apply {
                 action = SoftEtherVpnService.ACTION_CONNECT
                 putExtra(SoftEtherVpnService.EXTRA_CONFIG, config)
@@ -686,6 +687,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             isSoftEtherConnecting = true
             binding.btnConnect.setText(R.string.cancel)
             paidServerUtil.setLastConnectServer(mPaidServer!!)
+            dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
+            dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
             sendConnectVPN()
         } catch (e: Exception) {
             Log.e(TAG, "Error starting SoftEther connection", e)
