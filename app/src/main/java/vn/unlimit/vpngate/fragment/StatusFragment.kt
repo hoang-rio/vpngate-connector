@@ -412,6 +412,43 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
     }
 
+    /**
+     * Resolves the primary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard primary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined primary DNS (if set)
+     * 3. Fallback → 8.8.8.8
+     */
+    private fun resolvePrimaryDns(): String {
+        return when {
+            dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
+                    .ifEmpty { "8.8.8.8" }
+            dataUtil!!.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil!!.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8") ?: "8.8.8.8"
+            else -> "8.8.8.8"
+        }
+    }
+
+    /**
+     * Resolves the secondary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard secondary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined secondary DNS (if set)
+     * 3. Fallback → 8.8.4.4
+     */
+    private fun resolveSecondaryDns(): String {
+        return when {
+            dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
+                    .ifEmpty { "8.8.4.4" }
+            dataUtil!!.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil!!.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, "8.8.4.4")
+                    ?.takeIf { it.isNotEmpty() } ?: "8.8.4.4"
+            else -> "8.8.4.4"
+        }
+    }
+
     private fun loadVpnProfile(): Boolean {
         try {
             val useUdp = dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
@@ -430,20 +467,11 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
             // Configure split tunneling - exclude apps from VPN
             excludeAppsManager.configureSplitTunneling(vpnProfile)
-            if (dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
+            if (dataUtil!!.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ||
+                dataUtil!!.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
                 vpnProfile!!.mOverrideDNS = true
-                vpnProfile!!.mDNS1 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
-                vpnProfile!!.mDNS2 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
-            } else if (dataUtil!!.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
-                vpnProfile!!.mOverrideDNS = true
-                vpnProfile!!.mDNS1 =
-                    dataUtil!!.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8")
-                val dns2 = dataUtil!!.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, null)
-                if (dns2 != null) {
-                    vpnProfile!!.mDNS2 = dns2
-                }
+                vpnProfile!!.mDNS1 = resolvePrimaryDns()
+                vpnProfile!!.mDNS2 = resolveSecondaryDns()
             }
             ProfileManager.setTemporaryProfile(activity, vpnProfile)
         } catch (e: IOException) {
@@ -712,8 +740,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             sessionName = serverName,
             localAddress = "10.0.0.2",
             prefixLength = 24,
-            dnsServer = "8.8.8.8", // Default DNS
-            secondaryDnsServer = "8.8.4.4", // Default Secondary DNS
+            dnsServer = resolvePrimaryDns(),
+            secondaryDnsServer = resolveSecondaryDns(),
             routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
             mtu = 1500
         )

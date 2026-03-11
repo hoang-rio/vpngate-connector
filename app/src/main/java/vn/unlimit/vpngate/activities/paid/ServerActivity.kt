@@ -670,7 +670,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 sessionName = mPaidServer!!.getName(false),
                 localAddress = "10.0.0.2",
                 prefixLength = 24,
-                dnsServer = "8.8.8.8",
+                dnsServer = resolvePrimaryDns(),
+                secondaryDnsServer = resolveSecondaryDns(),
                 routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
                 mtu = 1500,
                 excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
@@ -736,6 +737,43 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         }
     }
 
+    /**
+     * Resolves the primary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard primary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined primary DNS (if set)
+     * 3. Fallback → 8.8.8.8
+     */
+    private fun resolvePrimaryDns(): String {
+        return when {
+            dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
+                    .ifEmpty { "8.8.8.8" }
+            dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8") ?: "8.8.8.8"
+            else -> "8.8.8.8"
+        }
+    }
+
+    /**
+     * Resolves the secondary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard secondary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined secondary DNS (if set)
+     * 3. Fallback → 8.8.4.4
+     */
+    private fun resolveSecondaryDns(): String {
+        return when {
+            dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
+                    .ifEmpty { "8.8.4.4" }
+            dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, "8.8.4.4")
+                    ?.takeIf { it.isNotEmpty() } ?: "8.8.4.4"
+            else -> "8.8.4.4"
+        }
+    }
+
     private fun loadVpnProfile(useUDP: Boolean): Boolean {
         val data: ByteArray = if (useUDP) {
             mPaidServer!!.getOpenVpnConfigDataUdp().toByteArray()
@@ -749,19 +787,11 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             vpnProfile = cp.convertProfile()
             vpnProfile?.mName = mPaidServer!!.getName(useUDP)
             vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
-            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
+            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ||
+                dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
                 vpnProfile?.mOverrideDNS = true
-                vpnProfile?.mDNS1 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
-                vpnProfile?.mDNS2 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
-            } else if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
-                vpnProfile?.mOverrideDNS = true
-                vpnProfile?.mDNS1 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8")
-                val dns2 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, null)
-                if (dns2 != null) {
-                    vpnProfile?.mDNS2 = dns2
-                }
+                vpnProfile?.mDNS1 = resolvePrimaryDns()
+                vpnProfile?.mDNS2 = resolveSecondaryDns()
             }
             vpnProfile?.mUsername = paidServerUtil.getUserInfo()!!.username
             vpnProfile?.mPassword = paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
