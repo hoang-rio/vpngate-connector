@@ -1469,6 +1469,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
+    @androidx.annotation.Keep
     companion object {
         const val TYPE_FROM_NOTIFY: Int = 1001
         const val TYPE_NORMAL: Int = 1000
