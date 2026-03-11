@@ -143,6 +143,9 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     binding.btnConnect.text = getString(R.string.disconnect)
                     binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
                     binding.txtNetStats.visibility = View.GONE; binding.txtCheckIp.visibility = View.VISIBLE
+                    if (mPaidServer != null) {
+                        paidServerUtil.setCurrentSession(mPaidServer!!._id, assignedIp)
+                    }
                 }
                 SoftEtherVpnService.STATE_DISCONNECTING -> {
                     isSoftEtherConnected = true; isConnecting = false; isSoftEtherConnecting = false
@@ -157,6 +160,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     binding.btnConnect.text = getString(R.string.connect_to_this_server)
                     binding.txtStatus.text = getString(R.string.softether_disconnected)
                     binding.txtNetStats.visibility = View.GONE; binding.txtCheckIp.visibility = View.GONE
+                    paidServerUtil.clearCurrentSession()
                 }
                 SoftEtherVpnService.STATE_ERROR -> {
                     isSoftEtherConnected = false; isConnecting = false; isSoftEtherConnecting = false
@@ -164,6 +168,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     binding.btnConnect.text = getString(R.string.retry_connect)
                     binding.txtStatus.text = getString(R.string.softether_disconnected_by_error)
                     binding.txtNetStats.visibility = View.GONE; binding.txtCheckIp.visibility = View.GONE
+                    paidServerUtil.clearCurrentSession()
                 }
                 else -> Log.w(TAG, "Unknown SoftEther state: $state")
             }

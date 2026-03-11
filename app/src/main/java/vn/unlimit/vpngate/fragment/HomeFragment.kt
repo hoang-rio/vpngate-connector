@@ -340,7 +340,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     }
 
     override fun onRefresh() {
-        connectionListViewModel!!.getAPIData()
+        connectionListViewModel?.getAPIData()
     }
 
     private fun onAPISuccess(o: Any?) {
