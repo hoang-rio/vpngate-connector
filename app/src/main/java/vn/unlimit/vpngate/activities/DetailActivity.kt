@@ -241,6 +241,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun startVpnSSTPService(action: String) {
+        if (action == ACTION_VPN_CONNECT) {
+            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+            val targetClass = if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java
+            SstpVpnService.notificationTargetActivity = targetClass
+        }
         val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
         if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             applicationContext.startForegroundService(intent)
@@ -390,10 +395,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         excludeAppsManager.updateExcludeAppsButtonText { text ->
             binding.btnExcludeApps.text = text
         }
-        bindData()
         initAdMob()
         initInterstitialAd()
         initSSTP()
+        bindData()
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         binding.txtStatus.text = ""
@@ -440,8 +445,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     ) {
         runOnUiThread {
             try {
-                // Don't let OpenVPN state override an active SoftEther connection
-                if (isSoftEtherConnected || isSoftEtherConnecting) return@runOnUiThread
+                // Don't let OpenVPN state override an active SoftEther or SSTP connection
+                if (isSoftEtherConnected || isSoftEtherConnecting || isSSTPConnected || isSSTPConnectOrDisconnecting) return@runOnUiThread
 
                 binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
                 when (status) {
@@ -569,17 +574,30 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     binding.lnSstp.visibility = View.GONE
                 }
 
-                if (isCurrent && checkStatus()) {
+                if (isCurrent && (checkStatus() || isSSTPConnected || isSoftEtherConnected)) {
                     binding.btnConnect.text = resources.getString(R.string.disconnect)
                     binding.btnConnect.background =
-                        resources.getDrawable(R.drawable.selector_apply_button, resources.newTheme())
-                    binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
-                    binding.txtNetStats.visibility = View.VISIBLE
+                        resources.getDrawable(R.drawable.selector_red_button, resources.newTheme())
+                    
+                    if (isSSTPConnected) {
+                         val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
+                         if (connectedIp!!.isNotEmpty()) {
+                             binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                         } else {
+                             binding.txtStatus.text = getString(R.string.sstp_connecting)
+                         }
+                    } else {
+                        binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
+                    }
+                    
+                    if (isSSTPConnected || isSoftEtherConnected) {
+                        binding.txtNetStats.visibility = View.GONE
+                    } else {
+                        binding.txtNetStats.visibility = View.VISIBLE
+                    }
+                    binding.txtCheckIp.visibility = View.VISIBLE
                 } else {
                     binding.txtNetStats.visibility = View.GONE
-                }
-                if (checkStatus()) {
-                    binding.txtCheckIp.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "bindData error", e)

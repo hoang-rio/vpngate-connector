@@ -103,7 +103,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private var isSoftEtherConnected = false
 
     private val isFreeConnected: Boolean
-        get() = ((checkStatus() || isSoftEtherConnected) && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) || isSSTPConnected
+        get() = (checkStatus() || isSoftEtherConnected || isSSTPConnected) && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
 
     private val isAnyConnected: Boolean
         get() = checkStatus() || isSSTPConnected || isSoftEtherConnected
@@ -356,7 +356,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                             showAds()
                             prepareVpn()
                         }
-                        binding.txtStatus.text = getString(R.string.connecting)
+                        binding.txtStatus.text = getString(R.string.connecting) + " " + connectionName
                         binding.btnOnOff.isActivated = true
                         isConnecting = true
                     }, 1000) // Wait 1 second for disconnection to complete
@@ -379,7 +379,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         
                         startSoftEtherConnection(true) // Default to TCP for now, TODO: persist preference
                         
-                        binding.txtStatus.text = getString(R.string.connecting)
+                        binding.txtStatus.text = getString(R.string.connecting) + " " + connectionName
                         binding.btnOnOff.isActivated = true
                         isConnecting = true
                     }
@@ -394,7 +394,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_VPN", params)
                         prepareVpn()
-                        binding.txtStatus.text = getString(R.string.connecting)
+                        binding.txtStatus.text = getString(R.string.connecting) + " " + connectionName
                         binding.btnOnOff.isActivated = true
                         isConnecting = true
                     }
@@ -629,7 +629,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         requireActivity().runOnUiThread {
             try {
                 // Don't override status text if SSTP is connected or if it's a paid connection
-                if (!isSSTPConnected && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+                if (!isSSTPConnected && !isSoftEtherConnected && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
                     binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(mContext)
                 }
                 dataUtil!!.setBooleanSetting(DataUtil.USER_ALLOWED_VPN, true)
@@ -658,7 +658,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         false
                     )
 
-                    ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed && !isSSTPConnected) {
+                    ConnectionStatus.LEVEL_NOTCONNECTED -> if (!isConnecting && !isAuthFailed && !isSSTPConnected && !isSoftEtherConnected) {
                         binding.btnOnOff.isActivated = false
                         binding.txtStatus.text =
                             String.format(getString(R.string.tap_to_connect_last), connectionName)
@@ -878,6 +878,11 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     private fun startVpnSSTPService(action: String) {
+        if (action == ACTION_VPN_CONNECT) {
+            val isStartUpDetail = dataUtil!!.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+            val targetClass = if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java
+            SstpVpnService.notificationTargetActivity = targetClass
+        }
         val intent = Intent(requireContext(), SstpVpnService::class.java).setAction(action)
         if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             requireContext().startForegroundService(intent)
