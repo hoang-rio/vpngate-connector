@@ -687,7 +687,6 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             isSoftEtherConnecting = true
             binding.btnConnect.setText(R.string.cancel)
             paidServerUtil.setLastConnectServer(mPaidServer!!)
-            dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
             dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
             sendConnectVPN()
         } catch (e: Exception) {
