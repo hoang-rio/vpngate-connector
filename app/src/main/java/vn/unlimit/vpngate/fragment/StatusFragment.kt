@@ -46,6 +46,7 @@ import de.blinkt.openvpn.utils.PropertiesService
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
+import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
@@ -64,7 +65,7 @@ import java.io.InputStreamReader
  * Created by hoangnd on 2/9/2018.
  */
 class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener,
-    ByteCountListener, SoftEtherVpnService.StateListener {
+    ByteCountListener, SoftEtherVpnService.StateListener, SoftEtherVpnService.TrafficListener {
     companion object {
         private const val TAG = "StatusFragment"
         const val START_VPN_SSTP: Int = 80
@@ -172,6 +173,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         SoftEtherVpnService.addStateListener(this)
+        SoftEtherVpnService.addTrafficListener(this)
         return binding.root
     }
 
@@ -199,16 +201,6 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private fun bindData() {
         try {
             mVpnGateConnection = dataUtil!!.lastVPNConnection
-            binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(
-                PropertiesService.getUploaded(mContext),
-                false,
-                resources
-            )
-            binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(
-                PropertiesService.getDownloaded(mContext),
-                false,
-                resources
-            )
             if (isFreeConnected) {
                 binding.btnOnOff.isActivated = true
                 binding.txtStatus.text =
@@ -221,6 +213,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                 binding.btnOnOff.isEnabled = false
                 binding.txtStatus.setText(R.string.no_last_vpn_server)
             }
+            refreshTrafficMonitor()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -524,6 +517,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             val intent = Intent(context, OpenVPNService::class.java)
             OpenVPNService.mDisplaySpeed =
                 dataUtil!!.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+            SoftEtherVpnService.mDisplaySpeed =
+                dataUtil!!.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
             intent.setAction(OpenVPNService.START_SERVICE)
             requireActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
         } catch (ex: Exception) {
@@ -547,6 +542,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             VpnStatus.removeStateListener(this)
             VpnStatus.removeByteCountListener(this)
             SoftEtherVpnService.removeStateListener(this)
+            SoftEtherVpnService.removeTrafficListener(this)
             prefs.unregisterOnSharedPreferenceChangeListener(listener)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -562,7 +558,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             return
         }
         requireActivity().runOnUiThread {
-            if (isFreeConnected && !isDetached) {
+            if (isFreeConnected && !isDetached && !isSoftEtherConnected) {
                 binding.txtDownloadSession.text =
                     OpenVPNService.humanReadableByteCount(`in`, false, resources)
                 binding.txtDownloadSpeed.text = OpenVPNService.humanReadableByteCount(
@@ -583,6 +579,89 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, resources)
             }
         }
+    }
+
+    override fun onSoftEtherTrafficUpdated(snapshot: SoftEtherTrafficSnapshot) {
+        if (isDetached() || !isSoftEtherConnected || dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
+            return
+        }
+        activity?.runOnUiThread {
+            if (!isDetached && isSoftEtherConnected) {
+                renderSoftEtherTrafficSnapshot(snapshot)
+            }
+        }
+    }
+
+    private fun renderSoftEtherTrafficSnapshot(snapshot: SoftEtherTrafficSnapshot) {
+        TotalTraffic.getTotalTraffic(requireContext())
+        binding.txtDownloadSession.text =
+            OpenVPNService.humanReadableByteCount(snapshot.inBytes, false, resources)
+        binding.txtDownloadSpeed.text =
+            OpenVPNService.humanReadableByteCount(snapshot.inBytesPerSecond(), true, resources)
+        binding.txtUploadSession.text =
+            OpenVPNService.humanReadableByteCount(snapshot.outBytes, false, resources)
+        binding.txtUploadSpeed.text =
+            OpenVPNService.humanReadableByteCount(snapshot.outBytesPerSecond(), true, resources)
+        binding.txtTotalDownload.text =
+            OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, resources)
+        binding.txtTotalUpload.text =
+            OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, resources)
+    }
+
+    private fun resetSoftEtherTrafficViews() {
+        binding.txtDownloadSession.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+        binding.txtDownloadSpeed.text = OpenVPNService.humanReadableByteCount(0, true, resources)
+        binding.txtUploadSession.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+        binding.txtUploadSpeed.text = OpenVPNService.humanReadableByteCount(0, true, resources)
+        binding.txtTotalDownload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+        binding.txtTotalUpload.text = OpenVPNService.humanReadableByteCount(0, false, resources)
+    }
+
+    private fun refreshTrafficMonitor() {
+        if (isDetached) return
+        val isPaidSession = dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+        val lastConnectMethod = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
+        when {
+            isSoftEtherConnected && !isPaidSession -> {
+                onSoftEtherTrafficUpdated(SoftEtherVpnService.currentTrafficSnapshot)
+            }
+            checkStatus() && !isPaidSession -> {
+                renderOpenVpnTrafficSnapshot()
+            }
+            lastConnectMethod == "softether" && !isPaidSession &&
+                SoftEtherVpnService.lastTrafficSnapshot != SoftEtherTrafficSnapshot.EMPTY -> {
+                renderSoftEtherTrafficSnapshot(SoftEtherVpnService.lastTrafficSnapshot)
+            }
+            else -> resetSoftEtherTrafficViews()
+        }
+    }
+
+    private fun renderOpenVpnTrafficSnapshot() {
+        val history = VpnStatus.trafficHistory?.seconds
+        val current = history?.lastOrNull()
+        val previous = if (history != null && history.size > 1) history[history.size - 2] else current
+        val intervalMs = if (current != null && previous != null) {
+            (current.timestamp - previous.timestamp).coerceAtLeast(1L)
+        } else {
+            1000L
+        }
+        val inBytes = current?.`in` ?: 0L
+        val outBytes = current?.out ?: 0L
+        val diffIn = if (current != null && previous != null) (current.`in` - previous.`in`).coerceAtLeast(0L) else 0L
+        val diffOut = if (current != null && previous != null) (current.out - previous.out).coerceAtLeast(0L) else 0L
+
+        binding.txtDownloadSession.text =
+            OpenVPNService.humanReadableByteCount(inBytes, false, resources)
+        binding.txtDownloadSpeed.text =
+            OpenVPNService.humanReadableByteCount(diffIn * 1000L / intervalMs, true, resources)
+        binding.txtUploadSession.text =
+            OpenVPNService.humanReadableByteCount(outBytes, false, resources)
+        binding.txtUploadSpeed.text =
+            OpenVPNService.humanReadableByteCount(diffOut * 1000L / intervalMs, true, resources)
+        binding.txtTotalDownload.text =
+            OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, resources)
+        binding.txtTotalUpload.text =
+            OpenVPNService.humanReadableByteCount(TotalTraffic.outTotal, false, resources)
     }
 
     override fun onDetach() {
@@ -773,10 +852,12 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     binding.btnOnOff.isActivated = true
                     binding.txtStatus.text = String.format(getString(R.string.tap_to_disconnect), connectionName)
                     binding.txtCheckIp?.visibility = View.VISIBLE
+                    onSoftEtherTrafficUpdated(SoftEtherVpnService.currentTrafficSnapshot)
                 }
                 SoftEtherVpnService.STATE_DISCONNECTED, SoftEtherVpnService.STATE_ERROR -> {
                     isSoftEtherConnected = false
                     isConnecting = false
+                    refreshTrafficMonitor()
                     if (!isAnyConnected) {
                         binding.btnOnOff.isActivated = false
                         binding.txtStatus.text = String.format(getString(R.string.tap_to_connect_last), connectionName)

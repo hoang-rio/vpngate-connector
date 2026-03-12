@@ -55,6 +55,7 @@ import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpVpnService
+import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -195,7 +196,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     )
                     binding.btnConnect.text = getString(R.string.disconnect)
                     binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
-                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtNetStats.visibility = View.VISIBLE
+                    renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
                     binding.txtCheckIp.visibility = View.VISIBLE
                 }
                 SoftEtherVpnService.STATE_DISCONNECTING -> {
@@ -238,6 +240,24 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 else -> Log.w(TAG, "Unknown SoftEther state: $state")
             }
         }
+    }
+
+    private val softEtherTrafficListener = object : SoftEtherVpnService.TrafficListener {
+        override fun onSoftEtherTrafficUpdated(snapshot: SoftEtherTrafficSnapshot) {
+            if (!isSoftEtherConnected || !isCurrent) return
+            renderSoftEtherTraffic(snapshot)
+        }
+    }
+
+    private fun renderSoftEtherTraffic(snapshot: SoftEtherTrafficSnapshot) {
+        binding.txtNetStats.visibility = View.VISIBLE
+        binding.txtNetStats.text = String.format(
+            getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytesPerSecond(), true, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytesPerSecond(), true, resources)
+        )
     }
 
     private fun startVpnSSTPService(action: String) {
@@ -595,10 +615,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
                     }
                     
-                    if (isSSTPConnected || isSoftEtherConnected) {
+                    if (isSSTPConnected) {
                         binding.txtNetStats.visibility = View.GONE
                     } else {
                         binding.txtNetStats.visibility = View.VISIBLE
+                        if (isSoftEtherConnected) {
+                            renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
+                        }
                     }
                     binding.txtCheckIp.visibility = View.VISIBLE
                 } else {
@@ -622,11 +645,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         // Register SoftEther state listener — same pattern as OpenVPN's VpnStatus.addStateListener.
         // addStateListener() immediately replays currentState, so we always get the right UI.
         SoftEtherVpnService.addStateListener(softEtherStateListener)
+        SoftEtherVpnService.addTrafficListener(softEtherTrafficListener)
 
         try {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, OpenVPNService::class.java)
                 OpenVPNService.mDisplaySpeed =
+                    dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+                SoftEtherVpnService.mDisplaySpeed =
                     dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
                 intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
@@ -655,6 +681,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             super.onPause()
             // Unregister SoftEther state listener
             SoftEtherVpnService.removeStateListener(softEtherStateListener)
+            SoftEtherVpnService.removeTrafficListener(softEtherTrafficListener)
             TotalTraffic.saveTotal(this)
             unbindService(mConnection)
         } catch (e: Exception) {
