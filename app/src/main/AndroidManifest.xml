@@ -100,7 +100,7 @@
             android:label="@string/title_activity_reset_pass"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
-            android:hardwareAccelerated="false"
+            android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize"
             android:name=".activities.paid.ServerActivity"
             android:theme="@style/AppTheme.PaidServer"/>
