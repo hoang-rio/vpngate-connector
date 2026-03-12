@@ -262,19 +262,23 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
                         if (isSSTPConnectOrDisconnecting) {
-                            binding.txtStatus.setText(R.string.sstp_disconnected)
+                            if (isSSTPConnected) {
+                                binding.txtStatus.setText(R.string.sstp_disconnected)
+                            } else {
+                                binding.txtStatus.setText(R.string.canceled)
+                            }
                         } else {
                             binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
                         isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
                         binding.txtCheckIp.visibility = View.GONE
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_primary_button, null
                         )
                         binding.btnConnect.setText(R.string.connect_to_this_server)
                     }
-                    isSSTPConnectOrDisconnecting = false
                 }
                 if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
                     val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
@@ -283,6 +287,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
                         isSSTPConnected = true
                         isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
                         binding.txtCheckIp.visibility = View.VISIBLE
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_red_button, null
@@ -777,12 +782,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     params.putString("ip", mVpnGateConnection!!.ip)
                     params.putString("country", mVpnGateConnection!!.countryLong)
                     FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_VPN", params)
-                    // Check if it's a SoftEther connection being cancelled
+                    // Check if it's a SoftEther connection being canceled
                     if (isSoftEtherConnecting) {
                         disconnectSoftEther()
                     } else if (isSSTPConnectOrDisconnecting) {
                         startVpnSSTPService(ACTION_VPN_DISCONNECT)
-                        isSSTPConnectOrDisconnecting = false
                     } else {
                         stopVpn()
                     }
@@ -943,7 +947,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("type", "replace connect via MS-SSTP")
             binding.txtCheckIp.visibility = View.GONE
             Handler(mainLooper).postDelayed({ this.connectSSTPVPN() }, 100)
-        } else if (!isSSTPConnected) {
+        } else if (!isSSTPConnected && !isConnecting) {
             params.putString("type", "connect via MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_Via_SSTP", params)
             dataUtil.lastVPNConnection = mVpnGateConnection

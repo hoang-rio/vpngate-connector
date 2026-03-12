@@ -491,12 +491,17 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
                         if (isSSTPConnectOrDisconnecting) {
-                            binding.txtStatus.setText(R.string.sstp_disconnected)
+                            if (isSSTPConnected) {
+                                binding.txtStatus.setText(R.string.sstp_disconnected)
+                            } else {
+                                binding.txtStatus.setText(R.string.canceled)
+                            }
                         } else {
                             binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
                         isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
                         paidServerUtil.clearCurrentSession()
                         binding.txtCheckIp.visibility = View.GONE
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
@@ -504,7 +509,6 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                         )
                         binding.btnConnect.setText(R.string.connect_to_this_server)
                     }
-                    isSSTPConnectOrDisconnecting = false
                 }
                 if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
                     val connectedIp =
@@ -515,6 +519,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                         dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
                         isSSTPConnected = true
                         isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
                         binding.txtCheckIp.visibility = View.VISIBLE
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_red_button, null
@@ -633,7 +638,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             params.putString("type", "replace connect via MS-SSTP")
             binding.txtCheckIp.visibility = View.GONE
             Handler(mainLooper).postDelayed({ connectSSTPVPN() }, 100)
-        } else if (!isSSTPConnected) {
+        } else if (!isSSTPConnected && !isConnecting) {
             params.putString("type", "connect via MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext)
                 .logEvent("Paid_Connect_Via_SSTP", params)
@@ -915,7 +920,6 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 disconnectSoftEther()
             } else if (isSSTPConnectOrDisconnecting) {
                 startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
-                isSSTPConnectOrDisconnecting = false
             } else {
                 stopVpn()
             }
