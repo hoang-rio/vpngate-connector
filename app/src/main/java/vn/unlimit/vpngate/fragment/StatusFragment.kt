@@ -104,6 +104,10 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private var isSSTPConnected = false
     private var isSSTPConnectOrDisconnecting = false
     private var isSoftEtherConnected = false
+    private var lastOpenVpnInBytes = 0L
+    private var lastOpenVpnOutBytes = 0L
+    private var lastOpenVpnDiffInBytes = 0L
+    private var lastOpenVpnDiffOutBytes = 0L
 
     private val isFreeConnected: Boolean
         get() = (checkStatus() || isSoftEtherConnected || isSSTPConnected) && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
@@ -563,6 +567,10 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         if (isDetached()) {
             return
         }
+        lastOpenVpnInBytes = `in`
+        lastOpenVpnOutBytes = out
+        lastOpenVpnDiffInBytes = diffIn
+        lastOpenVpnDiffOutBytes = diffOut
         requireActivity().runOnUiThread {
             if (isFreeConnected && !isDetached && !isSoftEtherConnected && !isSSTPConnected) {
                 binding.txtDownloadSession.text =
@@ -677,27 +685,22 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     private fun renderOpenVpnTrafficSnapshot() {
-        val history = VpnStatus.trafficHistory?.seconds
-        val current = history?.lastOrNull()
-        val previous = if (history != null && history.size > 1) history[history.size - 2] else current
-        val intervalMs = if (current != null && previous != null) {
-            (current.timestamp - previous.timestamp).coerceAtLeast(1L)
-        } else {
-            1000L
-        }
-        val inBytes = current?.`in` ?: 0L
-        val outBytes = current?.out ?: 0L
-        val diffIn = if (current != null && previous != null) (current.`in` - previous.`in`).coerceAtLeast(0L) else 0L
-        val diffOut = if (current != null && previous != null) (current.out - previous.out).coerceAtLeast(0L) else 0L
-
         binding.txtDownloadSession.text =
-            OpenVPNService.humanReadableByteCount(inBytes, false, resources)
+            OpenVPNService.humanReadableByteCount(lastOpenVpnInBytes, false, resources)
         binding.txtDownloadSpeed.text =
-            OpenVPNService.humanReadableByteCount(diffIn * 1000L / intervalMs, true, resources)
+            OpenVPNService.humanReadableByteCount(
+                lastOpenVpnDiffInBytes / OpenVPNManagement.mBytecountInterval,
+                true,
+                resources
+            )
         binding.txtUploadSession.text =
-            OpenVPNService.humanReadableByteCount(outBytes, false, resources)
+            OpenVPNService.humanReadableByteCount(lastOpenVpnOutBytes, false, resources)
         binding.txtUploadSpeed.text =
-            OpenVPNService.humanReadableByteCount(diffOut * 1000L / intervalMs, true, resources)
+            OpenVPNService.humanReadableByteCount(
+                lastOpenVpnDiffOutBytes / OpenVPNManagement.mBytecountInterval,
+                true,
+                resources
+            )
         binding.txtTotalDownload.text =
             OpenVPNService.humanReadableByteCount(TotalTraffic.inTotal, false, resources)
         binding.txtTotalUpload.text =
