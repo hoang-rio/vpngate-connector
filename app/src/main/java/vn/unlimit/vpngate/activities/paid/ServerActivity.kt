@@ -47,6 +47,7 @@ import de.blinkt.openvpn.core.VPNLaunchHelper
 import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
+import kittoku.osc.service.SstpTrafficSnapshot
 import kittoku.osc.service.SstpVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -188,7 +189,25 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         }
     }
 
+    private val sstpTrafficListener = object : SstpVpnService.TrafficListener {
+        override fun onSstpTrafficUpdated(snapshot: SstpTrafficSnapshot) {
+            if (!isSSTPConnected || !isCurrent()) return
+            renderSstpTraffic(snapshot)
+        }
+    }
+
     private fun renderSoftEtherTraffic(snapshot: SoftEtherTrafficSnapshot) {
+        binding.txtNetStats.visibility = View.VISIBLE
+        binding.txtNetStats.text = String.format(
+            getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytesPerSecond(), true, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytesPerSecond(), true, resources)
+        )
+    }
+
+    private fun renderSstpTraffic(snapshot: SstpTrafficSnapshot) {
         binding.txtNetStats.visibility = View.VISIBLE
         binding.txtNetStats.text = String.format(
             getString(de.blinkt.openvpn.R.string.statusline_bytecount),
@@ -295,12 +314,15 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         super.onResume()
         SoftEtherVpnService.addStateListener(softEtherStateListener)
         SoftEtherVpnService.addTrafficListener(softEtherTrafficListener)
+        SstpVpnService.addTrafficListener(sstpTrafficListener)
         try {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, OpenVPNService::class.java)
                 OpenVPNService.mDisplaySpeed =
                     dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
                 SoftEtherVpnService.mDisplaySpeed =
+                    dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+                SstpVpnService.mDisplaySpeed =
                     dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
                 intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
@@ -328,6 +350,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         try {
             SoftEtherVpnService.removeStateListener(softEtherStateListener)
             SoftEtherVpnService.removeTrafficListener(softEtherTrafficListener)
+            SstpVpnService.removeTrafficListener(sstpTrafficListener)
             super.onPause()
             TotalTraffic.saveTotal(this)
             unbindService(mConnection)
@@ -491,10 +514,11 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 }
 
                 if (isSSTPConnected) {
-                     binding.txtNetStats.visibility = View.GONE
-                } else {
                      binding.txtNetStats.visibility = View.VISIBLE
-                     if (SoftEtherVpnService.currentState == SoftEtherVpnService.STATE_CONNECTED) {
+                     renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
+                 } else {
+                      binding.txtNetStats.visibility = View.VISIBLE
+                      if (SoftEtherVpnService.currentState == SoftEtherVpnService.STATE_CONNECTED) {
                          renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
                      }
                 }
@@ -531,6 +555,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                         isSSTPConnectOrDisconnecting = false
                         paidServerUtil.clearCurrentSession()
                         binding.txtCheckIp.visibility = View.GONE
+                        binding.txtNetStats.visibility = View.GONE
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_primary_button, null
                         )
@@ -548,6 +573,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                         isConnecting = false
                         isSSTPConnectOrDisconnecting = false
                         binding.txtCheckIp.visibility = View.VISIBLE
+                        renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
                         binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_red_button, null
                         )
@@ -572,6 +598,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 if (!connectedIp.isNullOrEmpty()) {
                     paidServerUtil.setCurrentSession(mPaidServer!!._id, connectedIp)
                 }
+                renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
             }
         }
     }
@@ -613,6 +640,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     private fun startVpnSSTPService(action: String) {
         if (action == DetailActivity.ACTION_VPN_CONNECT) {
             SstpVpnService.notificationTargetActivity = ServerActivity::class.java
+            SstpVpnService.mDisplaySpeed =
+                dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
         }
         val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
         if (action == DetailActivity.ACTION_VPN_CONNECT && VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -1179,7 +1208,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
 
 
     override fun updateByteCount(`in`: Long, out: Long, diffIn: Long, diffOut: Long) {
-        if (!isCurrent()) {
+        if (!isCurrent() || isSSTPConnected || isSoftEtherConnected) {
             return
         }
         runOnUiThread {
