@@ -82,6 +82,7 @@
                 android:autofillHints="@string/prompt_user"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_user"
+                android:imeOptions="actionNext"
                 android:inputType="text"
                 android:selectAllOnFocus="true"
                 app:layout_constraintEnd_toEndOf="parent"

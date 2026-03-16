@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Patterns
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -45,6 +47,14 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         binding.ivCaptcha.setOnClickListener(this)
         binding.btnLogin.setOnClickListener(this)
         binding.btnResetPass.setOnClickListener(this)
+        binding.txtCaptchaAnswer.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnResetPass.performClick()
+                true
+            } else {
+                false
+            }
+        }
         val initialScrimHeight = binding.statusBarScrim.layoutParams.height
         val initialNavLeftPadding = binding.navDetail.paddingLeft
         val initialNavRightPadding = binding.navDetail.paddingRight
@@ -63,6 +73,12 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         }
         ViewCompat.requestApplyInsets(binding.navDetail)
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     override fun onResume() {

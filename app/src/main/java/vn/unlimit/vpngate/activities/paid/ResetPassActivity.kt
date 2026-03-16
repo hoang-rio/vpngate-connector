@@ -2,7 +2,9 @@ package vn.unlimit.vpngate.activities.paid
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -39,6 +41,14 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         binding.btnBackToFreeError.setOnClickListener(this)
         binding.btnBackToFree.setOnClickListener(this)
         binding.btnResetPass.setOnClickListener(this)
+        binding.txtReNewPassword.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnResetPass.performClick()
+                true
+            } else {
+                false
+            }
+        }
         val initialScrimHeight = binding.statusBarScrim.layoutParams.height
         val initialNavLeftPadding = binding.navDetail.paddingLeft
         val initialNavRightPadding = binding.navDetail.paddingRight
@@ -109,6 +119,12 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 binding.lnInvalidToken.visibility = View.VISIBLE
             }
         })
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     override fun onResume() {

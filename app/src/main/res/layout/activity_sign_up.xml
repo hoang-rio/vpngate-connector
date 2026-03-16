@@ -77,6 +77,7 @@
                 android:autofillHints="@string/prompt_user"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_user"
+                android:imeOptions="actionNext"
                 android:inputType="text"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -91,6 +92,7 @@
                 android:autofillHints="@string/prompt_full_name"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_full_name"
+                android:imeOptions="actionNext"
                 android:inputType="textCapWords"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -105,6 +107,7 @@
                 android:autofillHints="@string/prompt_email"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_email"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -119,6 +122,7 @@
                 android:autofillHints="@string/prompt_birthday"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_birthday"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -133,6 +137,7 @@
                 android:autofillHints="@string/prompt_timezone"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_timezone"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -147,7 +152,7 @@
                 android:autofillHints="@string/prompt_password"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_password"
-                android:imeActionLabel="@string/action_sign_in"
+                android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:selectAllOnFocus="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -165,7 +170,7 @@
                 android:autofillHints="@string/prompt_retype_password"
                 android:backgroundTint="@color/colorPaidServer"
                 android:hint="@string/prompt_retype_password"
-                android:imeActionLabel="@string/action_sign_in"
+                android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:selectAllOnFocus="true"
                 tools:targetApi="lollipop" />
@@ -225,7 +230,8 @@
                         android:autofillHints="@string/prompt_captcha_answer"
                         android:backgroundTint="@color/colorPaidServer"
                         android:hint="@string/prompt_captcha_answer"
-                        android:imeActionLabel="@string/action_sign_in"
+                        android:imeActionLabel="@string/action_sign_up"
+                        android:imeOptions="actionDone"
                         android:inputType="numberSigned"
                         android:selectAllOnFocus="true"
                         android:textAlignment="center"

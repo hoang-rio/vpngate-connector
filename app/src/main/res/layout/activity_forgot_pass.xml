@@ -77,6 +77,7 @@
             android:autofillHints="@string/prompt_email"
             android:backgroundTint="@color/colorPaidServer"
             android:hint="@string/prompt_email"
+            android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
             android:selectAllOnFocus="true"
             tools:targetApi="lollipop" />
@@ -136,7 +137,8 @@
                     android:autofillHints="@string/prompt_captcha_answer"
                     android:backgroundTint="@color/colorPaidServer"
                     android:hint="@string/prompt_captcha_answer"
-                    android:imeActionLabel="@string/action_sign_in"
+                    android:imeActionLabel="@string/action_reset_pass"
+                    android:imeOptions="actionDone"
                     android:inputType="numberSigned"
                     android:selectAllOnFocus="true"
                     android:textAlignment="center"

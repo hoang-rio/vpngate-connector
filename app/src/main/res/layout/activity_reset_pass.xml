@@ -137,7 +137,7 @@
                     android:autofillHints="@string/prompt_new_password"
                     android:backgroundTint="@color/colorPaidServer"
                     android:hint="@string/prompt_new_password"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="true"
                     tools:ignore="UnusedAttribute" />
@@ -150,6 +150,7 @@
                     android:autofillHints="@string/prompt_re_new_password"
                     android:backgroundTint="@color/colorPaidServer"
                     android:hint="@string/prompt_re_new_password"
+                    android:imeActionLabel="@string/action_reset_pass"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="true"

@@ -6,7 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.EditText
@@ -98,8 +100,22 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
         }
         ViewCompat.requestApplyInsets(binding.navDetail)
         binding.txtUsername.requestFocus()
+        binding.txtCaptchaAnswer.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnSignUp.performClick()
+                true
+            } else {
+                false
+            }
+        }
         loadingDialog = LoadingDialog.newInstance()
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     private fun bindViewModel() {

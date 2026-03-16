@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -63,8 +65,22 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
         binding.btnLogin.setOnClickListener(this)
         binding.btnSignUp.setOnClickListener(this)
         binding.btnForgotPass.setOnClickListener(this)
+        binding.txtPassword.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnLogin.performClick()
+                true
+            } else {
+                false
+            }
+        }
         loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     private fun bindViewModel() {
