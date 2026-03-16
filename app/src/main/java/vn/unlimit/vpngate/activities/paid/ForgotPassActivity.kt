@@ -114,8 +114,8 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
-            if (isLoading && !loadingDialog!!.isVisible) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            if (isLoading) {
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
@@ -190,6 +190,9 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
             binding.ivCaptcha -> loadCaptcha(true)
             binding.btnLogin -> backToLogin()
             binding.btnResetPass -> {
+                if (isResetPasClicked || userViewModel?.isLoading?.value == true) {
+                    return
+                }
                 if (!Patterns.EMAIL_ADDRESS.matcher(binding.txtEmail.text.toString()).matches()) {
                     Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT)
                         .show()

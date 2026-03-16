@@ -71,7 +71,7 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
             if (it) {
                 loadingDialog =
                     if (loadingDialog != null) loadingDialog else LoadingDialog.newInstance()
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.simpleName)
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.simpleName)
             } else {
                 if (loadingDialog != null) {
                     loadingDialog!!.dismiss()
@@ -145,7 +145,9 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
     }
 
     private fun doResetPass() {
-        isPressedResetPass = true
+        if (isPressedResetPass || userViewModel?.isLoading?.value == true) {
+            return
+        }
         val newPassword = binding.txtNewPassword.text.toString()
         val reRenewPassword = binding.txtReNewPassword.text.toString()
         val matcher = Pattern.compile(SignUpActivity.PASSWORD_REGEX).matcher(newPassword)
@@ -160,6 +162,7 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 Toast.LENGTH_LONG
             ).show()
         }
+        isPressedResetPass = true
         userViewModel!!.resetPassword(resetPassToken!!, newPassword, reRenewPassword)
     }
 

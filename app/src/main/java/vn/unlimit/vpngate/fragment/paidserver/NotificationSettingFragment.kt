@@ -44,7 +44,7 @@ class NotificationSettingFragment : Fragment(), CompoundButton.OnCheckedChangeLi
         }
         deviceViewModel!!.isLoading.observe(viewLifecycleOwner) {
             binding.swNotifySetting.isEnabled = !it
-            if (it && !loadingDialog.isVisible) {
+            if (it) {
                 loadingDialog.show(
                     paidServiceActivity.supportFragmentManager,
                     LoadingDialog::class.java.name

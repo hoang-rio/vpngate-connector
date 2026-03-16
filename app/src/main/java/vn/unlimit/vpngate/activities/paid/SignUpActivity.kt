@@ -121,8 +121,8 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
-            if (isLoading && !loadingDialog!!.isVisible) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            if (isLoading) {
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
@@ -293,6 +293,9 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
 
     private fun handleSignUp() {
         try {
+            if (isPressedSignup || userViewModel?.isLoading?.value == true) {
+                return
+            }
             checkEmptyField(binding.txtUsername, R.string.prompt_user)
             checkEmptyField(binding.txtFullName, R.string.prompt_full_name)
             checkEmptyField(binding.txtEmail, R.string.prompt_email)

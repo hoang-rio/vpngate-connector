@@ -90,7 +90,7 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 return@observe
             }
             if (isLoggingIn!!) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else {
                 isClickedLogin = false
                 loadingDialog?.dismiss()
@@ -150,6 +150,9 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
             binding.btnBack -> backToFree()
             binding.btnBackToFree -> backToFree()
             binding.btnLogin -> {
+                if (isClickedLogin || userViewModel?.isLoading?.value == true) {
+                    return
+                }
                 if (binding.txtUsername.text.isEmpty() || binding.txtPassword.text.isEmpty()) {
                     Toast.makeText(
                         this,

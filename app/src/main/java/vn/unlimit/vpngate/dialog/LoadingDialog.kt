@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.LayoutLoadingDialogBinding
@@ -50,5 +51,24 @@ class LoadingDialog : DialogFragment() {
             e.printStackTrace()
         }
         return dialog
+    }
+
+    private fun safeShow(manager: FragmentManager, tag: String? = LoadingDialog::class.java.name): Boolean {
+        if (isAdded || manager.isStateSaved) {
+            return false
+        }
+        if (tag != null && manager.findFragmentByTag(tag) != null) {
+            return false
+        }
+        return try {
+            super.show(manager, tag)
+            true
+        } catch (_: IllegalStateException) {
+            false
+        }
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        safeShow(manager, tag)
     }
 }
