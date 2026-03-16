@@ -8,21 +8,76 @@
     android:background="?android:windowBackground"
     tools:context=".activities.paid.LoginActivity">
 
+    <View
+        android:id="@+id/status_bar_scrim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorPaidServer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/nav_detail"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/custom_header_height"
+        android:background="@color/colorPaidServer"
+        android:orientation="horizontal"
+        android:padding="@dimen/custom_header_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_bar_scrim">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="@dimen/custom_header_back_button_size"
+            android:layout_height="@dimen/custom_header_back_button_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:contentDescription="@string/action_back_to_free"
+            android:focusable="true"
+            android:padding="@dimen/custom_header_back_button_padding"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_white" />
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/action_sign_in"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp"
+            android:theme="@style/label" />
+    </RelativeLayout>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nav_detail">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="15dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp">
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/txt_username"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="160dp"
+                android:layout_marginTop="0dp"
                 android:layout_marginEnd="15dp"
                 android:autofillHints="@string/prompt_user"
                 android:backgroundTint="@color/colorPaidServer"
@@ -142,7 +197,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginBottom="64dp"
+                android:layout_marginBottom="0dp"
                 android:background="@drawable/selector_primary_button"
                 android:text="@string/action_back_to_free"
                 android:textAllCaps="false"
@@ -152,6 +207,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/btn_forgot_pass"
                 app:layout_constraintVertical_bias="0.2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

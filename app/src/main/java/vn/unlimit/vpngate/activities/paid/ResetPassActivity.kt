@@ -4,7 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.R
@@ -15,7 +20,7 @@ import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.regex.Pattern
 
-class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
+class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private var resetPassToken: String? = null
     private var userViewModel: UserViewModel? = null
     private var loadingDialog: LoadingDialog? = null
@@ -23,13 +28,34 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
     private var isPressedResetPass = false
     private lateinit var binding: ActivityResetPassBinding
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityResetPassBinding.inflate(layoutInflater)
+        viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        binding.btnBack.setOnClickListener(this)
         binding.btnBackToFreeError.setOnClickListener(this)
         binding.btnBackToFree.setOnClickListener(this)
         binding.btnResetPass.setOnClickListener(this)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialFormBottom = binding.lnForm.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.lnForm.updatePadding(bottom = initialFormBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this, Observer {
             if (it) {
@@ -129,6 +155,7 @@ class ResetPassActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
+            binding.btnBack -> backToFree()
             binding.btnBackToFree -> backToFree()
             binding.btnBackToFreeError -> backToFree()
             binding.btnResetPass -> doResetPass()

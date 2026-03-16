@@ -6,6 +6,12 @@ import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -32,8 +38,28 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnBackToFree.setOnClickListener(this)
+        binding.btnBack.setOnClickListener(this)
         binding.ivHidePassword.setOnClickListener(this)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         binding.btnLogin.setOnClickListener(this)
         binding.btnSignUp.setOnClickListener(this)
         binding.btnForgotPass.setOnClickListener(this)
@@ -105,6 +131,7 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
+            binding.btnBack -> backToFree()
             binding.btnBackToFree -> backToFree()
             binding.btnLogin -> {
                 if (binding.txtUsername.text.isEmpty() || binding.txtPassword.text.isEmpty()) {

@@ -9,6 +9,12 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -31,11 +37,31 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         this.viewBinding = binding
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
         loadingDialog = LoadingDialog.newInstance()
+        binding.btnBack.setOnClickListener(this)
         binding.ivCaptcha.setOnClickListener(this)
         binding.btnLogin.setOnClickListener(this)
         binding.btnResetPass.setOnClickListener(this)
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         bindViewModel()
     }
 
@@ -144,6 +170,7 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when (view) {
+            binding.btnBack -> onBackPressedDispatcher.onBackPressed()
             binding.ivCaptcha -> loadCaptcha(true)
             binding.btnLogin -> backToLogin()
             binding.btnResetPass -> {

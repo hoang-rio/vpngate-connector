@@ -1,24 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?android:windowBackground"
     tools:context=".activities.paid.ForgotPassActivity">
 
-    <LinearLayout
+    <View
+        android:id="@+id/status_bar_scrim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorPaidServer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/nav_detail"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/custom_header_height"
+        android:background="@color/colorPaidServer"
+        android:orientation="horizontal"
+        android:padding="@dimen/custom_header_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_bar_scrim">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="@dimen/custom_header_back_button_size"
+            android:layout_height="@dimen/custom_header_back_button_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:contentDescription="@string/action_forgot_pass"
+            android:focusable="true"
+            android:padding="@dimen/custom_header_back_button_padding"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_white" />
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/action_forgot_pass"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp"
+            android:theme="@style/label" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scroll_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nav_detail">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
         <EditText
             android:id="@+id/txt_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="180dp"
+            android:layout_marginTop="0dp"
             android:layout_marginEnd="15dp"
             android:autofillHints="@string/prompt_email"
             android:backgroundTint="@color/colorPaidServer"
@@ -128,5 +182,6 @@
                 android:textSize="18sp"
                 android:theme="@style/AppTheme.Button"
                 app:layout_constraintVertical_bias="0.2" />
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

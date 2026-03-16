@@ -12,6 +12,12 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -47,7 +53,10 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
         this.viewBinding = binding
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        binding.btnBack.setOnClickListener(this)
         binding.btnSignUp.setOnClickListener(this)
         binding.btnLogin.setOnClickListener(this)
         binding.txtBirthday.onFocusChangeListener = this
@@ -71,6 +80,23 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DATE)
         )
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         binding.txtUsername.requestFocus()
         loadingDialog = LoadingDialog.newInstance()
         bindViewModel()
@@ -325,6 +351,7 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
 
     override fun onClick(v: View?) {
         when (v) {
+            binding.btnBack -> onBackPressedDispatcher.onBackPressed()
             binding.btnLogin -> onBackPressedDispatcher.onBackPressed()
             binding.ivCaptcha -> loadCaptcha(true)
             binding.txtBirthday -> datePickerDialog!!.show()

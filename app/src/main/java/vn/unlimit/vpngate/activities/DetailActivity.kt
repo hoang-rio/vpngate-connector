@@ -19,6 +19,7 @@ import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import android.view.View
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +30,11 @@ import androidx.core.content.IntentCompat
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdListener
@@ -390,8 +396,42 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 VPNGateConnection::class.java
             )
         }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val initialRootLeft = binding.root.paddingLeft
+        val initialRootRight = binding.root.paddingRight
+        val initialNavHeight = binding.navDetail.layoutParams.height
+        val initialNavTop = binding.navDetail.paddingTop
+        val initialNavLeft = binding.navDetail.paddingLeft
+        val initialNavRight = binding.navDetail.paddingRight
+        val initialNavBottom = binding.navDetail.paddingBottom
+        val initialBackTopMargin = (binding.btnBack.layoutParams as RelativeLayout.LayoutParams).topMargin
+        val initialScrollBottom = binding.scrollView.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.root.updatePadding(
+                left = initialRootLeft + insets.left,
+                right = initialRootRight + insets.right
+            )
+            binding.navDetail.updateLayoutParams {
+                height = initialNavHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                top = initialNavTop,
+                left = initialNavLeft + insets.left,
+                right = initialNavRight + insets.right,
+                bottom = initialNavBottom
+            )
+            binding.btnBack.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.CENTER_VERTICAL, 0)
+                addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
+                topMargin = initialBackTopMargin + initialNavTop + insets.top
+            }
+            binding.scrollView.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
             override fun updateButtonText(count: Int) {
                 binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)

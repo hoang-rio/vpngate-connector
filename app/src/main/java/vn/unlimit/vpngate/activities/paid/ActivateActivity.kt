@@ -7,7 +7,12 @@ import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import vn.unlimit.vpngate.R
@@ -16,16 +21,41 @@ import vn.unlimit.vpngate.databinding.ActivityActivateBinding
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class ActivateActivity : AppCompatActivity() {
+class ActivateActivity : EdgeToEdgeActivity() {
     private var userViewModel: UserViewModel? = null
     private var isDoingActivate = false
     private lateinit var binding: ActivityActivateBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityActivateBinding.inflate(layoutInflater)
+        viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        binding.btnBack.setOnClickListener {
+            val freeIntent = Intent(this, MainActivity::class.java)
+            startActivity(freeIntent)
+            finish()
+        }
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialContentBottom = binding.contentContainer.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.contentContainer.updatePadding(bottom = initialContentBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         findViewById<Button>(R.id.btn_login).setOnClickListener {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)

@@ -7,6 +7,7 @@
     tools:context=".fragment.paidserver.HomeFragment">
 
     <View
+        android:id="@+id/header_background"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:background="@drawable/paid_home_bg"

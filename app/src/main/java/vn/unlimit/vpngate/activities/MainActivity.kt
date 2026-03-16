@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.RelativeLayout
@@ -26,6 +27,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -129,6 +135,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         dataUtil = (application as App).dataUtil
         connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->
@@ -154,6 +161,40 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val initialToolbarTop = binding.toolbar.paddingTop
+        val initialToolbarLeft = binding.toolbar.paddingLeft
+        val initialToolbarRight = binding.toolbar.paddingRight
+        val initialFrameLeft = binding.frameContent.paddingLeft
+        val initialFrameRight = binding.frameContent.paddingRight
+        val initialFrameTopMargin = (binding.frameContent.layoutParams as RelativeLayout.LayoutParams).topMargin
+        val initialAdBottom = binding.adContainerHome.paddingBottom
+        val initialNavBottom = binding.navMain.paddingBottom
+        val drawerHeaderView = binding.navMain.getHeaderView(0)
+        val initialDrawerHeaderHeight = drawerHeaderView.layoutParams.height
+        val initialDrawerHeaderTop = drawerHeaderView.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.activityMainDrawer) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.toolbar.updatePadding(
+                left = initialToolbarLeft + insets.left,
+                top = initialToolbarTop + insets.top,
+                right = initialToolbarRight + insets.right
+            )
+            binding.frameContent.updatePadding(
+                left = initialFrameLeft + insets.left,
+                right = initialFrameRight + insets.right
+            )
+            binding.frameContent.updateLayoutParams<RelativeLayout.LayoutParams> {
+                topMargin = initialFrameTopMargin + insets.top
+            }
+            binding.adContainerHome.updatePadding(bottom = initialAdBottom + insets.bottom)
+            binding.navMain.updatePadding(bottom = initialNavBottom + insets.bottom)
+            drawerHeaderView.updateLayoutParams<ViewGroup.LayoutParams> {
+                height = initialDrawerHeaderHeight + insets.top
+            }
+            drawerHeaderView.updatePadding(top = initialDrawerHeaderTop)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.activityMainDrawer)
         setSupportActionBar(binding.toolbar)
         binding.incError.lnError.setOnClickListener(this)
         drawerToggle = ActionBarDrawerToggle(

@@ -1,16 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".activities.paid.ActivateActivity">
+
+    <View
+        android:id="@+id/status_bar_scrim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorPaidServer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/nav_detail"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/custom_header_height"
+        android:background="@color/colorPaidServer"
+        android:orientation="horizontal"
+        android:padding="@dimen/custom_header_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_bar_scrim">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="@dimen/custom_header_back_button_size"
+            android:layout_height="@dimen/custom_header_back_button_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:contentDescription="@string/action_back_to_free"
+            android:focusable="true"
+            android:padding="@dimen/custom_header_back_button_padding"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_white" />
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/account_activating"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp"
+            android:theme="@style/label" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/content_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nav_detail">
 
     <LinearLayout
         android:id="@+id/ln_activate_failed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:gravity="center"
         android:padding="15dp"
         android:orientation="vertical"
@@ -43,7 +98,7 @@
         android:id="@+id/ln_activating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible">
@@ -66,7 +121,7 @@
         android:id="@+id/ln_activated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="15dp"
@@ -93,4 +148,5 @@
             android:text="@string/action_sign_in"
             android:textColor="@color/colorWhite" />
     </LinearLayout>
-</RelativeLayout>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
