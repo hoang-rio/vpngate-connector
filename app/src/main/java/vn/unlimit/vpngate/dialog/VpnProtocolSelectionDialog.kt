@@ -4,7 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.DialogVpnProtocolSelectionBinding
@@ -60,8 +66,34 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        applyWindowInsets()
         setupUI()
         setupClickListeners()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val bottomSheetDialog = dialog as? BottomSheetDialog ?: return
+        val bottomSheet = bottomSheetDialog.findViewById<FrameLayout>(
+            com.google.android.material.R.id.design_bottom_sheet
+        ) ?: return
+
+        BottomSheetBehavior.from(bottomSheet).apply {
+            skipCollapsed = true
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+        // After the first layout pass, check if the content fits on screen.
+        // If not, expand to full screen so nothing is clipped.
+        bottomSheet.post {
+            val availableHeight = resources.displayMetrics.heightPixels
+            if (bottomSheet.height >= availableHeight) {
+                bottomSheet.layoutParams = bottomSheet.layoutParams.apply {
+                    height = availableHeight
+                }
+            }
+        }
     }
 
     private fun setupUI() {
@@ -106,6 +138,17 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
             binding.txtMsSstpStatus.text = getString(R.string.protocol_available_port, tcpPort)
         } else {
             binding.cardMsSstp.visibility = View.GONE
+        }
+    }
+
+    private fun applyWindowInsets() {
+        val initialBottomPadding = binding.contentContainer.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.scrollContent) { view, windowInsets ->
+            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.contentContainer.updatePadding(bottom = initialBottomPadding + systemBars.bottom)
+            view.updatePadding(bottom = 0)
+            windowInsets
         }
     }
 

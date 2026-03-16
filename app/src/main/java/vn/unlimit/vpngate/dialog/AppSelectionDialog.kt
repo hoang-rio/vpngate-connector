@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -78,11 +80,37 @@ class AppSelectionDialog : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Set dialog width to 90% of screen width
-        dialog?.window?.setLayout(
-            (resources.displayMetrics.widthPixels * 0.9).toInt(),
-            ViewGroup.LayoutParams.WRAP_CONTENT
+        val rootView = view ?: return
+        val dialogWidth = (resources.displayMetrics.widthPixels * REGULAR_DIALOG_WIDTH_RATIO).toInt()
+        val screenHeight = resources.displayMetrics.heightPixels
+
+        // Pre-measure the content at dialog width to decide if it fits on screen.
+        rootView.measure(
+            View.MeasureSpec.makeMeasureSpec(dialogWidth, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
+        val desiredHeight = rootView.measuredHeight
+
+        if (desiredHeight <= screenHeight) {
+            // Content fits: show at natural height with 90% width.
+            dialog?.window?.setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        } else {
+            // Content taller than screen: go full-screen and let the list fill remaining space.
+            dialog?.window?.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            rootView.layoutParams = rootView.layoutParams.apply {
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            val listContainer = rootView.findViewById<FrameLayout>(R.id.list_container)
+            val lp = listContainer?.layoutParams as? LinearLayout.LayoutParams
+            if (lp != null) {
+                lp.height = 0
+                lp.weight = 1f
+                listContainer.layoutParams = lp
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -227,5 +255,9 @@ class AppSelectionDialog : DialogFragment() {
         val hasChanges = originalPackageNames != currentPackageNames
         btnAdd.isEnabled = hasChanges
         btnAdd.alpha = if (hasChanges) 1.0f else 0.5f
+    }
+
+    companion object {
+        private const val REGULAR_DIALOG_WIDTH_RATIO = 0.9f
     }
 }

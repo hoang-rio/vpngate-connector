@@ -39,8 +39,9 @@
         android:singleLine="true" />
 
     <FrameLayout
+        android:id="@+id/list_container"
         android:layout_width="match_parent"
-        android:layout_height="400dp">
+        android:layout_height="350dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_apps"
