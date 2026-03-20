@@ -42,21 +42,19 @@ import de.blinkt.openvpn.core.ProfileManager
 import de.blinkt.openvpn.core.VPNLaunchHelper
 import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
-import de.blinkt.openvpn.utils.PropertiesService
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
 import kittoku.osc.service.SstpTrafficSnapshot
 import kittoku.osc.service.SstpVpnService
 import vn.unlimit.softether.SoftEtherTrafficSnapshot
+import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
-import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.databinding.FragmentStatusBinding
 import vn.unlimit.vpngate.models.VPNGateConnection
-import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import java.io.ByteArrayInputStream
 import java.io.IOException
@@ -571,7 +569,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         lastOpenVpnOutBytes = out
         lastOpenVpnDiffInBytes = diffIn
         lastOpenVpnDiffOutBytes = diffOut
-        requireActivity().runOnUiThread {
+        activity?.runOnUiThread {
             if (isFreeConnected && !isDetached && !isSoftEtherConnected && !isSSTPConnected) {
                 binding.txtDownloadSession.text =
                     OpenVPNService.humanReadableByteCount(`in`, false, resources)
@@ -748,7 +746,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         status: ConnectionStatus,
         intent: Intent?
     ) {
-        requireActivity().runOnUiThread {
+        activity?.runOnUiThread {
             try {
                 // Don't override status text if SSTP is connected or if it's a paid connection
                 if (!isSSTPConnected && !isSoftEtherConnected && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)) {
@@ -944,7 +942,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private fun initSSTP() {
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         listener = SharedPreferences.OnSharedPreferenceChangeListener { _: SharedPreferences?, key: String? ->
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 if (OscPrefKey.ROOT_STATE.toString() == key) {
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
