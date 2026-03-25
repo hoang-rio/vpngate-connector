@@ -33,7 +33,7 @@ jobs:
         run: |
           set -e
           if [ -n "$GPG_PRIVATE_KEY" ]; then
-            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
             GPG=gpg2 blackbox_postdeploy || true
           fi
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           set -e
           if [ -n "$GPG_PRIVATE_KEY" ]; then
-            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
             GPG=gpg2 blackbox_postdeploy || true
           fi
 
@@ -113,7 +113,7 @@ jobs:
         run: |
           set -e
           if [ -n "$GPG_PRIVATE_KEY" ]; then
-            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
             GPG=gpg2 blackbox_postdeploy || true
           fi
 
@@ -153,7 +153,7 @@ jobs:
         run: |
           set -e
           if [ -n "$GPG_PRIVATE_KEY" ]; then
-            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
             GPG=gpg2 blackbox_postdeploy || true
           fi
 
