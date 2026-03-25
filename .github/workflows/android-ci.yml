@@ -1,0 +1,175 @@
+name: Android CI
+
+on:
+  push:
+    branches-ignore:
+      - release
+    tags:
+      - 'f*'
+      - 'p*'
+  workflow_dispatch: {}
+
+env:
+  GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+  SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
+
+jobs:
+  build-apk-free:
+    if: "! startsWith(github.ref, 'refs/tags/')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Assemble Free Release APK
+        run: ./gradlew assembleFreeRelease
+
+      - name: Upload Free APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.sha }}-free.apk
+          path: app/build/outputs/apk/free/release/app-free-release.apk
+          retention-days: 5
+
+  build-apk-pro:
+    if: "! startsWith(github.ref, 'refs/tags/')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Assemble Pro Release APK
+        run: ./gradlew assembleProRelease
+
+      - name: Upload Pro APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.sha }}-pro.apk
+          path: app/build/outputs/apk/pro/release/app-pro-release.apk
+          retention-days: 5
+
+  build-aab-free:
+    if: "startsWith(github.ref, 'refs/tags/f')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Bundle Free Release AAB
+        run: ./gradlew :app:bundleFreeRelease
+
+      - name: Upload Free AAB
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.ref_name }}-free.aab
+          path: app/build/outputs/bundle/freeRelease/app-free-release.aab
+          retention-days: 5
+
+  build-aab-pro:
+    if: "startsWith(github.ref, 'refs/tags/p')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            gpg2 -v --import <(echo "$GPG_PRIVATE_KEY")
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Bundle Pro Release AAB
+        run: ./gradlew :app:bundleProRelease
+
+      - name: Upload Pro AAB
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.ref_name }}-pro.aab
+          path: app/build/outputs/bundle/proRelease/app-pro-release.aab
+          retention-days: 5
