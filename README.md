@@ -1,5 +1,5 @@
 # VPN Gate Connector
-[![pipeline status](https://gitlab.com/hoangrio/vpngate-connector/badges/master/pipeline.svg)](https://gitlab.com/hoangrio/vpngate-connector/commits/master)
+[![Android CI](https://github.com/hoang-rio/vpngate-connector/actions/workflows/android-ci.yml/badge.svg)](https://github.com/hoang-rio/vpngate-connector/actions/workflows/android-ci.yml)
 
 ## A VPN Gate Client for android
 
