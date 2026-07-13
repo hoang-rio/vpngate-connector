@@ -44,6 +44,9 @@ jobs:
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
 
+      - name: Install Android SDK 37
+        run: yes | sdkmanager --sdk_root=/opt/android-sdk-linux "platforms;android-37" || true
+
       - name: Assemble Free Release APK
         run: ./gradlew assembleFreeRelease
 
@@ -83,6 +86,9 @@ jobs:
       - name: Build OpenSSL headers
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Install Android SDK 37
+        run: yes | sdkmanager --sdk_root=/opt/android-sdk-linux "platforms;android-37" || true
 
       - name: Assemble Pro Release APK
         run: ./gradlew assembleProRelease
@@ -124,6 +130,9 @@ jobs:
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
 
+      - name: Install Android SDK 37
+        run: yes | sdkmanager --sdk_root=/opt/android-sdk-linux "platforms;android-37" || true
+
       - name: Bundle Free Release AAB
         run: ./gradlew :app:bundleFreeRelease
 
@@ -163,6 +172,9 @@ jobs:
       - name: Build OpenSSL headers
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Install Android SDK 37
+        run: yes | sdkmanager --sdk_root=/opt/android-sdk-linux "platforms;android-37" || true
 
       - name: Bundle Pro Release AAB
         run: ./gradlew :app:bundleProRelease
