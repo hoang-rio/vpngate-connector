@@ -471,7 +471,6 @@
                         android:background="@drawable/selector_primary_button"
                         android:text="@string/save_config_file"
                         android:textAllCaps="false"
-                        android:theme="@style/AppTheme.Button"
                         android:visibility="gone" />
                 </LinearLayout>
 
@@ -489,8 +488,7 @@
                         android:layout_marginRight="10dp"
                         android:background="@drawable/selector_primary_button"
                         android:text="@string/connect_to_this_server"
-                        android:textAllCaps="false"
-                        android:theme="@style/AppTheme.Button" />
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView

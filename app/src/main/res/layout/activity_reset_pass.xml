@@ -5,6 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:windowBackground"
     tools:context=".activities.paid.ResetPassActivity">
 
     <View
@@ -102,15 +103,14 @@
 
             <Button
                 android:id="@+id/btn_back_to_free_error"
-                style="?attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/selector_primary_button"
                 android:gravity="center"
                 android:text="@string/action_back_to_free"
-                android:textSize="18sp"
-                android:theme="@style/AppTheme.Button" />
+                android:textAllCaps="false"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -170,15 +170,13 @@
 
                 <Button
                     android:id="@+id/btn_back_to_free"
-                    style="?attr/buttonBarButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/selector_primary_button"
                     android:text="@string/action_back_to_free"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button" />
+                    android:textAllCaps="false" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </FrameLayout>

@@ -132,7 +132,6 @@
 
             <Button
                 android:id="@+id/btn_save"
-                style="?attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -142,8 +141,7 @@
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/selector_primary_button"
                 android:text="@string/action_save"
-                android:textSize="18sp"
-                android:theme="@style/AppTheme.Button" />
+                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

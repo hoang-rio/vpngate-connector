@@ -33,7 +33,6 @@
             android:text="TCP 1194"
             android:background="@drawable/selector_primary_button"
             android:textAllCaps="false"
-            android:theme="@style/AppTheme.Button"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/btn_use_udp"
