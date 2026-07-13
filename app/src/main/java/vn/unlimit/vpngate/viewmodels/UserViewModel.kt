@@ -57,10 +57,13 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             try {
                 val loginResponse = userApiService.login(UserLoginRequest(username, password))
                 Log.d(TAG, "Login success with response %s".format(loginResponse.toString()))
+                if (loginResponse.user == null) {
+                    throw NullPointerException("loginResponse.user is null")
+                }
                 userInfo.postValue(loginResponse.user)
                 isLoggedIn.postValue(true)
                 isLoading.postValue(false)
-                paidServerUtil.setUserInfo(loginResponse.user!!)
+                paidServerUtil.setUserInfo(loginResponse.user)
                 paidServerUtil.setIsLoggedIn(true)
                 loginResponse.sessionId?.let {
                     paidServerUtil.setStringSetting(
@@ -70,6 +73,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 }
             } catch (e: HttpException) {
                 Log.e(TAG, "Login error with HttpException", e)
+                paidServerUtil.setIsLoggedIn(false)
                 try {
                     val responseError = JSONObject(e.response()?.errorBody()?.string() ?: "{}")
                     errorList.postValue(responseError)
@@ -80,6 +84,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
                 isLoading.postValue(false)
             } catch (th: Throwable) {
                 Log.e(TAG, "Login error with Exception", th)
+                paidServerUtil.setIsLoggedIn(false)
                 isLoggedIn.postValue(false)
                 isLoading.postValue(false)
             }
