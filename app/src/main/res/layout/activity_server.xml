@@ -371,6 +371,8 @@
                     android:layout_height="35dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/selector_primary_button"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:text="@string/save_config_file"
                     android:textAllCaps="false"
                     android:textColor="@color/colorWhite"
