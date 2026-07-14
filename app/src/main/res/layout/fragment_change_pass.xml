@@ -102,6 +102,7 @@
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/selector_primary_button"
                 android:text="@string/action_save"
+                android:textColor="@color/colorWhite"
                 android:textSize="18sp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

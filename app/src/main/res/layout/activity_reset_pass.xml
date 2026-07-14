@@ -110,6 +110,7 @@
                 android:gravity="center"
                 android:text="@string/action_back_to_free"
                 android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -176,7 +177,8 @@
                     android:layout_marginTop="15dp"
                     android:background="@drawable/selector_primary_button"
                     android:text="@string/action_back_to_free"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </FrameLayout>
