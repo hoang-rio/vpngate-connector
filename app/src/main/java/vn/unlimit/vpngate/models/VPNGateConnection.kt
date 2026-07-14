@@ -9,6 +9,7 @@ import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.utils.DataUtil
 import java.text.DecimalFormat
+import kotlin.math.roundToInt
 
 /**
  * Created by dongh on 14/01/2018.
@@ -34,6 +35,8 @@ class VPNGateConnection : Parcelable {
     var udpPort = 0
     private var isL2TPSupport = 0
     private var isSSTPSupport = 0
+    var seTcpPort = 0
+    var seUdpPort = 0
 
     private constructor(`in`: Parcel) {
         hostName = `in`.readString()
@@ -55,6 +58,8 @@ class VPNGateConnection : Parcelable {
         udpPort = `in`.readInt()
         isL2TPSupport = `in`.readInt()
         isSSTPSupport = `in`.readInt()
+        seTcpPort = `in`.readInt()
+        seUdpPort = `in`.readInt()
     }
 
     //Empty constructor
@@ -80,6 +85,8 @@ class VPNGateConnection : Parcelable {
         out.writeInt(udpPort)
         out.writeInt(isL2TPSupport)
         out.writeInt(isSSTPSupport)
+        out.writeInt(seTcpPort)
+        out.writeInt(seUdpPort)
     }
 
     private fun decodeBase64(base64str: String): String? {
@@ -93,7 +100,10 @@ class VPNGateConnection : Parcelable {
     }
 
     val calculateHostName: String
-        get() = "$hostName.opengw.net"
+        get() {
+            val name = hostName ?: ""
+            return "$name.opengw.net"
+        }
 
     val scoreAsString: String
         get() = score.toString()
@@ -163,7 +173,7 @@ class VPNGateConnection : Parcelable {
         }
         //Display as minute
         if (uptime < 3600000) {
-            return Math.round(uptime.toDouble() / 60000)
+            return (uptime.toDouble() / 60000).roundToInt()
                 .toString() + " " + context.resources.getString(R.string.minutes)
         }
         //Display as hours
@@ -203,6 +213,8 @@ class VPNGateConnection : Parcelable {
             udpPort = this.udpPort,
             isL2TPSupport = this.isL2TPSupport(),
             isSSTPSupport = this.isSSTPSupport(),
+            seTcpPort = this.seTcpPort,
+            seUdpPort = this.seUdpPort
         )
     }
 
@@ -226,6 +238,8 @@ class VPNGateConnection : Parcelable {
         udpPort = vpnGateItem.udpPort
         isL2TPSupport = if (vpnGateItem.isL2TPSupport) 1 else 0
         isSSTPSupport = if (vpnGateItem.isSSTPSupport) 1 else 0
+        seTcpPort = vpnGateItem.seTcpPort
+        seUdpPort = vpnGateItem.seUdpPort
         return this
     }
 
@@ -257,7 +271,7 @@ class VPNGateConnection : Parcelable {
     }
 
     fun isSSTPSupport(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isSSTPSupport == 1
+        return isSSTPSupport == 1
     }
 
     companion object {
@@ -308,14 +322,22 @@ class VPNGateConnection : Parcelable {
                     if (properties.size > index + 1) {
                         vpnGateConnection.isSSTPSupport = properties[++index].toInt()
                     }
+                    if (properties.size > index + 1) {
+                        vpnGateConnection.seTcpPort = properties[++index].toInt()
+                    }
+                    if (properties.size > index + 1) {
+                        vpnGateConnection.seUdpPort = properties[++index].toInt()
+                    }
                 } else {
                     vpnGateConnection.tcpPort = 0
                     vpnGateConnection.udpPort = 0
                     vpnGateConnection.isL2TPSupport = 0
                     vpnGateConnection.isSSTPSupport = 0
+                    vpnGateConnection.seTcpPort = 0
+                    vpnGateConnection.seUdpPort = 0
                 }
                 return vpnGateConnection
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return null
             }
         }

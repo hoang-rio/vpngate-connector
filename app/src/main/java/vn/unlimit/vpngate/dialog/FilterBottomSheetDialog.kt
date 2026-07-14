@@ -78,9 +78,6 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             binding.chbFilterL2tp.visibility = View.GONE
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            binding.chbFilterSstp.visibility = View.GONE
-        }
         binding.btnApply.setOnClickListener(applyButtonClickListener)
         bindData()
         return binding.root

@@ -8,7 +8,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.common.reflect.TypeToken
+import com.google.gson.reflect.TypeToken
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
@@ -65,6 +65,7 @@ class DataUtil(context: Context?) {
          */
         get() {
             try {
+                Log.d(TAG, "get connectionsCache")
                 val inFile = File(mContext!!.filesDir, CONNECTION_CACHE_KEY)
                 if (!inFile.isFile) {
                     return null
@@ -303,6 +304,7 @@ class DataUtil(context: Context?) {
         const val SETTING_BLOCK_ADS: String = "SETTING_BLOCK_ADS"
         const val INCLUDE_UDP_SERVER: String = "INCLUDE_UDP_SERVER"
         const val LAST_CONNECT_USE_UDP: String = "LAST_CONNECT_USE_UDP"
+        const val LAST_CONNECT_METHOD: String = "LAST_CONNECT_METHOD"
         const val USE_CUSTOM_DNS: String = "USE_CUSTOM_DNS"
         const val CUSTOM_DNS_IP_1: String = "CUSTOM_DNS_IP_1"
         const val CUSTOM_DNS_IP_2: String = "CUSTOM_DNS_IP_2"

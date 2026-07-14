@@ -2,33 +2,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="false"
+    tools:context=".activities.paid.ServerActivity"
+    android:background="?android:attr/windowBackground"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/nav_detail"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/custom_header_height"
         android:layout_gravity="center_vertical"
         android:background="@color/colorPaidServer"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:padding="@dimen/custom_header_padding">
 
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/custom_header_back_button_size"
+            android:layout_height="@dimen/custom_header_back_button_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:padding="8dp"
+            android:padding="@dimen/custom_header_back_button_padding"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_back_white" />
 
         <LinearLayout
             android:id="@+id/ln_title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/custom_header_back_button_size"
+            android:layout_alignTop="@id/btn_back"
+            android:layout_centerHorizontal="true"
             android:gravity="center">
 
             <ImageView
@@ -46,16 +52,18 @@
                 android:text="Việt Nam"
                 android:textAlignment="center"
                 android:textColor="@color/colorWhite"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:theme="@style/label" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ln_status"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:paddingEnd="5dp">
 
             <TextView
                 android:layout_marginTop="-9dp"
@@ -74,7 +82,7 @@
                 android:layout_marginTop="2dp"
                 android:text="@string/good" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -363,29 +371,12 @@
                     android:layout_height="35dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/selector_primary_button"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:text="@string/save_config_file"
                     android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
+                    android:textColor="@color/colorWhite"
                     android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ln_sstp_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/btn_sstp_connect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/selector_primary_button"
-                    android:text="@string/connect_via_sstp"
-                    android:textAllCaps="false"
-                    android:theme="@style/AppTheme.Button"
-                    android:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
@@ -405,6 +396,21 @@
                     android:textAllCaps="false"
                     android:theme="@style/AppTheme.Button" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/btn_exclude_apps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                    android:text="@string/exclude_apps_text"
+                android:textColor="@color/colorPrimaryAdaptive"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txt_net_stats"

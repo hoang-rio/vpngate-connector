@@ -100,7 +100,7 @@
             android:label="@string/title_activity_reset_pass"
             android:theme="@style/AppTheme.PaidServer" />
         <activity
-            android:hardwareAccelerated="false"
+            android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize"
             android:name=".activities.paid.ServerActivity"
             android:theme="@style/AppTheme.PaidServer"/>
@@ -119,6 +119,10 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+        <service
+            android:name="de.blinkt.openvpn.core.keepVPNAlive"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
         <service
             android:name=".services.PaidServerFCMService"
             android:exported="false">
@@ -158,10 +162,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
             android:value="true"/>
-        <property
-            android:name="android.adservices.AD_SERVICES_CONFIG"
-            android:resource="@xml/gma_ad_services_config"
-            tools:replace="android:resource" />
 
     </application>
 

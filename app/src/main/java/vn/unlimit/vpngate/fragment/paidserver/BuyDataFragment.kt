@@ -253,7 +253,8 @@ class BuyDataFragment : Fragment(), View.OnClickListener, OnItemClickListener {
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         binding.incLoading.lnLoading.visibility = View.VISIBLE
         binding.rcvSkuDetails.visibility = View.GONE
-        billingClient?.queryProductDetailsAsync(params.build()) { result, listProductDetails ->
+        billingClient?.queryProductDetailsAsync(params.build()) { result, queryDetails ->
+            val listProductDetails = queryDetails.productDetailsList
             if (isAttached) {
                 requireActivity().runOnUiThread {
                     if (result.responseCode == BillingClient.BillingResponseCode.OK) {

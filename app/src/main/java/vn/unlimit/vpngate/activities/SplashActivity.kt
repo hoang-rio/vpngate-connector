@@ -11,6 +11,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
@@ -35,6 +39,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private var activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
+    private lateinit var binding: ActivitySplashBinding
 
     override fun onDestroy() {
         super.onDestroy()
@@ -45,7 +50,16 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivitySplashBinding.inflate(layoutInflater).root)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val initialLoadingBottom = binding.txtLoadingText.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.txtLoadingText.updatePadding(bottom = initialLoadingBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
         AppOpenManager.splashActivity = this
         activityResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()

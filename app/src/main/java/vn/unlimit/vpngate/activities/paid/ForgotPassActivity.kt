@@ -6,10 +6,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Patterns
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -20,7 +27,7 @@ import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
+class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private var loadingDialog: LoadingDialog? = null
     private var captchaSecret: String? = null
     private var userViewModel: UserViewModel? = null
@@ -28,15 +35,50 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityForgotPassBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityForgotPassBinding.inflate(layoutInflater)
+        this.viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
         loadingDialog = LoadingDialog.newInstance()
+        binding.btnBack.setOnClickListener(this)
         binding.ivCaptcha.setOnClickListener(this)
         binding.btnLogin.setOnClickListener(this)
         binding.btnResetPass.setOnClickListener(this)
+        binding.txtCaptchaAnswer.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnResetPass.performClick()
+                true
+            } else {
+                false
+            }
+        }
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     override fun onResume() {
@@ -72,8 +114,8 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
-            if (isLoading && !loadingDialog!!.isVisible) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            if (isLoading) {
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
@@ -144,9 +186,13 @@ class ForgotPassActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when (view) {
+            binding.btnBack -> onBackPressedDispatcher.onBackPressed()
             binding.ivCaptcha -> loadCaptcha(true)
             binding.btnLogin -> backToLogin()
             binding.btnResetPass -> {
+                if (isResetPasClicked || userViewModel?.isLoading?.value == true) {
+                    return
+                }
                 if (!Patterns.EMAIL_ADDRESS.matcher(binding.txtEmail.text.toString()).matches()) {
                     Toast.makeText(this, getString(R.string.email_is_invalid), Toast.LENGTH_SHORT)
                         .show()

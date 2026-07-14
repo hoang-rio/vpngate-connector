@@ -59,11 +59,12 @@ class ProfileFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDat
     private fun bindViewModel() {
         userViewModel = (activity as PaidServerActivity).userViewModel
         userViewModel?.isLoading?.observe(viewLifecycleOwner) {
-            if (it && !loadingDialog.isVisible) {
-                return@observe loadingDialog.show(
+            if (it) {
+                loadingDialog.show(
                     requireActivity().supportFragmentManager,
                     LoadingDialog::class.java.name
                 )
+                return@observe
             }
             if (loadingDialog.isVisible) {
                 loadingDialog.dismiss()

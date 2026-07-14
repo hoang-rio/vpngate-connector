@@ -230,6 +230,11 @@ class PaidServerUtil(context: Context) {
     }
 
     fun isCurrentSession(serverId: String, privateIp: String): Boolean {
-        return "%s:%s".format(serverId, privateIp) == getStringSetting(CURRENT_SESSION_KEY)
+        val currentSession = getStringSetting(CURRENT_SESSION_KEY)
+        if (currentSession != null && currentSession.endsWith(":softether")) {
+            // If stored session is SoftEther, only check serverId as we don't know the assigned IP beforehand
+            return currentSession.startsWith("$serverId:")
+        }
+        return "%s:%s".format(serverId, privateIp) == currentSession
     }
 }

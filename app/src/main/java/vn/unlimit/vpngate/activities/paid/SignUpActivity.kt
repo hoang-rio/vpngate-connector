@@ -6,13 +6,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pixplicity.sharp.Sharp
@@ -25,7 +32,7 @@ import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.Calendar
 import java.util.regex.Pattern
 
-class SignUpActivity : AppCompatActivity(), View.OnClickListener,
+class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
     DatePickerDialog.OnDateSetListener, View.OnFocusChangeListener {
     private val calendar = Calendar.getInstance()
     private var datePickerDialog: DatePickerDialog? = null
@@ -44,10 +51,14 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
+        this.viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        binding.btnBack.setOnClickListener(this)
         binding.btnSignUp.setOnClickListener(this)
         binding.btnLogin.setOnClickListener(this)
         binding.txtBirthday.onFocusChangeListener = this
@@ -71,16 +82,47 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DATE)
         )
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         binding.txtUsername.requestFocus()
+        binding.txtCaptchaAnswer.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnSignUp.performClick()
+                true
+            } else {
+                false
+            }
+        }
         loadingDialog = LoadingDialog.newInstance()
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     private fun bindViewModel() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         userViewModel!!.isLoading.observe(this) { isLoading ->
-            if (isLoading && !loadingDialog!!.isVisible) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+            if (isLoading) {
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
                 loadingDialog!!.dismiss()
             }
@@ -251,6 +293,9 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun handleSignUp() {
         try {
+            if (isPressedSignup || userViewModel?.isLoading?.value == true) {
+                return
+            }
             checkEmptyField(binding.txtUsername, R.string.prompt_user)
             checkEmptyField(binding.txtFullName, R.string.prompt_full_name)
             checkEmptyField(binding.txtEmail, R.string.prompt_email)
@@ -325,6 +370,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onClick(v: View?) {
         when (v) {
+            binding.btnBack -> onBackPressedDispatcher.onBackPressed()
             binding.btnLogin -> onBackPressedDispatcher.onBackPressed()
             binding.ivCaptcha -> loadCaptcha(true)
             binding.txtBirthday -> datePickerDialog!!.show()

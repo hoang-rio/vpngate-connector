@@ -56,4 +56,8 @@
         <key>invite_paid_server</key>
         <value>true</value>
     </entry>
+    <entry>
+        <key>vpn_show_native_ad</key>
+        <value>true</value>
+    </entry>
 </defaultsMap>

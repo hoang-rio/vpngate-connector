@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -16,15 +15,23 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -65,6 +72,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.DataUtil.Companion.isOnline
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import kittoku.osc.preference.OscPrefKey
 import vn.unlimit.vpngate.viewmodels.ConnectionListViewModel
 import java.util.Objects
 import java.util.concurrent.atomic.AtomicBoolean
@@ -104,12 +112,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 )
 
                 BaseProvider.ACTION.ACTION_CONNECT_VPN -> {
-                    if (dataUtil != null && dataUtil!!.lastVPNConnection != null) {
-                        try {
-                            binding.navMain.menu.findItem(R.id.nav_status).setVisible(true)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Got exception when handle broadcast receive", e)
-                        }
+                    try {
+                        checkStatusMenu()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Got exception when handle broadcast receive", e)
                     }
                 }
 
@@ -129,11 +135,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         dataUtil = (application as App).dataUtil
         connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->
             if (aBoolean) {
-                binding.incLoading.lnLoading.visibility = View.VISIBLE
+                if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
+                    binding.incLoading.lnLoading.visibility = View.VISIBLE
+                }
             } else if (intent.getStringExtra(TARGET_FRAGMENT) == null) {
                 postVPNGateAPI()
             }
@@ -152,6 +161,40 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val initialToolbarTop = binding.toolbar.paddingTop
+        val initialToolbarLeft = binding.toolbar.paddingLeft
+        val initialToolbarRight = binding.toolbar.paddingRight
+        val initialFrameLeft = binding.frameContent.paddingLeft
+        val initialFrameRight = binding.frameContent.paddingRight
+        val initialFrameTopMargin = (binding.frameContent.layoutParams as RelativeLayout.LayoutParams).topMargin
+        val initialAdBottom = binding.adContainerHome.paddingBottom
+        val initialNavBottom = binding.navMain.paddingBottom
+        val drawerHeaderView = binding.navMain.getHeaderView(0)
+        val initialDrawerHeaderHeight = drawerHeaderView.layoutParams.height
+        val initialDrawerHeaderTop = drawerHeaderView.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.activityMainDrawer) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.toolbar.updatePadding(
+                left = initialToolbarLeft + insets.left,
+                top = initialToolbarTop + insets.top,
+                right = initialToolbarRight + insets.right
+            )
+            binding.frameContent.updatePadding(
+                left = initialFrameLeft + insets.left,
+                right = initialFrameRight + insets.right
+            )
+            binding.frameContent.updateLayoutParams<RelativeLayout.LayoutParams> {
+                topMargin = initialFrameTopMargin + insets.top
+            }
+            binding.adContainerHome.updatePadding(bottom = initialAdBottom + insets.bottom)
+            binding.navMain.updatePadding(bottom = initialNavBottom + insets.bottom)
+            drawerHeaderView.updateLayoutParams<ViewGroup.LayoutParams> {
+                height = initialDrawerHeaderHeight + insets.top
+            }
+            drawerHeaderView.updatePadding(top = initialDrawerHeaderTop)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.activityMainDrawer)
         setSupportActionBar(binding.toolbar)
         binding.incError.lnError.setOnClickListener(this)
         drawerToggle = ActionBarDrawerToggle(
@@ -184,6 +227,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         } catch (ex: Exception) {
             Log.e(TAG, "Got exception handle support action bar", ex)
         }
+        if (!dataUtil!!.hasAds()) {
+            hideAdContainer()
+            binding.navMain.menu.setGroupVisible(R.id.menu_top, false)
+        }
 
         checkUMP()
         if (consentInformation != null) {
@@ -198,7 +245,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         addBackPressedHandler()
         lifecycleScope.launch(Dispatchers.IO) {
-            vpnGateConnectionList = dataUtil!!.connectionsCache
             disallowLoadHome =
                 vpnGateConnectionList != null && vpnGateConnectionList!!
                     .size() > 0
@@ -209,8 +255,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun checkStatusMenu() {
-        binding.navMain.menu.findItem(R.id.nav_status)
-            .setVisible(dataUtil!!.lastVPNConnection != null)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
+        val isOpenVPNFreeConnected = dataUtil!!.lastVPNConnection != null
+        val isSSTPFreeConnected = !sstpHostName.isNullOrEmpty() && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+        binding.navMain.menu.findItem(R.id.nav_status).isVisible = isOpenVPNFreeConnected || isSSTPFreeConnected
     }
 
     private fun checkUMP() {
@@ -286,9 +335,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }
                 (findViewById<View>(R.id.ad_container_home) as RelativeLayout).addView(adView)
                 adView!!.loadAd(AdRequest.Builder().build())
-            } else {
-                hideAdContainer()
-                binding.navMain.menu.setGroupVisible(R.id.menu_top, false)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when initAdMob", e)
@@ -337,7 +383,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     runOnUiThread {
                         binding.incNoNetwork.lnNoNetwork.visibility = View.GONE
                     }
-                    if (vpnGateConnectionList == null || vpnGateConnectionList!!.size() == 0) {
+                    if (dataUtil?.connectionsCache == null) {
                         withContext(Dispatchers.Main) {
                             if (supportFragmentManager.isStateSaved.not()) {
                                 callDataServer()
@@ -436,15 +482,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val editText =
                 searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
             editText.imeOptions = EditorInfo.IME_ACTION_DONE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                editText.setTextColor(resources.getColor(R.color.colorWhite, theme))
-                editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent, theme))
-            } else {
-                @Suppress("DEPRECATION")
-                editText.setTextColor(resources.getColor(R.color.colorWhite))
-                @Suppress("DEPRECATION")
-                editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent))
-            }
+            editText.setTextColor(resources.getColor(R.color.colorWhite, theme))
+            editText.setHintTextColor(resources.getColor(R.color.colorWhiteTransparent, theme))
             searchView.queryHint = getString(R.string.search_hint)
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
@@ -621,7 +660,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=vn.unlimit.vpngatepro")
+                                "market://details?id=vn.unlimit.vpngatepro".toUri()
                             )
                         )
                     } catch (ex: ActivityNotFoundException) {
@@ -629,7 +668,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                             startActivity(
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro")
+                                    "https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro".toUri()
                                 )
                             )
                         } catch (exception: ActivityNotFoundException) {
@@ -667,7 +706,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             R.id.nav_status -> {
-                if (dataUtil!!.lastVPNConnection == null) {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+                val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
+                val isOpenVPNFreeConnected = dataUtil!!.lastVPNConnection != null
+                val isSSTPFreeConnected = !sstpHostName.isNullOrEmpty() && !dataUtil!!.getBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                if (!isOpenVPNFreeConnected && !isSSTPFreeConnected) {
                     Toast.makeText(
                         applicationContext,
                         getString(R.string.connect_one_warning),
@@ -880,8 +923,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     var vpnGateConnectionList: VPNGateConnectionList?
         get() = connectionListViewModel!!.vpnGateConnectionList.value
         set(inVpnGateConnectionList) {
-            connectionListViewModel!!.vpnGateConnectionList.postValue(inVpnGateConnectionList)
             lifecycleScope.launch {
+                connectionListViewModel!!.vpnGateConnectionList.value = inVpnGateConnectionList
                 withContext(Dispatchers.Main) {
                     if (mMenu != null) {
                         mMenu!!.findItem(R.id.action_filter)

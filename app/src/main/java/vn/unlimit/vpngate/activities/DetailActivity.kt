@@ -9,7 +9,6 @@ import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -27,7 +26,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdListener
@@ -53,12 +60,16 @@ import de.blinkt.openvpn.core.VpnStatus
 import de.blinkt.openvpn.core.VpnStatus.ByteCountListener
 import de.blinkt.openvpn.utils.TotalTraffic
 import kittoku.osc.preference.OscPrefKey
+import kittoku.osc.service.SstpTrafficSnapshot
 import kittoku.osc.service.SstpVpnService
+import vn.unlimit.softether.SoftEtherTrafficSnapshot
+import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
 import vn.unlimit.vpngate.dialog.MessageDialog
+import vn.unlimit.vpngate.dialog.VpnProtocolSelectionDialog
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
@@ -90,7 +101,6 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var mVpnGateConnection: VPNGateConnection? = null
     private lateinit var vpnProfile: VpnProfile
     private var mInterstitialAd: InterstitialAd? = null
-    private lateinit var adView: AdView
     private lateinit var adViewBellow: AdView
     private lateinit var prefs: SharedPreferences
     private lateinit var listener: OnSharedPreferenceChangeListener
@@ -101,19 +111,189 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var isSSTPConnected = false
     private var isFullScreenAdLoaded = false
     private lateinit var binding: ActivityDetailBinding
+    private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
+    private var isSoftEtherConnected = false
+    @Volatile
+    private var isSoftEtherConnecting = false
+    private var lastDisconnectTime: Long = 0
+    private val disconnectCooldownMS = 1000L // 1 second cooldown after disconnect
+    private var pendingSoftEtherUseTcp: Boolean = true // Track pending SoftEther connection protocol
+    private var notificationPermissionRequested = false // Track if we've already requested notification permission
 
-    private fun checkConnectionData() {
-        if (mVpnGateConnection == null) {
-            //Start main
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+    private val softEtherStateListener = object : SoftEtherVpnService.StateListener {
+        override fun onSoftEtherStateChanged(state: String, assignedIp: String) {
+            // Already delivered on main thread by SoftEtherVpnService
+            Log.d(TAG, if (assignedIp.isNotEmpty()) "SoftEther state: $state ip=$assignedIp" else "SoftEther state: $state")
+
+            // Don't show terminal states (DISCONNECTED/ERROR) unless we were
+            // already in an active SoftEther session — prevents "SoftEther Disconnected"
+            // showing on fresh screen open when no SoftEther session ever ran.
+            if ((state == SoftEtherVpnService.STATE_DISCONNECTED || state == SoftEtherVpnService.STATE_ERROR)
+                && !isSoftEtherConnected && !isSoftEtherConnecting) {
+                return
+            }
+
+            when (state) {
+                SoftEtherVpnService.STATE_CONNECTING -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_connecting)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_TLS_HANDSHAKE -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_tls_handshake)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_PROTOCOL_HANDSHAKE -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_protocol_handshake)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_AUTHENTICATING -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_authenticating)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_SESSION_SETUP -> {
+                    isSoftEtherConnected = false
+                    isConnecting = true
+                    isSoftEtherConnecting = true
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_apply_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.cancel)
+                    binding.txtStatus.text = getString(R.string.softether_session_setup)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_CONNECTED -> {
+                    isSoftEtherConnected = true
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_red_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.disconnect)
+                    binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
+                    binding.txtNetStats.visibility = View.VISIBLE
+                    renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
+                    binding.txtCheckIp.visibility = View.VISIBLE
+                }
+                SoftEtherVpnService.STATE_DISCONNECTING -> {
+                    // Keep isSoftEtherConnected=true so the guard allows STATE_DISCONNECTED through next
+                    isSoftEtherConnected = true
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.connect_to_this_server)
+                    binding.txtStatus.text = getString(R.string.softether_disconnecting)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_DISCONNECTED -> {
+                    isSoftEtherConnected = false
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.connect_to_this_server)
+                    binding.txtStatus.text = getString(R.string.softether_disconnected)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                SoftEtherVpnService.STATE_ERROR -> {
+                    isSoftEtherConnected = false
+                    isConnecting = false
+                    isSoftEtherConnecting = false
+                    binding.btnConnect.background = ResourcesCompat.getDrawable(
+                        resources, R.drawable.selector_primary_button, null
+                    )
+                    binding.btnConnect.text = getString(R.string.retry_connect)
+                    binding.txtStatus.text = getString(R.string.softether_disconnected_by_error)
+                    binding.txtNetStats.visibility = View.GONE
+                    binding.txtCheckIp.visibility = View.GONE
+                }
+                else -> Log.w(TAG, "Unknown SoftEther state: $state")
+            }
         }
     }
 
-    private fun startVpnSSTPService(action: String) {
-        val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
+    private val softEtherTrafficListener = object : SoftEtherVpnService.TrafficListener {
+        override fun onSoftEtherTrafficUpdated(snapshot: SoftEtherTrafficSnapshot) {
+            if (!isSoftEtherConnected || !isCurrent) return
+            renderSoftEtherTraffic(snapshot)
+        }
+    }
 
+    private val sstpTrafficListener = object : SstpVpnService.TrafficListener {
+        override fun onSstpTrafficUpdated(snapshot: SstpTrafficSnapshot) {
+            if (!isSSTPConnected || !isCurrent) return
+            renderSstpTraffic(snapshot)
+        }
+    }
+
+    private fun renderSoftEtherTraffic(snapshot: SoftEtherTrafficSnapshot) {
+        binding.txtNetStats.visibility = View.VISIBLE
+        binding.txtNetStats.text = String.format(
+            getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytesPerSecond(), true, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytesPerSecond(), true, resources)
+        )
+    }
+
+    private fun renderSstpTraffic(snapshot: SstpTrafficSnapshot) {
+        binding.txtNetStats.visibility = View.VISIBLE
+        binding.txtNetStats.text = String.format(
+            getString(de.blinkt.openvpn.R.string.statusline_bytecount),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.inBytesPerSecond(), true, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytes, false, resources),
+            OpenVPNService.humanReadableByteCount(snapshot.outBytesPerSecond(), true, resources)
+        )
+    }
+
+    private fun startVpnSSTPService(action: String) {
+        if (action == ACTION_VPN_CONNECT) {
+            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+            val targetClass = if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java
+            SstpVpnService.notificationTargetActivity = targetClass
+            SstpVpnService.mDisplaySpeed =
+                dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+        }
+        val intent = Intent(applicationContext, SstpVpnService::class.java).setAction(action)
         if (action == ACTION_VPN_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             applicationContext.startForegroundService(intent)
         } else {
@@ -128,44 +308,54 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 if (OscPrefKey.ROOT_STATE.toString() == key) {
                     val newState = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
                     if (!newState) {
-                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                            resources, R.drawable.selector_paid_button, null
-                        )
-                        binding.btnSstpConnect.setText(R.string.connect_via_sstp)
                         if (isSSTPConnectOrDisconnecting) {
-                            binding.txtStatus.setText(R.string.sstp_disconnected)
+                            if (isSSTPConnected) {
+                                binding.txtStatus.setText(R.string.sstp_disconnected)
+                            } else {
+                                binding.txtStatus.setText(R.string.canceled)
+                            }
                         } else {
                             binding.txtStatus.setText(R.string.sstp_disconnected_by_error)
                         }
                         isSSTPConnected = false
+                        isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
                         binding.txtCheckIp.visibility = View.GONE
+                        binding.txtNetStats.visibility = View.GONE
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
+                            resources, R.drawable.selector_primary_button, null
+                        )
+                        binding.btnConnect.setText(R.string.connect_to_this_server)
                     }
-                    isSSTPConnectOrDisconnecting = false
                 }
                 if (OscPrefKey.HOME_CONNECTED_IP.toString() == key) {
                     val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
                     if (connectedIp!!.isNotEmpty()) {
-                        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
+                        binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                        dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, false)
+                        isSSTPConnected = true
+                        isConnecting = false
+                        isSSTPConnectOrDisconnecting = false
+                        binding.txtCheckIp.visibility = View.VISIBLE
+                        renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
                             resources, R.drawable.selector_red_button, null
                         )
-                        binding.btnSstpConnect.setText(R.string.disconnect_sstp)
-                        binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
-                        isSSTPConnected = true
-                        binding.txtCheckIp.visibility = View.VISIBLE
+                        binding.btnConnect.setText(R.string.disconnect)
+                        val intent = Intent(BaseProvider.ACTION.ACTION_CONNECT_VPN)
+                        sendBroadcast(intent)
                     }
                 }
             }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         isSSTPConnected = prefs.getBoolean(OscPrefKey.ROOT_STATE.toString(), false)
-        val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
         if (isSSTPConnected) {
             binding.txtCheckIp.visibility = View.VISIBLE
-            if (sstpHostName == mVpnGateConnection!!.calculateHostName) {
-                binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                    resources, R.drawable.selector_red_button, null
-                )
-                binding.btnSstpConnect.setText(R.string.disconnect_sstp)
-            }
+            renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
+            binding.btnConnect.background = ResourcesCompat.getDrawable(
+                resources, R.drawable.selector_red_button, null
+            )
+            binding.btnConnect.setText(R.string.disconnect)
         }
     }
 
@@ -173,44 +363,131 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataUtil = (application as App).dataUtil!!
+        // Initialize exclude apps manager early to prevent crashes when loading VPN profile
+        excludeAppsManager = vn.unlimit.vpngate.utils.ExcludeAppsManager(this)
+        
+        // Handle disconnect action from notification
+        if (intent.action == SoftEtherVpnService.ACTION_DISCONNECT) {
+            Log.d(TAG, "Disconnect action from notification")
+            disconnectSoftEther()
+            finish()
+            return
+        }
+        
         if (intent.getIntExtra(TYPE_START, TYPE_NORMAL) == TYPE_FROM_NOTIFY) {
+            val lastMethod = dataUtil.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
             mVpnGateConnection = dataUtil.lastVPNConnection
-            loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
+            if (lastMethod != "softether" && mVpnGateConnection != null) {
+                loadVpnProfile(dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false))
+            }
             try {
                 val params = Bundle()
                 params.putString("from", "Notification")
-                params.putString("ip", mVpnGateConnection!!.ip)
-                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
-                params.putString("country", mVpnGateConnection!!.countryLong)
+                params.putString("ip", mVpnGateConnection?.ip)
+                params.putString("hostname", mVpnGateConnection?.calculateHostName)
+                params.putString("country", mVpnGateConnection?.countryLong)
                 FirebaseAnalytics.getInstance(applicationContext).logEvent("Open_Detail", params)
             } catch (ex: NullPointerException) {
                 Log.e(TAG, "onCreate error", ex)
             }
         } else {
-            mVpnGateConnection = (if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(
-                    BaseProvider.PASS_DETAIL_VPN_CONNECTION
-                )
-            } else intent.getParcelableExtra(
-                BaseProvider.PASS_DETAIL_VPN_CONNECTION,
+            mVpnGateConnection = IntentCompat.getParcelableExtra(
+                intent, BaseProvider.PASS_DETAIL_VPN_CONNECTION,
                 VPNGateConnection::class.java
-            ))
+            )
         }
-        checkConnectionData()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val initialRootLeft = binding.root.paddingLeft
+        val initialRootRight = binding.root.paddingRight
+        val initialNavHeight = binding.navDetail.layoutParams.height
+        val initialNavTop = binding.navDetail.paddingTop
+        val initialNavLeft = binding.navDetail.paddingLeft
+        val initialNavRight = binding.navDetail.paddingRight
+        val initialNavBottom = binding.navDetail.paddingBottom
+        val initialBackTopMargin = (binding.btnBack.layoutParams as RelativeLayout.LayoutParams).topMargin
+        val initialScrollBottom = binding.scrollView.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.root.updatePadding(
+                left = initialRootLeft + insets.left,
+                right = initialRootRight + insets.right
+            )
+            binding.navDetail.updateLayoutParams {
+                height = initialNavHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                top = initialNavTop,
+                left = initialNavLeft + insets.left,
+                right = initialNavRight + insets.right,
+                bottom = initialNavBottom
+            )
+            binding.btnBack.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.CENTER_VERTICAL, 0)
+                addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
+                topMargin = initialBackTopMargin + initialNavTop + insets.top
+            }
+            binding.scrollView.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
+        excludeAppsManager.setCallback(object : vn.unlimit.vpngate.utils.ExcludeAppsManager.ExcludeAppsCallback {
+            override fun updateButtonText(count: Int) {
+                binding.btnExcludeApps.text = getString(R.string.exclude_apps_text, count)
+            }
+
+            override fun restartVpnIfRunning() {
+                var vpnRestarted = false
+                // Check if OpenVPN is currently running and restart it
+                if (isCurrent && checkStatus()) {
+                    // Disconnect first
+                    stopVpn()
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        handleConnection(false) // Default to TCP, or could check current protocol
+                    }, 500)
+                    vpnRestarted = true
+                }
+                // Check if SSTP is currently running and restart it
+                else if (isSSTPConnected) {
+                    // Disconnect SSTP first
+                    startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                    // Wait a bit then reconnect
+                    Handler(mainLooper).postDelayed({
+                        connectSSTPVPN()
+                    }, 500)
+                    vpnRestarted = true
+                }
+                // Check if SoftEther is currently running and restart it
+                else if (isSoftEtherConnected || isSoftEtherConnecting) {
+                    disconnectSoftEther()
+                    Handler(mainLooper).postDelayed({
+                        startSoftEtherConnection(true)
+                    }, 500)
+                    vpnRestarted = true
+                }
+
+                if (vpnRestarted) {
+                    Toast.makeText(this@DetailActivity, getString(R.string.vpn_restarted_for_settings), Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
         binding.btnSaveConfigFile.setOnClickListener(this)
         binding.btnInstallOpenvpn.setOnClickListener(this)
         binding.btnBack.setOnClickListener(this)
         binding.btnConnect.setOnClickListener(this)
         binding.txtCheckIp.setOnClickListener(this)
         binding.btnL2tpConnect.setOnClickListener(this)
-        binding.btnSstpConnect.setOnClickListener(this)
-        bindData()
+        binding.btnExcludeApps.setOnClickListener(this)
+        excludeAppsManager.updateExcludeAppsButtonText { text ->
+            binding.btnExcludeApps.text = text
+        }
         initAdMob()
         initInterstitialAd()
         initSSTP()
+        bindData()
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         binding.txtStatus.text = ""
@@ -220,28 +497,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             if (dataUtil.hasAds()) {
                 MobileAds.initialize(this)
-                adView = AdView(applicationContext)
-                adView.setAdSize(AdSize.LARGE_BANNER)
-                adView.adUnitId = resources.getString(R.string.admob_banner_bottom_detail)
-                adView.adListener = object : AdListener() {
-                    override fun onAdFailedToLoad(error: LoadAdError) {
-                        hideAdContainer()
-                        Log.e(TAG, error.toString())
-                    }
-                }
-                val params = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                )
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE)
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                adView.layoutParams = params
-                (findViewById<View>(R.id.ad_container_detail) as RelativeLayout).addView(adView)
-                adView.loadAd(AdRequest.Builder().build())
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
                 adViewBellow.adUnitId = getString(R.string.admob_banner_bellow_detail)
-                adViewBellow.setAdSize(AdSize.MEDIUM_RECTANGLE)
+                adViewBellow.setAdSize(AdSize.LARGE_BANNER)
                 adViewBellow.adListener = object : AdListener() {
                     override fun onAdFailedToLoad(error: LoadAdError) {
                         adViewBellow.visibility = View.GONE
@@ -249,20 +508,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 }
                 binding.lnContentDetail.addView(adViewBellow)
                 adViewBellow.loadAd(AdRequest.Builder().build())
-            } else {
-                hideAdContainer()
             }
         } catch (e: Exception) {
             Log.e(TAG, "initAdMob error", e)
-        }
-    }
-
-    private fun hideAdContainer() {
-        try {
-            findViewById<View>(R.id.ad_container_detail).visibility = View.GONE
-            adView.visibility = View.GONE
-        } catch (e: Exception) {
-            Log.e(TAG, "hideAdContainer error", e)
         }
     }
 
@@ -286,6 +534,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     ) {
         runOnUiThread {
             try {
+                // Don't let OpenVPN state override an active SoftEther or SSTP connection
+                if (isSoftEtherConnected || isSoftEtherConnecting || isSSTPConnected || isSSTPConnectOrDisconnecting) return@runOnUiThread
+
                 binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
                 when (status) {
                     ConnectionStatus.LEVEL_CONNECTED -> {
@@ -408,23 +659,38 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
                 if (mVpnGateConnection!!.isSSTPSupport()) {
                     binding.lnSstp.visibility = View.VISIBLE
-                    binding.lnSstpBtn.visibility = View.VISIBLE
                 } else {
                     binding.lnSstp.visibility = View.GONE
-                    binding.lnSstpBtn.visibility = View.GONE
                 }
 
-                if (isCurrent && checkStatus()) {
+                if (isCurrent && (checkStatus() || isSSTPConnected || isSoftEtherConnected)) {
                     binding.btnConnect.text = resources.getString(R.string.disconnect)
                     binding.btnConnect.background =
-                        resources.getDrawable(R.drawable.selector_apply_button, resources.newTheme())
-                    binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
-                    binding.txtNetStats.visibility = View.VISIBLE
+                        resources.getDrawable(R.drawable.selector_red_button, resources.newTheme())
+                    
+                    if (isSSTPConnected) {
+                         val connectedIp = prefs.getString(OscPrefKey.HOME_CONNECTED_IP.toString(), "")
+                         if (connectedIp!!.isNotEmpty()) {
+                             binding.txtStatus.text = getString(R.string.sstp_connected, connectedIp)
+                         } else {
+                             binding.txtStatus.text = getString(R.string.sstp_connecting)
+                         }
+                    } else {
+                        binding.txtStatus.text = VpnStatus.getLastCleanLogMessage(this)
+                    }
+                    
+                    if (isSSTPConnected) {
+                        binding.txtNetStats.visibility = View.VISIBLE
+                        renderSstpTraffic(SstpVpnService.currentTrafficSnapshot)
+                    } else {
+                        binding.txtNetStats.visibility = View.VISIBLE
+                        if (isSoftEtherConnected) {
+                            renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
+                        }
+                    }
+                    binding.txtCheckIp.visibility = View.VISIBLE
                 } else {
                     binding.txtNetStats.visibility = View.GONE
-                }
-                if (checkStatus()) {
-                    binding.txtCheckIp.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "bindData error", e)
@@ -440,12 +706,23 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     public override fun onResume() {
         super.onResume()
+
+        // Register SoftEther state listener — same pattern as OpenVPN's VpnStatus.addStateListener.
+        // addStateListener() immediately replays currentState, so we always get the right UI.
+        SoftEtherVpnService.addStateListener(softEtherStateListener)
+        SoftEtherVpnService.addTrafficListener(softEtherTrafficListener)
+        SstpVpnService.addTrafficListener(sstpTrafficListener)
+
         try {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, OpenVPNService::class.java)
                 OpenVPNService.mDisplaySpeed =
                     dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
-                intent.setAction(OpenVPNService.START_SERVICE)
+                SoftEtherVpnService.mDisplaySpeed =
+                    dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+                SstpVpnService.mDisplaySpeed =
+                    dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true)
+                intent.action = OpenVPNService.START_SERVICE
                 bindService(intent, mConnection, BIND_AUTO_CREATE)
             }, 300)
             if (!App.isImportToOpenVPN) {
@@ -470,6 +747,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     public override fun onPause() {
         try {
             super.onPause()
+            // Unregister SoftEther state listener
+            SoftEtherVpnService.removeStateListener(softEtherStateListener)
+            SoftEtherVpnService.removeTrafficListener(softEtherTrafficListener)
+            SstpVpnService.removeTrafficListener(sstpTrafficListener)
             TotalTraffic.saveTotal(this)
             unbindService(mConnection)
         } catch (e: Exception) {
@@ -513,7 +794,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val packageManager = packageManager
                 val intent = packageManager.getLaunchIntentForPackage("net.openvpn.openvpn")
                 if (intent != null) {
-                    intent.setAction(Intent.ACTION_VIEW)
+                    intent.action = Intent.ACTION_VIEW
                     startActivity(intent)
                 }
             }, 500)
@@ -567,7 +848,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
             if (view == binding.btnConnect) {
                 if (!isConnecting) {
-                    if (checkStatus() && isCurrent) {
+                    if (isSoftEtherConnected) {
+                        // Disconnect active SoftEther connection
+                        disconnectSoftEther()
+                    } else if (isSSTPConnected) {
+                        // Disconnect active MS-SSTP connection
+                        handleSSTPBtn()
+                    } else if (checkStatus() && isCurrent) {
                         val params = Bundle()
                         params.putString("type", "disconnect current")
                         params.putString("hostname", mVpnGateConnection!!.calculateHostName)
@@ -580,46 +867,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                             resources.getDrawable(R.drawable.selector_primary_button, resources.newTheme())
                         binding.btnConnect.setText(R.string.connect_to_this_server)
                         binding.txtStatus.setText(R.string.disconnecting)
-                    } else if (mVpnGateConnection!!.tcpPort > 0 && mVpnGateConnection!!.udpPort > 0) {
-                        if (dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0) != 0) {
-                            // Apply default protocol in setting
-                            var protocol = "TCP"
-                            if (dataUtil.getIntSetting(
-                                    DataUtil.SETTING_DEFAULT_PROTOCOL,
-                                    0
-                                ) == 1
-                            ) {
-                                handleConnection(false)
-                            } else {
-                                protocol = "UDP"
-                                handleConnection(true)
-                            }
-                            Toast.makeText(
-                                this,
-                                getString(R.string.connecting_use_protocol, protocol),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            val connectionUseProtocol =
-                                ConnectionUseProtocol.newInstance(mVpnGateConnection, object : ConnectionUseProtocol.ClickResult {
-                                    override fun onResult(useUdp: Boolean) {
-                                        handleConnection(useUdp)
-                                    }
-                                })
-                            if (!isFinishing && !isDestroyed) {
-                                connectionUseProtocol.show(
-                                    supportFragmentManager,
-                                    ConnectionUseProtocol::class.java.name
-                                )
-                            } else if (!isFinishing) {
-                                connectionUseProtocol.show(
-                                    supportFragmentManager,
-                                    ConnectionUseProtocol::class.java.name
-                                )
-                            }
-                        }
                     } else {
-                        handleConnection(false)
+                        // Show VPN Protocol Selection Dialog
+                        showVpnProtocolSelectionDialog()
                     }
                 } else {
                     val params = Bundle()
@@ -628,12 +878,20 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     params.putString("ip", mVpnGateConnection!!.ip)
                     params.putString("country", mVpnGateConnection!!.countryLong)
                     FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_VPN", params)
-                    stopVpn()
+                    // Check if it's a SoftEther connection being canceled
+                    if (isSoftEtherConnecting) {
+                        disconnectSoftEther()
+                    } else if (isSSTPConnectOrDisconnecting) {
+                        startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                    } else {
+                        stopVpn()
+                    }
                     binding.btnConnect.background =
                         resources.getDrawable(R.drawable.selector_primary_button, resources.newTheme())
                     binding.btnConnect.setText(R.string.connect_to_this_server)
                     binding.txtStatus.text = getString(R.string.canceled)
                     isConnecting = false
+                    isSoftEtherConnecting = false
                 }
             } else if (view == binding.txtCheckIp) {
                 val params = Bundle()
@@ -644,7 +902,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 FirebaseAnalytics.getInstance(applicationContext).logEvent("Click_Check_IP", params)
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url"))
+                    FirebaseRemoteConfig.getInstance().getString("vpn_check_ip_url").toUri()
                 )
                 startActivity(browserIntent)
             } else if (view == binding.btnL2tpConnect) {
@@ -660,22 +918,19 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 l2tpIntent.putExtra(BaseProvider.PASS_DETAIL_VPN_CONNECTION, mVpnGateConnection)
                 startActivity(l2tpIntent)
             }
-            if (view == binding.btnSstpConnect) {
-                handleSSTPBtn()
-            }
             if (view == binding.btnInstallOpenvpn) {
                 try {
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=net.openvpn.openvpn")
+                            "market://details?id=net.openvpn.openvpn".toUri()
                         )
                     )
-                } catch (ex: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=net.openvpn.openvpn")
+                            "https://play.google.com/store/apps/details?id=net.openvpn.openvpn".toUri()
                         )
                     )
                 }
@@ -703,31 +958,42 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     handleImport(false)
                 }
             }
+            if (view == binding.btnExcludeApps) {
+                excludeAppsManager.openExcludeAppsManager(supportFragmentManager)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "onClick error", e)
         }
     }
 
     private fun connectSSTPVPN() {
-        val editor = prefs.edit()
-        editor.putString(
-            OscPrefKey.HOME_HOSTNAME.toString(),
-            mVpnGateConnection!!.calculateHostName
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "sstp")
+        val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+        val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
+
+        prefs.edit {
+            putString(
+                OscPrefKey.HOME_HOSTNAME.toString(),
+                mVpnGateConnection!!.calculateHostName
+            )
+            putString(
+                OscPrefKey.HOME_COUNTRY.toString(),
+                mVpnGateConnection!!.countryShort!!.uppercase()
+            )
+            putString(
+                OscPrefKey.HOME_SERVER_NAME.toString(),
+                mVpnGateConnection!!.getName(false)
+            )
+            putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
+            putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
+            putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
+            putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
+        }
+        isConnecting = true
+        binding.btnConnect.background = ResourcesCompat.getDrawable(
+            resources, R.drawable.selector_apply_button, null
         )
-        editor.putString(
-            OscPrefKey.HOME_COUNTRY.toString(),
-            mVpnGateConnection!!.countryShort!!.uppercase()
-        )
-        editor.putString(OscPrefKey.HOME_USERNAME.toString(), "vpn")
-        editor.putString(OscPrefKey.HOME_PASSWORD.toString(), "vpn")
-        editor.putString(OscPrefKey.SSL_PORT.toString(), mVpnGateConnection!!.tcpPort.toString())
-        editor.apply()
-        binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.selector_apply_button,
-            null
-        )
-        binding.btnSstpConnect.setText(R.string.cancel_sstp)
+        binding.btnConnect.setText(R.string.cancel)
         binding.txtStatus.setText(R.string.sstp_connecting)
         loadAds()
         startVpnSSTPService(ACTION_VPN_CONNECT)
@@ -739,6 +1005,15 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         handleActivityResult(START_VPN_SSTP, it.resultCode)
     }
 
+    private val startActivityIntentSoftEther: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        // When VPN permission is granted, proceed with SoftEther connection
+        if (it.resultCode == RESULT_OK) {
+            startSoftEtherConnection()
+        }
+    }
+
     private fun startSSTPVPN() {
         if (checkStatus()) {
             stopVpn()
@@ -748,7 +1023,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         if (intent != null) {
             try {
                 startActivityIntentSSTPVPN.launch(intent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 Log.e(TAG, "OS does not support VPN")
             }
         } else {
@@ -764,12 +1039,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         params.putString("country", mVpnGateConnection!!.countryLong)
         val sstpHostName = prefs.getString(OscPrefKey.HOME_HOSTNAME.toString(), "")
         if (isSSTPConnected && sstpHostName != mVpnGateConnection!!.calculateHostName) {
-            // Connected but not must disconnect old first
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
             params.putString("type", "replace connect via MS-SSTP")
             binding.txtCheckIp.visibility = View.GONE
             Handler(mainLooper).postDelayed({ this.connectSSTPVPN() }, 100)
-        } else if (!isSSTPConnected) {
+        } else if (!isSSTPConnected && !isConnecting) {
             params.putString("type", "connect via MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_Via_SSTP", params)
             dataUtil.lastVPNConnection = mVpnGateConnection
@@ -778,12 +1052,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             params.putString("type", "cancel MS-SSTP")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Cancel_Via_SSTP", params)
             startVpnSSTPService(ACTION_VPN_DISCONNECT)
-            binding.btnSstpConnect.background = ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.selector_paid_button,
-                null
+            isConnecting = false
+            binding.btnConnect.background = ResourcesCompat.getDrawable(
+                resources, R.drawable.selector_primary_button, null
             )
-            binding.btnSstpConnect.setText(R.string.connect_via_sstp)
+            binding.btnConnect.setText(R.string.connect_to_this_server)
             binding.txtStatus.setText(R.string.sstp_disconnecting)
         }
     }
@@ -794,7 +1067,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 val adRequest = AdRequest.Builder().build()
                 InterstitialAd.load(
                     applicationContext,
-                    getString(R.string.admob_full_screen),
+                    getString(R.string.admob_full_screen_connect),
                     adRequest,
                     object : InterstitialAdLoadCallback() {
                         override fun onAdLoaded(interstitialAd: InterstitialAd) {
@@ -837,6 +1110,43 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         sendBroadcast(intent)
     }
 
+    /**
+     * Resolves the primary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard primary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined primary DNS
+     * 3. Fallback → 8.8.8.8
+     */
+    private fun resolvePrimaryDns(): String {
+        return when {
+            dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
+                    .ifEmpty { "8.8.8.8" }
+            dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8") ?: "8.8.8.8"
+            else -> "8.8.8.8"
+        }
+    }
+
+    /**
+     * Resolves the secondary DNS to use based on user settings:
+     * 1. Block Ads → AdGuard secondary DNS (from Firebase Remote Config)
+     * 2. Custom DNS → user-defined secondary DNS (if set)
+     * 3. Fallback → 8.8.4.4
+     */
+    private fun resolveSecondaryDns(): String {
+        return when {
+            dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ->
+                FirebaseRemoteConfig.getInstance()
+                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
+                    .ifEmpty { "8.8.4.4" }
+            dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false) ->
+                dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, "8.8.4.4")
+                    ?.takeIf { it.isNotEmpty() } ?: "8.8.4.4"
+            else -> "8.8.4.4"
+        }
+    }
+
     private fun prepareVpn(useUdp: Boolean) {
         if (loadVpnProfile(useUdp)) {
             startOpenVpn()
@@ -852,26 +1162,23 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             mVpnGateConnection!!.getOpenVpnConfigDataString()!!.toByteArray()
         }
         dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
+        dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
         val cp = ConfigParser()
         val isr = InputStreamReader(ByteArrayInputStream(data))
         try {
             cp.parseConfig(isr)
             vpnProfile = cp.convertProfile()
             vpnProfile.mName = mVpnGateConnection!!.getName(useUDP)
-            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false)) {
+            vpnProfile.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
+            if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ||
+                dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)
+            ) {
                 vpnProfile.mOverrideDNS = true
-                vpnProfile.mDNS1 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_primary_cfg_key))
-                vpnProfile.mDNS2 = FirebaseRemoteConfig.getInstance()
-                    .getString(getString(R.string.dns_block_ads_alternative_cfg_key))
-            } else if (dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
-                vpnProfile.mOverrideDNS = true
-                vpnProfile.mDNS1 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_1, "8.8.8.8")
-                val dns2 = dataUtil.getStringSetting(DataUtil.CUSTOM_DNS_IP_2, null)
-                if (dns2 != null) {
-                    vpnProfile.mDNS2 = dns2
-                }
+                vpnProfile.mDNS1 = resolvePrimaryDns()
+                vpnProfile.mDNS2 = resolveSecondaryDns()
             }
+            // Configure split tunneling - exclude apps from VPN
+            excludeAppsManager.configureSplitTunneling(vpnProfile)
             ProfileManager.setTemporaryProfile(applicationContext, vpnProfile)
         } catch (e: IOException) {
             Log.e(TAG, "loadVpnProfile error", e)
@@ -923,7 +1230,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             // Start the query
             try {
                 startActivityIntentOpenVPN.launch(intent)
-            } catch (ane: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 // Shame on you Sony! At least one user reported that
                 // an official Sony Xperia Arc S image triggers this exception
                 VpnStatus.logError(de.blinkt.openvpn.R.string.no_vpn_support_image)
@@ -937,7 +1244,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == START_VPN_PROFILE) {
-                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext)
+                    VPNLaunchHelper.startOpenVpn(vpnProfile, baseContext, null, true)
                 }
                 if (requestCode == START_VPN_SSTP) {
                     connectSSTPVPN()
@@ -953,7 +1260,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     override fun updateByteCount(`in`: Long, out: Long, diffIn: Long, diffOut: Long) {
-        if (!isCurrent) {
+        if (!isCurrent || isSSTPConnected || isSoftEtherConnected) {
             return
         }
         runOnUiThread {
@@ -976,12 +1283,319 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         }
     }
 
+    /**
+     * Show the VPN Protocol Selection Dialog
+     */
+    private fun showVpnProtocolSelectionDialog() {
+        // Safety checks
+        if (isFinishing || isDestroyed) {
+            Log.w(TAG, "Cannot show dialog, activity is finishing or destroyed")
+            return
+        }
+        
+        if (mVpnGateConnection == null) {
+            Log.e(TAG, "Cannot show dialog, VPN connection is null")
+            Toast.makeText(this, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Count available protocols using same visibility logic as the dialog
+        val conn = mVpnGateConnection!!
+        val hasOpenVpnTcp = conn.tcpPort > 0 && conn.openVpnConfigData != null
+        val hasOpenVpnUdp = conn.udpPort > 0
+        val hasSoftEtherTcp = conn.seTcpPort > 0
+        val hasSstp = conn.isSSTPSupport() && conn.tcpPort > 0
+        // Config with no explicit port info — port is embedded in the .ovpn file itself
+        val hasOpenVpnConfigOnly = conn.openVpnConfigData != null && !hasOpenVpnTcp && !hasOpenVpnUdp
+
+        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSstp, hasOpenVpnConfigOnly).count { it }
+
+        // Skip the dialog and connect directly when only one protocol is available
+        if (availableCount == 1) {
+            Log.d(TAG, "Only one protocol available, connecting directly")
+            when {
+                hasOpenVpnConfigOnly -> handleConnection(false) // config-only: port embedded in .ovpn
+                hasOpenVpnTcp -> handleConnection(false)
+                hasOpenVpnUdp -> handleConnection(true)
+                hasSoftEtherTcp -> startSoftEtherConnection(true)
+                hasSstp -> handleSSTPBtn()
+            }
+            return
+        }
+        
+        try {
+            val dialog = VpnProtocolSelectionDialog.newInstance(mVpnGateConnection, true)
+            dialog.setProtocolSelectionListener(object : VpnProtocolSelectionDialog.ProtocolSelectionListener {
+                override fun onProtocolSelected(protocol: VpnProtocolSelectionDialog.VpnProtocol) {
+                    // Check activity is still valid
+                    if (isFinishing || isDestroyed) {
+                        Log.w(TAG, "Activity no longer valid when protocol selected")
+                        return
+                    }
+                    
+                    when (protocol) {
+                        VpnProtocolSelectionDialog.VpnProtocol.OPENVPN_TCP -> {
+                            handleConnection(false) // TCP
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.OPENVPN_UDP -> {
+                            handleConnection(true) // UDP
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.SOFTEther_TCP -> {
+                            // Start SoftEther VPN connection with TCP
+                            startSoftEtherConnection(true)
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.SOFTEther_UDP -> {
+                            // Start SoftEther VPN connection with UDP
+                            startSoftEtherConnection(false)
+                        }
+                        VpnProtocolSelectionDialog.VpnProtocol.MS_SSTP -> {
+                            handleSSTPBtn()
+                        }
+                    }
+                }
+            })
+            dialog.show(supportFragmentManager, VpnProtocolSelectionDialog.TAG)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing protocol selection dialog", e)
+            Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Disconnect SoftEther VPN connection from notification
+     */
+    private fun disconnectSoftEther() {
+        Log.d(TAG, "Disconnecting SoftEther")
+        
+        // Update state immediately to prevent race conditions
+        isConnecting = false
+        isSoftEtherConnecting = false
+        lastDisconnectTime = System.currentTimeMillis()
+        
+        // Send disconnect intent to service
+        try {
+            val intent = Intent(this, SoftEtherVpnService::class.java).apply {
+                action = SoftEtherVpnService.ACTION_DISCONNECT
+            }
+            startService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending disconnect intent", e)
+        }
+        
+        // Log analytics
+        try {
+            val params = Bundle()
+            params.putString("type", "disconnect")
+            params.putString("hostname", mVpnGateConnection?.calculateHostName ?: "")
+            params.putString("ip", mVpnGateConnection?.ip ?: "")
+            FirebaseAnalytics.getInstance(applicationContext).logEvent("Disconnect_Via_SoftEther", params)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error logging analytics", e)
+        }
+    }
+
+    /**
+     * Start SoftEther VPN connection
+     * @param useTcp true for TCP, false for UDP
+     */
+    private fun startSoftEtherConnection(useTcp: Boolean = true) {
+        // Safety checks
+        if (mVpnGateConnection == null) {
+            Log.e(TAG, "Cannot start SoftEther connection: VPN connection is null")
+            Toast.makeText(this, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Request notification permission FIRST (required for Android 13+)
+        // This ensures notifications can be displayed when VPN connects
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "Requesting POST_NOTIFICATIONS permission before VPN permission")
+                // Store the useTcp value for later use in permission callback
+                pendingSoftEtherUseTcp = useTcp
+                notificationPermissionRequested = true
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+                // Return here and wait for permission result callback
+                return
+            }
+        }
+
+        // After notification permission is granted (or skipped on older Android), 
+        // continue with VPN permission check and connection
+        continueSoftEtherConnection(useTcp)
+    }
+
+    private fun continueSoftEtherConnection(useTcp: Boolean) {
+        // Check and request VPN permission
+        val vpnIntent = VpnService.prepare(this)
+        if (vpnIntent != null) {
+            // Need to request permission - launch activity
+            Log.d(TAG, "VPN permission required, launching VPN permission dialog")
+            try {
+                startActivityIntentSoftEther.launch(vpnIntent)
+            } catch (_: ActivityNotFoundException) {
+                Log.e(TAG, "OS does not support VPN")
+                Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show()
+            }
+            return
+        }
+
+        // Check cooldown period after disconnect
+        val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
+        if (timeSinceDisconnect < disconnectCooldownMS) {
+            Log.d(TAG, "Waiting for cooldown period: ${disconnectCooldownMS - timeSinceDisconnect}ms remaining")
+            Handler(mainLooper).postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    continueSoftEtherConnection(useTcp)
+                }
+            }, disconnectCooldownMS - timeSinceDisconnect)
+            return
+        }
+        
+        // Prevent multiple connection attempts
+        if (isConnecting || isSoftEtherConnecting) {
+            Log.w(TAG, "Connection already in progress, ignoring request")
+            return
+        }
+        
+        try {
+            // Disconnect any existing VPN first
+            if (isSSTPConnected) {
+                startVpnSSTPService(ACTION_VPN_DISCONNECT)
+            }
+            if (checkStatus()) {
+                stopVpn()
+            }
+
+            // Log analytics
+            try {
+                val params = Bundle()
+                params.putString("type", "connect via SoftEther")
+                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
+                params.putString("ip", mVpnGateConnection!!.ip)
+                params.putString("country", mVpnGateConnection!!.countryLong)
+                FirebaseAnalytics.getInstance(applicationContext).logEvent("Connect_Via_SoftEther", params)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error logging analytics", e)
+            }
+
+            // Create ConnectionConfig for SoftEther using the same mName format as OpenVPN
+            val serverName = mVpnGateConnection!!.getName(false) // Use TCP protocol for mName format
+            
+            // Determine serverHost based on user preference for IP or domain (same logic as OpenVPN)
+            val useDomainToConnect = dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
+            val serverHost = if (useDomainToConnect) {
+                mVpnGateConnection!!.calculateHostName
+            } else {
+                mVpnGateConnection!!.ip!!
+            }
+            
+            // Use appropriate port based on protocol selection
+            val serverPort = if (useTcp) {
+                mVpnGateConnection!!.seTcpPort
+            } else {
+                mVpnGateConnection!!.seUdpPort
+            }
+            
+            val config = vn.unlimit.softether.model.ConnectionConfig(
+                serverHost = serverHost,
+                serverPort = serverPort,
+                username = "vpn",
+                password = "vpn",
+                virtualHub = "vpngate",
+                sessionName = serverName,
+                localAddress = "10.0.0.2",
+                prefixLength = 24,
+                dnsServer = resolvePrimaryDns(),
+                secondaryDnsServer = resolveSecondaryDns(),
+                routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
+                mtu = 1500,
+                excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
+                    .map { it.packageName },
+                isMetered = false
+            )
+
+            // Set the target activity for SoftEther notifications
+            val isStartUpDetail = dataUtil.getIntSetting(DataUtil.SETTING_STARTUP_SCREEN, 0) == 0
+            val targetClass = if (isStartUpDetail) DetailActivity::class.java else MainActivity::class.java
+            SoftEtherVpnService.notificationTargetActivity = targetClass
+
+            // Create intent to start SoftEther VPN service
+            val intent = Intent(this, SoftEtherVpnService::class.java).apply {
+                action = SoftEtherVpnService.ACTION_CONNECT
+                putExtra(SoftEtherVpnService.EXTRA_CONFIG, config)
+            }
+
+            // Start the service
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+
+            // Update UI
+            binding.btnConnect.background = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.selector_apply_button,
+                null
+            )
+            binding.txtStatus.text = getString(R.string.softether_connecting)
+            isConnecting = true
+            isSoftEtherConnecting = true
+            binding.btnConnect.setText(R.string.cancel)
+            dataUtil.lastVPNConnection = mVpnGateConnection
+            dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
+            sendConnectVPN()
+
+            Toast.makeText(this, R.string.softether_connecting, Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting SoftEther connection", e)
+            isConnecting = false
+            isSoftEtherConnecting = false
+            Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        when (requestCode) {
+            REQUEST_NOTIFICATION_PERMISSION -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d(TAG, "POST_NOTIFICATIONS permission granted")
+                } else {
+                    Log.d(TAG, "POST_NOTIFICATIONS permission denied, but continuing with connection")
+                }
+                // Permission granted or denied, continue with VPN connection anyway
+                // Notifications will display on Android 13+ if permission granted
+                // Connection will proceed regardless of notification permission
+                notificationPermissionRequested = false
+                continueSoftEtherConnection(pendingSoftEtherUseTcp)
+                return
+            }
+        }
+    }
+
+    @androidx.annotation.Keep
     companion object {
         const val TYPE_FROM_NOTIFY: Int = 1001
         const val TYPE_NORMAL: Int = 1000
-        const val TYPE_START: String = "vn.ulimit.vpngate.TYPE_START"
+        const val TYPE_START: String = "vn.unlimit.vpngate.TYPE_START"
         const val START_VPN_PROFILE: Int = 70
         const val START_VPN_SSTP: Int = 80
+        const val REQUEST_NOTIFICATION_PERMISSION: Int = 90
         const val ACTION_VPN_CONNECT: String = "kittoku.osc.connect"
         const val ACTION_VPN_DISCONNECT: String = "kittoku.osc.disconnect"
         private const val TAG = "DetailActivity"

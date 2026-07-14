@@ -25,6 +25,16 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
     var dataUtil: DataUtil = App.instance!!.dataUtil!!
 
     val vpnGateConnectionList = MutableLiveData<VPNGateConnectionList>()
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val connectionCache = dataUtil.connectionsCache
+            connectionCache?.let {
+                withContext(Dispatchers.Main) {
+                    vpnGateConnectionList.value = it
+                }
+            }
+        }
+    }
     private var isRetried = false
     var isError: MutableLiveData<Boolean> = MutableLiveData(false)
     private val vpnGateApiService: VPNGateApiService = retrofit.create(VPNGateApiService::class.java)
@@ -63,6 +73,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
         if (isLoading.value == true) {
             return
         }
+        Log.d(TAG, "Start vpnItem from API")
         isLoading.postValue(true)
         isError.postValue(false)
         viewModelScope.launch {
@@ -83,7 +94,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                     dataUtil.setUseAlternativeServer(true)
                     getAPIData()
                 } else {
-                    vpnGateConnectionList.postValue(connectionList)
+                    vpnGateConnectionList.value = connectionList
                     val items = connectionList.toVPNGateItems()
                     withContext(Dispatchers.IO) {
                         App.instance!!.vpnGateItemDao.deleteAll()

@@ -4,9 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -19,7 +26,7 @@ import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
-class LoginActivity : AppCompatActivity(), View.OnClickListener {
+class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
     private var userViewModel: UserViewModel? = null
     private val paidServerUtil = App.instance!!.paidServerUtil!!
     private var loadingDialog: LoadingDialog? = null
@@ -28,17 +35,52 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
+        viewBinding = binding
+        super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnBackToFree.setOnClickListener(this)
+        binding.btnBack.setOnClickListener(this)
         binding.ivHidePassword.setOnClickListener(this)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        val initialScrimHeight = binding.statusBarScrim.layoutParams.height
+        val initialNavLeftPadding = binding.navDetail.paddingLeft
+        val initialNavRightPadding = binding.navDetail.paddingRight
+        val initialScrollBottom = binding.scrollContent.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                height = initialScrimHeight + insets.top
+            }
+            binding.navDetail.updatePadding(
+                left = initialNavLeftPadding + insets.left,
+                right = initialNavRightPadding + insets.right
+            )
+            binding.scrollContent.updatePadding(bottom = initialScrollBottom + insets.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.navDetail)
         binding.btnLogin.setOnClickListener(this)
         binding.btnSignUp.setOnClickListener(this)
         binding.btnForgotPass.setOnClickListener(this)
+        binding.txtPassword.setOnEditorActionListener { _, actionId, event ->
+            if (isSubmitAction(actionId, event)) {
+                binding.btnLogin.performClick()
+                true
+            } else {
+                false
+            }
+        }
         loadingDialog = LoadingDialog.newInstance(getString(R.string.login_loading_text))
         bindViewModel()
+    }
+
+    private fun isSubmitAction(actionId: Int, event: KeyEvent?): Boolean {
+        return actionId == EditorInfo.IME_ACTION_DONE ||
+            actionId == EditorInfo.IME_ACTION_GO ||
+            (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
     }
 
     private fun bindViewModel() {
@@ -48,7 +90,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 return@observe
             }
             if (isLoggingIn!!) {
-                loadingDialog!!.show(supportFragmentManager, LoadingDialog::class.java.name)
+                loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else {
                 isClickedLogin = false
                 loadingDialog?.dismiss()
@@ -105,8 +147,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
+            binding.btnBack -> backToFree()
             binding.btnBackToFree -> backToFree()
             binding.btnLogin -> {
+                if (isClickedLogin || userViewModel?.isLoading?.value == true) {
+                    return
+                }
                 if (binding.txtUsername.text.isEmpty() || binding.txtPassword.text.isEmpty()) {
                     Toast.makeText(
                         this,

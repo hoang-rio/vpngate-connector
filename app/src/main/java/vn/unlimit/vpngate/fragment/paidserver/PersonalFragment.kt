@@ -51,7 +51,7 @@ class PersonalFragment : Fragment(), View.OnClickListener {
             view.findViewById<View>(R.id.line_notification_setting).visibility = View.GONE
         }
         userViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading && !loadingDialog.isVisible) {
+            if (isLoading) {
                 loadingDialog.show(
                     requireActivity().supportFragmentManager,
                     LoadingDialog::class.java.name
