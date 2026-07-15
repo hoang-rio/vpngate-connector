@@ -22,7 +22,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: Download AAB
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: aab-free
 
@@ -74,7 +74,7 @@ jobs:
           firebase appdistribution:distribute app-free-release.aab --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
       - name: Delete AAB artifact
-        uses: actions/delete-artifact@v4
+        uses: geekyeggo/delete-artifact@v5
         with:
           name: aab-free
 
@@ -86,7 +86,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -123,7 +123,7 @@ jobs:
 
     steps:
       - name: Download AAB
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: aab-pro
 
@@ -138,6 +138,6 @@ jobs:
           firebase appdistribution:distribute app-pro-release.aab --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
       - name: Delete AAB artifact
-        uses: actions/delete-artifact@v4
+        uses: geekyeggo/delete-artifact@v5
         with:
           name: aab-pro
