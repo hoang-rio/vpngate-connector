@@ -837,7 +837,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
 
         // Create connection config
-        val serverName = mVpnGateConnection!!.getName(false)
+        val serverName = mVpnGateConnection!!.getName(!useTcp)
         val useDomainToConnect = dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
         val serverHost = if (useDomainToConnect) {
             mVpnGateConnection!!.calculateHostName
@@ -863,7 +863,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             dnsServer = resolvePrimaryDns(),
             secondaryDnsServer = resolveSecondaryDns(),
             routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
-            mtu = 1500
+            mtu = 1500,
+            useTcp = useTcp
         )
 
         // Set notification target activity

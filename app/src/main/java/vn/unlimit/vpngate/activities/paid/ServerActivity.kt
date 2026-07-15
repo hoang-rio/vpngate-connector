@@ -813,7 +813,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 username = userInfo.username,
                 password = savedPassword,
                 virtualHub = virtualHub,
-                sessionName = mPaidServer!!.getName(false),
+                sessionName = mPaidServer!!.getName(!useTcp),
                 localAddress = "10.0.0.2",
                 prefixLength = 24,
                 dnsServer = resolvePrimaryDns(),
@@ -823,7 +823,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
                     .map { it.packageName },
                 isMetered = false,
-                authMethod = vn.unlimit.softether.model.AuthMethod.PLAIN_PASSWORD
+                authMethod = vn.unlimit.softether.model.AuthMethod.PLAIN_PASSWORD,
+                useTcp = useTcp
             )
             SoftEtherVpnService.notificationTargetActivity = ServerActivity::class.java
             val intent = Intent(this, SoftEtherVpnService::class.java).apply {

@@ -1488,7 +1488,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
 
             // Create ConnectionConfig for SoftEther using the same mName format as OpenVPN
-            val serverName = mVpnGateConnection!!.getName(false) // Use TCP protocol for mName format
+            val serverName = mVpnGateConnection!!.getName(!useTcp) // Protocol-appropriate mName format
             
             // Determine serverHost based on user preference for IP or domain (same logic as OpenVPN)
             val useDomainToConnect = dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
@@ -1520,7 +1520,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 mtu = 1500,
                 excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
                     .map { it.packageName },
-                isMetered = false
+                isMetered = false,
+                useTcp = useTcp
             )
 
             // Set the target activity for SoftEther notifications
