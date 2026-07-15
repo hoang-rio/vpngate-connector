@@ -14,8 +14,136 @@ env:
   SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
 
 jobs:
+  build-apk-free:
+    if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[pro]')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Assemble Free Release APK
+        run: ./gradlew assembleFreeRelease
+
+      - name: Upload Free APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: apk-free
+          path: app/build/outputs/apk/free/release/app-free-release.apk
+
+  distribute-apk-free:
+    needs: build-apk-free
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v8
+        with:
+          name: apk-free
+
+      - name: Distribute to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
+          npm install -g firebase-tools
+          firebase appdistribution:distribute app-free-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
+
+      - name: Delete APK artifact
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: apk-free
+
+  build-apk-pro:
+    if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[free]')"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Import GPG key and run blackbox_postdeploy
+        run: |
+          set -e
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
+            GPG=gpg2 blackbox_postdeploy || true
+          fi
+
+      - name: Java version
+        run: java --version
+
+      - name: Build OpenSSL headers
+        run: |
+          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
+
+      - name: Assemble Pro Release APK
+        run: ./gradlew assembleProRelease
+
+      - name: Upload Pro APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: apk-pro
+          path: app/build/outputs/apk/pro/release/app-pro-release.apk
+
+  distribute-apk-pro:
+    needs: build-apk-pro
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v8
+        with:
+          name: apk-pro
+
+      - name: Distribute to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
+          npm install -g firebase-tools
+          firebase appdistribution:distribute app-pro-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
+
+      - name: Delete APK artifact
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: apk-pro
+
   build-aab-free:
-    if: "startsWith(github.ref, 'refs/tags/f') || (! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[pro]'))"
+    if: "startsWith(github.ref, 'refs/tags/f')"
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
@@ -79,7 +207,7 @@ jobs:
           name: aab-free
 
   build-aab-pro:
-    if: "startsWith(github.ref, 'refs/tags/p') || (! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[free]'))"
+    if: "startsWith(github.ref, 'refs/tags/p')"
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
