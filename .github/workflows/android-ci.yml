@@ -47,7 +47,7 @@ jobs:
       - name: Bundle Free Release AAB
         run: ./gradlew :app:bundleFreeRelease
 
-      - name: Build and Distribute to Firebase
+      - name: Distribute to Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
@@ -90,7 +90,7 @@ jobs:
       - name: Bundle Pro Release AAB
         run: ./gradlew :app:bundleProRelease
 
-      - name: Build and Distribute to Firebase
+      - name: Distribute to Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
