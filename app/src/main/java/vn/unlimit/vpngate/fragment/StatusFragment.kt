@@ -837,7 +837,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
 
         // Create connection config
-        val serverName = mVpnGateConnection!!.getName(!useTcp)
+        val serverName = mVpnGateConnection!!.getName(!useTcp, true)
         val useDomainToConnect = dataUtil!!.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
         val serverHost = if (useDomainToConnect) {
             mVpnGateConnection!!.calculateHostName
