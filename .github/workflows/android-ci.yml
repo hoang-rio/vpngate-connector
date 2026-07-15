@@ -74,7 +74,7 @@ jobs:
           firebase appdistribution:distribute app-free-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
       - name: Delete APK artifact
-        uses: geekyeggo/delete-artifact@v5
+        uses: geekyeggo/delete-artifact@v6
         with:
           name: apk-free
 
@@ -138,7 +138,7 @@ jobs:
           firebase appdistribution:distribute app-pro-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
       - name: Delete APK artifact
-        uses: geekyeggo/delete-artifact@v5
+        uses: geekyeggo/delete-artifact@v6
         with:
           name: apk-pro
 
@@ -181,31 +181,6 @@ jobs:
           name: aab-free
           path: app/build/outputs/bundle/freeRelease/app-free-release.aab
 
-  distribute-aab-free:
-    needs: build-aab-free
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download AAB
-        uses: actions/download-artifact@v8
-        with:
-          name: aab-free
-
-      - name: Distribute to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools
-          firebase appdistribution:distribute app-free-release.aab --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
-
-      - name: Delete AAB artifact
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: aab-free
-
   build-aab-pro:
     if: "startsWith(github.ref, 'refs/tags/p')"
     runs-on: ubuntu-latest
@@ -245,27 +220,4 @@ jobs:
           name: aab-pro
           path: app/build/outputs/bundle/proRelease/app-pro-release.aab
 
-  distribute-aab-pro:
-    needs: build-aab-pro
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Download AAB
-        uses: actions/download-artifact@v8
-        with:
-          name: aab-pro
-
-      - name: Distribute to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools
-          firebase appdistribution:distribute app-pro-release.aab --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
-
-      - name: Delete AAB artifact
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: aab-pro
