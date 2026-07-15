@@ -55,7 +55,7 @@ jobs:
           retention-days: 5
 
   build-apk-pro:
-    if: "! startsWith(github.ref, 'refs/tags/')"
+    if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[free]')"
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
