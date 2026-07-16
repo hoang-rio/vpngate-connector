@@ -50,6 +50,7 @@ import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
 import vn.unlimit.vpngate.activities.MainActivity
@@ -864,7 +865,10 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             secondaryDnsServer = resolveSecondaryDns(),
             routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
             mtu = 1500,
-            useTcp = useTcp
+            useTcp = useTcp,
+            clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
+            clientVersion = BuildConfig.VERSION_NAME,
+            clientBuild = BuildConfig.VERSION_CODE
         )
 
         // Set notification target activity

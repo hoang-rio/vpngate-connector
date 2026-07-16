@@ -75,6 +75,7 @@ import java.io.InputStreamReader
 import java.util.regex.Pattern
 import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.softether.SoftEtherVpnService
+import vn.unlimit.vpngate.BuildConfig
 
 class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.StateListener,
     VpnStatus.ByteCountListener {
@@ -824,7 +825,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                     .map { it.packageName },
                 isMetered = false,
                 authMethod = vn.unlimit.softether.model.AuthMethod.PLAIN_PASSWORD,
-                useTcp = useTcp
+                useTcp = useTcp,
+                clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
+                clientVersion = BuildConfig.VERSION_NAME,
+                clientBuild = BuildConfig.VERSION_CODE
             )
             SoftEtherVpnService.notificationTargetActivity = ServerActivity::class.java
             val intent = Intent(this, SoftEtherVpnService::class.java).apply {

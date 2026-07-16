@@ -65,6 +65,7 @@ import kittoku.osc.service.SstpVpnService
 import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
@@ -1521,7 +1522,10 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
                     .map { it.packageName },
                 isMetered = false,
-                useTcp = useTcp
+                useTcp = useTcp,
+                clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
+                clientVersion = BuildConfig.VERSION_NAME,
+                clientBuild = BuildConfig.VERSION_CODE
             )
 
             // Set the target activity for SoftEther notifications
