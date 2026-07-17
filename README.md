@@ -19,7 +19,7 @@ Pro Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro
 | Protocol | Transport | Free Server | Paid Server |
 |----------|-----------|:-----------:|:-----------:|
 | SoftEther VPN | TCP | ✅ | ✅ |
-| SoftEther VPN | UDP | 🚧 Planned | 🚧 Planned |
+| SoftEther VPN | UDP | 🔄 In Progress | 🔄 In Progress |
 | OpenVPN | TCP | ✅ | ✅ |
 | OpenVPN | UDP | ✅ | ✅ |
 | MS-SSTP | TCP | ✅ | ✅ |
