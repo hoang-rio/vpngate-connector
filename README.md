@@ -19,7 +19,7 @@ Pro Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro
 | Protocol | Transport | Free Server | Paid Server |
 |----------|-----------|:-----------:|:-----------:|
 | SoftEther VPN | TCP | ✅ | ✅ |
-| SoftEther VPN | UDP | 🔄 In Progress | 🔄 In Progress |
+| SoftEther VPN | UDP | ✅ | ✅ |
 | OpenVPN | TCP | ✅ | ✅ |
 | OpenVPN | UDP | ✅ | ✅ |
 | MS-SSTP | TCP | ✅ | ✅ |
@@ -27,6 +27,8 @@ Pro Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro
 
 ### SoftEther VPN
 Native SoftEther VPN protocol implementation via the [SoftEther-Android-Module](https://github.com/hoang-rio/SoftEther-Android-Module) submodule (no third-party VPN client required).
+
+Supports TCP and UDP (RUDP V1) transports. V2 (ChaCha20-Poly1305 AEAD) is planned.
 
 **Authentication methods:**
 
