@@ -17,6 +17,9 @@ class ExcludeAppsManager(private val context: Context) {
         fun restartVpnIfRunning()
     }
 
+    /** Self package is always excluded — hidden from user, cannot be removed */
+    private val selfPackageName: String get() = context.packageName
+
     private var callback: ExcludeAppsCallback? = null
 
     fun setCallback(callback: ExcludeAppsCallback) {
@@ -28,11 +31,13 @@ class ExcludeAppsManager(private val context: Context) {
             try {
                 // Get currently excluded apps on background thread
                 val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+                // Filter out self — hidden from user, always force-added on save
+                val userExcludedApps = excludedApps.filter { it.packageName != selfPackageName }
 
                 // Create dialog on main thread
                 withContext(Dispatchers.Main) {
                     val dialog = AppSelectionDialog()
-                    dialog.setExcludedApps(excludedApps)
+                    dialog.setExcludedApps(userExcludedApps)
                     dialog.setAppSelectionListener(object : AppSelectionDialog.AppSelectionListener {
                         override fun onAppsSelected(apps: List<ExcludedApp>) {
                             // Save selected apps to database
@@ -54,9 +59,14 @@ class ExcludeAppsManager(private val context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 App.instance?.excludedAppDao?.let { dao ->
+                    // Force-add self package — always excluded, user cannot remove
+                    val withSelf = selectedApps.toMutableList()
+                    if (withSelf.none { it.packageName == selfPackageName }) {
+                        withSelf.add(ExcludedApp(selfPackageName, "Self"))
+                    }
                     // Simple approach: delete all and insert selected
                     dao.getAllExcludedApps().forEach { dao.deleteExcludedApp(it) }
-                    selectedApps.forEach { dao.insertExcludedApp(it) }
+                    withSelf.forEach { dao.insertExcludedApp(it) }
 
                     // Add small delay to ensure database operations are complete
                     kotlinx.coroutines.delay(100)
@@ -95,8 +105,10 @@ class ExcludeAppsManager(private val context: Context) {
     fun updateExcludeAppsButtonText(callback: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val excludedAppsCount = App.instance?.excludedAppDao?.getAllExcludedApps()?.size ?: 0
-                val text = context.getString(R.string.exclude_apps_text, excludedAppsCount)
+                val allExcluded = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+                // Exclude self from user-visible count
+                val userCount = allExcluded.count { it.packageName != selfPackageName }
+                val text = context.getString(R.string.exclude_apps_text, userCount)
                 withContext(Dispatchers.Main) {
                     callback(text)
                 }
@@ -112,7 +124,9 @@ class ExcludeAppsManager(private val context: Context) {
 
     fun getExcludedAppsCount(): Int {
         return try {
-            App.instance?.excludedAppDao?.getAllExcludedApps()?.size ?: 0
+            val allExcluded = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
+            // Exclude self from user-visible count
+            allExcluded.count { it.packageName != selfPackageName }
         } catch (e: Exception) {
             e.printStackTrace()
             0
@@ -126,32 +140,25 @@ class ExcludeAppsManager(private val context: Context) {
 
             android.util.Log.d("ExcludeAppsManager", "Found ${excludedApps.size} excluded apps in database")
 
-            if (excludedApps.isNotEmpty()) {
-                // Initialize the allowed apps set if not already done
-                if (vpnProfile?.mAllowedAppsVpn == null) {
-                    vpnProfile?.mAllowedAppsVpn = java.util.HashSet()
-                }
-
-                // Clear existing apps
-                vpnProfile?.mAllowedAppsVpn?.clear()
-
-                // Add excluded apps as disallowed (they bypass VPN)
-                for (excludedApp in excludedApps) {
-                    vpnProfile?.mAllowedAppsVpn?.add(excludedApp.packageName)
-                    android.util.Log.d("ExcludeAppsManager", "Excluding app: ${excludedApp.packageName}")
-                }
-
-                // Set as disallowed - meaning these apps are excluded from VPN
-                vpnProfile?.mAllowedAppsVpnAreDisallowed = true
-                vpnProfile?.mAllowAppVpnBypass = true
-
-                android.util.Log.d("ExcludeAppsManager", "Configured split tunneling for ${excludedApps.size} excluded apps")
-            } else {
-                // No excluded apps, ensure default behavior
-                vpnProfile?.mAllowedAppsVpnAreDisallowed = true
-                vpnProfile?.mAllowAppVpnBypass = false
-                android.util.Log.d("ExcludeAppsManager", "No excluded apps, using default VPN behavior")
+            // Initialize the allowed apps set if not already done
+            if (vpnProfile?.mAllowedAppsVpn == null) {
+                vpnProfile?.mAllowedAppsVpn = java.util.HashSet()
             }
+
+            // Clear existing apps
+            vpnProfile?.mAllowedAppsVpn?.clear()
+
+            // Add excluded apps as disallowed (they bypass VPN)
+            for (excludedApp in excludedApps) {
+                vpnProfile?.mAllowedAppsVpn?.add(excludedApp.packageName)
+                android.util.Log.d("ExcludeAppsManager", "Excluding app: ${excludedApp.packageName}")
+            }
+
+            // Set as disallowed - meaning these apps are excluded from VPN
+            vpnProfile?.mAllowedAppsVpnAreDisallowed = true
+            vpnProfile?.mAllowAppVpnBypass = true
+
+            android.util.Log.d("ExcludeAppsManager", "Configured split tunneling for ${excludedApps.size} excluded apps")
         } catch (e: Exception) {
             android.util.Log.e("ExcludeAppsManager", "Error configuring split tunneling", e)
             // Ensure default behavior on error
