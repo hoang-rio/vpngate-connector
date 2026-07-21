@@ -1305,11 +1305,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         val hasOpenVpnTcp = conn.tcpPort > 0 && conn.openVpnConfigData != null
         val hasOpenVpnUdp = conn.udpPort > 0
         val hasSoftEtherTcp = conn.seTcpPort > 0
+        val hasSoftEtherUdp = conn.seUdpPort > 0
         val hasSstp = conn.isSSTPSupport() && conn.tcpPort > 0
         // Config with no explicit port info — port is embedded in the .ovpn file itself
         val hasOpenVpnConfigOnly = conn.openVpnConfigData != null && !hasOpenVpnTcp && !hasOpenVpnUdp
 
-        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSstp, hasOpenVpnConfigOnly).count { it }
+        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSoftEtherUdp, hasSstp, hasOpenVpnConfigOnly).count { it }
 
         // Skip the dialog and connect directly when only one protocol is available
         if (availableCount == 1) {
@@ -1319,6 +1320,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 hasOpenVpnTcp -> handleConnection(false)
                 hasOpenVpnUdp -> handleConnection(true)
                 hasSoftEtherTcp -> startSoftEtherConnection(true)
+                hasSoftEtherUdp -> startSoftEtherConnection(false)
                 hasSstp -> handleSSTPBtn()
             }
             return
