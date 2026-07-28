@@ -238,11 +238,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         if (isSoftEtherConnected) {
             val intent = Intent(context, SoftEtherVpnService::class.java)
             intent.action = SoftEtherVpnService.ACTION_DISCONNECT
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context?.startForegroundService(intent)
-            } else {
-                context?.startService(intent)
-            }
+            context?.startService(intent)
         }
     }
 
