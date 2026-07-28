@@ -93,6 +93,21 @@ class App : Application() {
     }
 
     private fun initializeDefaultExcludedApps() {
+        // Always exclude self — hidden from user, cannot be removed
+        val selfPackage = ExcludedApp(
+            packageName = packageName,
+            appName = "Self"
+        )
+        try {
+            val existingSelf = excludedAppDao.isAppExcluded(selfPackage.packageName)
+            if (existingSelf == 0) {
+                excludedAppDao.insertExcludedApp(selfPackage)
+                Log.d(TAG, "Added self as default excluded app")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing self excluded app", e)
+        }
+
         // Add Android Auto as default excluded app
         val androidAuto = ExcludedApp(
             packageName = "com.google.android.projection.gearhead",

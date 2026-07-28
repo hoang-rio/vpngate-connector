@@ -65,6 +65,7 @@ import kittoku.osc.service.SstpVpnService
 import vn.unlimit.softether.SoftEtherTrafficSnapshot
 import vn.unlimit.softether.SoftEtherVpnService
 import vn.unlimit.vpngate.App
+import vn.unlimit.vpngate.BuildConfig
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityDetailBinding
 import vn.unlimit.vpngate.dialog.ConnectionUseProtocol
@@ -1304,11 +1305,12 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         val hasOpenVpnTcp = conn.tcpPort > 0 && conn.openVpnConfigData != null
         val hasOpenVpnUdp = conn.udpPort > 0
         val hasSoftEtherTcp = conn.seTcpPort > 0
+        val hasSoftEtherUdp = conn.seUdpPort > 0
         val hasSstp = conn.isSSTPSupport() && conn.tcpPort > 0
         // Config with no explicit port info — port is embedded in the .ovpn file itself
         val hasOpenVpnConfigOnly = conn.openVpnConfigData != null && !hasOpenVpnTcp && !hasOpenVpnUdp
 
-        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSstp, hasOpenVpnConfigOnly).count { it }
+        val availableCount = listOf(hasOpenVpnTcp, hasOpenVpnUdp, hasSoftEtherTcp, hasSoftEtherUdp, hasSstp, hasOpenVpnConfigOnly).count { it }
 
         // Skip the dialog and connect directly when only one protocol is available
         if (availableCount == 1) {
@@ -1318,6 +1320,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 hasOpenVpnTcp -> handleConnection(false)
                 hasOpenVpnUdp -> handleConnection(true)
                 hasSoftEtherTcp -> startSoftEtherConnection(true)
+                hasSoftEtherUdp -> startSoftEtherConnection(false)
                 hasSstp -> handleSSTPBtn()
             }
             return
@@ -1488,7 +1491,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             }
 
             // Create ConnectionConfig for SoftEther using the same mName format as OpenVPN
-            val serverName = mVpnGateConnection!!.getName(false) // Use TCP protocol for mName format
+            val serverName = mVpnGateConnection!!.getName(!useTcp, true) // Protocol-appropriate mName format
             
             // Determine serverHost based on user preference for IP or domain (same logic as OpenVPN)
             val useDomainToConnect = dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false)
@@ -1520,7 +1523,11 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 mtu = 1500,
                 excludedApps = (App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList())
                     .map { it.packageName },
-                isMetered = false
+                isMetered = false,
+                useTcp = useTcp,
+                clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
+                clientVersion = BuildConfig.VERSION_NAME,
+                clientBuild = BuildConfig.VERSION_CODE
             )
 
             // Set the target activity for SoftEther notifications

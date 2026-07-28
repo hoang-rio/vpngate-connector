@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
@@ -42,7 +45,15 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstance: Bundle?) {
-        //Load content to webview
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootLayout) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            if (insets.bottom > 0) {
+                v.updatePadding(bottom = insets.bottom)
+            } else {
+                v.updatePadding(bottom = 0)
+            }
+            windowInsets
+        }
         binding.webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 binding.progressBar.visibility = View.GONE
