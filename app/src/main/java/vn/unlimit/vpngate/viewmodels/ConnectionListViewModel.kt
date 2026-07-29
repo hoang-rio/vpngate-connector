@@ -26,14 +26,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
 
     val vpnGateConnectionList = MutableLiveData<VPNGateConnectionList>()
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val connectionCache = dataUtil.connectionsCache
-            connectionCache?.let {
-                withContext(Dispatchers.Main) {
-                    vpnGateConnectionList.value = it
-                }
-            }
-        }
+        vpnGateConnectionList.value = dataUtil.connectionsCache
     }
     private var isRetried = false
     var isError: MutableLiveData<Boolean> = MutableLiveData(false)
