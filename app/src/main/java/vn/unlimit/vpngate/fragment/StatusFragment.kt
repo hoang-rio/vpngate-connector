@@ -148,7 +148,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                 else if (isSoftEtherConnected && mVpnGateConnection != null) {
                     stopVpn()
                     Handler(Looper.getMainLooper()).postDelayed({
-                        startSoftEtherConnection(true)
+                        val useTcp = !dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
+                        startSoftEtherConnection(useTcp)
                     }, 500)
                     vpnRestarted = true
                 }
@@ -346,7 +347,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                             connectSSTPVPN()
                         } else if (targetMethod == "softether") {
                             showAds()
-                            startSoftEtherConnection(true)
+                            val useTcp = !dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
+                            startSoftEtherConnection(useTcp)
                         } else {
                             showAds()
                             prepareVpn()
@@ -372,7 +374,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         params.putString("country", mVpnGateConnection!!.countryLong)
                         FirebaseAnalytics.getInstance(mContext!!).logEvent("Connect_VPN", params)
                         
-                        startSoftEtherConnection(true) // Default to TCP for now, TODO: persist preference
+                        val useTcp = !dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
+                        startSoftEtherConnection(useTcp)
                         
                         binding.txtStatus.text = getString(R.string.connecting) + " " + connectionName
                         binding.btnOnOff.isActivated = true
@@ -720,8 +723,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private val connectionName: String
         get() {
             val method = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
-            val useUdp = if (method == "sstp" || method == "softether") {
-                // SSTP only supports TCP, SoftEther currently defaults to TCP
+            val useUdp = if (method == "sstp") {
                 false
             } else {
                 dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
@@ -883,6 +885,9 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         } else {
             context?.startService(intent)
         }
+
+        dataUtil?.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, !useTcp)
+        dataUtil?.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
     }
 
     override fun onSoftEtherStateChanged(state: String, assignedIp: String) {

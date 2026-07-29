@@ -1559,6 +1559,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             isSoftEtherConnecting = true
             binding.btnConnect.setText(R.string.cancel)
             dataUtil.lastVPNConnection = mVpnGateConnection
+            dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, !useTcp)
             dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
             sendConnectVPN()
 
