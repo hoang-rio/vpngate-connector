@@ -852,6 +852,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     if (isSoftEtherConnected) {
                         // Disconnect active SoftEther connection
                         disconnectSoftEther()
+                        // Immediately reflect the disconnecting state in UI
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(
+                            resources, R.drawable.selector_primary_button, null
+                        )
+                        binding.btnConnect.text = getString(R.string.connect_to_this_server)
+                        binding.txtStatus.text = getString(R.string.softether_disconnecting)
+                        binding.txtNetStats.visibility = View.GONE
+                        binding.txtCheckIp.visibility = View.GONE
                     } else if (isSSTPConnected) {
                         // Disconnect active MS-SSTP connection
                         handleSSTPBtn()
