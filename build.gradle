@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '2.3.21'
+    ext.kotlin_version = '2.4.0'
 
     repositories {
         google()
@@ -28,9 +28,9 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
     project.ext {
-        compileSdkVersion = 36
+        compileSdkVersion = 37
         minSdkVersion = 23
-        targetSdkVersion = 36
+        targetSdkVersion = 37
     }
 }
 
