@@ -728,7 +728,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             } else {
                 dataUtil!!.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
             }
-            val baseName = mVpnGateConnection!!.getName(useUdp)
+            val baseName = mVpnGateConnection!!.getName(useUdp, method == "softether")
             return if (method == "sstp") {
                 "MS-SSTP:$baseName"
             } else if (method == "softether") {
