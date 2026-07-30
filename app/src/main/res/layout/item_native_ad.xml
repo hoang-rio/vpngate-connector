@@ -4,13 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     android:theme="@style/AppTheme.DayNight">
 
     <!-- Container with distinct ad styling (dashed border to differentiate from VPN items) -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/bg_ad_border"
         android:padding="8dp">
 
@@ -24,7 +27,7 @@
             android:gravity="center"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:text="Ad"
+            android:text="@string/native_ad_label"
             android:textColor="@color/colorWhite"
             android:textSize="10sp"
             android:textStyle="bold"
@@ -35,7 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="22dp">
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp">
 
             <!-- Skeleton Loading Container - shown while ad is loading -->
             <com.facebook.shimmer.ShimmerFrameLayout

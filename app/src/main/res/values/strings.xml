@@ -188,6 +188,7 @@
     <string name="admob_open_app" translatable="false">ca-app-pub-3085232976681422/7891399166</string>
     <string name="admob_native_unit_id" translatable="false">ca-app-pub-3085232976681422/8546099928</string>
     <string name="cfg_show_native_ad" translatable="false">vpn_show_native_ad</string>
+    <string name="native_ad_label">Ad</string>
     <!--Firebase remote config -->
     <string name="dns_block_ads_primary_cfg_key" translatable="false">vpn_dns_block_ads_primary</string>
     <string name="dns_block_ads_alternative_cfg_key" translatable="false">vpn_dns_block_ads_alternative</string>
