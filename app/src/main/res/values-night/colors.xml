@@ -28,4 +28,5 @@
     <color name="background">#303030</color>
     <color name="colorSkeleton">#424242</color>
     <color name="lineColor">#666666</color>
+    <color name="adBorderColor">#FF5A5A5A</color>
 </resources>

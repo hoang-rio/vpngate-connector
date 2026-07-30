@@ -28,4 +28,5 @@
     <color name="colorPrimaryAdaptive">#124097</color>
     <color name="background">#fafafa</color>
     <color name="colorSkeleton">#E0E0E0</color>
+    <color name="adBorderColor">#FFD6D6D6</color>
 </resources>
