@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -57,6 +58,7 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.FragmentStatusBinding
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.utils.DataUtil
+import vn.unlimit.vpngate.utils.NotificationUtil
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStreamReader
@@ -495,7 +497,14 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             }
         }
 
+    private fun requestNotificationPermission() {
+        (activity as? AppCompatActivity)?.let {
+            NotificationUtil(it).requestPermission()
+        }
+    }
+
     private fun startVpn() {
+        requestNotificationPermission()
         val intent = VpnService.prepare(context)
 
         if (intent != null) {
@@ -820,6 +829,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
 
     private fun startSoftEtherConnection(useTcp: Boolean = true) {
+        requestNotificationPermission()
         if (mVpnGateConnection == null) {
             Toast.makeText(context, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
             return
@@ -1046,6 +1056,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     private fun startSSTPVPN() {
+        requestNotificationPermission()
         if (checkStatus()) {
             stopVpn()
         }
