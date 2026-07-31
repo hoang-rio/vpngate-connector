@@ -35,7 +35,9 @@ class AboutFragment : Fragment(), View.OnClickListener {
             String.format(getString(R.string.license_html), getString(R.string.app_name))
         binding.txtGithubLink.text = getString(R.string.license_link)
         binding.txtGithubLink.setOnClickListener(this)
+        binding.txtGithubLinkGlide.setOnClickListener(this)
         binding.txtGithubLinkSstp.setOnClickListener(this)
+        binding.txtGithubLinkSoftether.setOnClickListener(this)
         return binding.root
     }
 
