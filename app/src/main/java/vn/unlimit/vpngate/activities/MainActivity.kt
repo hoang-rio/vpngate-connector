@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     public override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("currentUrl", currentUrl)
         outState.putString("currentTitle", currentTitle)
+        outState.putString("currentFragmentTag", currentFragmentTag)
         super.onSaveInstanceState(outState)
     }
 
@@ -158,6 +159,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             isLoading = false
             currentUrl = savedInstanceState.getString("currentUrl")
             currentTitle = savedInstanceState.getString("currentTitle")
+            currentFragmentTag = savedInstanceState.getString("currentFragmentTag")
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -629,7 +631,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun displayHome() {
         isLoading = false
         binding.incLoading.lnLoading.visibility = View.GONE
-        if (vpnGateConnectionList != null) {
+        if (vpnGateConnectionList != null && (currentUrl.isNullOrEmpty() || currentUrl == "home")) {
             replaceFragment("home")
         }
     }
