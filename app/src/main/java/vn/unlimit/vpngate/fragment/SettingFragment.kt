@@ -96,23 +96,6 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
         binding.lnDomain.setOnClickListener(this)
         binding.swDomain.setChecked(dataUtil.getBooleanSetting(DataUtil.USE_DOMAIN_TO_CONNECT, false))
         binding.swDomain.setOnCheckedChangeListener(this)
-        binding.spinProto.onItemSelectedListener = this
-        val listProtocol = resources.getStringArray(R.array.list_protocol)
-        val spinnerInitProto = SpinnerInit(context, binding.spinProto)
-        spinnerInitProto.setStringArray(
-            listProtocol,
-            listProtocol[dataUtil.getIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, 0)]
-        )
-        spinnerInitProto.onItemSelectedIndexListener = object : OnItemSelectedIndexListener {
-            override fun onItemSelected(name: String?, index: Int) {
-                val params = Bundle()
-                params.putString("selected_protocol", listProtocol[index])
-                FirebaseAnalytics.getInstance(mContext)
-                    .logEvent("Change_Default_Protocol_Setting", params)
-                dataUtil.setIntSetting(DataUtil.SETTING_DEFAULT_PROTOCOL, index)
-            }
-
-        }
         binding.lnNotifySpeed.setOnClickListener(this)
         binding.swNotifySpeed.setChecked(dataUtil.getBooleanSetting(DataUtil.SETTING_NOTIFY_SPEED, true))
         binding.swNotifySpeed.setOnCheckedChangeListener(this)
@@ -280,7 +263,6 @@ class SettingFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSele
         params.putString("enabled", isChecked.toString() + "")
         if (switchCompat == binding.swUdp) {
             dataUtil.setBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, isChecked)
-            binding.lnDefaultProtocol.visibility = if (isChecked) View.VISIBLE else View.GONE
             clearListServerCache(false)
             FirebaseAnalytics.getInstance(mContext).logEvent("Change_Include_UDP_Setting", params)
             return

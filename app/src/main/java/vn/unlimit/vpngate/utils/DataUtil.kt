@@ -309,7 +309,6 @@ class DataUtil(context: Context?) {
         const val CUSTOM_DNS_IP_1: String = "CUSTOM_DNS_IP_1"
         const val CUSTOM_DNS_IP_2: String = "CUSTOM_DNS_IP_2"
         const val USE_DOMAIN_TO_CONNECT: String = "USE_DOMAIN_TO_CONNECT"
-        const val SETTING_DEFAULT_PROTOCOL: String = "SETTING_DEFAULT_PROTOCOL"
         const val SETTING_STARTUP_SCREEN: String = "SETTING_STARTUP_SCREEN"
         const val SETTING_NOTIFY_SPEED: String = "SETTING_NOTIFY_SPEED"
         const val INVITED_USE_PAID_SERVER: String = "INVITED_USE_PAID_SERVER"

@@ -89,13 +89,6 @@
         <item>12 hours</item>
     </string-array>
     <string name="press_back_again_to_exit">Please click BACK again to exit</string>
-    <string name="setting_default_protocol">Default protocol</string>
-    <string name="setting_protocol_subtitle">Default protocol to connect when server has both TCP and UDP protocol</string>
-    <string-array name="list_protocol">
-        <item>Always ask</item>
-        <item>TCP</item>
-        <item>UDP</item>
-    </string-array>
     <!-- Detail -->
     <string name="total_user">Total user</string>
     <string name="total_traffic">Total traffic</string>
