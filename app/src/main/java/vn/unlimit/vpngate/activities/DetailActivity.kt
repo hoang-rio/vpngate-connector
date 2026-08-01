@@ -440,13 +440,14 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
             override fun restartVpnIfRunning() {
                 var vpnRestarted = false
+                val useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
                 // Check if OpenVPN is currently running and restart it
                 if (isCurrent && checkStatus()) {
                     // Disconnect first
                     stopVpn()
                     // Wait a bit then reconnect
                     Handler(mainLooper).postDelayed({
-                        handleConnection(false) // Default to TCP, or could check current protocol
+                        handleConnection(useUdp)
                     }, 500)
                     vpnRestarted = true
                 }
@@ -464,7 +465,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 else if (isSoftEtherConnected || isSoftEtherConnecting) {
                     disconnectSoftEther()
                     Handler(mainLooper).postDelayed({
-                        startSoftEtherConnection(true)
+                        startSoftEtherConnection(!useUdp)
                     }, 500)
                     vpnRestarted = true
                 }

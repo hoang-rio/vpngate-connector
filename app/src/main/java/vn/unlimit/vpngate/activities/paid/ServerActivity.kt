@@ -300,13 +300,14 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
 
             override fun restartVpnIfRunning() {
                 var vpnRestarted = false
+                val useUdp = dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, false)
                 // Check if OpenVPN is currently running and restart it
                 if (checkStatus()) {
                     // Disconnect first
                     stopVpn()
                     // Wait a bit then reconnect
                     Handler(mainLooper).postDelayed({
-                        handleConnection(false) // Default to TCP, or could check current protocol
+                        handleConnection(useUdp)
                     }, 500)
                     vpnRestarted = true
                 }
@@ -325,7 +326,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 else if (isSoftEtherConnected || isSoftEtherConnecting) {
                     disconnectSoftEther()
                     Handler(mainLooper).postDelayed({
-                        startSoftEtherConnection(true)
+                        startSoftEtherConnection(!useUdp)
                     }, 500)
                     vpnRestarted = true
                 }
@@ -845,6 +846,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             binding.btnConnect.setText(R.string.cancel)
             paidServerUtil.setLastConnectServer(mPaidServer!!)
             dataUtil.setBooleanSetting(DataUtil.IS_LAST_CONNECTED_PAID, true)
+            dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, !useTcp)
             sendConnectVPN()
         } catch (e: Exception) {
             Log.e(TAG, "Error starting SoftEther connection", e)
@@ -931,6 +933,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         } else {
             mPaidServer!!.getOpenVpnConfigData().toByteArray()
         }
+        dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, useUDP)
         val cp = ConfigParser()
         val isr = InputStreamReader(ByteArrayInputStream(data))
         try {
