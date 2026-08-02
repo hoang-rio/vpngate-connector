@@ -462,7 +462,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             val isr = InputStreamReader(ByteArrayInputStream(data))
             cp.parseConfig(isr)
             vpnProfile = cp.convertProfile()
-            vpnProfile!!.mName = connectionName
+            vpnProfile!!.mName = mVpnGateConnection!!.getName(useUdp)
             vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
 
             // Configure split tunneling - exclude apps from VPN
