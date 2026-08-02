@@ -48,7 +48,7 @@ jobs:
         run: ./gradlew assembleFreeRelease
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
@@ -59,7 +59,7 @@ jobs:
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools
+          npm install -g firebase-tools@15.7.0
           firebase appdistribution:distribute app/build/outputs/apk/free/release/app-free-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
   build-apk-pro:
@@ -96,7 +96,7 @@ jobs:
         run: ./gradlew assembleProRelease
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
@@ -107,7 +107,7 @@ jobs:
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools
+          npm install -g firebase-tools@15.7.0
           firebase appdistribution:distribute app/build/outputs/apk/pro/release/app-pro-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
 
   build-aab-free:
