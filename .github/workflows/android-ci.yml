@@ -47,20 +47,14 @@ jobs:
       - name: Assemble Free Release APK
         run: ./gradlew assembleFreeRelease
 
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-
       - name: Distribute to Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools@15.7.0
-          firebase appdistribution:distribute app/build/outputs/apk/free/release/app-free-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
+          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
+          ./gradlew assembleFreeRelease appDistributionUploadFreeRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
 
   build-apk-pro:
     if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[free]')"
@@ -95,20 +89,14 @@ jobs:
       - name: Assemble Pro Release APK
         run: ./gradlew assembleProRelease
 
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-
       - name: Distribute to Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npm install -g firebase-tools@15.7.0
-          firebase appdistribution:distribute app/build/outputs/apk/pro/release/app-pro-release.apk --app $FIREBASE_APP_ID --testers "chiasenhac.us@gmail.com" --release-notes "Release: ${{ github.event.head_commit.message }}"
+          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
+          ./gradlew assembleProRelease appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
 
   build-aab-free:
     if: "startsWith(github.ref, 'refs/tags/f')"
