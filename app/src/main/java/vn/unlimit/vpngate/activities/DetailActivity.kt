@@ -506,10 +506,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 adViewBellow.adListener = object : AdListener() {
                     override fun onAdFailedToLoad(error: LoadAdError) {
                         adViewBellow.visibility = View.GONE
+                        binding.adContainerDetail.visibility = View.GONE
                     }
                 }
-                binding.lnContentDetail.addView(adViewBellow)
+                binding.adContainerDetail.addView(adViewBellow)
                 adViewBellow.loadAd(AdRequest.Builder().build())
+            } else {
+                binding.adContainerDetail.visibility = View.GONE
             }
         } catch (e: Exception) {
             Log.e(TAG, "initAdMob error", e)

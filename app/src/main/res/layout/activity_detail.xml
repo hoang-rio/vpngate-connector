@@ -60,10 +60,11 @@
 
         </RelativeLayout>
 
-        <ScrollView
+        <vn.unlimit.vpngate.customview.SafeNestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_above="@id/ad_container_detail"
             android:layout_below="@id/nav_detail">
 
             <LinearLayout
@@ -549,6 +550,13 @@
                         android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
+        </vn.unlimit.vpngate.customview.SafeNestedScrollView>
+
+        <RelativeLayout
+            android:id="@+id/ad_container_detail"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal" />
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
