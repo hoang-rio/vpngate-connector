@@ -1401,6 +1401,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         try {
             val params = Bundle()
             params.putString("type", "disconnect")
+            params.putString("protocol", if (dataUtil.getBooleanSetting(DataUtil.LAST_CONNECT_SOFTETHER_USE_UDP, false)) "UDP" else "TCP")
             params.putString("hostname", mVpnGateConnection?.calculateHostName ?: "")
             params.putString("ip", mVpnGateConnection?.ip ?: "")
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Disconnect_Via_SoftEther", params)
@@ -1494,6 +1495,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             try {
                 val params = Bundle()
                 params.putString("type", "connect via SoftEther")
+                params.putString("protocol", if (useTcp) "TCP" else "UDP")
                 params.putString("hostname", mVpnGateConnection!!.calculateHostName)
                 params.putString("ip", mVpnGateConnection!!.ip)
                 params.putString("country", mVpnGateConnection!!.countryLong)
@@ -1572,6 +1574,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             binding.btnConnect.setText(R.string.cancel)
             dataUtil.lastVPNConnection = mVpnGateConnection
             dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, !useTcp)
+            dataUtil.setBooleanSetting(DataUtil.LAST_CONNECT_SOFTETHER_USE_UDP, !useTcp)
             dataUtil.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
             sendConnectVPN()
 

@@ -897,6 +897,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
         }
 
         dataUtil?.setBooleanSetting(DataUtil.LAST_CONNECT_USE_UDP, !useTcp)
+        dataUtil?.setBooleanSetting(DataUtil.LAST_CONNECT_SOFTETHER_USE_UDP, !useTcp)
         dataUtil?.setStringSetting(DataUtil.LAST_CONNECT_METHOD, "softether")
     }
 
