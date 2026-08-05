@@ -28,7 +28,7 @@ Pro Version: https://play.google.com/store/apps/details?id=vn.unlimit.vpngatepro
 ### SoftEther VPN
 Native SoftEther VPN protocol implementation via the [SoftEther-Android-Module](https://github.com/hoang-rio/SoftEther-Android-Module) submodule (no third-party VPN client required).
 
-Supports TCP and UDP (RUDP V1) transports. V2 (ChaCha20-Poly1305 AEAD) is planned.
+Supports TCP and UDP (RUDP V1 + V2) transports. V2 uses ChaCha20-Poly1305 AEAD with automatic fallback to V1 on servers that don't support it.
 
 **Authentication methods:**
 
