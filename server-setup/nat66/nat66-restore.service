@@ -1,0 +1,18 @@
+[Unit]
+Description=Restore IPv6 host-side config for tap_net (addr, sysctl, NAT rules)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# Wait for the SoftEther local bridge to create tap_net (up to 60s).
+ExecStart=/bin/sh -c 'i=0; until [ -d /sys/class/net/tap_net ]; do i=$((i+1)); [ $i -ge 60 ] && exit 1; sleep 1; done'
+ExecStart=/sbin/sysctl -w net.ipv6.conf.tap_net.forwarding=1 net.ipv6.conf.tap_net.accept_ra=0
+ExecStart=/sbin/ip -4 addr replace 10.21.0.1/19 dev tap_net
+ExecStart=/sbin/ip -6 addr replace fd00::1/64 dev tap_net nodad
+ExecStart=/etc/nat66/nat66-rules.sh
+
+[Install]
+WantedBy=multi-user.target

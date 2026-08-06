@@ -1,0 +1,13 @@
+[Unit]
+Description=Live IPv6 neighbor pin learner for tap_net
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/etc/nat66/ip6-pin.sh
+
+[Install]
+WantedBy=multi-user.target
