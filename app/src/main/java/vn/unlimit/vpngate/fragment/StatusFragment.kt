@@ -867,7 +867,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             password = "vpn",
             virtualHub = "vpngate",
             sessionName = serverName,
-            localAddress = "10.0.0.2",
+            localAddress = "10.21.0.2",
             prefixLength = 24,
             dnsServer = resolvePrimaryDns(),
             secondaryDnsServer = resolveSecondaryDns(),

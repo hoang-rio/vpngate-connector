@@ -816,7 +816,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 password = savedPassword,
                 virtualHub = virtualHub,
                 sessionName = mPaidServer!!.getName(!useTcp),
-                localAddress = "10.0.0.2",
+                localAddress = "10.21.0.2",
                 prefixLength = 24,
                 dnsServer = resolvePrimaryDns(),
                 secondaryDnsServer = resolveSecondaryDns(),
