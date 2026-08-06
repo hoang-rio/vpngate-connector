@@ -817,7 +817,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 virtualHub = virtualHub,
                 sessionName = mPaidServer!!.getName(!useTcp),
                 localAddress = "10.21.0.2",
-                prefixLength = 24,
+                prefixLength = 19,
                 dnsServer = resolvePrimaryDns(),
                 secondaryDnsServer = resolveSecondaryDns(),
                 routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),

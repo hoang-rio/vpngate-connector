@@ -868,7 +868,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             virtualHub = "vpngate",
             sessionName = serverName,
             localAddress = "10.21.0.2",
-            prefixLength = 24,
+            prefixLength = 19,
             dnsServer = resolvePrimaryDns(),
             secondaryDnsServer = resolveSecondaryDns(),
             routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
