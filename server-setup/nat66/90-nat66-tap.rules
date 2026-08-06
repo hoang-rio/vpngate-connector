@@ -1,0 +1,2 @@
+# Re-apply tap_net addresses + NAT rules whenever the TAP device appears.
+SUBSYSTEM=="net", ACTION=="add", ATTR{ifname}=="tap_net", RUN+="/bin/bash /etc/nat66/nat66-online.sh"

@@ -91,6 +91,9 @@ mkdir -p /etc/nat66
 install -m 0755 "$SRC/nat66-rules.sh" /etc/nat66/nat66-rules.sh
 sed -i "s/^eth=eth0/eth=$EXT_IF/" /etc/nat66/nat66-rules.sh
 install -m 0755 "$SRC/ip6-pin.sh"     /etc/nat66/ip6-pin.sh
+install -m 0755 "$SRC/nat66-online.sh" /etc/nat66/nat66-online.sh
+install -m 0644 "$SRC/90-nat66-tap.rules" /etc/udev/rules.d/90-nat66-tap.rules
+install -m 0644 "$SRC/sysctl-ipv4.conf" /etc/sysctl.d/10-ipv4-forward.conf
 install -m 0644 "$SRC/sysctl-ipv6.conf" /etc/sysctl.d/10-ipv6-forward.conf
 install -m 0644 "$SRC/ip6-nat.conf"   /etc/modules-load.d/ip6-nat.conf
 install -m 0644 "$SRC/ndppd.conf"     /etc/ndppd.conf
@@ -107,6 +110,11 @@ for u in ndppd radvd dnsmasq; do
   printf '[Unit]\nAfter=nat66-restore.service\n' > "/etc/systemd/system/$u.service.d/order.conf"
 done
 systemctl daemon-reload
+
+# tap_net is deleted+recreated whenever vpnserver restarts, wiping its
+# addresses; udev re-applies them on every appearance of the interface.
+udevadm control --reload
+udevadm trigger --subsystem-match=net
 
 # ---- [5/6] apply addresses + NAT rules ----------------------------------------------
 echo "==> [5/6] Applying tap_net addresses + NAT rules"
@@ -132,3 +140,4 @@ echo "  IPv6 tap_net : $(ip -6 addr show dev tap_net | awk '/inet6 fd00/{print $
 systemctl is-enabled nat66-restore ip6-pin ndppd radvd dnsmasq
 iptables -t nat -S POSTROUTING  | grep -E "$IP4_NET" || true
 ip6tables -t nat -S POSTROUTING | grep -E "$IP6_NET" || true
+ip rule show | grep '^5200:.*from 10.21.0.0/19' || true
