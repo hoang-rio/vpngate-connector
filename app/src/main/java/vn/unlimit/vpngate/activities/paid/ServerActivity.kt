@@ -65,6 +65,7 @@ import vn.unlimit.vpngate.dialog.VpnProtocolSelectionDialog
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
+import vn.unlimit.vpngate.utils.Ipv6Ula
 import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.ByteArrayInputStream
@@ -680,6 +681,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             putString(OscPrefKey.SSL_PORT.toString(), mPaidServer!!.tcpPort.toString())
             putString(OscPrefKey.HOME_SERVER_NAME.toString(), mPaidServer!!.getName(false))
             putStringSet(OscPrefKey.ROUTE_EXCLUDED_APPS.toString(), excludedPackageNames)
+            putBoolean(OscPrefKey.PPP_IPv6_ENABLED.toString(), true)
+            putString(OscPrefKey.HOME_ULA_V6.toString(), Ipv6Ula.getOrDerive(this@ServerActivity))
         }
         isConnecting = true
         binding.btnConnect.background = ResourcesCompat.getDrawable(
@@ -941,6 +944,12 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             vpnProfile = cp.convertProfile()
             vpnProfile?.mName = mPaidServer!!.getName(useUDP)
             vpnProfile?.mCompatMode = App.VPN_PROFILE_COMPAT_MODE_24X
+            // Inject the per-install ULA so the tunnel sources fd00::/8 and the
+            // server's NAT66 can route IPv6 (the server never pushes ifconfig-ipv6).
+            val ulaV6 = Ipv6Ula.getOrDerive(this)
+            vpnProfile?.mUseIPv6 = true
+            vpnProfile?.mIPv6Address = "$ulaV6/64"
+            vpnProfile?.mUseDefaultRoutev6 = true
             if (dataUtil.getBooleanSetting(DataUtil.SETTING_BLOCK_ADS, false) ||
                 dataUtil.getBooleanSetting(DataUtil.USE_CUSTOM_DNS, false)) {
                 vpnProfile?.mOverrideDNS = true
