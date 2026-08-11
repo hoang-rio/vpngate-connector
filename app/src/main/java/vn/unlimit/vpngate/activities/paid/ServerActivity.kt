@@ -66,7 +66,6 @@ import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.Ipv6Ula
-import vn.unlimit.vpngate.utils.NotificationUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -87,11 +86,13 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         const val TYPE_FROM_NOTIFY = 1001
         const val TYPE_NORMAL = 1000
         const val TYPE_START = "vn.unlimit.vpngate.TYPE_START"
+        const val REQUEST_NOTIFICATION_PERMISSION: Int = 90
     }
     private var mPaidServer: PaidServer? = null
     private val paidServerUtil: PaidServerUtil = App.instance!!.paidServerUtil!!
     private val dataUtil: DataUtil = App.instance!!.dataUtil!!
     private var isConnecting = false
+    private var pendingConnectAction: Runnable? = null
     private var isAuthFailed = false
     private var vpnProfile: VpnProfile? = null
     private var btnInstallOpenVpn: Button? = null
@@ -436,6 +437,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     }
 
     private fun handleConnection(useUdp: Boolean) {
+        ensureNotificationPermissionThen { continueHandleConnection(useUdp) }
+    }
+
+    private fun continueHandleConnection(useUdp: Boolean) {
         if (isSSTPConnected) {
             startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
         }
@@ -728,6 +733,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     }
 
     private fun startSSTPVPN() {
+        ensureNotificationPermissionThen { continueSSTPVPN() }
+    }
+
+    private fun continueSSTPVPN() {
         if (checkStatus()) {
             stopVpn()
         }
@@ -794,6 +803,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             Toast.makeText(this, R.string.error_load_profile, Toast.LENGTH_SHORT).show()
             return
         }
+        ensureNotificationPermissionThen { continueSoftEtherConnection(useTcp) }
+    }
+
+    private fun continueSoftEtherConnection(useTcp: Boolean) {
         val vpnIntent = VpnService.prepare(this)
         if (vpnIntent != null) {
             try {
@@ -986,10 +999,46 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 if (requestCode == DetailActivity.START_VPN_SSTP) {
                     connectSSTPVPN()
                 }
-                NotificationUtil(this).requestPermission()
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+        }
+    }
+
+    /**
+     * Requests POST_NOTIFICATIONS permission (required for Android 13+ to show the
+     * VPN status notification) before starting a connection, then runs [action]
+     * whether the user grants or denies the permission.
+     */
+    private fun ensureNotificationPermissionThen(action: () -> Unit) {
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d(TAG, "Requesting POST_NOTIFICATIONS permission before connecting VPN")
+            pendingConnectAction = Runnable { action() }
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_NOTIFICATION_PERMISSION
+            )
+        } else {
+            action()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            val pending = pendingConnectAction
+            pendingConnectAction = null
+            pending?.run()
         }
     }
     private val startActivityIntentOpenVPN: ActivityResultLauncher<Intent> = registerForActivityResult(
