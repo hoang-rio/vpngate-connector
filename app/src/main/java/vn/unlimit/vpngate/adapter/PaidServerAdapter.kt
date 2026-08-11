@@ -75,6 +75,8 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
         private var imgFlag: ImageView = itemView.findViewById(R.id.img_flag)
         private var txtCountry: TextView = itemView.findViewById(R.id.txt_country)
         private var txtIp: TextView = itemView.findViewById(R.id.txt_ip)
+        private var txtIpv6: TextView = itemView.findViewById(R.id.txt_ipv6)
+        private var lnIpv6: View = itemView.findViewById(R.id.ln_ipv6)
         private var txtHostname: TextView = itemView.findViewById(R.id.txt_hostname)
         private var txtSession: TextView = itemView.findViewById(R.id.txt_session)
         private var txtOwner: TextView = itemView.findViewById(R.id.txt_owner)
@@ -100,6 +102,12 @@ class PaidServerAdapter(context: Context?) : RecyclerView.Adapter<RecyclerView.V
                     .into(imgFlag)
                 txtCountry.text = paidServer.serverLocation
                 txtIp.text = paidServer.serverIp
+                if (!paidServer.serverIpv6.isNullOrEmpty()) {
+                    txtIpv6.text = paidServer.serverIpv6
+                    lnIpv6.visibility = VISIBLE
+                } else {
+                    lnIpv6.visibility = GONE
+                }
                 txtHostname.text = paidServer.serverName
                 txtDomain.text = paidServer.serverDomain
                 txtSession.text = paidServer.sessionCount.toString()

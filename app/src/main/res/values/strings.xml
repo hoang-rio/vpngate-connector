@@ -32,6 +32,7 @@
     <string name="session">Session</string>
     <string name="max_session">Max Session</string>
     <string name="domain">Domain</string>
+    <string name="ipv6">IPv6</string>
     <string name="good">Good</string>
     <string name="medium">Normal</string>
     <string name="full">Full</string>
@@ -403,7 +404,7 @@
     <string name="softether_tls_handshake">Establishing SoftEther TLS handshake…</string>
     <string name="softether_protocol_handshake">Negotiating SoftEther protocol…</string>
     <string name="softether_authenticating">Authenticating SoftEther session…</string>
-    <string name="softether_session_setup">Establishing SoftEther VPN session…</string>
+    <string name="softether_session_setup">Establishing SoftEther session…</string>
     <string name="softether_disconnecting">Disconnecting SoftEther…</string>
     <string name="error_unknown">An unknown error occurred. Please try again.</string>
 </resources>

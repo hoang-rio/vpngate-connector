@@ -484,6 +484,12 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 .into(binding.imgFlag)
             binding.txtCountry.text = mPaidServer!!.serverLocation
             binding.txtIp.text = mPaidServer!!.serverIp
+            if (!mPaidServer!!.serverIpv6.isNullOrEmpty()) {
+                binding.txtIpv6.text = mPaidServer!!.serverIpv6
+                binding.lnIpv6.visibility = View.VISIBLE
+            } else {
+                binding.lnIpv6.visibility = View.GONE
+            }
             binding.txtHostname.text = mPaidServer!!.serverName
             binding.txtDomain.text = mPaidServer!!.serverDomain
             binding.txtSession.text = mPaidServer!!.sessionCount.toString()

@@ -18,6 +18,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var serverLocation = "Singapore"
     var serverDomain = ""
     var serverIp = ""
+    var serverIpv6 = ""
     var tcpPort = 0
     var udpPort = 0
     var seTcpPort = 0
@@ -49,6 +50,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         serverLocation = inParcel.readString()!!
         serverDomain = inParcel.readString()!!
         serverIp = inParcel.readString()!!
+        serverIpv6 = inParcel.readString() ?: ""
         tcpPort = inParcel.readInt()
         udpPort = inParcel.readInt()
         seTcpPort = inParcel.readInt()
@@ -75,6 +77,7 @@ class PaidServer(inParcel: Parcel) : Parcelable {
         out.writeString(serverLocation)
         out.writeString(serverDomain)
         out.writeString(serverIp)
+        out.writeString(serverIpv6)
         out.writeInt(tcpPort)
         out.writeInt(udpPort)
         out.writeInt(seTcpPort)
