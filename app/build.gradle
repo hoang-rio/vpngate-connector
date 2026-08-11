@@ -79,6 +79,12 @@ android {
             def signingConfig = androidExt.signingConfigs.findByName(flavorName)
             if (signingConfig != null) {
                 variant.signingConfig.setConfig(signingConfig)
+                // Sign the androidTest APK with the same key so it matches the
+                // target's signature (otherwise connectedAndroidTest fails with
+                // "Permission Denial: starting instrumentation ... signature matching")
+                if (variant.androidTest != null) {
+                    variant.androidTest.signingConfig.setConfig(signingConfig)
+                }
             }
         }
     }
