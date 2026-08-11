@@ -104,6 +104,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     private var isSoftEtherConnected = false
     @Volatile
     private var isSoftEtherConnecting = false
+    private var lastDisconnectTime: Long = 0
+    private val disconnectCooldownMS = 1000L // 1 second cooldown after disconnect
     private lateinit var binding: ActivityServerBinding
     private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
     private val softEtherStateListener = object : SoftEtherVpnService.StateListener {
@@ -150,13 +152,17 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 }
                 SoftEtherVpnService.STATE_CONNECTED -> {
                     isSoftEtherConnected = true; isConnecting = false; isSoftEtherConnecting = false
-                    binding.btnConnect.background = ResourcesCompat.getDrawable(resources, R.drawable.selector_red_button, null)
-                    binding.btnConnect.text = getString(R.string.disconnect)
-                    binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
-                    binding.txtNetStats.visibility = View.VISIBLE; binding.txtCheckIp.visibility = View.VISIBLE
-                    renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
-                    if (mPaidServer != null) {
-                        paidServerUtil.setCurrentSession(mPaidServer!!._id, assignedIp)
+                    // Only show disconnect + speed stats when the connected server
+                    // is the one being viewed (this handler replays on every onResume).
+                    if (isCurrent()) {
+                        binding.btnConnect.background = ResourcesCompat.getDrawable(resources, R.drawable.selector_red_button, null)
+                        binding.btnConnect.text = getString(R.string.disconnect)
+                        binding.txtStatus.text = getString(R.string.softether_connected, assignedIp)
+                        binding.txtNetStats.visibility = View.VISIBLE; binding.txtCheckIp.visibility = View.VISIBLE
+                        renderSoftEtherTraffic(SoftEtherVpnService.currentTrafficSnapshot)
+                        if (mPaidServer != null) {
+                            paidServerUtil.setCurrentSession(mPaidServer!!._id, assignedIp)
+                        }
                     }
                 }
                 SoftEtherVpnService.STATE_DISCONNECTING -> {
@@ -444,6 +450,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         if (isSSTPConnected) {
             startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
         }
+        val needToStopSoftEther = isSoftEtherConnected || isSoftEtherConnecting
+        if (needToStopSoftEther) {
+            disconnectSoftEther()
+        }
         if (checkStatus()) {
             stopVpn()
             val params = Bundle()
@@ -453,7 +463,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             params.putString("country", mPaidServer!!.serverLocation)
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Connect_VPN", params)
             binding.txtCheckIp.visibility = View.GONE
-            Handler(Looper.getMainLooper()).postDelayed({ prepareVpn(useUdp) }, 500)
+            Handler(Looper.getMainLooper()).postDelayed(
+                { prepareVpn(useUdp) },
+                if (needToStopSoftEther) 1000L else 500L
+            )
         } else {
             val params = Bundle()
             params.putString("type", "connect new")
@@ -461,7 +474,13 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             params.putString("ip", mPaidServer!!.serverIp)
             params.putString("country", mPaidServer!!.serverLocation)
             FirebaseAnalytics.getInstance(applicationContext).logEvent("Paid_Connect_VPN", params)
-            prepareVpn(useUdp)
+            if (needToStopSoftEther) {
+                // Wait for the SoftEther tunnel to fully tear down before starting OpenVPN
+                binding.txtCheckIp.visibility = View.GONE
+                Handler(Looper.getMainLooper()).postDelayed({ prepareVpn(useUdp) }, 1000L)
+            } else {
+                prepareVpn(useUdp)
+            }
         }
         binding.btnConnect.background =
             ResourcesCompat.getDrawable(resources, R.drawable.selector_apply_button, null)
@@ -669,6 +688,10 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     }
 
     private fun connectSSTPVPN() {
+        val needToStopSoftEther = isSoftEtherConnected || isSoftEtherConnecting
+        if (needToStopSoftEther) {
+            disconnectSoftEther()
+        }
         val excludedApps = App.instance?.excludedAppDao?.getAllExcludedApps() ?: emptyList()
         val excludedPackageNames = excludedApps.map { it.packageName }.toSet()
 
@@ -701,7 +724,16 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         )
         binding.btnConnect.setText(R.string.cancel)
         binding.txtStatus.setText(R.string.sstp_connecting)
-        startVpnSSTPService(DetailActivity.ACTION_VPN_CONNECT)
+        if (needToStopSoftEther) {
+            // Wait for the SoftEther tunnel to fully tear down before starting SSTP
+            Handler(mainLooper).postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    startVpnSSTPService(DetailActivity.ACTION_VPN_CONNECT)
+                }
+            }, 1000L)
+        } else {
+            startVpnSSTPService(DetailActivity.ACTION_VPN_CONNECT)
+        }
     }
 
     private fun startVpnSSTPService(action: String) {
@@ -788,6 +820,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
     private fun disconnectSoftEther() {
         isConnecting = false
         isSoftEtherConnecting = false
+        lastDisconnectTime = System.currentTimeMillis()
         try {
             val intent = Intent(this, SoftEtherVpnService::class.java).apply {
                 action = SoftEtherVpnService.ACTION_DISCONNECT
@@ -817,6 +850,23 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             return
         }
         if (isConnecting || isSoftEtherConnecting) return
+
+        // Switching from an existing SoftEther tunnel (to a different server):
+        // stop it first — the cooldown below waits for the old tunnel to tear down
+        // so the singleton service can accept the new connection.
+        if (isSoftEtherConnected) {
+            disconnectSoftEther()
+        }
+
+        val timeSinceDisconnect = System.currentTimeMillis() - lastDisconnectTime
+        if (timeSinceDisconnect < disconnectCooldownMS) {
+            Handler(mainLooper).postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    continueSoftEtherConnection(useTcp)
+                }
+            }, disconnectCooldownMS - timeSinceDisconnect)
+            return
+        }
 
         val userInfo = paidServerUtil.getUserInfo()
         val savedPassword = paidServerUtil.getStringSetting(PaidServerUtil.SAVED_VPN_PW)
@@ -1068,7 +1118,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
 
     private fun connectVPNServer() {
         if (!isConnecting) {
-            if (isSoftEtherConnected) {
+            if (isSoftEtherConnected && isCurrent()) {
                 disconnectSoftEther()
             } else if (isSSTPConnected) {
                 handleSSTPBtn()
