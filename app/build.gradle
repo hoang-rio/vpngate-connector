@@ -139,6 +139,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.android.gms:play-services-ads:25.4.0'
     // Start.io Ads
+    //noinspection GradleDynamicVersion
     implementation 'io.start:admob-mediation:3.+'
     //noinspection GradleDependency
     implementation('com.google.android.ump:user-messaging-platform:3.2.0') {
