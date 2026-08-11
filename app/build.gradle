@@ -72,6 +72,16 @@ android {
             versionNameSuffix "-dev"
         }
     }
+    androidComponents {
+        onVariants(selector().withBuildType("debug")) { variant ->
+            def flavorName = variant.productFlavors[0].second
+            def androidExt = project.extensions.getByName("android")
+            def signingConfig = androidExt.signingConfigs.findByName(flavorName)
+            if (signingConfig != null) {
+                variant.signingConfig.setConfig(signingConfig)
+            }
+        }
+    }
     useLibrary 'android.test.runner'
 
     useLibrary 'android.test.base'
