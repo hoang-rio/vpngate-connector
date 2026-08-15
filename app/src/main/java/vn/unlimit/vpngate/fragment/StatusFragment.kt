@@ -854,10 +854,16 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             mVpnGateConnection!!.ip!!
         }
 
-        val serverPort = if (useTcp) {
-            mVpnGateConnection!!.seTcpPort
-        } else {
-            mVpnGateConnection!!.seUdpPort
+        val isUdpOnly = mVpnGateConnection!!.isUdpOnly
+        if (isUdpOnly) {
+            Log.i(TAG, "UDP-only server (no SoftEther TCP port): NAT-T path implied")
+        }
+        // For a UDP-only server the transport targets the server IP and reaches
+        // it via NAT-T, so the port is a placeholder for the config.
+        val serverPort = when {
+            isUdpOnly -> mVpnGateConnection!!.seUdpPort
+            useTcp -> mVpnGateConnection!!.seTcpPort
+            else -> mVpnGateConnection!!.seUdpPort
         }
 
         val config = vn.unlimit.softether.model.ConnectionConfig(

@@ -23,6 +23,9 @@ class PaidServer(inParcel: Parcel) : Parcelable {
     var udpPort = 0
     var seTcpPort = 0
     var seUdpPort = 0
+
+    val isUdpOnly: Boolean
+        get() = seTcpPort <= 0 && seUdpPort > 0
     var maxSession = 0
     var sessionCount = 0
     private var ovpnContent = ""

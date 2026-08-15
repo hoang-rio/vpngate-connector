@@ -36,6 +36,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
     private var seTcpPort: Int = 0
     private var seUdpPort: Int = 0
     private var sstpSupport: Boolean = false
+    private var isUdpOnly: Boolean = false
 
     interface ProtocolSelectionListener {
         fun onProtocolSelected(protocol: VpnProtocol)
@@ -114,6 +115,12 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
         if (hasSoftEtherUdp) {
             binding.cardSoftEtherUdp.visibility = View.VISIBLE
             binding.txtSoftEtherUdpStatus.text = getString(R.string.protocol_available_port, seUdpPort)
+            // A server without a SoftEther TCP port is only reachable via NAT-T
+            binding.txtSoftEtherUdpTitle.text = if (isUdpOnly) {
+                getString(R.string.softether_vpn_udp_natt)
+            } else {
+                getString(R.string.softether_vpn_udp)
+            }
         } else {
             binding.cardSoftEtherUdp.visibility = View.GONE
         }
@@ -230,6 +237,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
                 seTcpPort = connection?.seTcpPort ?: 0
                 seUdpPort = connection?.seUdpPort ?: 0
                 sstpSupport = connection?.isSSTPSupport() == true
+                isUdpOnly = connection?.isUdpOnly == true
                 setSoftEtherAvailable(isSoftEtherAvailable)
             }
         }
@@ -246,6 +254,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
                 seTcpPort = server?.tcpPort ?: 0
                 seUdpPort = server?.udpPort ?: 0
                 sstpSupport = server?.isSSTPSupport() == true
+                isUdpOnly = server?.isUdpOnly == true
                 setSoftEtherAvailable(isSoftEtherAvailable)
             }
         }

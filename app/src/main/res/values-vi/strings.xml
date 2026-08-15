@@ -343,6 +343,7 @@
     <string name="openvpn_udp">OpenVPN (UDP)</string>
     <string name="softether_vpn_tcp">SoftEther VPN (TCP)</string>
     <string name="softether_vpn_udp">SoftEther VPN (UDP)</string>
+    <string name="softether_vpn_udp_natt">SoftEther VPN (UDP - NAT-T)</string>
     <string name="protocol_available_port">Khả dụng trên cổng %1$d</string>
     <string name="protocol_not_available">Không khả dụng</string>
     <string name="softether_available">Giao thức SSL-VPN</string>

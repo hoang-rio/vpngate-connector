@@ -27,4 +27,7 @@ data class VPNGateItem(
     @ColumnInfo val isSSTPSupport: Boolean = false,
     @ColumnInfo val seTcpPort: Int = 0,
     @ColumnInfo val seUdpPort: Int = 0
-)
+) {
+    val isUdpOnly: Boolean
+        get() = seTcpPort <= 0 && seUdpPort > 0
+}

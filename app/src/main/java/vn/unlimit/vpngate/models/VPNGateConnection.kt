@@ -38,6 +38,9 @@ class VPNGateConnection : Parcelable {
     var seTcpPort = 0
     var seUdpPort = 0
 
+    val isUdpOnly: Boolean
+        get() = seTcpPort <= 0 && seUdpPort > 0
+
     private constructor(`in`: Parcel) {
         hostName = `in`.readString()
         ip = `in`.readString()

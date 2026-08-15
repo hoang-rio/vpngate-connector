@@ -1567,11 +1567,17 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 mVpnGateConnection!!.ip!!
             }
             
-            // Use appropriate port based on protocol selection
-            val serverPort = if (useTcp) {
-                mVpnGateConnection!!.seTcpPort
-            } else {
-                mVpnGateConnection!!.seUdpPort
+            // Use appropriate port based on protocol selection. A UDP-only
+            // server has no TCP port; the transport targets the server IP and
+            // reaches it via NAT-T, so the port is a placeholder for the config.
+            val isUdpOnly = mVpnGateConnection!!.isUdpOnly
+            if (isUdpOnly) {
+                Log.i(TAG, "UDP-only server (no SoftEther TCP port): NAT-T path implied")
+            }
+            val serverPort = when {
+                isUdpOnly -> mVpnGateConnection!!.seUdpPort
+                useTcp -> mVpnGateConnection!!.seTcpPort
+                else -> mVpnGateConnection!!.seUdpPort
             }
             
             val config = vn.unlimit.softether.model.ConnectionConfig(

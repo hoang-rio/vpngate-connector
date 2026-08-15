@@ -879,7 +879,17 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
             if (isSSTPConnected) startVpnSSTPService(DetailActivity.ACTION_VPN_DISCONNECT)
             if (checkStatus()) stopVpn()
 
-            val serverPort = if (useTcp) mPaidServer!!.tcpPort else mPaidServer!!.udpPort
+            val isUdpOnly = mPaidServer!!.isUdpOnly
+            if (isUdpOnly) {
+                Log.i(TAG, "UDP-only paid server (no TCP port): NAT-T path implied")
+            }
+            // For a UDP-only server the transport targets the server IP and
+            // reaches it via NAT-T, so the port is a placeholder for the config.
+            val serverPort = when {
+                isUdpOnly -> mPaidServer!!.seUdpPort.takeIf { it > 0 } ?: mPaidServer!!.udpPort
+                useTcp -> mPaidServer!!.tcpPort
+                else -> mPaidServer!!.udpPort
+            }
             val virtualHub = mPaidServer!!.hubName.ifEmpty { "VPNGatePaid" }
             val config = vn.unlimit.softether.model.ConnectionConfig(
                 serverHost = mPaidServer!!.serverDomain,
