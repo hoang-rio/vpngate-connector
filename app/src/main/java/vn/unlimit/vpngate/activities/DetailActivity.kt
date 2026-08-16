@@ -1597,6 +1597,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     .map { it.packageName },
                 isMetered = false,
                 useTcp = useTcp,
+                udpPort = mVpnGateConnection!!.seUdpPort,
+                udpOnly = isUdpOnly,
                 clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
                 clientVersion = BuildConfig.VERSION_NAME,
                 clientBuild = BuildConfig.VERSION_CODE

@@ -909,6 +909,8 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
                 isMetered = false,
                 authMethod = vn.unlimit.softether.model.AuthMethod.PLAIN_PASSWORD,
                 useTcp = useTcp,
+                udpPort = mPaidServer!!.seUdpPort,
+                udpOnly = isUdpOnly,
                 clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
                 clientVersion = BuildConfig.VERSION_NAME,
                 clientBuild = BuildConfig.VERSION_CODE

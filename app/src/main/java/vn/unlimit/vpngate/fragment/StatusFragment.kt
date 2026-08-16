@@ -880,6 +880,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
             routes = listOf(vn.unlimit.softether.model.Route("0.0.0.0", 0)),
             mtu = 1500,
             useTcp = useTcp,
+            udpPort = mVpnGateConnection!!.seUdpPort,
+            udpOnly = isUdpOnly,
             clientProductName = if (BuildConfig.FLAVOR == "pro") "VPN Gate Connector Pro" else "VPN Gate Connector",
             clientVersion = BuildConfig.VERSION_NAME,
             clientBuild = BuildConfig.VERSION_CODE
