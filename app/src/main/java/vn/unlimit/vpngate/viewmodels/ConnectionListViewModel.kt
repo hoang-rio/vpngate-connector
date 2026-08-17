@@ -76,7 +76,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                 val version = if (!dataUtil.hasAds()) "pro" else null
                 val url =
                     if (dataUtil.getBooleanSetting(DataUtil.INCLUDE_UDP_SERVER, true)) {
-                        FirebaseRemoteConfig.getInstance().getString("vpn_udp_api")
+                        FirebaseRemoteConfig.getInstance().getString("vpn_udp_api_v2")
                     } else {
                         dataUtil.baseUrl + "/api/iphone/"
                     }
