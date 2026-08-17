@@ -115,12 +115,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
         if (hasSoftEtherUdp) {
             binding.cardSoftEtherUdp.visibility = View.VISIBLE
             binding.txtSoftEtherUdpStatus.text = getString(R.string.protocol_available_port, seUdpPort)
-            // A server without a SoftEther TCP port is only reachable via NAT-T
-            binding.txtSoftEtherUdpTitle.text = if (isUdpOnly) {
-                getString(R.string.softether_vpn_udp_natt)
-            } else {
-                getString(R.string.softether_vpn_udp)
-            }
+            binding.txtSoftEtherUdpTitle.text = getString(R.string.softether_vpn_udp)
         } else {
             binding.cardSoftEtherUdp.visibility = View.GONE
         }
