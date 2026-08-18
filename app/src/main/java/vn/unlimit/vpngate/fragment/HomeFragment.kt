@@ -14,12 +14,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
@@ -69,12 +68,10 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         super.onResume()
         if (dataUtil!!.hasAds()) {
             if (interstitialAd == null || isShowedAd) {
-                val adRequest = AdRequest.Builder().build()
+                val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
-                    mContext!!,
-                    getString(R.string.admob_full_screen_detail),
                     adRequest,
-                    object : InterstitialAdLoadCallback() {
+                    object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<InterstitialAd> {
                         override fun onAdLoaded(interstitialAd: InterstitialAd) {
                             this@HomeFragment.interstitialAd = interstitialAd
                         }
@@ -103,17 +100,17 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     private fun checkAndShowAd(vpnGateConnection: VPNGateConnection?): Boolean {
         if (dataUtil!!.hasAds()) {
             if (interstitialAd != null) {
-                interstitialAd!!.fullScreenContentCallback = object : FullScreenContentCallback() {
+                interstitialAd!!.adEventCallback = object : InterstitialAdEventCallback {
                     override fun onAdDismissedFullScreenContent() {
                         startDetailAct(vpnGateConnection)
                     }
 
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
                         // Called when fullscreen content failed to show.
                         startDetailAct(vpnGateConnection)
                     }
                 }
-                interstitialAd!!.show(mActivity!!)
+                interstitialAd!!.show(requireActivity())
                 isShowedAd = true
                 return true
             }

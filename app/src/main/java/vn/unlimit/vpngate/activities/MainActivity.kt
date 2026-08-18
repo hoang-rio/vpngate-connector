@@ -36,11 +36,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.banner.AdView
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import com.google.android.material.navigation.NavigationView
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
@@ -326,17 +325,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     return
                 }
                 adView = AdView(applicationContext)
-                adView!!.setAdSize(AdSize.LARGE_BANNER)
-                adView!!.adUnitId = resources.getString(R.string.admob_banner_bottom_home)
-                adView!!.adListener = object : AdListener() {
-                    override fun onAdFailedToLoad(error: LoadAdError) {
+                (findViewById<View>(R.id.ad_container_home) as RelativeLayout).addView(adView)
+                val bannerAdRequest = BannerAdRequest.Builder(resources.getString(R.string.admob_banner_bottom_home), com.google.android.libraries.ads.mobile.sdk.banner.AdSize.LARGE_BANNER).build()
+                adView!!.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
+                    override fun onAdLoaded(ad: com.google.android.libraries.ads.mobile.sdk.banner.BannerAd) {
+                        Log.d(TAG, "Banner ad loaded")
+                    }
+
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
                         adView!!.visibility = View.GONE
                         hideAdContainer()
-                        Log.e(TAG, error.toString())
+                        Log.e(TAG, adError.toString())
                     }
-                }
-                (findViewById<View>(R.id.ad_container_home) as RelativeLayout).addView(adView)
-                adView!!.loadAd(AdRequest.Builder().build())
+                })
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception when initAdMob", e)

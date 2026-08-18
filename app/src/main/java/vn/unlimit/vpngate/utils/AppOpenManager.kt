@@ -7,12 +7,11 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.appopen.AppOpenAd
-import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAd
+import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.SplashActivity
@@ -24,7 +23,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
     private var adUnitId: String? = null
     private var appOpenAd: AppOpenAd? = null
 
-    private var loadCallback: AppOpenAdLoadCallback? = null
+    private var loadCallback: com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<AppOpenAd>? = null
 
     private var myApplication: App? = null
 
@@ -69,7 +68,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
             return
         }
 
-        loadCallback = object : AppOpenAdLoadCallback() {
+        loadCallback = object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<AppOpenAd> {
             /**
              * Called when an app open ad has loaded.
              *
@@ -90,15 +89,13 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
             }
         }
         val request = getAdRequest()
-        AppOpenAd.load(
-            myApplication!!, adUnitId!!, request, loadCallback!!
-        )
+        AppOpenAd.load(request, loadCallback!!)
 
     }
 
     /** Creates and returns ad request.  */
     private fun getAdRequest(): AdRequest {
-        return AdRequest.Builder().build()
+        return AdRequest.Builder(adUnitId!!).build()
     }
 
     /** Utility method to check if ad was loaded more than n hours ago.  */
@@ -140,8 +137,8 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
         // and an ad is available.
         if (!isShowingAd && isAdAvailable()) {
             Log.d(LOG_TAG, "Will show ad.")
-            val fullScreenContentCallback: FullScreenContentCallback =
-                object : FullScreenContentCallback() {
+            val fullScreenContentCallback: AppOpenAdEventCallback =
+                object : AppOpenAdEventCallback {
                     override fun onAdDismissedFullScreenContent() {
                         // Set the reference to null so isAdAvailable() returns false.
                         appOpenAd = null
@@ -151,12 +148,12 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
                         splashActivity = null
                     }
 
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {}
+                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {}
                     override fun onAdShowedFullScreenContent() {
                         isShowingAd = true
                     }
                 }
-            appOpenAd!!.fullScreenContentCallback = fullScreenContentCallback
+            appOpenAd!!.adEventCallback = fullScreenContentCallback
             appOpenAd!!.show(currentActivity!!)
         } else {
             Log.d(LOG_TAG, "Can not show ad.")

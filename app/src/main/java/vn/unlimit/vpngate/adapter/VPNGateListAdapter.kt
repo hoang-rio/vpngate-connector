@@ -13,12 +13,13 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.models.VPNGateConnectionList
@@ -91,23 +92,21 @@ class VPNGateListAdapter(private val mContext: Context) :
     private fun loadNativeAd(adViewHolder: VHTypeAd) {
         if (adUnitId == null) return
 
-        val adLoader = AdLoader.Builder(mContext, adUnitId!!)
-            .forNativeAd { nativeAd ->
-                this.nativeAd = nativeAd
+        val adRequest = NativeAdRequest.Builder(adUnitId!!, listOf(NativeAd.NativeAdType.NATIVE)).build()
+        NativeAdLoader.load(adRequest, object : NativeAdLoaderCallback {
+            override fun onNativeAdLoaded(nativeAd: NativeAd) {
+                this@VPNGateListAdapter.nativeAd = nativeAd
                 populateNativeAdView(nativeAd, adViewHolder)
             }
-            .withAdListener(object : AdListener() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.e(TAG, "Native ad failed to load: ${adError.message}")
-                }
 
-                override fun onAdLoaded() {
-                    Log.d(TAG, "Native ad loaded successfully")
-                }
-            })
-            .build()
+            override fun onCustomNativeAdLoaded(customNativeAd: com.google.android.libraries.ads.mobile.sdk.nativead.CustomNativeAd) {
+                // Not used
+            }
 
-        adLoader.loadAd(AdRequest.Builder().build())
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.e(TAG, "Native ad failed to load: ${adError.message}")
+            }
+        })
     }
 
     private fun populateNativeAdView(nativeAd: NativeAd, adViewHolder: VHTypeAd) {
@@ -116,9 +115,6 @@ class VPNGateListAdapter(private val mContext: Context) :
         adViewHolder.nativeAdView.visibility = View.VISIBLE
 
         val adView = adViewHolder.nativeAdView
-
-        // Set the media view
-        adView.mediaView = adViewHolder.adMedia
 
         // Set other ad assets
         adView.headlineView = adViewHolder.adHeadline
@@ -199,7 +195,7 @@ class VPNGateListAdapter(private val mContext: Context) :
         }
 
         // Register the native ad view
-        adView.setNativeAd(nativeAd)
+        adView.registerNativeAd(nativeAd, adViewHolder.adMedia)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -344,7 +340,7 @@ class VPNGateListAdapter(private val mContext: Context) :
 
     private inner class VHTypeAd(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nativeAdView: NativeAdView = itemView.findViewById(R.id.native_ad_view)
-        val adMedia: com.google.android.gms.ads.nativead.MediaView = itemView.findViewById(R.id.ad_media)
+        val adMedia: com.google.android.libraries.ads.mobile.sdk.nativead.MediaView = itemView.findViewById(R.id.ad_media)
         val adHeadline: TextView = itemView.findViewById(R.id.ad_headline)
         val adBody: TextView = itemView.findViewById(R.id.ad_body)
         val adCallToAction: Button = itemView.findViewById(R.id.ad_call_to_action)

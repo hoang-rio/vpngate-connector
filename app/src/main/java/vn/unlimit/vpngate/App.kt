@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.room.Room
-import com.google.android.gms.ads.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.gms.tasks.Task
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -58,7 +59,7 @@ class App : Application() {
         instance = this
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
-            MobileAds.initialize(this)
+            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build(), null)
             if (dataUtil!!.isAcceptedPrivacyPolicy && dataUtil!!.getBooleanSetting(
                     DataUtil.INVITED_USE_PAID_SERVER,
                     false

@@ -146,7 +146,7 @@
             </com.facebook.shimmer.ShimmerFrameLayout>
 
             <!-- Native Ad View -->
-            <com.google.android.gms.ads.nativead.NativeAdView
+            <com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
                 android:id="@+id/native_ad_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,7 +159,7 @@
                     android:orientation="vertical">
 
                     <!-- Media View (for video/image) -->
-                    <com.google.android.gms.ads.nativead.MediaView
+                    <com.google.android.libraries.ads.mobile.sdk.nativead.MediaView
                         android:id="@+id/ad_media"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
@@ -277,7 +277,7 @@
 
                 </LinearLayout>
 
-            </com.google.android.gms.ads.nativead.NativeAdView>
+            </com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView>
 
         </LinearLayout>
     </FrameLayout>
