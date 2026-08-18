@@ -180,8 +180,10 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             } else {
                 mActivity!!.vpnGateConnectionList?.advancedFilter()
             }
+            val listSize = mActivity!!.vpnGateConnectionList?.size() ?: 0
             withContext(Dispatchers.Main) {
                 vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                updateEmptyState(listSize)
             }
         }
     }
@@ -192,12 +194,15 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             if (isSearching && "" != mKeyword) {
                 vpnGateConnectionList = vpnGateConnectionList.filter(mKeyword)
             }
+            val listSize = vpnGateConnectionList.size()
             withContext(Dispatchers.Main) {
-                if (vpnGateConnectionList.size() == 0) {
+                if (listSize == 0) {
                     binding.txtEmpty.setText(R.string.empty_filter_result)
                     binding.txtEmpty.visibility = View.VISIBLE
+                    binding.rcvConnection.visibility = View.GONE
                 } else {
                     binding.txtEmpty.visibility = View.GONE
+                    binding.rcvConnection.visibility = View.VISIBLE
                 }
                 vpnGateListAdapter!!.initialize(vpnGateConnectionList)
             }
@@ -250,12 +255,16 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
                     mActivity!!.vpnGateConnectionList!!.sort(property, type)
                     if (isSearching) {
                         val filterResult = mActivity!!.vpnGateConnectionList!!.filter(mKeyword)
+                        val listSize = filterResult.size()
                         withContext(Dispatchers.Main) {
                             vpnGateListAdapter!!.initialize(filterResult)
+                            updateEmptyState(listSize)
                         }
                     } else {
+                        val listSize = mActivity!!.vpnGateConnectionList!!.size()
                         withContext(Dispatchers.Main) {
                             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+                            updateEmptyState(listSize)
                         }
                     }
                 }
@@ -276,18 +285,19 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
      */
     fun closeSearch() {
         isSearching = false
-        binding.txtEmpty.visibility = View.GONE
-        binding.rcvConnection.visibility = View.VISIBLE
         if (mActivity!!.vpnGateConnectionList != null) {
             mActivity!!.vpnGateConnectionList!!.mKeyword = null
             lifecycleScope.launch(Dispatchers.IO) {
                 val vpnGateConnectionList = mActivity!!.vpnGateConnectionList!!.advancedFilter()
+                val listSize = vpnGateConnectionList.size()
                 withContext(Dispatchers.Main) {
                     vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+                    updateEmptyState(listSize)
                 }
             }
         } else {
             vpnGateListAdapter!!.initialize(mActivity!!.vpnGateConnectionList)
+            updateEmptyState(0)
         }
         handler!!.postDelayed({
             binding.lnSwipeRefresh.isEnabled = true
@@ -339,6 +349,17 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
         binding.btnToTop.visibility = View.GONE
     }
 
+    private fun updateEmptyState(listSize: Int) {
+        if (listSize == 0) {
+            binding.txtEmpty.setText(R.string.no_server_available)
+            binding.txtEmpty.visibility = View.VISIBLE
+            binding.rcvConnection.visibility = View.GONE
+        } else {
+            binding.txtEmpty.visibility = View.GONE
+            binding.rcvConnection.visibility = View.VISIBLE
+        }
+    }
+
     override fun onRefresh() {
         connectionListViewModel?.getAPIData()
     }
@@ -352,11 +373,11 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
                     mActivity!!.sortType
                 )
             }
+            val listSize = vpnGateConnectionList?.size() ?: 0
             withContext(Dispatchers.Main) {
                 mActivity!!.vpnGateConnectionList = vpnGateConnectionList
-                binding.txtEmpty.visibility = View.GONE
-                binding.rcvConnection.visibility = View.VISIBLE
                 vpnGateListAdapter!!.initialize(vpnGateConnectionList)
+                updateEmptyState(listSize)
                 binding.lnSwipeRefresh.isRefreshing = false
             }
         }
