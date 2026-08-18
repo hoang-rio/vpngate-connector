@@ -146,7 +146,7 @@
             </com.facebook.shimmer.ShimmerFrameLayout>
 
             <!-- Native Ad View -->
-            <com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
+            <vn.unlimit.vpngate.customview.ThreadSafeNativeAdView
                 android:id="@+id/native_ad_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -277,7 +277,7 @@
 
                 </LinearLayout>
 
-            </com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView>
+            </vn.unlimit.vpngate.customview.ThreadSafeNativeAdView>
 
         </LinearLayout>
     </FrameLayout>

@@ -2,6 +2,8 @@ package vn.unlimit.vpngate.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -89,14 +91,18 @@ class VPNGateListAdapter(private val mContext: Context) :
         return position - ((position + 2) / AD_INTERVAL)
     }
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     private fun loadNativeAd(adViewHolder: VHTypeAd) {
         if (adUnitId == null) return
 
         val adRequest = NativeAdRequest.Builder(adUnitId!!, listOf(NativeAd.NativeAdType.NATIVE)).build()
         NativeAdLoader.load(adRequest, object : NativeAdLoaderCallback {
             override fun onNativeAdLoaded(nativeAd: NativeAd) {
-                this@VPNGateListAdapter.nativeAd = nativeAd
-                populateNativeAdView(nativeAd, adViewHolder)
+                mainHandler.post {
+                    this@VPNGateListAdapter.nativeAd = nativeAd
+                    populateNativeAdView(nativeAd, adViewHolder)
+                }
             }
 
             override fun onCustomNativeAdLoaded(customNativeAd: com.google.android.libraries.ads.mobile.sdk.nativead.CustomNativeAd) {
