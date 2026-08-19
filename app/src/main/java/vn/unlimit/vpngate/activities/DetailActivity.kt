@@ -525,13 +525,15 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 adViewBellow.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
                     override fun onAdLoaded(ad: com.google.android.libraries.ads.mobile.sdk.banner.BannerAd) {
                         Log.d(TAG, "Banner ad loaded")
-                        adjustAdPosition()
+                        runOnUiThread { adjustAdPosition() }
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
-                        adViewBellow.visibility = View.GONE
-                        binding.adContainerFixed.visibility = View.GONE
-                        binding.adContainerInline.visibility = View.GONE
+                        runOnUiThread {
+                            adViewBellow.visibility = View.GONE
+                            binding.adContainerFixed.visibility = View.GONE
+                            binding.adContainerInline.visibility = View.GONE
+                        }
                     }
                 })
             } else {

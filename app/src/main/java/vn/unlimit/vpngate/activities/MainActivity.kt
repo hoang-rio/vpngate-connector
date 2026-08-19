@@ -333,8 +333,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
-                        adView!!.visibility = View.GONE
-                        hideAdContainer()
+                        runOnUiThread {
+                            adView!!.visibility = View.GONE
+                            hideAdContainer()
+                        }
                         Log.e(TAG, adError.toString())
                     }
                 })

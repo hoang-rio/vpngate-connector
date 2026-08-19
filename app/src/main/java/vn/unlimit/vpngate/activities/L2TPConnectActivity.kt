@@ -153,7 +153,9 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
-                        binding.adContainerL2tp.visibility = View.GONE
+                        runOnUiThread {
+                            binding.adContainerL2tp.visibility = View.GONE
+                        }
                     }
                 })
             }
