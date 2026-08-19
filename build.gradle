@@ -31,7 +31,7 @@ allprojects {
     }
     project.ext {
         compileSdkVersion = 37
-        minSdkVersion = 23
+        minSdkVersion = 24
         targetSdkVersion = 37
     }
 }

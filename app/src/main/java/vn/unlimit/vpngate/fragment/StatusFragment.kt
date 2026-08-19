@@ -26,10 +26,9 @@ import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.VpnProfile
@@ -247,12 +246,10 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private fun loadAdMob() {
         if (dataUtil!!.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            val adRequest = AdRequest.Builder().build()
+            val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_status)).build()
             InterstitialAd.load(
-                mContext!!,
-                resources.getString(R.string.admob_full_screen_status),
                 adRequest,
-                object : InterstitialAdLoadCallback() {
+                object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<InterstitialAd> {
                     override fun onAdLoaded(interstitialAd: InterstitialAd) {
                         mInterstitialAd = interstitialAd
                         isFullScreenAdsLoaded = true

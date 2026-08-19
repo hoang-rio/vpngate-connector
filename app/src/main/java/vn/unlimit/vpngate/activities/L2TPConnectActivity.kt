@@ -3,6 +3,7 @@ package vn.unlimit.vpngate.activities
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -12,12 +13,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.banner.AdView
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.ActivityL2tpConnectBinding
@@ -137,15 +134,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     private fun loadBannerAds() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this)
                 adView = AdView(applicationContext)
-                adView!!.setAdSize(AdSize.LARGE_BANNER)
-                adView!!.adUnitId = resources.getString(R.string.admob_banner_bottom_l2tp)
-                adView!!.adListener = object : AdListener() {
-                    override fun onAdFailedToLoad(errorCode: LoadAdError) {
-                        binding.adContainerL2tp.visibility = View.GONE
-                    }
-                }
                 val params = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
@@ -154,7 +143,19 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
                 adView!!.layoutParams = params
                 binding.adContainerL2tp.addView(adView)
-                adView!!.loadAd(AdRequest.Builder().build())
+                val bannerAdRequest = com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest.Builder(
+                    resources.getString(R.string.admob_banner_bottom_l2tp),
+                    com.google.android.libraries.ads.mobile.sdk.banner.AdSize.LARGE_BANNER
+                ).build()
+                adView!!.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
+                    override fun onAdLoaded(ad: com.google.android.libraries.ads.mobile.sdk.banner.BannerAd) {
+                        Log.d("L2TPConnect", "Banner ad loaded")
+                    }
+
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        binding.adContainerL2tp.visibility = View.GONE
+                    }
+                })
             }
         } catch (e: Exception) {
             e.printStackTrace()

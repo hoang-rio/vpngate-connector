@@ -18,6 +18,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
+import android.view.ViewGroup
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.Toast
@@ -37,14 +38,11 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.banner.AdView
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import de.blinkt.openvpn.VpnProfile
@@ -504,29 +502,71 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         VpnStatus.addStateListener(this)
         VpnStatus.addByteCountListener(this)
         binding.txtStatus.text = ""
+        binding.scrollView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    binding.scrollView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    adjustAdPosition()
+                }
+            }
+        )
     }
 
     private fun initAdMob() {
         try {
             if (dataUtil.hasAds()) {
-                MobileAds.initialize(this)
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
-                adViewBellow.adUnitId = getString(R.string.admob_banner_bellow_detail)
-                adViewBellow.setAdSize(AdSize.LARGE_BANNER)
-                adViewBellow.adListener = object : AdListener() {
-                    override fun onAdFailedToLoad(error: LoadAdError) {
-                        adViewBellow.visibility = View.GONE
-                        binding.adContainerDetail.visibility = View.GONE
+                binding.adContainerFixed.addView(adViewBellow)
+                val bannerAdRequest = com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest.Builder(
+                    getString(R.string.admob_banner_bellow_detail),
+                    com.google.android.libraries.ads.mobile.sdk.banner.AdSize.LARGE_BANNER
+                ).build()
+                adViewBellow.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
+                    override fun onAdLoaded(ad: com.google.android.libraries.ads.mobile.sdk.banner.BannerAd) {
+                        Log.d(TAG, "Banner ad loaded")
+                        adjustAdPosition()
                     }
-                }
-                binding.adContainerDetail.addView(adViewBellow)
-                adViewBellow.loadAd(AdRequest.Builder().build())
+
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        adViewBellow.visibility = View.GONE
+                        binding.adContainerFixed.visibility = View.GONE
+                        binding.adContainerInline.visibility = View.GONE
+                    }
+                })
             } else {
-                binding.adContainerDetail.visibility = View.GONE
+                binding.adContainerFixed.visibility = View.GONE
+                binding.adContainerInline.visibility = View.GONE
             }
         } catch (e: Exception) {
             Log.e(TAG, "initAdMob error", e)
+        }
+    }
+
+    /**
+     * When scroll content fits viewport: move banner inline below Check IP (higher CTR).
+     * When content overflows: move banner to fixed position at screen bottom (always visible).
+     */
+    private fun adjustAdPosition() {
+        val scrollViewHeight = binding.scrollView.height
+        val contentHeight = binding.lnContentDetail.height
+        if (scrollViewHeight == 0 || contentHeight == 0) return
+        if (contentHeight <= scrollViewHeight) {
+            binding.adContainerFixed.visibility = View.GONE
+            binding.adContainerInline.visibility = View.VISIBLE
+            if (adViewBellow.parent !== binding.adContainerInline) {
+                (adViewBellow.parent as? ViewGroup)?.removeView(adViewBellow)
+                binding.adContainerInline.addView(adViewBellow)
+            }
+        } else {
+            binding.adContainerInline.visibility = View.GONE
+            binding.adContainerFixed.visibility = View.VISIBLE
+            if (adViewBellow.parent !== binding.adContainerFixed) {
+                (adViewBellow.parent as? ViewGroup)?.removeView(adViewBellow)
+                binding.adContainerFixed.addView(adViewBellow)
+            }
+            val adHeight = binding.adContainerFixed.height
+            binding.lnContentDetail.setPadding(0, 0, 0, adHeight)
         }
     }
 
@@ -1116,22 +1156,20 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private fun initInterstitialAd() {
         if (dataUtil.hasAds()) {
             try {
-                val adRequest = AdRequest.Builder().build()
+                val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
-                    applicationContext,
-                    getString(R.string.admob_full_screen_connect),
                     adRequest,
-                    object : InterstitialAdLoadCallback() {
+                    object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<InterstitialAd> {
                         override fun onAdLoaded(interstitialAd: InterstitialAd) {
                             isFullScreenAdLoaded = true
                             mInterstitialAd = interstitialAd
                             Log.e(TAG, "Full screen ads loaded")
                         }
 
-                        override fun onAdFailedToLoad(var1: LoadAdError) {
+                        override fun onAdFailedToLoad(adError: LoadAdError) {
                             isFullScreenAdLoaded = false
                             mInterstitialAd = null
-                            Log.e(TAG, String.format("Full screen ads failed to load %s", var1))
+                            Log.e(TAG, String.format("Full screen ads failed to load %s", adError))
                         }
                     })
             } catch (e: Exception) {
