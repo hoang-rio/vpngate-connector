@@ -320,7 +320,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun initAdMob() {
         try {
-            if (dataUtil!!.hasAds()) {
+            if (dataUtil!!.hasAds() && App.isMobileAdsInitialized) {
                 if (isMobileAdsInitializeCalled.getAndSet(true)) {
                     return
                 }

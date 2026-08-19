@@ -21,6 +21,7 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.customview.ThreadSafeNativeAdView
@@ -95,6 +96,7 @@ class VPNGateListAdapter(private val mContext: Context) :
 
     private fun loadNativeAd(adViewHolder: VHTypeAd) {
         if (adUnitId == null) return
+        if (!App.isMobileAdsInitialized) return
 
         val adRequest = NativeAdRequest.Builder(adUnitId!!, listOf(NativeAd.NativeAdType.NATIVE)).build()
         NativeAdLoader.load(adRequest, object : NativeAdLoaderCallback {

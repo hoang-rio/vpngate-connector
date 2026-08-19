@@ -24,6 +24,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.DetailActivity
@@ -66,7 +67,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
 
     override fun onResume() {
         super.onResume()
-        if (dataUtil!!.hasAds()) {
+        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized) {
             if (interstitialAd == null || isShowedAd) {
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
@@ -98,7 +99,7 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     }
 
     private fun checkAndShowAd(vpnGateConnection: VPNGateConnection?): Boolean {
-        if (dataUtil!!.hasAds()) {
+        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized) {
             if (interstitialAd != null) {
                 interstitialAd!!.adEventCallback = object : InterstitialAdEventCallback {
                     override fun onAdDismissedFullScreenContent() {

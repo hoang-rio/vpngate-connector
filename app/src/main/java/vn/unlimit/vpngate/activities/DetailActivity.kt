@@ -514,7 +514,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun initAdMob() {
         try {
-            if (dataUtil.hasAds()) {
+            if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
                 binding.adContainerFixed.addView(adViewBellow)
@@ -1157,7 +1157,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun initInterstitialAd() {
-        if (dataUtil.hasAds()) {
+        if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
             try {
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
@@ -1183,7 +1183,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun loadAds() {
         try {
-            if (dataUtil.hasAds() && dataUtil.getBooleanSetting(
+            if (dataUtil.hasAds() && App.isMobileAdsInitialized && dataUtil.getBooleanSetting(
                     DataUtil.USER_ALLOWED_VPN,
                     false
                 ) && isFullScreenAdLoaded

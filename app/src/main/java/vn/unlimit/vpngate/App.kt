@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.room.Room
 import com.google.android.libraries.ads.mobile.sdk.MobileAds
 import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
+import com.google.android.libraries.ads.mobile.sdk.initialization.OnInitializationCompleteListener
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.gms.tasks.Task
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -59,7 +60,10 @@ class App : Application() {
         instance = this
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
-            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build(), null)
+            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build(), OnInitializationCompleteListener {
+                isMobileAdsInitialized = true
+                Log.d(TAG, "MobileAds initialized successfully")
+            })
             if (dataUtil!!.isAcceptedPrivacyPolicy && dataUtil!!.getBooleanSetting(
                     DataUtil.INVITED_USE_PAID_SERVER,
                     false
@@ -149,6 +153,9 @@ class App : Application() {
         var instance: App? = null
             private set
         var isImportToOpenVPN: Boolean = false
+            private set
+        @Volatile
+        var isMobileAdsInitialized: Boolean = false
             private set
 
         fun getResourceString(resId: Int): String {

@@ -133,7 +133,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun loadBannerAds() {
         try {
-            if (dataUtil.hasAds()) {
+            if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
                 adView = AdView(applicationContext)
                 val params = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
