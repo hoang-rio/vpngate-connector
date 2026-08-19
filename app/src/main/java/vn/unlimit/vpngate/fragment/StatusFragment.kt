@@ -245,20 +245,22 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     }
 
     private fun loadAdMob() {
-        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized && dataUtil!!.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_status)).build()
-            InterstitialAd.load(
-                adRequest,
-                object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<InterstitialAd> {
-                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                        mInterstitialAd = interstitialAd
-                        isFullScreenAdsLoaded = true
-                    }
+        if (dataUtil!!.hasAds() && dataUtil!!.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
+            App.runWhenInitialized {
+                val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_status)).build()
+                InterstitialAd.load(
+                    adRequest,
+                    object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<InterstitialAd> {
+                        override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                            mInterstitialAd = interstitialAd
+                            isFullScreenAdsLoaded = true
+                        }
 
-                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        mInterstitialAd = null
-                    }
-                })
+                        override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                            mInterstitialAd = null
+                        }
+                    })
+            }
         }
     }
 

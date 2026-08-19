@@ -96,25 +96,25 @@ class VPNGateListAdapter(private val mContext: Context) :
 
     private fun loadNativeAd(adViewHolder: VHTypeAd) {
         if (adUnitId == null) return
-        if (!App.isMobileAdsInitialized) return
-
-        val adRequest = NativeAdRequest.Builder(adUnitId!!, listOf(NativeAd.NativeAdType.NATIVE)).build()
-        NativeAdLoader.load(adRequest, object : NativeAdLoaderCallback {
-            override fun onNativeAdLoaded(nativeAd: NativeAd) {
-                mainHandler.post {
-                    this@VPNGateListAdapter.nativeAd = nativeAd
-                    populateNativeAdView(nativeAd, adViewHolder)
+        App.runWhenInitialized {
+            val adRequest = NativeAdRequest.Builder(adUnitId!!, listOf(NativeAd.NativeAdType.NATIVE)).build()
+            NativeAdLoader.load(adRequest, object : NativeAdLoaderCallback {
+                override fun onNativeAdLoaded(nativeAd: NativeAd) {
+                    mainHandler.post {
+                        this@VPNGateListAdapter.nativeAd = nativeAd
+                        populateNativeAdView(nativeAd, adViewHolder)
+                    }
                 }
-            }
 
-            override fun onCustomNativeAdLoaded(customNativeAd: com.google.android.libraries.ads.mobile.sdk.nativead.CustomNativeAd) {
-                // Not used
-            }
+                override fun onCustomNativeAdLoaded(customNativeAd: com.google.android.libraries.ads.mobile.sdk.nativead.CustomNativeAd) {
+                    // Not used
+                }
 
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.e(TAG, "Native ad failed to load: ${adError.message}")
-            }
-        })
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.e(TAG, "Native ad failed to load: ${adError.message}")
+                }
+            })
+        }
     }
 
     private fun populateNativeAdView(nativeAd: NativeAd, adViewHolder: VHTypeAd) {

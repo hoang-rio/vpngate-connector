@@ -319,10 +319,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initAdMob() {
-        try {
-            if (dataUtil!!.hasAds() && App.isMobileAdsInitialized) {
+        if (!dataUtil!!.hasAds()) return
+        App.runWhenInitialized {
+            try {
                 if (isMobileAdsInitializeCalled.getAndSet(true)) {
-                    return
+                    return@runWhenInitialized
                 }
                 adView = AdView(applicationContext)
                 (findViewById<View>(R.id.ad_container_home) as RelativeLayout).addView(adView)
@@ -340,9 +341,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                         Log.e(TAG, adError.toString())
                     }
                 })
+            } catch (e: Exception) {
+                Log.e(TAG, "Got exception when initAdMob", e)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Got exception when initAdMob", e)
         }
     }
 

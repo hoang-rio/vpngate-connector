@@ -46,7 +46,7 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 136
+            versionCode 137
             versionName "2.3.4"
         }
 

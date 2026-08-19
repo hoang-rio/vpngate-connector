@@ -132,8 +132,9 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun loadBannerAds() {
-        try {
-            if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
+        if (!dataUtil.hasAds()) return
+        App.runWhenInitialized {
+            try {
                 adView = AdView(applicationContext)
                 val params = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -158,9 +159,9 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
                 })
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

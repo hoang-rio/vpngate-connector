@@ -67,8 +67,8 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
 
     override fun onResume() {
         super.onResume()
-        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized) {
-            if (interstitialAd == null || isShowedAd) {
+        if (dataUtil!!.hasAds() && (interstitialAd == null || isShowedAd)) {
+            App.runWhenInitialized {
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
                     adRequest,

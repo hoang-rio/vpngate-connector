@@ -513,8 +513,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun initAdMob() {
-        try {
-            if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
+        if (!dataUtil.hasAds()) return
+        App.runWhenInitialized {
+            try {
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
                 binding.adContainerFixed.addView(adViewBellow)
@@ -536,12 +537,9 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                         }
                     }
                 })
-            } else {
-                binding.adContainerFixed.visibility = View.GONE
-                binding.adContainerInline.visibility = View.GONE
+            } catch (e: Exception) {
+                Log.e(TAG, "initAdMob error", e)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "initAdMob error", e)
         }
     }
 
@@ -1157,7 +1155,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     }
 
     private fun initInterstitialAd() {
-        if (dataUtil.hasAds() && App.isMobileAdsInitialized) {
+        if (!dataUtil.hasAds()) return
+        App.runWhenInitialized {
             try {
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(

@@ -67,30 +67,20 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
         if (isAdAvailable()) {
             return
         }
+        App.runWhenInitialized {
+            loadCallback = object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<AppOpenAd> {
+                override fun onAdLoaded(ad: AppOpenAd) {
+                    appOpenAd = ad
+                    loadTime = Date().time
+                }
 
-        loadCallback = object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<AppOpenAd> {
-            /**
-             * Called when an app open ad has loaded.
-             *
-             * @param ad the loaded app open ad.
-             */
-            override fun onAdLoaded(ad: AppOpenAd) {
-                appOpenAd = ad
-                loadTime = Date().time
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    Log.e(LOG_TAG, loadAdError.toString())
+                }
             }
-
-            /**
-             * Called when an app open ad has failed to load.
-             *
-             * @param loadAdError the error.
-             */
-            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(LOG_TAG, loadAdError.toString())
-            }
+            val request = getAdRequest()
+            AppOpenAd.load(request, loadCallback!!)
         }
-        val request = getAdRequest()
-        AppOpenAd.load(request, loadCallback!!)
-
     }
 
     /** Creates and returns ad request.  */

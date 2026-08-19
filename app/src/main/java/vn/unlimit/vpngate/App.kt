@@ -2,11 +2,12 @@ package vn.unlimit.vpngate
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.room.Room
 import com.google.android.libraries.ads.mobile.sdk.MobileAds
 import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
-import com.google.android.libraries.ads.mobile.sdk.initialization.OnInitializationCompleteListener
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.gms.tasks.Task
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -60,10 +61,11 @@ class App : Application() {
         instance = this
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
-            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build(), OnInitializationCompleteListener {
+            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build()) {
                 isMobileAdsInitialized = true
                 Log.d(TAG, "MobileAds initialized successfully")
-            })
+                mainHandler.post { drainPendingCallbacks() }
+            }
             if (dataUtil!!.isAcceptedPrivacyPolicy && dataUtil!!.getBooleanSetting(
                     DataUtil.INVITED_USE_PAID_SERVER,
                     false
@@ -157,6 +159,25 @@ class App : Application() {
         @Volatile
         var isMobileAdsInitialized: Boolean = false
             private set
+
+        private val mainHandler = Handler(Looper.getMainLooper())
+        private val pendingCallbacks = mutableListOf<Runnable>()
+
+        @Synchronized
+        private fun drainPendingCallbacks() {
+            val callbacks = ArrayList(pendingCallbacks)
+            pendingCallbacks.clear()
+            callbacks.forEach { it.run() }
+        }
+
+        @Synchronized
+        fun runWhenInitialized(runnable: Runnable) {
+            if (isMobileAdsInitialized) {
+                runnable.run()
+            } else {
+                pendingCallbacks.add(runnable)
+            }
+        }
 
         fun getResourceString(resId: Int): String {
             return instance!!.getString(resId)
