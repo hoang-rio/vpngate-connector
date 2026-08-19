@@ -227,7 +227,7 @@ class DataUtil(context: Context?) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return true
+        return false
     }
 
     private val adMobId: String?
