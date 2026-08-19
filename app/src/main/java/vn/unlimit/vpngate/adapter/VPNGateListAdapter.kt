@@ -21,9 +21,9 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
-import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import vn.unlimit.vpngate.App.Companion.instance
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.customview.ThreadSafeNativeAdView
 import vn.unlimit.vpngate.models.VPNGateConnectionList
 import vn.unlimit.vpngate.utils.DataUtil
 
@@ -118,19 +118,19 @@ class VPNGateListAdapter(private val mContext: Context) :
     private fun populateNativeAdView(nativeAd: NativeAd, adViewHolder: VHTypeAd) {
         // Hide loading container and show ad view
         adViewHolder.adLoadingContainer.visibility = View.GONE
-        adViewHolder.nativeAdView.visibility = View.VISIBLE
+        adViewHolder.nativeAdWrapper.visibility = View.VISIBLE
 
-        val adView = adViewHolder.nativeAdView
+        val adWrapper = adViewHolder.nativeAdWrapper
 
-        // Set other ad assets
-        adView.headlineView = adViewHolder.adHeadline
-        adView.bodyView = adViewHolder.adBody
-        adView.callToActionView = adViewHolder.adCallToAction
-        adView.iconView = adViewHolder.adAppIcon
-        adView.priceView = adViewHolder.adPrice
-        adView.starRatingView = adViewHolder.adStars
-        adView.storeView = adViewHolder.adStore
-        adView.advertiserView = adViewHolder.adAdvertiser
+        // Set other ad assets via wrapper delegates
+        adWrapper.setHeadlineView(adViewHolder.adHeadline)
+        adWrapper.setBodyView(adViewHolder.adBody)
+        adWrapper.setCallToActionView(adViewHolder.adCallToAction)
+        adWrapper.setIconView(adViewHolder.adAppIcon)
+        adWrapper.setPriceView(adViewHolder.adPrice)
+        adWrapper.setStarRatingView(adViewHolder.adStars)
+        adWrapper.setStoreView(adViewHolder.adStore)
+        adWrapper.setAdvertiserView(adViewHolder.adAdvertiser)
 
         // Populate the headline
         adViewHolder.adHeadline.text = nativeAd.headline
@@ -200,8 +200,8 @@ class VPNGateListAdapter(private val mContext: Context) :
             adViewHolder.adAdvertiser.visibility = View.GONE
         }
 
-        // Register the native ad view
-        adView.registerNativeAd(nativeAd, adViewHolder.adMedia)
+        // Register the native ad view via wrapper
+        adWrapper.registerNativeAd(nativeAd, adViewHolder.adMedia)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -345,7 +345,7 @@ class VPNGateListAdapter(private val mContext: Context) :
     }
 
     private inner class VHTypeAd(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nativeAdView: NativeAdView = itemView.findViewById(R.id.native_ad_view)
+        val nativeAdWrapper: ThreadSafeNativeAdView = itemView.findViewById(R.id.native_ad_view)
         val adMedia: com.google.android.libraries.ads.mobile.sdk.nativead.MediaView = itemView.findViewById(R.id.ad_media)
         val adHeadline: TextView = itemView.findViewById(R.id.ad_headline)
         val adBody: TextView = itemView.findViewById(R.id.ad_body)
