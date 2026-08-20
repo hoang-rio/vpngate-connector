@@ -136,8 +136,11 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
             handler = Handler(Looper.getMainLooper())
             connectionListViewModel = (this.activity as MainActivity).connectionListViewModel
             connectionListViewModel!!.isLoading.observe(this) { isLoading: Boolean? ->
-                if (!isLoading!! && connectionListViewModel!!.vpnGateConnectionList.value != null) {
-                    onAPISuccess(connectionListViewModel!!.vpnGateConnectionList.value)
+                if (!isLoading!!) {
+                    binding.lnSwipeRefresh.isRefreshing = false
+                    if (connectionListViewModel!!.vpnGateConnectionList.value != null) {
+                        onAPISuccess(connectionListViewModel!!.vpnGateConnectionList.value)
+                    }
                 }
             }
             connectionListViewModel!!.isError.observe(this) { isError: Boolean ->

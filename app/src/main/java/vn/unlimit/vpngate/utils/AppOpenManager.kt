@@ -138,7 +138,13 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
                         splashActivity = null
                     }
 
-                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {}
+                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
+                        appOpenAd = null
+                        isShowingAd = false
+                        fetchAd()
+                        splashActivity?.startStartUpActivity(0)
+                        splashActivity = null
+                    }
                     override fun onAdShowedFullScreenContent() {
                         isShowingAd = true
                     }

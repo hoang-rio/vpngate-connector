@@ -85,6 +85,7 @@ class ConnectionListViewModel(application: Application) : BaseViewModel(applicat
                 if (connectionList.size() == 0 && !isRetried) {
                     isRetried = true
                     dataUtil.setUseAlternativeServer(true)
+                    isLoading.postValue(false)
                     getAPIData()
                 } else {
                     vpnGateConnectionList.value = connectionList
