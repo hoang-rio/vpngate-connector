@@ -48,6 +48,14 @@
 -keep class vn.unlimit.vpngate.models.User {*;}
 -keep class vn.unlimit.vpngate.models.UserRegister {*;}
 -keep class vn.unlimit.vpngate.models.Captcha {*;}
+# Keep Fragment constructors (required for FragmentManager state restoration)
+-keep class * extends androidx.fragment.app.Fragment {
+    public <init>();
+}
+# Keep Services (required for Android component restoration)
+-keep class * extends android.app.Service {
+    public <init>();
+}
 # Crashlytics
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
