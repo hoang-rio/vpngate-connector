@@ -360,6 +360,22 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                     }, 1000) // Wait 1 second for disconnection to complete
                 }
             } else {
+                if (isConnecting) {
+                    // Cancel a connecting VPN (SoftEther/OpenVPN/SSTP)
+                    val method = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
+                    when (method) {
+                        "softether" -> {
+                            val intent = Intent(context, SoftEtherVpnService::class.java)
+                            intent.action = SoftEtherVpnService.ACTION_DISCONNECT
+                            context?.startService(intent)
+                        }
+                        "sstp" -> startVpnSSTPService(ACTION_VPN_DISCONNECT)
+                        else -> stopVpn()
+                    }
+                    isConnecting = false
+                    binding.btnOnOff.isActivated = false
+                    binding.txtStatus.text = getString(R.string.disconnecting)
+                } else {
                 // No connected: create a new connect
                 val method = dataUtil!!.getStringSetting(DataUtil.LAST_CONNECT_METHOD, "openvpn")
                 if (method == "sstp") {
@@ -397,6 +413,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         binding.btnOnOff.isActivated = true
                         isConnecting = true
                     }
+                }
                 }
             }
         }
