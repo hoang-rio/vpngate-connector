@@ -9,6 +9,10 @@ on:
       - 'p*'
   workflow_dispatch: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
   SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
