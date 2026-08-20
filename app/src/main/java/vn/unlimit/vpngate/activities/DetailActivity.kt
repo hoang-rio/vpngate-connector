@@ -548,7 +548,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
      * When content overflows: move banner to fixed position at screen bottom (always visible).
      */
     private fun adjustAdPosition() {
-        if (!dataUtil.hasAds()) return
+        if (!dataUtil.hasAds() || !::adViewBellow.isInitialized) return
         val scrollViewHeight = binding.scrollView.height
         val contentHeight = binding.lnContentDetail.height
         if (scrollViewHeight == 0 || contentHeight == 0) return
