@@ -20,8 +20,8 @@ env:
 jobs:
   build-free:
     if: >-
-      (! startsWith(github.ref, 'refs/tags/p'))
-      && (! startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[pro]'))
+      ! startsWith(github.ref, 'refs/tags/p')
+      && (startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[pro]'))
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
@@ -71,8 +71,8 @@ jobs:
 
   build-pro:
     if: >-
-      (! startsWith(github.ref, 'refs/tags/f'))
-      && (! startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[free]'))
+      ! startsWith(github.ref, 'refs/tags/f')
+      && (startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[free]'))
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
