@@ -105,7 +105,7 @@ jobs:
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
           echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
-          ./gradlew :app:bundleProRelease appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
+          ./gradlew :app:bundleProRelease appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com" --info 2>&1 | tail -50
 
       - name: Upload Pro AAB
         if: startsWith(github.ref, 'refs/tags/')

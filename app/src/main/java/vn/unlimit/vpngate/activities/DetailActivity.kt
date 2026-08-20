@@ -101,7 +101,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private var mVpnGateConnection: VPNGateConnection? = null
     private lateinit var vpnProfile: VpnProfile
     private var mInterstitialAd: InterstitialAd? = null
-    private lateinit var adViewBellow: AdView
+    private var adViewBellow: AdView? = null
     private lateinit var prefs: SharedPreferences
     private lateinit var listener: OnSharedPreferenceChangeListener
     private var isConnecting = false
@@ -523,7 +523,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                     getString(R.string.admob_banner_bellow_detail),
                     com.google.android.libraries.ads.mobile.sdk.banner.AdSize.LARGE_BANNER
                 ).build()
-                adViewBellow.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
+                adViewBellow!!.loadAd(bannerAdRequest, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<com.google.android.libraries.ads.mobile.sdk.banner.BannerAd> {
                     override fun onAdLoaded(ad: com.google.android.libraries.ads.mobile.sdk.banner.BannerAd) {
                         Log.d(TAG, "Banner ad loaded")
                         runOnUiThread { adjustAdPosition() }
@@ -531,7 +531,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         runOnUiThread {
-                            adViewBellow.visibility = View.GONE
+                            adViewBellow?.visibility = View.GONE
                             binding.adContainerFixed.visibility = View.GONE
                             binding.adContainerInline.visibility = View.GONE
                         }
@@ -548,22 +548,22 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
      * When content overflows: move banner to fixed position at screen bottom (always visible).
      */
     private fun adjustAdPosition() {
-        if (!dataUtil.hasAds() || !::adViewBellow.isInitialized) return
+        if (!dataUtil.hasAds() || adViewBellow == null) return
         val scrollViewHeight = binding.scrollView.height
         val contentHeight = binding.lnContentDetail.height
         if (scrollViewHeight == 0 || contentHeight == 0) return
         if (contentHeight <= scrollViewHeight) {
             binding.adContainerFixed.visibility = View.GONE
             binding.adContainerInline.visibility = View.VISIBLE
-            if (adViewBellow.parent !== binding.adContainerInline) {
-                (adViewBellow.parent as? ViewGroup)?.removeView(adViewBellow)
+            if (adViewBellow?.parent !== binding.adContainerInline) {
+                (adViewBellow?.parent as? ViewGroup)?.removeView(adViewBellow)
                 binding.adContainerInline.addView(adViewBellow)
             }
         } else {
             binding.adContainerInline.visibility = View.GONE
             binding.adContainerFixed.visibility = View.VISIBLE
-            if (adViewBellow.parent !== binding.adContainerFixed) {
-                (adViewBellow.parent as? ViewGroup)?.removeView(adViewBellow)
+            if (adViewBellow?.parent !== binding.adContainerFixed) {
+                (adViewBellow?.parent as? ViewGroup)?.removeView(adViewBellow)
                 binding.adContainerFixed.addView(adViewBellow)
             }
             val adHeight = binding.adContainerFixed.height
