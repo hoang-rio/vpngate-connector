@@ -46,17 +46,14 @@ jobs:
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
 
-      - name: Bundle Free Release AAB
-        run: ./gradlew :app:bundleFreeRelease
-
-      - name: Distribute to Firebase
+      - name: Bundle and Distribute Free Release AAB
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
           echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
-          ./gradlew appDistributionUploadFreeRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
+          ./gradlew :app:bundleFreeRelease appDistributionUploadFreeRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
 
       - name: Upload Free AAB
         if: startsWith(github.ref, 'refs/tags/')
@@ -97,17 +94,14 @@ jobs:
         run: |
           cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
 
-      - name: Bundle Pro Release AAB
-        run: ./gradlew :app:bundleProRelease
-
-      - name: Distribute to Firebase
+      - name: Bundle and Distribute Pro Release AAB
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
           echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
-          ./gradlew appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
+          ./gradlew :app:bundleProRelease appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
 
       - name: Upload Pro AAB
         if: startsWith(github.ref, 'refs/tags/')
