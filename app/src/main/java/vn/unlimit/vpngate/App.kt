@@ -62,9 +62,11 @@ class App : Application() {
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
             MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build()) {
-                isMobileAdsInitialized = true
-                Log.d(TAG, "MobileAds initialized successfully")
-                mainHandler.post { drainPendingCallbacks() }
+                mainHandler.post {
+                    isMobileAdsInitialized = true
+                    Log.d(TAG, "MobileAds initialized successfully")
+                    drainPendingCallbacks()
+                }
             }
             if (dataUtil!!.isAcceptedPrivacyPolicy && dataUtil!!.getBooleanSetting(
                     DataUtil.INVITED_USE_PAID_SERVER,
