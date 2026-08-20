@@ -74,7 +74,7 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 loadingDialog?.show(supportFragmentManager, LoadingDialog::class.simpleName)
             } else {
                 if (loadingDialog != null) {
-                    loadingDialog!!.dismiss()
+                    loadingDialog!!.dismissAllowingStateLoss()
                 }
                 if (!isPressedResetPass) {
                     return@Observer

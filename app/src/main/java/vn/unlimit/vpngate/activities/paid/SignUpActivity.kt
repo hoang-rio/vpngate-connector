@@ -124,7 +124,7 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
             if (isLoading) {
                 loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
-                loadingDialog!!.dismiss()
+                loadingDialog!!.dismissAllowingStateLoss()
             }
         }
     }
@@ -221,7 +221,7 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
                 captchaSecret = result.secret
                 Sharp.loadString(svgImage).into(binding.ivCaptcha)
                 if (isReload) {
-                    loadingDialog.dismiss()
+                    loadingDialog.dismissAllowingStateLoss()
                 }
             }
 
@@ -232,7 +232,7 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
                     Toast.LENGTH_SHORT
                 ).show()
                 if (isReload) {
-                    loadingDialog.dismiss()
+                    loadingDialog.dismissAllowingStateLoss()
                 }
             }
         })

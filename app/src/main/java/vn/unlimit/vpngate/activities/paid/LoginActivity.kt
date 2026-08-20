@@ -93,7 +93,7 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else {
                 isClickedLogin = false
-                loadingDialog?.dismiss()
+                loadingDialog?.dismissAllowingStateLoss()
                 if (!userViewModel!!.isLoggedIn.value!!) {
                     val errorMsg: String =
                         if (!userViewModel!!.errorList.value!!.has("code")) {

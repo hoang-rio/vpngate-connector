@@ -117,7 +117,7 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
             if (isLoading) {
                 loadingDialog?.show(supportFragmentManager, LoadingDialog::class.java.name)
             } else if (loadingDialog!!.isVisible) {
-                loadingDialog!!.dismiss()
+                loadingDialog!!.dismissAllowingStateLoss()
             }
         }
         userViewModel!!.isForgotPassSuccess.observe(this, Observer {
@@ -161,7 +161,7 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
                 Sharp.loadString(svgImage).into(binding.ivCaptcha)
                 binding.txtCaptchaAnswer.setText("")
                 if (isReload) {
-                    loadingDialog.dismiss()
+                    loadingDialog.dismissAllowingStateLoss()
                 }
             }
 
@@ -172,7 +172,7 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
                     Toast.LENGTH_SHORT
                 ).show()
                 if (isReload) {
-                    loadingDialog.dismiss()
+                    loadingDialog.dismissAllowingStateLoss()
                 }
             }
         })
