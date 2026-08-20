@@ -14,92 +14,10 @@ env:
   SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
 
 jobs:
-  build-apk-free:
-    if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[pro]')"
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          submodules: 'recursive'
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Import GPG key and run blackbox_postdeploy
-        run: |
-          set -e
-          if [ -n "$GPG_PRIVATE_KEY" ]; then
-            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
-            GPG=gpg2 blackbox_postdeploy || true
-          fi
-
-      - name: Java version
-        run: java --version
-
-      - name: Build OpenSSL headers
-        run: |
-          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
-
-      - name: Assemble Free Release APK
-        run: ./gradlew assembleFreeRelease
-
-      - name: Distribute to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
-          ./gradlew assembleFreeRelease appDistributionUploadFreeRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
-
-  build-apk-pro:
-    if: "! startsWith(github.ref, 'refs/tags/') && ! contains(github.event.head_commit.message, '[free]')"
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          submodules: 'recursive'
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Import GPG key and run blackbox_postdeploy
-        run: |
-          set -e
-          if [ -n "$GPG_PRIVATE_KEY" ]; then
-            echo "$GPG_PRIVATE_KEY" | gpg2 --batch --yes --import -
-            GPG=gpg2 blackbox_postdeploy || true
-          fi
-
-      - name: Java version
-        run: java --version
-
-      - name: Build OpenSSL headers
-        run: |
-          cd SoftEtherClient/src/main/cpp && ./build-openssl-android.sh --headers-only
-
-      - name: Assemble Pro Release APK
-        run: ./gradlew assembleProRelease
-
-      - name: Distribute to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
-          ./gradlew assembleProRelease appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
-
-  build-aab-free:
-    if: "startsWith(github.ref, 'refs/tags/f')"
+  build-free:
+    if: >-
+      (! startsWith(github.ref, 'refs/tags/p'))
+      && (! startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[pro]'))
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
@@ -131,14 +49,26 @@ jobs:
       - name: Bundle Free Release AAB
         run: ./gradlew :app:bundleFreeRelease
 
+      - name: Distribute to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_FREE_APP_ID }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
+          ./gradlew appDistributionUploadFreeRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
+
       - name: Upload Free AAB
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v7
         with:
           name: aab-free
           path: app/build/outputs/bundle/freeRelease/app-free-release.aab
 
-  build-aab-pro:
-    if: "startsWith(github.ref, 'refs/tags/p')"
+  build-pro:
+    if: >-
+      (! startsWith(github.ref, 'refs/tags/f'))
+      && (! startsWith(github.ref, 'refs/tags/') || ! contains(github.event.head_commit.message, '[free]'))
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hoang-rio/docker-linux-android-sdk:ndk-jdk21
@@ -170,7 +100,17 @@ jobs:
       - name: Bundle Pro Release AAB
         run: ./gradlew :app:bundleProRelease
 
+      - name: Distribute to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_PRO_APP_ID }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+          echo "Release: ${{ github.event.head_commit.message }}" > release-notes.txt
+          ./gradlew appDistributionUploadProRelease --serviceCredentialsFile=service-account.json --appId="$FIREBASE_APP_ID" --releaseNotesFile=release-notes.txt --testers="chiasenhac.us@gmail.com"
+
       - name: Upload Pro AAB
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v7
         with:
           name: aab-pro
