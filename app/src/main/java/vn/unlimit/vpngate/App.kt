@@ -68,11 +68,7 @@ class App : Application() {
                     drainPendingCallbacks()
                 }
             }
-            if (dataUtil!!.isAcceptedPrivacyPolicy && dataUtil!!.getBooleanSetting(
-                    DataUtil.INVITED_USE_PAID_SERVER,
-                    false
-                )
-            ) {
+            if (dataUtil!!.isAcceptedPrivacyPolicy) {
                 appOpenManager = AppOpenManager(this)
             }
         }

@@ -312,7 +312,6 @@ class DataUtil(context: Context?) {
         const val USE_DOMAIN_TO_CONNECT: String = "USE_DOMAIN_TO_CONNECT"
         const val SETTING_STARTUP_SCREEN: String = "SETTING_STARTUP_SCREEN"
         const val SETTING_NOTIFY_SPEED: String = "SETTING_NOTIFY_SPEED"
-        const val INVITED_USE_PAID_SERVER: String = "INVITED_USE_PAID_SERVER"
         const val IS_LAST_CONNECTED_PAID: String = "IS_LAST_CONNECTED_PAID"
         private const val USE_ALTERNATIVE_SERVER = "USE_ALTERNATIVE_SERVER"
         private const val ACCEPTED_PRIVACY_POLICY = "ACCEPTED_PRIVACY_POLICY"
