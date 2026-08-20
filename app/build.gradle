@@ -48,6 +48,10 @@ android {
             signingConfig signingConfigs.free
             versionCode 137
             versionName "2.3.4"
+            firebaseAppDistribution {
+                artifactType = "AAB"
+                testers = "chiasenhac.us@gmail.com"
+            }
         }
 
         pro {
@@ -56,6 +60,10 @@ android {
             signingConfig signingConfigs.pro
             versionCode 126
             versionName "2.2.5"
+            firebaseAppDistribution {
+                artifactType = "AAB"
+                testers = "chiasenhac.us@gmail.com"
+            }
         }
     }
 
