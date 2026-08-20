@@ -181,6 +181,11 @@ class App : Application() {
             }
         }
 
+        @Synchronized
+        fun cancelPendingCallbacks(runnable: Runnable) {
+            pendingCallbacks.remove(runnable)
+        }
+
         fun getResourceString(resId: Int): String {
             return instance!!.getString(resId)
         }

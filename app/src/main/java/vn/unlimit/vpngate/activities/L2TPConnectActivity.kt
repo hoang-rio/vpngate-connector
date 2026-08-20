@@ -28,6 +28,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     private var dataUtil: DataUtil = App.instance!!.dataUtil!!
     private var adView: AdView? = null
     private lateinit var binding: ActivityL2tpConnectBinding
+    private var adInitRunnable: Runnable? = null
 
     companion object {
         const val TYPE_FREE = 0
@@ -133,7 +134,8 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun loadBannerAds() {
         if (!dataUtil.hasAds()) return
-        App.runWhenInitialized {
+        val runnable = Runnable {
+            if (isFinishing || isDestroyed) return@Runnable
             try {
                 adView = AdView(applicationContext)
                 val params = RelativeLayout.LayoutParams(
@@ -163,6 +165,13 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
                 e.printStackTrace()
             }
         }
+        adInitRunnable = runnable
+        App.runWhenInitialized(runnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adInitRunnable?.let { App.cancelPendingCallbacks(it) }
     }
 
     override fun onClick(view: View?) {

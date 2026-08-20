@@ -119,6 +119,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
     private val disconnectCooldownMS = 1000L // 1 second cooldown after disconnect
     private var pendingSoftEtherUseTcp: Boolean = true // Track pending SoftEther connection protocol
     private var notificationPermissionRequested = false // Track if we've already requested notification permission
+    private var adMobInitRunnable: Runnable? = null
+    private var interstitialInitRunnable: Runnable? = null
 
     private val softEtherStateListener = object : SoftEtherVpnService.StateListener {
         override fun onSoftEtherStateChanged(state: String, assignedIp: String) {
@@ -514,7 +516,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun initAdMob() {
         if (!dataUtil.hasAds()) return
-        App.runWhenInitialized {
+        val runnable = Runnable {
+            if (isFinishing || isDestroyed) return@Runnable
             try {
                 //Banner bellow
                 adViewBellow = AdView(applicationContext)
@@ -541,6 +544,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 Log.e(TAG, "initAdMob error", e)
             }
         }
+        adMobInitRunnable = runnable
+        App.runWhenInitialized(runnable)
     }
 
     /**
@@ -573,6 +578,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     public override fun onDestroy() {
         super.onDestroy()
+        adMobInitRunnable?.let { App.cancelPendingCallbacks(it) }
+        interstitialInitRunnable?.let { App.cancelPendingCallbacks(it) }
         VpnStatus.removeStateListener(this)
         VpnStatus.removeByteCountListener(this)
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
@@ -1156,7 +1163,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun initInterstitialAd() {
         if (!dataUtil.hasAds()) return
-        App.runWhenInitialized {
+        val runnable = Runnable {
+            if (isFinishing || isDestroyed) return@Runnable
             try {
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
@@ -1178,6 +1186,8 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 Log.e(TAG, "initInterstitialAd error", e)
             }
         }
+        interstitialInitRunnable = runnable
+        App.runWhenInitialized(runnable)
     }
 
     private fun loadAds() {
@@ -1185,12 +1195,21 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
             if (dataUtil.hasAds() && App.isMobileAdsInitialized && dataUtil.getBooleanSetting(
                     DataUtil.USER_ALLOWED_VPN,
                     false
-                ) && isFullScreenAdLoaded
+                ) && isFullScreenAdLoaded && mInterstitialAd != null
             ) {
                 isShowAds = true
-                if (mInterstitialAd != null) {
-                    mInterstitialAd!!.show(this)
+                isFullScreenAdLoaded = false
+                mInterstitialAd!!.adEventCallback = object : com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback {
+                    override fun onAdDismissedFullScreenContent() {
+                        mInterstitialAd = null
+                        isShowAds = false
+                    }
+                    override fun onAdFailedToShowFullScreenContent(error: com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError) {
+                        mInterstitialAd = null
+                        isShowAds = false
+                    }
                 }
+                mInterstitialAd!!.show(this)
             }
         } catch (e: Exception) {
             Log.e(TAG, "loadAds error", e)

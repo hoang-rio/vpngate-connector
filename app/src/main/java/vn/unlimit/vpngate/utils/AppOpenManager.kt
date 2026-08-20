@@ -150,6 +150,7 @@ class AppOpenManager(myApplication: App?) : Application.ActivityLifecycleCallbac
                     }
                 }
             appOpenAd!!.adEventCallback = fullScreenContentCallback
+            isShowingAd = true
             appOpenAd!!.show(currentActivity!!)
         } else {
             Log.d(LOG_TAG, "Can not show ad.")

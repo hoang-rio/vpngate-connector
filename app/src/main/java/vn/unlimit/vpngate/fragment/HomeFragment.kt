@@ -64,11 +64,13 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     //Flag ads is showed need request new ad
     private var isShowedAd = true
     private lateinit var binding: FragmentHomeBinding
+    private var adInitRunnable: Runnable? = null
 
     override fun onResume() {
         super.onResume()
         if (dataUtil!!.hasAds() && (interstitialAd == null || isShowedAd)) {
-            App.runWhenInitialized {
+            val runnable = Runnable {
+                if (!isAdded) return@Runnable
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_detail)).build()
                 InterstitialAd.load(
                     adRequest,
@@ -84,6 +86,8 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
                     })
                 isShowedAd = false
             }
+            adInitRunnable = runnable
+            App.runWhenInitialized(runnable)
         }
     }
 
@@ -122,6 +126,11 @@ class HomeFragment : Fragment(), OnRefreshListener, View.OnClickListener, OnItem
     override fun onAttach(context: Context) {
         mContext = context
         super.onAttach(context)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adInitRunnable?.let { App.cancelPendingCallbacks(it) }
     }
 
     override fun onCreate(savedBundle: Bundle?) {

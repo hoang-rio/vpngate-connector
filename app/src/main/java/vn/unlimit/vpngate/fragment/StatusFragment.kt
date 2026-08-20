@@ -100,6 +100,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
     private lateinit var binding: FragmentStatusBinding
     private lateinit var excludeAppsManager: vn.unlimit.vpngate.utils.ExcludeAppsManager
     private lateinit var prefs: SharedPreferences
+    private var adInitRunnable: Runnable? = null
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
     private var isSSTPConnected = false
     private var isSSTPConnectOrDisconnecting = false
@@ -246,7 +247,8 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private fun loadAdMob() {
         if (dataUtil!!.hasAds() && dataUtil!!.getBooleanSetting(DataUtil.USER_ALLOWED_VPN, false)) {
-            App.runWhenInitialized {
+            val runnable = Runnable {
+                if (!isAdded) return@Runnable
                 val adRequest = AdRequest.Builder(getString(R.string.admob_full_screen_status)).build()
                 InterstitialAd.load(
                     adRequest,
@@ -261,14 +263,25 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
                         }
                     })
             }
+            adInitRunnable = runnable
+            App.runWhenInitialized(runnable)
         }
     }
 
     private fun showAds() {
-        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized && isFullScreenAdsLoaded) {
-            if (mInterstitialAd != null) {
-                mInterstitialAd!!.show(requireActivity())
+        if (dataUtil!!.hasAds() && App.isMobileAdsInitialized && isFullScreenAdsLoaded && mInterstitialAd != null) {
+            isFullScreenAdsLoaded = false
+            mInterstitialAd!!.adEventCallback = object : com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback {
+                override fun onAdDismissedFullScreenContent() {
+                    mInterstitialAd = null
+                    isFullScreenAdsLoaded = false
+                }
+                override fun onAdFailedToShowFullScreenContent(error: com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError) {
+                    mInterstitialAd = null
+                    isFullScreenAdsLoaded = false
+                }
             }
+            mInterstitialAd!!.show(requireActivity())
         }
     }
 
@@ -570,6 +583,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     override fun onDestroy() {
         super.onDestroy()
+        adInitRunnable?.let { App.cancelPendingCallbacks(it) }
         try {
             VpnStatus.removeStateListener(this)
             VpnStatus.removeByteCountListener(this)
