@@ -48,6 +48,9 @@ android {
             signingConfig signingConfigs.free
             versionCode 137
             versionName "2.3.4"
+            firebaseAppDistribution {
+                artifactType = "AAB"
+            }
         }
 
         pro {
@@ -65,10 +68,6 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
-            firebaseAppDistribution {
-                artifactType = "AAB"
-                testers = "chiasenhac.us@gmail.com"
-            }
         }
 
         debug {
