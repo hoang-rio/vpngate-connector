@@ -69,6 +69,11 @@
 -keep class * extends com.google.gson.reflect.TypeToken
 -keep public class * implements java.lang.reflect.Type
 
+# Fix androidx.window.sidecar ClassNotFoundException during ObjectInputStream deserialization
+# (ProfileManager -> ObjectStreamClass.computeDefaultSUID -> getDeclaredMethods triggers class loading)
+-keep class androidx.window.sidecar.** { *; }
+-dontwarn androidx.window.sidecar.**
+
 # Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
 # EnclosingMethod is required to use InnerClasses.
 -keepattributes Signature, InnerClasses, EnclosingMethod
