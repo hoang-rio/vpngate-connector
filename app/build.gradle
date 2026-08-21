@@ -46,8 +46,8 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
-            versionCode 137
-            versionName "2.3.4"
+            versionCode 138
+            versionName "2.3.5"
             firebaseAppDistribution {
                 artifactType = "AAB"
             }
@@ -57,8 +57,8 @@ android {
             dimension "tier"
             applicationId "vn.unlimit.vpngatepro"
             signingConfig signingConfigs.pro
-            versionCode 126
-            versionName "2.2.5"
+            versionCode 127
+            versionName "2.2.6"
         }
     }
 
