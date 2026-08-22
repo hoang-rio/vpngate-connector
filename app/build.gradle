@@ -115,6 +115,7 @@ ext.glideVersion = '5.0.9'
 dependencies {
     implementation fileTree(include: ['*.jar', '*.so'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.core:core:1.19.0'
     implementation 'androidx.browser:browser:1.10.0'
     implementation 'com.google.code.gson:gson:2.14.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
