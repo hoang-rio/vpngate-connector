@@ -22,6 +22,8 @@ HUB="${HUB:-VPNGatePaid}"
 EXT_IF="${EXT_IF:-eth0}"
 IP4_NET="10.21.0.0/19"
 IP6_NET="fd00::/8"
+IP4_ADDR="10.21.0.1/19"
+IP6_ADDR="fd00::1/64"
 SERVER_PW="${VPN_SERVER_PW:-}"
 
 # ---- prompts (skipped when run non-interactively) ---------------------------------
@@ -115,6 +117,7 @@ systemctl daemon-reload
 # addresses; udev re-applies them on every appearance of the interface.
 udevadm control --reload
 udevadm trigger --subsystem-match=net
+udevadm settle
 
 # ---- [5/6] apply addresses + NAT rules ----------------------------------------------
 echo "==> [5/6] Applying tap_net addresses + NAT rules"
@@ -126,17 +129,28 @@ until [ -d /sys/class/net/tap_net ]; do
   sleep 1
 done
 ip link set dev tap_net up
-systemctl enable --now nat66-restore.service
-systemctl enable --now ip6-pin.service
+sysctl -q -w net.ipv6.conf.tap_net.forwarding=1 net.ipv6.conf.tap_net.accept_ra=0
+ip -4 addr replace "$IP4_ADDR" dev tap_net
+ip -6 addr replace "$IP6_ADDR" dev tap_net nodad
+/etc/nat66/nat66-rules.sh
+systemctl enable nat66-restore.service ip6-pin.service
+systemctl restart nat66-restore.service ip6-pin.service
 
 # ---- [6/6] dnsmasq / ndppd / radvd ---------------------------------------------------
-echo "==> [6/6] Enabling dnsmasq / ndppd / radvd at boot"
-systemctl enable --now ndppd radvd dnsmasq
+echo "==> [6/6] Enabling + restarting dnsmasq / ndppd / radvd"
+systemctl enable ndppd radvd dnsmasq
+systemctl restart ndppd radvd dnsmasq
 
 echo
+v4=$(ip -4 addr show dev tap_net | awk '/inet /{print $2}')
+v6=$(ip -6 addr show dev tap_net | awk '/inet6 fd00/{print $2}')
+if [ -z "$v4" ] || [ -z "$v6" ]; then
+  echo "ERROR: tap_net has no address (IPv4='$v4' IPv6='$v6'). Check: journalctl -u nat66-restore -u dnsmasq" >&2
+  exit 1
+fi
 echo "Done. Verification:"
-echo "  IPv4 tap_net : $(ip -4 addr show dev tap_net | awk '/inet /{print $2}')"
-echo "  IPv6 tap_net : $(ip -6 addr show dev tap_net | awk '/inet6 fd00/{print $2}')"
+echo "  IPv4 tap_net : $v4"
+echo "  IPv6 tap_net : $v6"
 systemctl is-enabled nat66-restore ip6-pin ndppd radvd dnsmasq
 iptables -t nat -S POSTROUTING  | grep -E "$IP4_NET" || true
 ip6tables -t nat -S POSTROUTING | grep -E "$IP6_NET" || true
