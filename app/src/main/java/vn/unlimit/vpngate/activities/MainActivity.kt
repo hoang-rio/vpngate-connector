@@ -1,7 +1,6 @@
 package vn.unlimit.vpngate.activities
 
 import android.annotation.SuppressLint
-import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -461,7 +460,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         menuInflater.inflate(R.menu.menu_main, menu)
         mMenu = menu
         toggleAction(currentUrl == "home")
-        val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val menuSearch = menu.findItem(R.id.action_search)
         menuSearch.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
@@ -483,7 +481,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         try {
             val searchView =
                 menuSearch.actionView as SearchView? ?: return super.onCreateOptionsMenu(menu)
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
             searchView.maxWidth = Int.MAX_VALUE
             val editText =
                 searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
