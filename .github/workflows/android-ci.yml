@@ -60,8 +60,8 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message || github.event.commits[0].message }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_NAME="${github.ref#refs/tags/}"
+          if echo "${{ github.ref }}" | grep -q '^refs/tags/'; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
             echo "Release: ${TAG_NAME}" > release-notes.txt
           else
             echo "Develop: ${COMMIT_MSG}" > release-notes.txt
@@ -117,8 +117,8 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message || github.event.commits[0].message }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_NAME="${github.ref#refs/tags/}"
+          if echo "${{ github.ref }}" | grep -q '^refs/tags/'; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
             echo "Release: ${TAG_NAME}" > release-notes.txt
           else
             echo "Develop: ${COMMIT_MSG}" > release-notes.txt
