@@ -96,11 +96,21 @@ class SplashActivity : AppCompatActivity() {
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
                     && activityResultLauncher != null
                 ) {
-                    appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        activityResultLauncher!!,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
-                    )
+                    // startUpdateFlowForResult resolves/launches the Play Store
+                    // update IntentSender and can throw IntentSender$SendIntentException
+                    // when the flow can't be started (e.g. no Play Store intent
+                    // resolves). It runs on this async callback thread, so the
+                    // try/catch in checkAppUpdateAndStartActivity cannot catch it.
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            activityResultLauncher!!,
+                            AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                        )
+                    } catch (ex: Exception) {
+                        Log.e(TAG, "Start update flow exception", ex)
+                        startStartUpActivity()
+                    }
                 } else {
                     startStartUpActivity(100)
                 }
