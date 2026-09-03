@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.viewbinding.ViewBinding
 import vn.unlimit.vpngate.R
+import vn.unlimit.vpngate.utils.InsetUtils
 
 open class EdgeToEdgeActivity: AppCompatActivity() {
     lateinit var viewBinding: ViewBinding
@@ -20,7 +21,7 @@ open class EdgeToEdgeActivity: AppCompatActivity() {
         val initialRight = root.paddingRight
         val initialBottom = root.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             window.decorView.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
             v.updatePadding(
                 left = initialLeft + insets.left,

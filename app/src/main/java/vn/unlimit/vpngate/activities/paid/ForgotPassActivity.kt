@@ -25,6 +25,7 @@ import vn.unlimit.vpngate.databinding.ActivityForgotPassBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
 class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
@@ -60,7 +61,7 @@ class ForgotPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         val initialNavRightPadding = binding.navDetail.paddingRight
         val initialScrollBottom = binding.scrollContent.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = initialScrimHeight + insets.top
             }

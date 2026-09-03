@@ -29,6 +29,7 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.ActivityPaidServerBinding
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.NotificationUtil
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.DeviceViewModel
 import vn.unlimit.vpngate.viewmodels.UserViewModel
@@ -63,7 +64,7 @@ class PaidServerActivity : AppCompatActivity() {
         val initialNavViewBottom = binding.navView.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
             window.decorView.setBackgroundColor(resources.getColor(R.color.colorPaidServer, theme))
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             lastSystemBarInsets = insets
             navHostContainer.updatePadding(
                 left = initialNavHostLeft + insets.left,

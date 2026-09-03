@@ -15,6 +15,7 @@ import vn.unlimit.vpngate.App
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.FragmentPrivacyPolicyBinding
+import vn.unlimit.vpngate.utils.InsetUtils
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
@@ -46,7 +47,7 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstance: Bundle?) {
         ViewCompat.setOnApplyWindowInsetsListener(binding.rootLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             if (insets.bottom > 0) {
                 v.updatePadding(bottom = insets.bottom)
             } else {

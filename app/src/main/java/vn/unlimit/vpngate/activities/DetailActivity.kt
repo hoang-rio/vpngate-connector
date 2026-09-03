@@ -72,6 +72,7 @@ import vn.unlimit.vpngate.dialog.VpnProtocolSelectionDialog
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.Ipv6Ula
 import vn.unlimit.vpngate.utils.NotificationUtil
 import java.io.ByteArrayInputStream
@@ -421,7 +422,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
         val initialBackTopMargin = (binding.btnBack.layoutParams as RelativeLayout.LayoutParams).topMargin
         val initialScrollBottom = binding.scrollView.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.root.updatePadding(
                 left = initialRootLeft + insets.left,
                 right = initialRootRight + insets.right

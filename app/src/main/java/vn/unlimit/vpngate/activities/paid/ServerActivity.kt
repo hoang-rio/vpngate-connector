@@ -66,6 +66,7 @@ import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.Ipv6Ula
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -265,7 +266,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
         val initialStatusTopMargin = (binding.lnStatus.layoutParams as RelativeLayout.LayoutParams).topMargin
         val initialScrollBottom = binding.scrollView.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.root.updatePadding(
                 left = initialRootLeft + insets.left,
                 right = initialRootRight + insets.right

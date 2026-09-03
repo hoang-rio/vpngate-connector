@@ -27,6 +27,7 @@ import vn.unlimit.vpngate.activities.paid.ResetPassActivity
 import vn.unlimit.vpngate.databinding.ActivitySplashBinding
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.utils.AppOpenManager
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import java.util.regex.Pattern
 
@@ -55,7 +56,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
         val initialLoadingBottom = binding.txtLoadingText.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.txtLoadingText.updatePadding(bottom = initialLoadingBottom + insets.bottom)
             windowInsets
         }

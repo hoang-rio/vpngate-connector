@@ -23,6 +23,7 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.ActivityLoginBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.BaseProvider
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 
@@ -50,7 +51,7 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
         val initialNavRightPadding = binding.navDetail.paddingRight
         val initialScrollBottom = binding.scrollContent.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = initialScrimHeight + insets.top
             }

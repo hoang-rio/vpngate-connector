@@ -20,6 +20,7 @@ import vn.unlimit.vpngate.databinding.ActivityResetPassBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
+import vn.unlimit.vpngate.utils.InsetUtils
 import java.util.regex.Pattern
 
 class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
@@ -54,7 +55,7 @@ class ResetPassActivity : EdgeToEdgeActivity(), View.OnClickListener {
         val initialNavRightPadding = binding.navDetail.paddingRight
         val initialFormBottom = binding.lnForm.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = initialScrimHeight + insets.top
             }

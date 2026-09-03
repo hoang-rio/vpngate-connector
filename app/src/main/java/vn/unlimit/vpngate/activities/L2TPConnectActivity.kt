@@ -22,6 +22,7 @@ import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.models.VPNGateConnection
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
+import vn.unlimit.vpngate.utils.InsetUtils
 
 class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
     private var mVPNGateConnection: VPNGateConnection? = null
@@ -52,7 +53,7 @@ class L2TPConnectActivity : AppCompatActivity(), View.OnClickListener {
         val initialScrollBottom = binding.scrollView.paddingBottom
         val initialAdBottom = binding.adContainerL2tp.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.root.updatePadding(
                 left = initialRootLeft + insets.left,
                 right = initialRootRight + insets.right

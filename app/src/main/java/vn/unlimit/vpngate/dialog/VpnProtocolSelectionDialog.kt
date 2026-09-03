@@ -16,6 +16,7 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.DialogVpnProtocolSelectionBinding
 import vn.unlimit.vpngate.models.PaidServer
 import vn.unlimit.vpngate.models.VPNGateConnection
+import vn.unlimit.vpngate.utils.InsetUtils
 
 /**
  * Bottom sheet dialog for selecting VPN protocol (OpenVPN or SoftEther)
@@ -150,7 +151,7 @@ class VpnProtocolSelectionDialog : BottomSheetDialogFragment() {
         val initialBottomPadding = binding.contentContainer.paddingBottom
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.scrollContent) { view, windowInsets ->
-            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val systemBars = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.contentContainer.updatePadding(bottom = initialBottomPadding + systemBars.bottom)
             view.updatePadding(bottom = 0)
             windowInsets

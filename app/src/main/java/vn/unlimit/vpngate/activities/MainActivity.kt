@@ -69,6 +69,7 @@ import vn.unlimit.vpngate.models.VPNGateConnectionList
 import vn.unlimit.vpngate.provider.BaseProvider
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.DataUtil.Companion.isOnline
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.utils.PaidServerUtil
 import kittoku.osc.preference.OscPrefKey
 import vn.unlimit.vpngate.viewmodels.ConnectionListViewModel
@@ -173,7 +174,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val initialDrawerHeaderHeight = drawerHeaderView.layoutParams.height
         val initialDrawerHeaderTop = drawerHeaderView.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(binding.activityMainDrawer) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.toolbar.updatePadding(
                 left = initialToolbarLeft + insets.left,
                 top = initialToolbarTop + insets.top,

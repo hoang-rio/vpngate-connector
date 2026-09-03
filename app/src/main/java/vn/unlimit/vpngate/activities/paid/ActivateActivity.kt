@@ -20,6 +20,7 @@ import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.ActivityActivateBinding
 import vn.unlimit.vpngate.provider.PaidServerProvider
 import vn.unlimit.vpngate.viewmodels.UserViewModel
+import vn.unlimit.vpngate.utils.InsetUtils
 
 class ActivateActivity : EdgeToEdgeActivity() {
     private var userViewModel: UserViewModel? = null
@@ -44,7 +45,7 @@ class ActivateActivity : EdgeToEdgeActivity() {
         val initialNavRightPadding = binding.navDetail.paddingRight
         val initialContentBottom = binding.contentContainer.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = initialScrimHeight + insets.top
             }

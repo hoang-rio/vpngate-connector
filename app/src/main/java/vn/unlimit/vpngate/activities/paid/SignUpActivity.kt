@@ -28,6 +28,7 @@ import vn.unlimit.vpngate.databinding.ActivitySignUpBinding
 import vn.unlimit.vpngate.dialog.LoadingDialog
 import vn.unlimit.vpngate.models.response.CaptchaResponse
 import vn.unlimit.vpngate.request.RequestListener
+import vn.unlimit.vpngate.utils.InsetUtils
 import vn.unlimit.vpngate.viewmodels.UserViewModel
 import java.util.Calendar
 import java.util.regex.Pattern
@@ -87,7 +88,7 @@ class SignUpActivity : EdgeToEdgeActivity(), View.OnClickListener,
         val initialNavRightPadding = binding.navDetail.paddingRight
         val initialScrollBottom = binding.scrollContent.paddingBottom
         ViewCompat.setOnApplyWindowInsetsListener(binding.navDetail) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets = InsetUtils.getSystemBarsInsets(windowInsets)
             binding.statusBarScrim.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = initialScrimHeight + insets.top
             }
