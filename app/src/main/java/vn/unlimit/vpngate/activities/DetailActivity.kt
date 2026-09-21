@@ -374,6 +374,13 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     @SuppressLint("SetTextI18n")
     public override fun onCreate(savedInstanceState: Bundle?) {
+        // Force the Window to install its decor (and content container) before AppCompat
+        // installs the sub-decor, avoiding the intermittent ContentFrameLayout NPE in
+        // AppCompatDelegateImpl.applyFixedSizeWindow (aosp issue 207638 family, still
+        // reported on newer appcompat). Most relevant when launched from a notification
+        // that finishes this activity before setContentView runs.
+        @Suppress("DEPRECATION")
+        window.decorView
         super.onCreate(savedInstanceState)
         dataUtil = (application as App).dataUtil!!
         // Initialize exclude apps manager early to prevent crashes when loading VPN profile
