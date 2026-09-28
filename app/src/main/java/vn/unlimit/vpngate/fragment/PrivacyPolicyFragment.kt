@@ -59,7 +59,10 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
 
     private fun String.removeHtmlHeadTitleAndStyle(): String =
         replace(Regex("<title[^>]*>.*?</title>", RegexOption.IGNORE_CASE), "")
-            .replace(Regex("<style[^>]*>.*?</style>", RegexOption.IGNORE_CASE), "")
+            .replace(
+                Regex("<style[^>]*>.*?</style>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)),
+                ""
+            )
 
     override fun onClick(view: View) {
         if (view == binding.btnDecide) {
