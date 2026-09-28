@@ -61,13 +61,17 @@ class App : Application() {
         instance = this
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
-            MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build()) {
-                mainHandler.post {
-                    isMobileAdsInitialized = true
-                    Log.d(TAG, "MobileAds initialized successfully")
-                    drainPendingCallbacks()
+            // GMA Next-Gen SDK requires initialization on a background thread,
+            // otherwise WebView Chromium startup on the main thread can cause an ANR.
+            Thread {
+                MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build()) {
+                    mainHandler.post {
+                        isMobileAdsInitialized = true
+                        Log.d(TAG, "MobileAds initialized successfully")
+                        drainPendingCallbacks()
+                    }
                 }
-            }
+            }.start()
             if (dataUtil!!.isAcceptedPrivacyPolicy) {
                 appOpenManager = AppOpenManager(this)
             }
