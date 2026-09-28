@@ -42,7 +42,10 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
             windowInsets
         }
         binding.tvPolicy.movementMethod = LinkMovementMethod.getInstance()
-        binding.tvPolicy.text = Html.fromHtml(readTextFromResource(), Html.FROM_HTML_MODE_LEGACY)
+        binding.tvPolicy.text = Html.fromHtml(
+            readTextFromResource().removeHtmlHeadTitleAndStyle(),
+            Html.FROM_HTML_MODE_LEGACY
+        )
     }
 
     private fun readTextFromResource(): String {
@@ -53,6 +56,10 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
             ""
         }
     }
+
+    private fun String.removeHtmlHeadTitleAndStyle(): String =
+        replace(Regex("<title[^>]*>.*?</title>", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("<style[^>]*>.*?</style>", RegexOption.IGNORE_CASE), "")
 
     override fun onClick(view: View) {
         if (view == binding.btnDecide) {
