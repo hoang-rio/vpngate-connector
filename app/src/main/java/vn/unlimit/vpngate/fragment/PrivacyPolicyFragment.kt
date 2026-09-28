@@ -1,12 +1,11 @@
 package vn.unlimit.vpngate.fragment
 
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -16,7 +15,6 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.MainActivity
 import vn.unlimit.vpngate.databinding.FragmentPrivacyPolicyBinding
 import vn.unlimit.vpngate.utils.InsetUtils
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
@@ -26,23 +24,11 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return try {
-            mainActivity = activity as MainActivity?
-            binding = FragmentPrivacyPolicyBinding.inflate(layoutInflater)
-            binding.btnAccept.setOnClickListener(this)
-            binding.btnDecide.setOnClickListener(this)
-            binding.root
-        } catch (ex: Exception) {
-            if (ex.message != null && ex.message!!.contains("webview")) {
-                Toast.makeText(
-                    mainActivity,
-                    R.string.no_webview_installed_you_must_install_system_webview_from_playstore_to_continue,
-                    Toast.LENGTH_LONG
-                ).show()
-                mainActivity!!.finish()
-            }
-            null
-        }
+        mainActivity = activity as MainActivity?
+        binding = FragmentPrivacyPolicyBinding.inflate(layoutInflater)
+        binding.btnAccept.setOnClickListener(this)
+        binding.btnDecide.setOnClickListener(this)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstance: Bundle?) {
@@ -55,29 +41,17 @@ class PrivacyPolicyFragment : Fragment(), View.OnClickListener {
             }
             windowInsets
         }
-        binding.webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-        binding.webView.loadData(readTextFromResource(), "text/html", "utf-8")
+        binding.tvPolicy.movementMethod = LinkMovementMethod.getInstance()
+        binding.tvPolicy.text = Html.fromHtml(readTextFromResource(), Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun readTextFromResource(): String {
-        val raw = resources.openRawResource(R.raw.privacy_policy)
-        val stream = ByteArrayOutputStream()
-        var i: Int
-        try {
-            i = raw.read()
-            while (i != -1) {
-                stream.write(i)
-                i = raw.read()
-            }
-            raw.close()
+        return try {
+            resources.openRawResource(R.raw.privacy_policy).use { it.readBytes().toString(Charsets.UTF_8) }
         } catch (e: IOException) {
             e.printStackTrace()
+            ""
         }
-        return stream.toString()
     }
 
     override fun onClick(view: View) {

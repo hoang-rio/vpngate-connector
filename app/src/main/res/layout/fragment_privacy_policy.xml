@@ -3,16 +3,18 @@
     android:id="@+id/root_layout"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <WebView
+    <ScrollView
         android:layout_above="@+id/ln_button"
-        android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_policy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textColorLink="@color/colorLink"
+            android:textIsSelectable="true"/>
+    </ScrollView>
     <LinearLayout
         android:id="@+id/ln_button"
         android:layout_width="match_parent"
