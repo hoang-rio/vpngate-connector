@@ -2,6 +2,7 @@ package vn.unlimit.vpngate
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -95,7 +96,16 @@ class App : Application() {
                 }
             }
         try {
-            ProviderInstaller.installIfNeeded(applicationContext)
+            ProviderInstaller.installIfNeededAsync(applicationContext,
+                object : ProviderInstaller.ProviderInstallListener {
+                    override fun onProviderInstalled() {
+                        Log.d(TAG, "Security provider installed")
+                    }
+
+                    override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {
+                        Log.e(TAG, "Security provider install failed: $errorCode")
+                    }
+                })
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
