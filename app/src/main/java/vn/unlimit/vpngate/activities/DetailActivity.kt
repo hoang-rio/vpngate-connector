@@ -9,6 +9,7 @@ import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -416,7 +418,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
                 VPNGateConnection::class.java
             )
         }
-        enableEdgeToEdge()
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val initialRootLeft = binding.root.paddingLeft

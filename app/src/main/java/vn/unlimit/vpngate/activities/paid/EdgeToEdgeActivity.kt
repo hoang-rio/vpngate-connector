@@ -1,6 +1,8 @@
 package vn.unlimit.vpngate.activities.paid
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,7 +15,7 @@ import vn.unlimit.vpngate.utils.InsetUtils
 open class EdgeToEdgeActivity: AppCompatActivity() {
     lateinit var viewBinding: ViewBinding
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
         val root = viewBinding.root
         val initialLeft = root.paddingLeft
