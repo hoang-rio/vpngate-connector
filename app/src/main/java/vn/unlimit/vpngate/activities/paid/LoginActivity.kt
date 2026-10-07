@@ -44,7 +44,6 @@ class LoginActivity : EdgeToEdgeActivity(), View.OnClickListener {
         binding.btnBack.setOnClickListener(this)
         binding.ivHidePassword.setOnClickListener(this)
         supportActionBar?.hide()
-        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
         WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
         val initialScrimHeight = binding.statusBarScrim.layoutParams.height
         val initialNavLeftPadding = binding.navDetail.paddingLeft

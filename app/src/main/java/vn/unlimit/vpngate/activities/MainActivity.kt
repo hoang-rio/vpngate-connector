@@ -21,13 +21,13 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -134,8 +134,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         dataUtil = (application as App).dataUtil
         connectionListViewModel = ViewModelProvider(this)[ConnectionListViewModel::class.java]
         connectionListViewModel!!.isLoading.observe(this) { aBoolean: Boolean ->

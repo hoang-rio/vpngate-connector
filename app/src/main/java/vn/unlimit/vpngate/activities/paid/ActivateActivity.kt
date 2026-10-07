@@ -33,7 +33,6 @@ class ActivateActivity : EdgeToEdgeActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar?.hide()
-        window.statusBarColor = resources.getColor(R.color.colorPaidServer, theme)
         WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
         binding.btnBack.setOnClickListener {
             val freeIntent = Intent(this, MainActivity::class.java)

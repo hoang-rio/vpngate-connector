@@ -1,9 +1,9 @@
 package vn.unlimit.vpngate.activities.paid
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.viewbinding.ViewBinding
@@ -13,8 +13,8 @@ import vn.unlimit.vpngate.utils.InsetUtils
 open class EdgeToEdgeActivity: AppCompatActivity() {
     lateinit var viewBinding: ViewBinding
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         val root = viewBinding.root
         val initialLeft = root.paddingLeft
         val initialTop = root.paddingTop
