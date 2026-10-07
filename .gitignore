@@ -16,3 +16,5 @@ app/release/
 /app/google-services.json
 .kotlin/
 nohup.out
+
+gradle/gradle-daemon-jvm.properties
