@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.webkit.WebView
 import androidx.room.Room
 import com.google.android.libraries.ads.mobile.sdk.MobileAds
 import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
@@ -72,12 +71,6 @@ class App : Application() {
                         Log.d(TAG, "MobileAds initialized successfully")
                         drainPendingCallbacks()
                     }
-                }
-                // Pre-warm WebView Chromium off the main thread so the ads SDK's
-                // later main-thread WebView creation doesn't ANR.
-                runCatching {
-                    val webView = WebView(applicationContext)
-                    webView.destroy()
                 }
             }.start()
             if (dataUtil!!.isAcceptedPrivacyPolicy) {
