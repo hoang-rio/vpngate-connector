@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.gson.Gson
 import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.databinding.LayoutFilterDialogBinding
 import vn.unlimit.vpngate.models.VPNGateConnectionList
@@ -18,16 +19,37 @@ import vn.unlimit.vpngate.utils.SpinnerInit
 import vn.unlimit.vpngate.utils.SpinnerInit.OnItemSelectedIndexListener
 
 
-class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomSheetDialogFragment() {
+class FilterBottomSheetDialog : BottomSheetDialogFragment() {
     companion object {
+        private const val ARG_FILTER = "arg_filter"
+
         @JvmStatic
         fun newInstance(filter: VPNGateConnectionList.Filter?): FilterBottomSheetDialog {
-            return FilterBottomSheetDialog(filter)
+            // Pass the filter through arguments instead of the constructor: the
+            // FragmentManager recreates this dialog with a no-arg constructor on
+            // activity relaunch (config change), so a parameterized-only constructor
+            // would throw Fragment.InstantiationException ("Unable to start activity").
+            val dialog = FilterBottomSheetDialog()
+            dialog.arguments = Bundle().apply {
+                putString(ARG_FILTER, Gson().toJson(filter))
+            }
+            return dialog
         }
     }
 
-    private var mFilter = filter ?: VPNGateConnectionList.Filter()
+    private var mFilter = VPNGateConnectionList.Filter()
     private lateinit var binding: LayoutFilterDialogBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mFilter = arguments?.getString(ARG_FILTER)?.let {
+            try {
+                Gson().fromJson(it, VPNGateConnectionList.Filter::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        } ?: VPNGateConnectionList.Filter()
+    }
 
     var onButtonClickListener: OnButtonClickListener? = null
 
@@ -61,7 +83,7 @@ class FilterBottomSheetDialog(filter: VPNGateConnectionList.Filter?) : BottomShe
         mFilter.ping = binding.txtPing.text.toString().toIntOrNull()
         mFilter.speed = binding.txtSpeed.text.toString().toIntOrNull()
         mFilter.sessionCount = binding.txtSession.text.toString().toIntOrNull()
-        onButtonClickListener!!.onButtonClick(mFilter)
+        onButtonClickListener?.onButtonClick(mFilter)
         this.dismiss()
     }
 
