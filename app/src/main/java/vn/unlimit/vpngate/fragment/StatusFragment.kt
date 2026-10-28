@@ -230,7 +230,7 @@ class StatusFragment : Fragment(), View.OnClickListener, VpnStatus.StateListener
 
     private fun stopVpn() {
         //prepareStopVPN();
-        ProfileManager.setConntectedVpnProfileDisconnected(context)
+        ProfileManager.setConnectedVpnProfileDisconnected(context)
         if (mVPNService != null) {
             try {
                 mVPNService!!.stopVPN(false)

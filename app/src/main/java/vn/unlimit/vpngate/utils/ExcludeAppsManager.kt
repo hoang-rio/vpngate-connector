@@ -92,7 +92,7 @@ class ExcludeAppsManager(private val context: Context) {
     private fun restartVpnForNewSettings() {
         try {
             // Stop current VPN connection
-            de.blinkt.openvpn.core.ProfileManager.setConntectedVpnProfileDisconnected(context)
+            de.blinkt.openvpn.core.ProfileManager.setConnectedVpnProfileDisconnected(context)
 
             // Note: We don't automatically restart VPN here as it requires user interaction
             // The next manual connect will use the updated settings

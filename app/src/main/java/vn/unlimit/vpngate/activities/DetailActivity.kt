@@ -1330,7 +1330,7 @@ class DetailActivity : AppCompatActivity(), View.OnClickListener, VpnStatus.Stat
 
     private fun stopVpn() {
         //prepareStopVPN();
-        ProfileManager.setConntectedVpnProfileDisconnected(this)
+        ProfileManager.setConnectedVpnProfileDisconnected(this)
         if (mVPNService != null) {
             try {
                 mVPNService!!.stopVPN(false)

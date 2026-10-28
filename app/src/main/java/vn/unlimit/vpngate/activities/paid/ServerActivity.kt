@@ -965,7 +965,7 @@ class ServerActivity : EdgeToEdgeActivity(), View.OnClickListener, VpnStatus.Sta
 
     private fun stopVpn() {
         //prepareStopVPN();
-        ProfileManager.setConntectedVpnProfileDisconnected(this)
+        ProfileManager.setConnectedVpnProfileDisconnected(this)
         if (mVPNService != null) {
             try {
                 mVPNService?.stopVPN(false)
