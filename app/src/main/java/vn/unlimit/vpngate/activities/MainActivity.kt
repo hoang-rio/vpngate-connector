@@ -101,7 +101,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var binding: ActivityMainBinding
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            when (Objects.requireNonNull<String?>(intent.action)) {
+            val action = intent.action ?: return
+            when (action) {
                 BaseProvider.ACTION.ACTION_CHANGE_NETWORK_STATE -> {
                     if (isInFront) {
                         initState()
