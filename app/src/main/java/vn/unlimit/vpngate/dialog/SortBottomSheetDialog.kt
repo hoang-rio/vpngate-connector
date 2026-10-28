@@ -129,6 +129,8 @@ class SortBottomSheetDialog : BottomSheetDialogFragment(), RadioGroup.OnCheckedC
     companion object {
         private const val PROPERTY_KEY = "PROPERTY_KEY"
         private const val TYPE_KEY = "TYPE_KEY"
+        const val TAG = "SortBottomSheetDialog"
+
         fun newInstance(sortProperty: String?, sortType: Int): SortBottomSheetDialog {
             val sortBottomSheetDialog = SortBottomSheetDialog()
             val args = Bundle()

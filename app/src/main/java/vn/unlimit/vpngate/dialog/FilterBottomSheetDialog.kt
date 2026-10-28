@@ -35,6 +35,8 @@ class FilterBottomSheetDialog : BottomSheetDialogFragment() {
             }
             return dialog
         }
+
+        const val TAG = "FilterBottomSheetDialog"
     }
 
     private var mFilter = VPNGateConnectionList.Filter()

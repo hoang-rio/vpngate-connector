@@ -594,9 +594,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             })
             if (!isFinishing && !isDestroyed) {
-                sortBottomSheetDialog.show(supportFragmentManager, sortBottomSheetDialog.tag)
+                sortBottomSheetDialog.show(supportFragmentManager, SortBottomSheetDialog.TAG)
             } else if (!isFinishing) {
-                sortBottomSheetDialog.show(supportFragmentManager, sortBottomSheetDialog.tag)
+                sortBottomSheetDialog.show(supportFragmentManager, SortBottomSheetDialog.TAG)
             }
             return true
         }
@@ -624,9 +624,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     }
                 }
             if (!isFinishing && !isDestroyed) {
-                filterBottomSheetDialog.show(supportFragmentManager, filterBottomSheetDialog.tag)
+                filterBottomSheetDialog.show(supportFragmentManager, FilterBottomSheetDialog.TAG)
             } else if (!isFinishing) {
-                filterBottomSheetDialog.show(supportFragmentManager, filterBottomSheetDialog.tag)
+                filterBottomSheetDialog.show(supportFragmentManager, FilterBottomSheetDialog.TAG)
             }
         }
 
