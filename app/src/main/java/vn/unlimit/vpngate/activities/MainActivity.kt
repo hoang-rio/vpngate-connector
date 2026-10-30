@@ -58,6 +58,7 @@ import vn.unlimit.vpngate.R
 import vn.unlimit.vpngate.activities.paid.LoginActivity
 import vn.unlimit.vpngate.activities.paid.PaidServerActivity
 import vn.unlimit.vpngate.databinding.ActivityMainBinding
+import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog.Companion.newInstance
 import vn.unlimit.vpngate.dialog.FilterBottomSheetDialog.OnButtonClickListener
 import vn.unlimit.vpngate.dialog.SortBottomSheetDialog
