@@ -53,8 +53,12 @@ class App : Application() {
         vpnGateItemDao = appDatabase.vpnGateItemDao()
         excludedAppDao = appDatabase.excludedAppDao()
 
-        // Initialize default excluded apps
-        initializeDefaultExcludedApps()
+        // Initialize default excluded apps off the main thread: this performs the
+        // first Room open (plus any pending migration) and used to run synchronously
+        // on main, lengthening process start. When the VPN service is started cold
+        // via startForegroundService() (e.g. the keepVPNAlive job) that delay eats
+        // into the 5s foreground-service budget.
+        Thread { initializeDefaultExcludedApps() }.start()
         if (!BuildConfig.DEBUG) {
             // OPTIONAL: If crash reporting has been explicitly disabled previously, add:
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
