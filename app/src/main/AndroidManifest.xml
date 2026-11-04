@@ -23,6 +23,30 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="n">
+        <!--
+            Cold start: every androidx.startup initializer runs on the main thread
+            before Application.onCreate(), inside ActivityThread.installContentProviders
+            (handleBindApplication -> installContentProviders -> provider.onCreate).
+
+            EmojiCompatInitializer is not needed here: it resolves a downloadable
+            emoji font and allocates on main, while AppCompat only uses EmojiCompat
+            when it is configured (EmojiCompat.isConfigured()), so emoji keep
+            rendering from the platform font. Removing it shortens the
+            pre-Application window, which is the same window that eats the
+            startForegroundService() 5s budget on cold starts and where Firebase's
+            own provider init has been seen to ANR (Crashlytics DataCollectionArbiter
+            reading SharedPreferences on main).
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                tools:node="remove" />
+        </provider>
+
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar.SplashScreen"
