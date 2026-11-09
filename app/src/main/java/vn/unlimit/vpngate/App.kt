@@ -23,6 +23,7 @@ import vn.unlimit.vpngate.models.ExcludedApp
 import vn.unlimit.vpngate.utils.AppOpenManager
 import vn.unlimit.vpngate.utils.DataUtil
 import vn.unlimit.vpngate.utils.PaidServerUtil
+import java.util.concurrent.atomic.AtomicBoolean
 
 class App : Application() {
     var dataUtil: DataUtil? = null
@@ -66,17 +67,7 @@ class App : Application() {
         instance = this
         dataUtil = DataUtil(this)
         if (dataUtil!!.hasAds()) {
-            // GMA Next-Gen SDK requires initialization on a background thread,
-            // otherwise WebView Chromium startup on the main thread can cause an ANR.
-            Thread {
-                MobileAds.initialize(this, InitializationConfig.Builder(getString(R.string.admob_app_id)).build()) {
-                    mainHandler.post {
-                        isMobileAdsInitialized = true
-                        Log.d(TAG, "MobileAds initialized successfully")
-                        drainPendingCallbacks()
-                    }
-                }
-            }.start()
+            ensureMobileAdsInitialized()
             if (dataUtil!!.isAcceptedPrivacyPolicy) {
                 appOpenManager = AppOpenManager(this)
             }
@@ -176,6 +167,8 @@ class App : Application() {
         var isMobileAdsInitialized: Boolean = false
             private set
 
+        private val adsInitStarted = AtomicBoolean(false)
+
         private val mainHandler = Handler(Looper.getMainLooper())
         private val pendingCallbacks = mutableListOf<Runnable>()
 
@@ -192,7 +185,41 @@ class App : Application() {
                 runnable.run()
             } else {
                 pendingCallbacks.add(runnable)
+                /* First run: the privacy policy is accepted after Application.onCreate()
+                 * has already run, when hasAds() was still false, so nothing kicked off
+                 * initialization for this process. Starting it here is what makes the
+                 * queued ad loads actually run instead of waiting forever. */
+                ensureMobileAdsInitialized()
             }
+        }
+
+        /**
+         * Starts GMA Next-Gen SDK initialization once, on a background thread: the SDK
+         * blocks internally while initializing, and WebView Chromium startup on the main
+         * thread can cause an ANR.
+         *
+         * Idempotent and safe to call after Application.onCreate(): on a first run the
+         * privacy policy is accepted later (and restartApp() only recreates the activity,
+         * not the process), so this is the only chance to initialize for that process.
+         */
+        @JvmStatic
+        @Synchronized
+        fun ensureMobileAdsInitialized() {
+            val app = instance ?: return
+            if (isMobileAdsInitialized) return
+            // hasAds() includes the privacy-policy consent check, so the SDK is never
+            // initialized before the user has accepted it.
+            if (app.dataUtil?.hasAds() != true) return
+            if (!adsInitStarted.compareAndSet(false, true)) return
+            Thread {
+                MobileAds.initialize(app, InitializationConfig.Builder(app.getString(R.string.admob_app_id)).build()) {
+                    mainHandler.post {
+                        isMobileAdsInitialized = true
+                        Log.d(TAG, "MobileAds initialized successfully")
+                        drainPendingCallbacks()
+                    }
+                }
+            }.start()
         }
 
         @Synchronized
