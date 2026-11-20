@@ -135,12 +135,13 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
     override fun onStart() {
         super.onStart()
         if (userViewModel?.isProfileUpdate == true && paidServerUtil.getUserInfo() != null) {
+            val userInfo = paidServerUtil.getUserInfo()!!
             binding.textHome.text = getString(
                 R.string.home_paid_welcome,
-                paidServerUtil.getUserInfo()!!.fullname
+                userInfo.fullname
             )
             binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
-                paidServerUtil.getUserInfo()!!.dataSize!!,
+                userInfo.dataSize ?: 0L,
                 false,
                 resources
             )
@@ -161,7 +162,7 @@ class HomeFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, View.OnCl
                     binding.textHome.text =
                         getString(R.string.home_paid_welcome, userInfo.fullname)
                     binding.txtDataSize.text = OpenVPNService.humanReadableByteCount(
-                        userInfo.dataSize!!,
+                        userInfo.dataSize ?: 0L,
                         false,
                         resources
                     )
