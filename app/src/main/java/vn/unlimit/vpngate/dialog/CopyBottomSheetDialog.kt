@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -52,40 +53,56 @@ class CopyBottomSheetDialog : BottomSheetDialogFragment(), View.OnClickListener 
         savedInstanceState: Bundle?
     ): View {
         binding = LayoutCopyBottomDialogBinding.inflate(layoutInflater)
-        binding.txtTitle.text = mVpnGateConnection!!.ip
+        val connection = mVpnGateConnection ?: run {
+            mVpnGateConnection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arguments?.getParcelable(ARG_CONNECTION, VPNGateConnection::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                arguments?.getParcelable(ARG_CONNECTION)
+            }
+            mVpnGateConnection
+        }
+        if (connection == null) {
+            // Fragment restored after process death without arguments: nothing to show.
+            dismissAllowingStateLoss()
+            return binding.root
+        }
+        binding.txtTitle.text = connection.ip
         binding.btnCopyIp.setOnClickListener(this)
         binding.btnCopyHostname.setOnClickListener(this)
+        val baseUrl = instance?.dataUtil?.baseUrl.orEmpty()
         Glide.with(this)
-            .load(instance!!.dataUtil!!.baseUrl + "/images/flags/" + mVpnGateConnection!!.countryShort + ".png")
+            .load(baseUrl + "/images/flags/" + connection.countryShort + ".png")
             .placeholder(R.color.colorOverlay)
             .error(R.color.colorOverlay)
             .into(binding.imgFlag)
-        return  binding.root
+        return binding.root
     }
 
     override fun onClick(view: View) {
         try {
+            val connection = mVpnGateConnection ?: return
             val clipboard =
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var clip: ClipData? = null
             if (view == binding.btnCopyIp) {
                 val params = Bundle()
                 params.putString("type", "ip")
-                params.putString("ip", mVpnGateConnection!!.ip)
-                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
-                params.putString("country", mVpnGateConnection!!.countryLong)
+                params.putString("ip", connection.ip)
+                params.putString("hostname", connection.calculateHostName)
+                params.putString("country", connection.countryLong)
                 FirebaseAnalytics.getInstance(requireActivity().applicationContext)
                     .logEvent("Copy", params)
-                clip = ClipData.newPlainText("text", mVpnGateConnection!!.ip)
+                clip = ClipData.newPlainText("text", connection.ip)
             } else if (view == binding.btnCopyHostname) {
                 val params = Bundle()
                 params.putString("type", "hostname")
-                params.putString("ip", mVpnGateConnection!!.ip)
-                params.putString("hostname", mVpnGateConnection!!.calculateHostName)
-                params.putString("country", mVpnGateConnection!!.countryLong)
+                params.putString("ip", connection.ip)
+                params.putString("hostname", connection.calculateHostName)
+                params.putString("country", connection.countryLong)
                 FirebaseAnalytics.getInstance(requireActivity().applicationContext)
                     .logEvent("Copy", params)
-                clip = ClipData.newPlainText("text", mVpnGateConnection!!.calculateHostName)
+                clip = ClipData.newPlainText("text", connection.calculateHostName)
             }
             if (clip != null) {
                 clipboard.setPrimaryClip(clip)
@@ -99,10 +116,15 @@ class CopyBottomSheetDialog : BottomSheetDialogFragment(), View.OnClickListener 
     }
 
     companion object {
+        private const val ARG_CONNECTION = "vpn_gate_connection"
+
         @JvmStatic
         fun newInstance(vpnGateConnection: VPNGateConnection?): CopyBottomSheetDialog {
             val copyBottomSheetDialog = CopyBottomSheetDialog()
             copyBottomSheetDialog.mVpnGateConnection = vpnGateConnection
+            copyBottomSheetDialog.arguments = Bundle().apply {
+                putParcelable(ARG_CONNECTION, vpnGateConnection)
+            }
             return copyBottomSheetDialog
         }
     }
