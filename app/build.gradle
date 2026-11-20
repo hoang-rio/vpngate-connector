@@ -47,7 +47,7 @@ android {
             applicationId "vn.unlimit.vpngate"
             signingConfig signingConfigs.free
             versionCode 144
-            versionName "2.3.10"
+            versionName "2.4.0"
             firebaseAppDistribution {
                 artifactType = "AAB"
             }
